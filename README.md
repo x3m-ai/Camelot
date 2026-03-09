@@ -143,12 +143,39 @@ Interested? Introduce yourself in [Discussions](https://github.com/x3m-ai/Camelo
 
 ### Support the Project
 
-Merlino is free and built with passion. If it saves you time, consider supporting its development:
+---
+
+<div align="center">
+
+## ❤️ Support Merlino & Morgana
+
+**Merlino is free. Forever. Built by one person, with passion.**
+
+If it saves you time, helps your team, or makes you a better threat hunter --
+please consider supporting its development. Every contribution keeps the project alive.
+
+<br>
 
 [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
+&nbsp;&nbsp;
 [![Ko-fi](https://img.shields.io/badge/Buy%20a%20Coffee-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/x3mai)
 
-Your support helps fund development, infrastructure, and threat intelligence data updates.
+<br>
+
+| Your support funds | |
+|---|---|
+| 🔬 New features and integrations | MITRE ATT&CK updates, new data sources, AI models |
+| ☁️ Infrastructure | Cloudflare, CDN, licensing system, hosting |
+| 📖 Documentation | Guides, tutorials, user labs |
+| 🛡️ Threat intelligence data | CVE, Exploit-DB, MISP feeds |
+
+<br>
+
+*No subscription. No paywall. Pay what you think it's worth.*
+
+</div>
+
+---
 
 ### Contact
 
