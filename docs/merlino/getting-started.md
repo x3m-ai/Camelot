@@ -6,7 +6,7 @@ Merlino is a free Microsoft Excel Add-in for Cyber Threat Intelligence professio
 
 1. Open Microsoft Excel (Desktop or Web)
 2. Go to **Insert** > **Add-ins** > **Get Add-ins**
-3. Search for **Merlino** or install directly from: **[merlino-addin.pages.dev](https://merlino-addin.pages.dev)**
+3. Search for **Merlino** or install directly from: **[merlino.x3m.ai](https://merlino.x3m.ai)**
 4. The Merlino ribbon tab appears in Excel
 
 ## First Steps

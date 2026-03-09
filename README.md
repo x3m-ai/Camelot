@@ -8,7 +8,7 @@
 <tr>
 <td align="left" width="20%">
 
-[![Merlino](https://img.shields.io/badge/Merlino-CTI%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://merlino-addin.pages.dev)
+[![Merlino](https://img.shields.io/badge/Merlino-CTI%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://merlino.x3m.ai)
 
 </td>
 <td align="center">
@@ -41,7 +41,7 @@
 
 | Tool | What It Does | Where It Lives |
 |---|---|---|
-| **Merlino** | [Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino-addin.pages.dev) |
+| **Merlino** | [Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino.x3m.ai) |
 | **Morgana Arsenal** | Caldera-based Red Team platform for adversary emulation -- attack simulation, agent management, operation automation | [GitHub repo](https://github.com/x3m-ai/Morgana-Arsenal) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
@@ -69,7 +69,7 @@ Merlino transforms Microsoft Excel into a full-featured Cyber Threat Intelligenc
 
 Merlino is a free Microsoft Excel Add-in. Install it directly from Cloudflare Pages:
 
-**[Install Merlino](https://merlino-addin.pages.dev)**
+**[Install Merlino](https://merlino.x3m.ai)**
 
 Requirements:
 - Microsoft Excel (Desktop or Web)
@@ -169,6 +169,6 @@ This repository (documentation and community content) is licensed under the [MIT
 
 *Camelot -- Where Intelligence Meets Offense*
 
-**[X3M.AI](https://x3m.ai)** | **[Merlino](https://merlino-addin.pages.dev)** | **[Morgana Arsenal](https://github.com/x3m-ai/Morgana-Arsenal)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
+**[X3M.AI](https://x3m.ai)** | **[Merlino](https://merlino.x3m.ai)** | **[Morgana Arsenal](https://github.com/x3m-ai/Morgana-Arsenal)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
 
 </div>
