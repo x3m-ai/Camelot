@@ -41,7 +41,7 @@
 
 | Tool | What It Does | Where It Lives |
 |---|---|---|
-| **Merlino** | Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://merlino-addin.pages.dev) |
+| **Merlino** | [Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino-addin.pages.dev) |
 | **Morgana Arsenal** | Caldera-based Red Team platform for adversary emulation -- attack simulation, agent management, operation automation | [GitHub repo](https://github.com/x3m-ai/Morgana-Arsenal) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
