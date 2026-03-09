@@ -164,8 +164,6 @@ please consider supporting its development. Every contribution keeps the project
 <br>
 
 [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
-&nbsp;&nbsp;
-[![Ko-fi](https://img.shields.io/badge/Buy%20a%20Coffee-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/x3mai)
 
 <br>
 
