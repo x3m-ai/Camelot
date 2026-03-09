@@ -156,7 +156,7 @@ Interested? Introduce yourself in [Discussions](https://github.com/x3m-ai/Camelo
 
 <div align="center">
 
-## Support 💜 Merlino & Morgana 🖤
+## 💜 Support Merlino & Morgana 🖤
 
 **Merlino is free. Forever. Built by one person, with passion.**
 
