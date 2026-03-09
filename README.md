@@ -33,10 +33,10 @@
 
 ---
 
-> ### 💜 Merlino is free. If it helps you, consider buying Nino a coffee.
+> ### 💜 Merlino is free. If it helps you, consider sponsoring the project.
 > *One tool. One developer. Zero subscription fees. Your support keeps it alive.*
 >
-> [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai) &nbsp; [![Ko-fi](https://img.shields.io/badge/☕_Buy%20a%20Coffee-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/x3mai)
+> [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
 
 </div>
 
