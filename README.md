@@ -38,8 +38,6 @@
 >
 > [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
 
-### 💜 Support Merlino & Morgana 🖤
-
 </div>
 
 ---
@@ -156,12 +154,9 @@ Interested? Introduce yourself in [Discussions](https://github.com/x3m-ai/Camelo
 
 <div align="center">
 
-## 💜 Support Merlino & Morgana 🖤
+### Merlino is free. If it helps you, consider sponsoring the project.
 
-**Merlino is free. Forever. Built by one person, with passion.**
-
-If it saves you time, helps your team, or makes you a better threat hunter --
-please consider supporting its development. Every contribution keeps the project alive.
+*One tool. One developer. Zero subscription fees. Your support keeps it alive.*
 
 <br>
 
