@@ -33,7 +33,7 @@
 
 ---
 
-> ### 💜 Merlino is free. If it helps you, consider sponsoring the project.
+> ### Merlino is free. If it helps you, consider sponsoring the project.
 > *One tool. One developer. Zero subscription fees. Your support keeps it alive.*
 >
 > [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
@@ -156,7 +156,7 @@ Interested? Introduce yourself in [Discussions](https://github.com/x3m-ai/Camelo
 
 <div align="center">
 
-## ❤️ Support Merlino & Morgana
+## ❤️ Support Merlino & Morgana 🖤
 
 **Merlino is free. Forever. Built by one person, with passion.**
 
