@@ -33,8 +33,6 @@
 
 ---
 
-### ❤️ Support Merlino & Morgana
-
 > ### 💜 Merlino is free. If it helps you, consider sponsoring the project.
 > *One tool. One developer. Zero subscription fees. Your support keeps it alive.*
 >
