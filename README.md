@@ -4,11 +4,28 @@
 
 ### The Kingdom of Cyber Threat Intelligence
 
-**Merlino** (Intelligence) + **Morgana** (Offense) = **Camelot** (Unified CTI Platform)
+<table width="100%" border="0" cellspacing="0" cellpadding="8">
+<tr>
+<td align="left" width="20%">
 
-[![Merlino Add-in](https://img.shields.io/badge/Merlino-Excel%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://merlino-addin.pages.dev)
-[![Morgana Arsenal](https://img.shields.io/badge/Morgana%20Arsenal-Red%20Team-dc3545?style=for-the-badge&logo=github&logoColor=white)](https://github.com/x3m-ai/Morgana-Arsenal)
+[![Merlino](https://img.shields.io/badge/Merlino-CTI%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://merlino-addin.pages.dev)
+
+</td>
+<td align="center">
+
+![CTI](https://img.shields.io/badge/CTI-Cyber%20Threat%20Intelligence-0d6efd?style=for-the-badge)
+![Red Team](https://img.shields.io/badge/Red%20Team-Adversary%20Emulation-dc3545?style=for-the-badge)
+![Blue Team](https://img.shields.io/badge/Blue%20Team-Detection%20%26%20Defense-0dcaf0?style=for-the-badge)
+![Purple Team](https://img.shields.io/badge/Purple%20Team-State%20of%20the%20Art-6f42c1?style=for-the-badge)
+
+</td>
+<td align="right" width="20%">
+
 [![Community](https://img.shields.io/badge/Community-Discussions-28a745?style=for-the-badge&logo=github&logoColor=white)](https://github.com/x3m-ai/Camelot/discussions)
+
+</td>
+</tr>
+</table>
 
 ---
 
