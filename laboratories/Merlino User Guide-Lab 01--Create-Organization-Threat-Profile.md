@@ -3,7 +3,8 @@
 **Product:** Merlino v1.4.0  
 **Publisher:** X3M.AI Ltd  
 **Date:** March 2026  
-**Audience:** End users, security analysts, and Microsoft Marketplace reviewers
+**Audience:** End users, security analysts, and Microsoft Marketplace reviewers  
+**Support:** [https://github.com/x3m-ai/Camelot](https://github.com/x3m-ai/Camelot)
 
 ---
 
