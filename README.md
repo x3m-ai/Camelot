@@ -87,9 +87,9 @@ Requirements:
 | Guide | Description |
 |---|---|
 | [Getting Started](docs/merlino/getting-started.md) | Quick start guide for first-time users |
-| User Guide -- Lab 01: Create Organization Threat Profile | Complete walkthrough building a threat profile from six APT groups |
-| User Guide -- Lab 02: Microsoft Sentinel Detection Coverage | Analyze your Sentinel rules against your threat profile |
-| User Guide -- Lab 03: Red Team Testing with Morgana Arsenal | Connect Merlino to Morgana and run adversary emulations |
+| [Lab 01: Create Organization Threat Profile](laboratories/Merlino%20User%20Guide-Lab%2001--Create-Organization-Threat-Profile.md) | Complete walkthrough building a threat profile from six APT groups |
+| [Lab 02: Microsoft Sentinel Detection Coverage](laboratories/Merlino%20User%20Guide-Lab%2002--Microsoft%20Sentinel%20Detection%20Coverage.md) | Analyze your Sentinel rules against your threat profile |
+| [Lab 03: Red Team Testing with Morgana Arsenal](laboratories/Merlino%20User%20Guide-Lab%2003--Red%20Team%20Testing%20with%20Morgana%20Arsenal.md) | Connect Merlino to Morgana and run adversary emulations |
 
 ---
 
