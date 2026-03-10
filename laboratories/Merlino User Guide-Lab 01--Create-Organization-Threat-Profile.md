@@ -57,7 +57,7 @@ This combination makes Merlino an extraordinarily versatile instrument. It is no
 
 As Satya Nadella, CEO of Microsoft, has said: *"You can do anything with Excel."*
 
-[![Satya Nadella on Excel](https://img.youtube.com/vi/KSqYSKwyLpM/maxresdefault.jpg)](https://www.youtube.com/watch?v=KSqYSKwyLpM "Satya Nadella: You can do anything with Excel")
+[![Satya Nadella on Excel](img/48-Satya-about-excel.fw.png)](https://www.youtube.com/watch?v=KSqYSKwyLpM "Satya Nadella: You can do anything with Excel")
 
 *Click the image above to watch Satya Nadella talk about the power of Excel.*
 
