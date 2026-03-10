@@ -1,4 +1,4 @@
-# Merlino User Guide -- Complete Walkthrough -- Create Organization Threat Profile
+# Merlino User Guide -- Lab 01 -- Create Organization Threat Profile
 
 **Product:** Merlino v1.4.0  
 **Publisher:** X3M.AI Ltd  
