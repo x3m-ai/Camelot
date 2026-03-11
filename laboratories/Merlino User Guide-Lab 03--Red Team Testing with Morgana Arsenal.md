@@ -1,6 +1,6 @@
 # Merlino User Guide -- Lab 03 -- Red Team Testing with Morgana Arsenal
 
-**Product:** Merlino v1.4.0  
+**Product:** Merlino v1.5.0  
 **Publisher:** X3M.AI Ltd  
 **Date:** March 2026  
 **Audience:** Red Team operators, SOC analysts, detection engineers, and security architects  

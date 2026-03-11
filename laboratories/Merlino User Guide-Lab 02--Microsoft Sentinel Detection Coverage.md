@@ -1,6 +1,6 @@
 # Merlino User Guide -- Lab 02 -- Microsoft Sentinel Detection Coverage
 
-**Product:** Merlino v1.4.0  
+**Product:** Merlino v1.5.0  
 **Publisher:** X3M.AI Ltd  
 **Date:** March 2026  
 **Audience:** End users, security analysts, detection engineers, and SOC managers  

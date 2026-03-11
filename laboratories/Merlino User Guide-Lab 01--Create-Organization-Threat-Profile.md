@@ -1,6 +1,6 @@
 # Merlino User Guide -- Lab 01 -- Create Organization Threat Profile
 
-**Product:** Merlino v1.4.0  
+**Product:** Merlino v1.5.0  
 **Publisher:** X3M.AI Ltd  
 **Date:** March 2026  
 **Audience:** End users, security analysts, and Microsoft Marketplace reviewers  
@@ -261,6 +261,27 @@ The first step in any Merlino workflow is loading a template that creates the re
    - **Main Coverage** -- The ATT&CK technique coverage heatmap
    - **AI** -- AI analysis prompts and results
    - Additional supporting sheets
+
+> **Using Merlino in a Browser (Excel on the Web)**
+>
+> **Recommended browser: Google Chrome.** We strongly recommend using Google Chrome when running Merlino in Excel on the web. Microsoft Edge may not display the Merlino ribbon tab correctly due to aggressive caching and WebView2 engine conflicts. If you experience missing ribbon buttons or the Merlino tab not appearing, switch to Chrome before troubleshooting further.
+>
+> When running Merlino inside Excel on the web (Office 365), the template loading behavior is different from the desktop experience. Because the application runs entirely as a web UI, clicking **Load Template** will **download the file `merlino_main_template-v1.0.0.xlsx` to your Downloads folder** instead of opening it directly in the current workbook.
+>
+> To load the template:
+> 1. Click **Load Template** -- the file `merlino_main_template-v1.0.0.xlsx` is downloaded to your local **Downloads** folder.
+> 2. Open your Downloads folder and locate `merlino_main_template-v1.0.0.xlsx`.
+> 3. Go to **File > Open** in Excel on the web and upload the downloaded template file.
+>
+> **Important:** Make sure that **pop-up permissions are granted** for the Office 365 domain in your browser settings. Merlino needs to open a new tab during this process, and if pop-ups are blocked the operation will fail silently.
+>
+> **"Add-in not available" Warning:** When you open the downloaded template in Excel on the web, you may see a yellow warning banner saying *"This add-in is not available in Office for the web. Open this document in desktop version of Office to use the add-in."* -- **this is not true, ignore it.** Simply click any button on the Merlino ribbon tab and the warning will disappear. Merlino works perfectly in the browser.
+>
+> ![Add-in Warning](img/49-addin-not-valid.png)
+>
+> *The false warning that may appear when opening a Merlino template in Excel on the web. Just ignore it and click any Merlino ribbon button to dismiss.*
+>
+> This is a natural consequence of running inside a browser environment. Some behaviors differ from the desktop version due to the web-based nature of the application -- keep this in mind and adapt accordingly throughout the labs.
 
 Each sheet contains a structured Excel table with standardized columns including **Pick** (Boolean), **CrossPick** (percentage), and **TCodes** (technique codes).
 
