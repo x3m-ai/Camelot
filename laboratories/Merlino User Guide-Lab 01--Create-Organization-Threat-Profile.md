@@ -416,23 +416,37 @@ Runbooks are automated multi-step workflows that process and correlate data acro
 | Runbook | Description |
 |---|---|
 | **Update Core** | Updates core components: cross-references techniques, tests, data sources, and the catalogue. Rebuilds the Main Coverage matrix. |
-| **Smart View** | Analyzes Pick column selections across all tables and colors techniques based on TCode frequency analysis. Produces the visual heatmap. |
+| **Smart View** | Analyzes Pick column selections across all tables and colors techniques based on the selected analysis approach. Produces the visual heatmap. |
 | **Set All Picks False** | Resets all Pick columns to FALSE across all tables, then runs Smart View to clear the heatmap. |
 | **Include Picks in Catalogue** | Copies all rows with Pick = TRUE from Groups, Software, Campaigns, Tests, etc. into the Catalogue -- the central table that drives the entire Techniques Coverage analysis. |
 | **Export Analytic Reports** | Generates a self-contained HTML report from the current analysis that can be shared and viewed without Excel or Merlino. |
 
+### Smart View Approach Selector
+
+At the top of the Runbooks taskpane, above the runbook list, you will find the **Smart View Approach** selector. This dropdown controls **how Smart View analyzes and colors the Main Coverage matrix** when it runs. Merlino offers four distinct analysis modes, each designed for a different analytical objective:
+
+| Approach | Description |
+|---|---|
+| **Threat-Informed Defense** (Default) | Analyzes Pick selections and colors techniques based on TCode frequency across threat actors. This is the standard mode for building threat profiles and understanding which techniques your adversaries use most often. |
+| **Attribution Analysis** | Collects all picked TCodes and runs TTP Attribution Analysis to identify matching threat groups, campaigns, and software. Useful when you want to understand which known actors match a particular set of techniques. |
+| **Coverage Gap Analysis** | Compares threat TCodes (from picked Groups, Campaigns, and Software) against Catalogue defenses to identify detection gaps. Highlights techniques where your threat exposure exceeds your detection coverage. |
+| **Priority Defense** | Combines threat frequency with coverage gaps to prioritize the most critical undefended techniques. This is the most advanced mode -- it tells you where to invest your defensive resources first. |
+
+**For this laboratory, leave the default selection: Threat-Informed Defense.** This is the right approach when your goal is to build a threat profile based on adversary groups and understand their TTP landscape. The other approaches are covered in subsequent laboratories where they become relevant (e.g., Coverage Gap Analysis is especially powerful in *Lab 02* when comparing threat profiles against Microsoft Sentinel detection coverage).
+
 ### Running Update Core
 
 1. Open the Runbooks taskpane
-2. Select (check) **Update Core**
-3. Click **Execute Selected Runbooks**
-4. Wait for the execution to complete -- Merlino processes all imported data and builds the Main Coverage matrix
+2. Verify that the **Smart View Approach** is set to **Threat-Informed Defense** (the default)
+3. Select (check) **Update Core**
+4. Click **Execute Selected Runbooks**
+5. Wait for the execution to complete -- Merlino processes all imported data and builds the Main Coverage matrix
 
 After completion, navigate to the **Main Coverage** sheet. You will see the ATT&CK technique matrix with columns for each tactic and rows of techniques. At this point, the matrix is empty (no colors) because no threat groups have been selected yet.
 
 ![Runbooks Taskpane](img/18-runbooks-taskpane.png)
 
-*The Runbooks taskpane showing all available runbooks with checkboxes. "Update Core" is checked and the "Execute Selected Runbooks" button is visible at the bottom.*
+*The Runbooks taskpane showing the Smart View Approach selector at the top (set to "Threat-Informed Defense"), the available runbooks with checkboxes below, and the "Execute Selected Runbooks" button at the bottom.*
 
 ![Main Coverage Empty](img/19-main-coverage-empty.png)
 
