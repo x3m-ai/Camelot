@@ -67,7 +67,7 @@ For this lab, we provide a sample file containing 41 real Microsoft Sentinel ale
 
 **Download the sample file:**
 
-[merlino-catalogue-sentinel-workspace-Lab02.json](https://merlino-addin.pages.dev/merlino-catalogue-sentinel-workspace-Lab02.json)
+[merlino-catalogue-sentinel-workspace-Lab02.json](https://raw.githubusercontent.com/x3m-ai/Camelot/refs/heads/main/laboratories/merlino-catalogue-sentinel-workspace-Lab02.json)
 
 Save this file to a known location on your computer (e.g., your Downloads folder or Desktop).
 
