@@ -76,6 +76,12 @@
     This script uses REST API directly via Invoke-RestMethod.
     No PowerShell modules are required.
     
+.NOTES
+    Author:  Nino Crudele
+    LinkedIn: https://www.linkedin.com/in/ninocrudele
+    Website:  https://merlino.x3m.ai
+    License:  MIT
+
 .LINK
     https://merlino-addin.x3m.ai
     https://learn.microsoft.com/en-us/defender-for-identity/

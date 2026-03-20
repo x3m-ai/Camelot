@@ -71,6 +71,12 @@
     
     API Version: 2023-02-01
     
+.NOTES
+    Author:  Nino Crudele
+    LinkedIn: https://www.linkedin.com/in/ninocrudele
+    Website:  https://merlino.x3m.ai
+    License:  MIT
+
 .LINK
     https://merlino-addin.x3m.ai
     https://docs.microsoft.com/en-us/rest/api/securityinsights/
