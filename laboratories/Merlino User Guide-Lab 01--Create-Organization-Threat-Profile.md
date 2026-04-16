@@ -24,7 +24,7 @@
 12. [Step 10 -- Explore Attack Knowledge Graph](#12-step-10----explore-attack-knowledge-graph)
 13. [Step 11 -- Analyze CrossPick Coverage Across Sheets](#13-step-11----analyze-crosspick-coverage-across-sheets)
 14. [Step 12 -- CVE Enrichment](#14-step-12----cve-enrichment)
-15. [Step 13 -- Tests & Operations (Caldera/Morgana)](#15-step-13----tests--operations-calderamorgana)
+15. [Step 13 -- Tests & Operations (Morgana)](#15-step-13----tests--operations-morgana)
 16. [Step 14 -- IOC Management and MISP Integration](#16-step-14----ioc-management-and-misp-integration)
 17. [Step 15 -- AI-Powered Analysis](#17-step-15----ai-powered-analysis)
 18. [Anacleto -- Contextual Documentation Assistant](#18-anacleto----contextual-documentation-assistant)
@@ -141,9 +141,9 @@ Click **Add Provider** to add a new row, fill in the fields, then click **Save A
 
 *The AI Provider Configuration table with providers configured, showing API key fields and the default selection.*
 
-### 2.3 Morgana Arsenal Configuration (Caldera Red Team)
+### 2.3 Morgana Configuration
 
-If you have a Caldera/Morgana Red Team server, enter its HTTPS URL here.
+If you have a Morgana Red Team server, enter its HTTPS URL here.
 
 - **Morgana Arsenal Server URL** -- e.g., `https://192.168.124.133`
 - Click **Check Morgana** to test the connection
@@ -498,7 +498,7 @@ What makes the Catalogue uniquely powerful is that it is **source-agnostic**. Yo
 - **Darktrace or other third-party detection rules**
 - **Campaigns**
 - **Software / malware**
-- **Red Team test results** from Caldera/Morgana
+- **Red Team test results** from Morgana
 - **Any combination of the above, mixed together**
 
 Merlino treats every entry in the Catalogue in exactly the same way: it reads the ATT&CK technique codes (TCodes) carried by each row and builds a unified coverage picture. It does not matter whether a technique code comes from a threat group, a Sentinel rule, or a Red Team test -- they are all equal citizens in the analysis.
@@ -601,9 +601,9 @@ In practice, this column drives your **log source strategy**: which SIEM data so
 
 #### 4. Tests Coverage
 
-The **Tests Coverage** column tracks the **percentage of completion and success of Red Team attack tests and adversary emulation exercises** conducted through **Morgana Arsenal** (Merlino's integrated Caldera fork).
+The **Tests Coverage** column tracks the **percentage of completion and success of Red Team attack tests and adversary emulation exercises** conducted through **Morgana** (X3M.AI's dedicated Red Team execution platform).
 
-When Merlino is connected to a Morgana Arsenal server, it synchronizes in real time with the Red Team testing infrastructure. Every time an attack ability is executed against your environment -- whether it is a single technique test or a full adversary emulation campaign -- Morgana reports the results back, and Merlino updates the Tests Coverage column accordingly.
+When Merlino is connected to a Morgana server, it synchronizes in real time with the Red Team testing infrastructure. Every time an attack script is executed against your environment -- whether it is a single technique test or a full adversary emulation campaign -- Morgana reports the results back, and Merlino updates the Tests Coverage column accordingly.
 
 This column answers the question: **"Are we actually testing our defenses against these techniques, and are our tests succeeding?"** A low Tests Coverage percentage for a high-CrossPick technique means you have a dangerous gap: a technique that your adversaries are very likely to use, but that you have never validated your defenses against through Red Team testing.
 
@@ -616,7 +616,7 @@ The combination of all four columns creates a powerful decision matrix:
 | High CrossPick + Low Data Components + Any Tests | Likely attack vector with blind spot | Onboard log sources urgently |
 | Low CrossPick + Any coverage | Lower priority in current profile | Address after higher priorities |
 
-Merlino can be **directly integrated with Morgana Arsenal (Caldera)** and updates attack test and simulation data in real time. The Tests Coverage column reflects the live status of your adversary emulation program. This gives you a continuous, quantitative measure of how thoroughly your organization is actually testing its threat detection capabilities -- not just theoretically, but through actual attack simulation. A dedicated laboratory covers this integration in detail: see *Merlino User Guide-Lab 03--Red Team Testing with Morgana Arsenal.md*.
+Merlino can be **directly integrated with Morgana** and updates attack test and simulation data in real time. The Tests Coverage column reflects the live status of your adversary emulation program. This gives you a continuous, quantitative measure of how thoroughly your organization is actually testing its threat detection capabilities -- not just theoretically, but through actual attack simulation. A dedicated laboratory covers this integration in detail: see *Merlino User Guide-Lab 03--Red Team Testing with Morgana Arsenal.md*.
 
 ### How to Read the Matrix
 
@@ -988,56 +988,56 @@ This is critical intelligence:
 
 ---
 
-## 14. Step 12 -- Tests & Operations (Caldera/Morgana)
+## 14. Step 12 -- Tests & Operations (Morgana)
 
-The Tests & Operations taskpane lets you interact with a Caldera/Morgana Red Team server to synchronize attack capabilities and plan adversary emulation operations.
+The Tests & Operations taskpane lets you interact with the Morgana Red Team server to synchronize attack capabilities and plan adversary emulation exercises.
 
 **How to open:** Click **Tests & Operations** in the **Operations** group on the Merlino ribbon.
 
-**Prerequisite:** You must have a Caldera/Morgana server configured in Settings. If you do not have one, this section can be skipped during testing.
+**Prerequisite:** You must have a Morgana server configured in Settings. If you do not have one, this section can be skipped during testing.
 
-### 14.1 Synchronize Catalogue
+### 14.1 Synchronize Chains
 
-Click the **Synchronize Catalogue** button to:
+Click the **Synchronize Chains** button to:
 
 - Read the current Catalogue entries in your workbook
-- Match them against the Caldera abilities (test procedures) available on your Morgana server
-- Update the **Tests** sheet with all matching abilities
+- Connect to Morgana and create **chains** -- each chain is an ordered sequence of scripts that implement the ATT&CK techniques from your Catalogue
+- Update the **Tests** sheet with all matching scripts
 - This maps your threat intelligence selections (Catalogue) to actual Red Team test procedures that can be executed
 
-After synchronization, the Tests sheet will contain rows for each available Caldera ability that matches your selected techniques, along with:
-- Ability name and description
+After synchronization, the Tests sheet will contain rows for each available Morgana script that matches your selected techniques, along with:
+- Script name and description
 - Linked ATT&CK technique codes (TCodes)
 - Executor type (PowerShell, cmd, bash, etc.)
 - Platform information
 
 ![Tests & Operations Taskpane](img/39-tests-operations-taskpane.png)
 
-*The Tests & Operations taskpane showing the Synchronize Catalogue and Synchronize Morgana buttons.*
+*The Tests & Operations taskpane showing the Synchronize Chains and Synchronize Tests buttons.*
 
-### 14.2 Synchronize Morgana
+### 14.2 Synchronize Tests
 
-Click the **Synchronize Morgana** button to perform one of Merlino's most powerful automation steps. This single click triggers a fully automated process that:
+Click the **Synchronize Tests** button to perform one of Merlino's most powerful automation steps. This single click triggers a fully automated process that:
 
-- **Creates all adversary profiles** on your Morgana/Caldera server -- Merlino reads the Catalogue and Tests sheet, organizes the matching abilities into coherent adversary profiles with complete attack chains, and pushes them to Morgana. Each adversary profile is structured with the correct sequence of techniques, organized by tactic phase (Initial Access through Impact)
-- **Creates all operations** ready to be launched -- Merlino automatically generates operations on the Morgana/Caldera server, pre-configured with the correct adversary profiles, target agents, and execution parameters. These operations are immediately ready to execute with a single click in the Morgana interface
-- **Populates the Excel sheets** (Agents, Tests, Adversaries, Operations) with the synchronized data, giving you complete visibility into your Red Team infrastructure from within Excel
+- **Creates all chains** on your Morgana server -- Merlino reads the Catalogue and Tests sheet, organizes the matching scripts into coherent chains (ordered sequences of scripts forming a kill chain), and pushes them to Morgana. Each chain is structured with the correct sequence of techniques, organized by tactic phase (Initial Access through Impact)
+- **Creates all tests** ready to be launched -- Merlino automatically generates tests on the Morgana server, pre-configured with the correct chains, target agents, and execution parameters. These tests are immediately ready to execute with a single click in the Morgana web UI
+- **Populates the Excel sheets** (Agents, Tests) with the synchronized data, giving you complete visibility into your Red Team infrastructure from within Excel
 
-This automation is transformative. What would normally take a Red Team operator **days of manual work** -- reviewing technique lists, selecting matching abilities, organizing them into adversary profiles with logical attack chains, configuring operations with the right parameters -- Merlino accomplishes in seconds. The entire pipeline from threat intelligence analysis (your Catalogue) to ready-to-launch Red Team operations is fully automated.
+This automation is transformative. What would normally take a Red Team operator **days of manual work** -- reviewing technique lists, selecting matching scripts, organizing them into chains with logical attack sequences, configuring tests with the right parameters -- Merlino accomplishes in seconds. The entire pipeline from threat intelligence analysis (your Catalogue) to ready-to-launch Red Team tests is fully automated.
 
 After synchronization, you can:
 - See all deployed agents and their status in the Agents sheet
-- Review the automatically created adversary profiles in the Adversaries sheet
-- Verify the generated operations in the Operations sheet
-- Open Morgana/Caldera and launch any operation immediately -- everything is pre-configured and ready to go
+- Review the automatically created chains in the Morgana web UI
+- Verify the generated tests in the Tests sheet
+- Open the Morgana web UI and launch any test immediately -- everything is pre-configured and ready to go
 
 ![Tests Synchronized](img/40-tests-synchronized.png)
 
-*The Tests sheet after synchronization, showing rows of Caldera abilities with columns for Pick, TCodes, Name, Description, Executor, Platform.*
+*The Tests sheet after synchronization, showing rows of Morgana scripts with columns for Pick, TCodes, Name, Description, Executor, Platform.*
 
 ![Morgana Operations Ready](img/41-morgana-operations-ready.png)
 
-*The Morgana/Caldera interface showing the operations automatically created by Merlino. Each operation is pre-configured with the correct adversary profile, attack chain, and target agents -- ready to be launched with a single click.*
+*The Morgana web UI showing the tests automatically created by Merlino. Each test is pre-configured with the correct chain, attack sequence, and target agents -- ready to be launched with a single click.*
 
 ---
 
@@ -1114,7 +1114,7 @@ Merlino integrates AI capabilities for automated threat analysis, technique revi
 - **Detection gap analysis** -- AI identifies techniques where your detection coverage is weak or missing, cross-referencing CrossPick priority with Data Components and Tests Coverage
 - **Technique prioritization recommendations** -- AI-generated rankings of which techniques to address first, based on the combined weight of threat intelligence, detection readiness, and testing maturity
 - **Mitigation suggestions** -- Specific security control recommendations aligned with MITRE mitigations for your highest-priority techniques
-- **Red Team scenario planning** -- AI-generated adversary emulation scenarios based on your threat profile, useful for briefing Red Team operators before Morgana/Caldera exercises
+- **Red Team scenario planning** -- AI-generated adversary emulation scenarios based on your threat profile, useful for briefing Red Team operators before Morgana exercises
 
 The AI sheet retains all responses, building a structured record of AI-assisted analysis that can be referenced, exported, or included in reports.
 
@@ -1212,8 +1212,8 @@ Merlino's features are organized into five ribbon groups:
 | Button | Function |
 |---|---|
 | **IOC** | Indicator of Compromise management and MISP integration |
-| **Agents** | Manage Caldera/Morgana agents |
-| **Tests and Operations** | Caldera abilities, adversaries, operations |
+| **Agents** | Manage Morgana agents |
+| **Tests and Operations** | Morgana scripts, chains, tests |
 
 ### Help Group
 | Button | Function |
@@ -1244,7 +1244,7 @@ Merlino's features are organized into five ribbon groups:
 | 10 | Generate Adaptive Report | Runbooks / Reports |
 | 11 | Explore Attack Knowledge graph | Attack Knowledge |
 | 12 | Sort sheets by CrossPick for prioritization | All sheets |
-| 13 | Synchronize with Caldera/Morgana | Tests & Operations |
+| 13 | Synchronize with Morgana | Tests & Operations |
 | 14 | Push to MISP / Import from MISP | IOC |
 | 15 | Run AI Review on analysis | AI |
 

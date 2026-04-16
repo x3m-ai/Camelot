@@ -15,7 +15,7 @@ This laboratory **requires completion of Lab 01 and Lab 02**.
 - In **Lab 01** you built a complete threat profile based on six APT groups, generated the Catalogue, ran Update Core and Smart View, and analyzed the Main Coverage heatmap.
 - In **Lab 02** you imported 41 Microsoft Sentinel detection rules, measured SIEM coverage against your threat profile, and identified techniques that are NOT covered by your detection rules.
 
-**Lab 03 closes the loop.** You will now take the techniques from your threat profile and test them against a real target machine using Morgana Arsenal -- a purpose-built fork of MITRE Caldera designed to work seamlessly with Merlino. After running operations, you will synchronize the results back into Merlino to see exactly which techniques were tested, which succeeded, and which failed -- giving you a complete, measurable picture of your security posture: intelligence (Lab 01) > detection (Lab 02) > validation (Lab 03).
+**Lab 03 closes the loop.** You will now take the techniques from your threat profile and test them against a real target machine using Morgana -- X3M.AI's dedicated Red Team execution platform, purpose-built to work seamlessly with Merlino. After running tests, you will synchronize the results back into Merlino to see exactly which techniques were tested, which succeeded, and which failed -- giving you a complete, measurable picture of your security posture: intelligence (Lab 01) > detection (Lab 02) > validation (Lab 03).
 
 If you have not completed Lab 01 and Lab 02, go back and complete them first. This lab builds directly on the workbook produced in those labs.
 
@@ -25,12 +25,12 @@ If you have not completed Lab 01 and Lab 02, go back and complete them first. Th
 
 1. [Introduction -- Why Red Team Validation Matters](#1-introduction----why-red-team-validation-matters)
 2. [Step 1 -- Prepare the Tests Sheet](#2-step-1----prepare-the-tests-sheet)
-3. [Step 2 -- Synchronize Catalogue to Tests](#3-step-2----synchronize-catalogue-to-tests)
+3. [Step 2 -- Synchronize Chains](#3-step-2----synchronize-chains)
 4. [Step 3 -- Install Morgana Arsenal](#4-step-3----install-morgana-arsenal)
 5. [Step 4 -- Configure Merlino to Connect to Morgana Arsenal](#5-step-4----configure-merlino-to-connect-to-morgana-arsenal)
 6. [Step 5 -- Configure MISP Connection](#6-step-5----configure-misp-connection)
-7. [Step 6 -- Deploy a Caldera Agent on the Target Machine](#7-step-6----deploy-a-caldera-agent-on-the-target-machine)
-8. [Step 7 -- Synchronize Morgana Arsenal (First Sync)](#8-step-7----synchronize-morgana-arsenal-first-sync)
+7. [Step 6 -- Deploy a Morgana Agent on the Target Machine](#7-step-6----deploy-a-morgana-agent-on-the-target-machine)
+8. [Step 7 -- Synchronize Tests (First Sync)](#8-step-7----synchronize-tests-first-sync)
 9. [Step 8 -- Run Operations in Morgana Arsenal](#9-step-8----run-operations-in-morgana-arsenal)
 10. [Step 9 -- Synchronize Back to Merlino (Post-Execution)](#10-step-9----synchronize-back-to-merlino-post-execution)
 11. [Step 10 -- Understanding the Tests Table After Synchronization](#11-step-10----understanding-the-tests-table-after-synchronization)
@@ -58,11 +58,11 @@ The difference between these two questions is the difference between theoretical
 In this laboratory, you will:
 
 - **Prepare Merlino's Tests table** with the techniques from your Catalogue (the same ones analyzed in Lab 01 and Lab 02)
-- **Install Morgana Arsenal** -- a MITRE Caldera fork optimized for Merlino integration -- on a virtual machine
-- **Deploy a Caldera agent** on a Windows target machine to serve as the test endpoint
-- **Synchronize Merlino with Morgana Arsenal** to push your adversaries and operations to the Red Team platform
-- **Execute attack operations** against the target machine using real MITRE ATT&CK techniques and abilities
-- **Synchronize results back into Merlino** to see which abilities succeeded, failed, or were blocked
+- **Install Morgana** -- X3M.AI's dedicated Red Team execution platform -- on a server or virtual machine
+- **Deploy a Morgana agent** on a Windows target machine to serve as the test endpoint
+- **Synchronize Chains** to push your Catalogue entries to Morgana as chains with ordered scripts
+- **Execute attack tests** against the target machine using real MITRE ATT&CK techniques and scripts
+- **Synchronize results back into Merlino** to see which scripts succeeded, failed, or were blocked
 - **Push intelligence to MISP** using the IOC taskpane to enrich your threat intelligence platform
 - **Import IOC data back from MISP** and visualize relationships using the IOC Cluster Graph
 
@@ -73,21 +73,21 @@ This is the final piece of the puzzle: after this lab, your Merlino workbook wil
 ```
 +------------------+       +---------------------+       +------------------+
 |                  |       |                     |       |                  |
-|     MERLINO      | <---> |   MORGANA ARSENAL   | <---> |  TARGET MACHINE  |
-|   (Excel Add-in) |       |   (Caldera Server)  |       |  (Windows Agent) |
-|                  |       |                     |       |                  |
+|     MERLINO      | <---> |      MORGANA        | <---> |  TARGET MACHINE  |
+|   (Excel Add-in) |       |  (Python/FastAPI     |       |  (Go Agent as    |
+|                  |       |   Server :8888)     |       |   NT Service)    |
 +--------+---------+       +----------+----------+       +------------------+
          |                            |
          |                            |
 +--------v---------+       +----------v----------+
 |                  |       |                     |
-|      MISP        |       |   MITRE ATT&CK     |
-| (Threat Intel)   |       |   Abilities DB      |
+|      MISP        |       |   Atomic Red Team   |
+| (Threat Intel)   |       |   Scripts Library   |
 |                  |       |                     |
 +------------------+       +---------------------+
 ```
 
-Merlino sends adversary definitions and operations to Morgana Arsenal. Morgana Arsenal deploys abilities against the target machine through the installed agent. Results flow back to Merlino through synchronization. Merlino can then push the intelligence to MISP for broader threat intelligence sharing and correlation.
+Merlino sends test definitions to Morgana via the synchronization API. Morgana queues jobs for the target agents. The Go agent (installed as an NT Service on Windows or systemd on Linux) polls the server, executes scripts, and reports results. Results flow back to Merlino through synchronization. Merlino can then push the intelligence to MISP for broader threat intelligence sharing and correlation.
 
 ---
 
@@ -97,7 +97,7 @@ Before synchronizing your Catalogue with the Tests table, you need to make sure 
 
 ### Navigate to the Tests Sheet
 
-1. In your Merlino workbook, click on the **Tests** sheet tab at the bottom of the Excel window.
+1. In your Merlino workCatalogue Description --> Tests Descriptionbook, click on the **Tests** sheet tab at the bottom of the Excel window.
 2. Examine the sheet. If you see data rows below the header row, you need to clear them.
 
 ![Navigating to the Tests sheet and checking for existing data](img/300-tests-sheet-empty.png)
@@ -110,7 +110,7 @@ If the Tests sheet contains data:
 1. Click on the **first data row** (the row immediately below the header).
 2. Hold **Shift** and click the **last data row** to select all data rows.
 3. Right-click and select **Delete Row** (or press **Ctrl+Minus**).
-4. **Do NOT delete the header row.** The header row contains the column names that Merlino relies on: Pick, CrossPick, TCodes, Name, Description, Operation, Adversary, State, Agents, Group, Status, Output, Command, and others.
+4. **Do NOT delete the header row.** The header row contains the column names that Merlino relies on: Pick, CrossPick, TCodes, Name, Description, Test, Chain, State, Agents, Group, Status, Output, Command, and others.
 
 > **WARNING:** If you accidentally delete the header row, the table structure will break. In that case, reload the template (Templates taskpane) and re-run the import process from Lab 01.
 
@@ -118,208 +118,162 @@ After clearing, the Tests sheet should show only the header row with no data bel
 
 ---
 
-## 3. Step 2 -- Synchronize Catalogue to Tests
+## 3. Step 2 -- Synchronize Chains
 
-Now you will transfer all the entries from your Catalogue into the Tests table. This creates one test record for each Catalogue entry, ready to be pushed to Morgana Arsenal.
+Now you will push your Catalogue entries to Morgana as chains. Each Catalogue entry becomes a chain containing ordered scripts that implement the ATT&CK techniques listed in the TCodes column.
 
 ### Open the Tests & Operations Taskpane
 
 1. Click the **Tests & Operations** button in the Merlino ribbon (Operations group).
 2. The taskpane opens with two main buttons at the top:
-   - **Synchronize Catalogue** -- transfers data from the Catalogue table to the Tests table
-   - **Synchronize Morgana** -- connects to Morgana Arsenal to push/pull operations data
+   - **Synchronize Chains** -- reads the Catalogue, connects to Morgana, and creates chains with scripts for each entry
+   - **Synchronize Tests** -- creates tests from chains, executes them, and syncs results back
 
-### Click Synchronize Catalogue
+### Click Synchronize Chains
 
-1. Click the **Synchronize Catalogue** button.
-2. Merlino reads all rows from the Catalogue table and compares them against the Tests table.
-3. Records that already exist in Tests (matched by the **Name** column) are skipped.
-4. New records are inserted into the Tests table with the following mapping:
-   - Catalogue **Name** --> Tests **Operation** and **Adversary**
+1. Click the **Synchronize Chains** button.
+2. Merlino reads all rows from the Catalogue table and sends them to Morgana via the API.
+3. For each Catalogue entry, Morgana creates a **chain** -- an ordered sequence of scripts that implement the ATT&CK techniques in the TCodes column.
+4. The Tests table is populated with the chain data:
+   - Catalogue **Name** --> Tests **Test** (test name) and **Chain** (chain name)
    - Catalogue **TCodes** --> Tests **TCodes**
    - Catalogue **Description** --> Tests **Description**
 
-![Synchronize Catalogue button and resulting Tests table](img/301-sync-catalogue-to-tests.png)
-*Figure 301: After clicking Synchronize Catalogue, the Tests table is populated with all Catalogue entries. Each row represents a potential Red Team operation.*
+5. A notification appears confirming how many chains were created and how many scripts were mapped.
 
-5. A notification appears confirming how many new records were inserted and how many were skipped (if duplicates existed).
-
-At this point, your Tests table contains all the entries from your Catalogue -- the same techniques and rules you analyzed in Lab 01 and Lab 02. These are now ready to be sent to Morgana Arsenal for actual Red Team execution.
+At this point, your Catalogue entries exist as chains in Morgana -- the same techniques and rules you analyzed in Lab 01 and Lab 02. These chains are now ready to be executed as tests against the target machine.
 
 ---
 
-## 4. Step 3 -- Install Morgana Arsenal
+## 4. Step 3 -- Install Morgana
 
-Morgana Arsenal is a purpose-built fork of [MITRE Caldera](https://github.com/mitre/caldera) that includes a dedicated API endpoint for bidirectional synchronization with Merlino. It also comes pre-configured with MISP integration for threat intelligence sharing.
+Morgana is X3M.AI's dedicated Red Team execution platform, purpose-built for Purple Teaming and tight integration with Merlino. It is a fully independent platform -- not a Caldera plugin or fork -- featuring a Python/FastAPI server, a Go-based agent, and its own web UI.
 
 ### Requirements
 
-- An Ubuntu machine (22.04 LTS or later) -- can be a VM, bare-metal, or cloud instance
-- Minimum 4 GB RAM, 2 CPU cores (8 GB RAM recommended if running MISP on the same machine)
-- Internet access for downloading packages
+- **Windows 10/11** or **Windows Server 2019+** -- can be the same machine running Excel (all-in-one topology) or a separate server
+- Minimum 4 GB RAM, 2 CPU cores
+- Internet access for downloading the repository (first install only)
 
-### Installation
+### Download
 
-1. Visit the official Morgana Arsenal repository: **[https://github.com/x3m-ai/morgana-arsenal](https://github.com/x3m-ai/morgana-arsenal)**
-2. Follow the installation instructions in the README. The installation is straightforward -- it uses a single bash script that handles all dependencies:
+1. Visit the official Morgana repository: **[https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana)**
+2. Clone the repository or download the latest release:
 
-```bash
-git clone https://github.com/x3m-ai/morgana-arsenal.git
-cd morgana-arsenal
-chmod +x install.sh
-./install.sh
+```powershell
+git clone https://github.com/x3m-ai/Morgana.git
+cd Morgana
 ```
 
-3. The script installs Python, Caldera, the Morgana Arsenal plugin, and optionally MISP. Follow the on-screen prompts.
+3. Initialize the Atomic Red Team scripts library (Git submodule):
 
-> **Note:** All detailed instructions, requirements, and troubleshooting are available in the [Morgana Arsenal GitHub repository](https://github.com/x3m-ai/morgana-arsenal). We recommend reading the full README before starting the installation.
-
-### Network Architecture -- nginx Reverse Proxy
-
-Morgana Arsenal uses **nginx** as a reverse proxy in front of Caldera. Caldera itself listens on `localhost:8888` (internal only), but nginx exposes it on port **80** externally. This means:
-
-- **From inside the VM** (e.g., via SSH): Caldera is available at `http://localhost:8888`
-- **From outside the VM** (e.g., from your Windows machine or from Merlino): use `http://<VM-IP>` (port 80, no port number needed)
-- **MISP** listens on port **8443** both internally and externally: `https://<VM-IP>:8443`
-
-You never need to open or reference port 8888 externally -- nginx handles the routing.
-
-### SSL Certificates -- Required for External Access
-
-If you run Morgana Arsenal on a **local VM** on the same machine where Excel is installed (e.g., VMware on your laptop), HTTP connections over `http://<VM-IP>` will work without issues.
-
-However, if you plan to access Morgana Arsenal from **outside the local machine** -- for example, from a cloud-hosted VM, a remote server, or any network segment external to your laptop -- you **must** configure an SSL certificate on nginx and use HTTPS.
-
-**Why?** Microsoft Excel is an extremely secure, air-gapped sandbox. The Office.js runtime does not permit any uncertified external HTTP communication. If Morgana Arsenal is not on the same local network or machine, Excel will silently block all API calls unless the connection is encrypted with a valid certificate. This is a non-negotiable security requirement enforced by the Office platform.
-
-**For lab environments** on a remote network, a self-signed certificate assigned to nginx is the minimum requirement:
-
-```bash
-# Generate a self-signed certificate (valid for 365 days)
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /etc/nginx/ssl/morgana.key \
-  -out /etc/nginx/ssl/morgana.crt \
-  -subj "/CN=morgana-arsenal"
+```powershell
+git submodule update --init --recursive
 ```
 
-After generating the certificate, configure nginx to use it and restart the service. You will also need to import the certificate into the Windows Trusted Root Certificate Store on the machine running Excel.
+### Install as a Windows Service (Recommended)
 
-**For production environments**, we strongly recommend using a proper certificate from a trusted Certificate Authority. Several free and low-cost options are available:
+The recommended way to run Morgana is as a **Windows NT Service**. This ensures automatic startup on boot, automatic recovery on failure, and standard Windows service management.
 
-| Provider | Cost | Notes |
-|---|---|---|
-| **[Let's Encrypt](https://letsencrypt.org)** | Free | Automated via Certbot. Requires a public domain name. Certificates renew every 90 days automatically. The industry standard for free TLS. |
-| **[ZeroSSL](https://zerossl.com)** | Free tier available | Up to 3 free 90-day certificates. REST API available for automation. Good alternative if Let's Encrypt is blocked. |
-| **[Cloudflare Origin CA](https://developers.cloudflare.com/ssl/origin-configuration/origin-ca/)** | Free (with Cloudflare) | If your domain is on Cloudflare, Origin CA certificates are free and valid for up to 15 years. Only trusted by Cloudflare's edge. |
-| **[DigiCert](https://www.digicert.com)** | Paid | Enterprise-grade certificates with extended validation. Recommended for organizations that require compliance-level trust chains. |
+Open **PowerShell as Administrator** and run:
 
-> **Recommendation:** For most lab and small-team deployments, **Let's Encrypt** with Certbot is the best option -- fully automated, widely trusted, and zero cost. For enterprise deployments behind a corporate domain, coordinate with your IT/PKI team.
-
-### CORS -- Already Configured by the Installer
-
-Merlino runs inside the Office.js sandbox, which means every API call from Excel to Morgana Arsenal is a **cross-origin request**. The browser engine embedded in Office enforces the same-origin policy strictly: if the server does not return the correct CORS headers, Excel will silently reject the response -- even if the request was technically successful on the server side.
-
-**You do not need to configure CORS manually.** The Morgana Arsenal `install.sh` script configures nginx with all the required CORS headers automatically as part of the installation process. The information below is provided for reference and troubleshooting only.
-
-The relevant nginx directives configured by the installer are:
-
-```nginx
-# /etc/nginx/sites-available/morgana-arsenal (excerpt)
-location / {
-    proxy_pass http://127.0.0.1:8888;
-
-    # CORS headers -- required for Office.js / Merlino
-    add_header Access-Control-Allow-Origin  "*" always;
-    add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
-    add_header Access-Control-Allow-Headers "KEY, Content-Type, Authorization" always;
-
-    # Preflight requests (OPTIONS)
-    if ($request_method = OPTIONS) {
-        add_header Access-Control-Allow-Origin  "*" always;
-        add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
-        add_header Access-Control-Allow-Headers "KEY, Content-Type, Authorization" always;
-        add_header Content-Length 0;
-        return 204;
-    }
-}
+```powershell
+cd Morgana
+.\Morgana.ps1 install -LogLevel INFO -AutoStart
+.\Morgana.ps1 start
 ```
 
-Key points:
+This does three things:
+1. **Registers** `Morgana` as a Windows NT Service with automatic start and failure recovery
+2. **Starts** the server on port **8888** with built-in HTTPS
+3. **Loads** all Atomic Red Team scripts from the `atomics/` submodule into the SQLite database
 
-- **`Access-Control-Allow-Origin "*"`** -- allows requests from any origin. In a production environment you can restrict this to the specific Office add-in origin (e.g., `https://merlino-addin.pages.dev`).
-- **`Access-Control-Allow-Headers`** -- must include `KEY` because Caldera uses a custom `KEY` header for API authentication. If this header is missing from the CORS allow-list, every authenticated request will be blocked.
-- **Preflight (OPTIONS)** -- Office.js sends an OPTIONS preflight before every non-simple request. The server must reply with `204 No Content` and the correct CORS headers, otherwise the actual request is never sent.
+To check the service status at any time:
 
-> **Troubleshooting:** If Merlino shows connection errors but the Morgana Arsenal web UI works fine in a browser, CORS is almost always the cause. Open the **Logs** taskpane in Merlino and look for messages containing "CORS" or "blocked by CORS policy". Verify that the nginx configuration includes all three `add_header` directives shown above and that `KEY` is listed in `Access-Control-Allow-Headers`.
->
-> For detailed nginx and CORS configuration documentation, see the [Morgana Arsenal GitHub repository](https://github.com/x3m-ai/morgana-arsenal).
-
-### Morgana Arsenal Launcher Page
-
-After the installation completes, the installer automatically opens the **Morgana Arsenal Launcher** -- a local HTML page that provides quick access to all services and status information. If it does not open automatically, you can access it manually from the VM desktop or terminal:
-
-```
-file:///home/morgana/morgana-arsenal/static/launcher.html
+```powershell
+.\Morgana.ps1 status
 ```
 
-The launcher page shows the status of all services (Caldera, MISP, nginx), provides direct links to the web interfaces, and displays the VM's IP address for easy configuration in Merlino.
+### Quick Start (Process-Based, Development)
 
-![Morgana Arsenal Launcher HTML page showing service status and access links](img/302-morgana-launcher-page.png)
-*Figure 302: The Morgana Arsenal Launcher page opens after installation, providing quick access to Caldera, MISP, and service status information.*
+If you prefer to run Morgana as a regular process (e.g., during development or quick testing), use:
 
-### Default Credentials
-
-After the installation completes, use the following credentials:
-
-| Service | Username | Password | Access |
-|---|---|---|---|
-| **Morgana Arsenal (Ubuntu + Caldera)** | `morgana` | `morgana` | SSH, VM console, `http://<VM-IP>` |
-| **MISP** | `admin@misp.test` | `admin` | `https://<VM-IP>:8443` |
-
-> **IMPORTANT:** Change all default passwords immediately in production environments. These credentials are intended for lab use only.
-
-### Find the VM IP Address
-
-After logging into the VM (username: `morgana`, password: `morgana`), run:
-
-```bash
-ip addr show
+```powershell
+.\Morgana.ps1 start 8888 -NoWindow   # start in background
+.\Morgana.ps1 status                  # check
+.\Morgana.ps1 stop                    # stop
 ```
 
-Note the IP address (e.g., `192.168.124.133`). You will need this for configuring Merlino and accessing the MISP web interface.
+### Verify the Installation
+
+Once started, open a browser and navigate to:
+
+```
+https://localhost:8888/ui/
+```
+
+The Morgana web UI provides a full dashboard for managing agents, scripts, chains, tests, and campaigns. It uses a dark theme consistent with Merlino's visual identity.
+
+> **Note:** Your browser will show a certificate warning because Morgana uses a self-signed TLS certificate. Accept the warning to proceed -- this is expected for local and LAN lab environments.
+
+### SSL Certificate
+
+Morgana generates a **self-signed TLS certificate** automatically on first start. HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all uncertified HTTP communication. Without HTTPS, Merlino cannot connect to Morgana.
+
+**For lab environments**, the self-signed certificate works out of the box. You need to import it into the **Windows Trusted Root Certificate Store** on the machine running Excel so that Merlino can connect without errors:
+
+1. Open the Morgana folder and locate `server\certs\server.crt`.
+2. Double-click the `.crt` file and click **Install Certificate**.
+3. Select **Local Machine** and click **Next**.
+4. Choose **Place all certificates in the following store**, click **Browse**, and select **Trusted Root Certification Authorities**.
+5. Click **Next**, then **Finish**.
+6. Restart Excel.
+
+> **For production environments**, replace the self-signed certificate with a proper one from a trusted Certificate Authority. Place your certificate files at `server\certs\server.crt` and `server\certs\server.key`, then restart the service. Alternatively, set `MORGANA_SSL=false` and put Morgana behind a reverse proxy (nginx or Caddy) with its own certificate.
+
+### Default API Key
+
+The Morgana server uses an API key for authentication. The default key is set via the `MORGANA_API_KEY` environment variable (default: `MORGANA_ADMIN_KEY`).
+
+> **IMPORTANT:** Change the default API key immediately in production environments. Set the `MORGANA_API_KEY` environment variable to a strong, random value before deploying.
+
+### Server IP Address
+
+If Morgana runs on a separate machine or VM, note its IP address for configuring Merlino. Run `ipconfig` in PowerShell and look for the IPv4 address of your network adapter. You will need this IP in the next step.
 
 ---
 
-## 5. Step 4 -- Configure Merlino to Connect to Morgana Arsenal
+## 5. Step 4 -- Configure Merlino to Connect to Morgana
 
-Now that Morgana Arsenal is running, you need to tell Merlino where to find it.
+Now that Morgana is running, you need to tell Merlino where to find it.
 
 ### Open the Settings Taskpane
 
 1. Click the **Settings** button in the Merlino ribbon (Help group).
-2. Scroll to the **Caldera / Morgana Arsenal** section.
+2. Scroll to the **Morgana** section.
 
 ### Enter the Connection Details
 
-1. In the **Server URL** field, enter the Morgana Arsenal URL: `http://<VM-IP>`
-   - Replace `<VM-IP>` with the actual IP address of your Morgana Arsenal VM (e.g., `http://192.168.124.133`)
-2. Click **Save**.
-3. Click **Test Connection**.
-4. If the connection is successful, the status indicator turns **green** with a confirmation message.
-
-![Settings taskpane with Morgana Arsenal connection configured and green status](img/303-settings-morgana-connection.png)
-*Figure 303: Morgana Arsenal connection configured in the Settings taskpane. The green indicator confirms a successful connection.*
+1. In the **Server URL** field, enter the Morgana URL: `https://<SERVER-IP>:8888`
+   - Replace `<SERVER-IP>` with the actual IP address of your Morgana server (e.g., `https://192.168.1.10:8888`)
+   - If Morgana runs on the same machine as Excel, use `https://localhost:8888`
+2. In the **API Key** field, enter the Morgana API key (default: `MORGANA_ADMIN_KEY`, or the value you set for `MORGANA_API_KEY`).
+3. Click **Save**.
+4. Click **Test Connection**.
+5. If the connection is successful, the status indicator turns **green** with a confirmation message.
 
 > **Troubleshooting:** If the test fails:
-> - Verify the VM is running and reachable (`ping <VM-IP>` from your Windows machine).
-> - Check that port 80 is not blocked by a firewall (nginx proxies to Caldera on port 8888 internally).
+> - Verify that Morgana is running (`.\Morgana.ps1 status`).
+> - Verify the server is reachable (`ping <SERVER-IP>` from your Windows machine).
+> - Check that port 8888 is not blocked by a firewall.
+> - If using a self-signed certificate, ensure it is imported into the Windows Trusted Root Certificate Store (see Step 3).
 > - Open the **Logs** taskpane in Merlino to read the detailed error message.
 
 ---
 
 ## 6. Step 5 -- Configure MISP Connection
 
-MISP (Malware Information Sharing Platform) is included in the Morgana Arsenal VM. Configuring it now allows you to push threat intelligence from Merlino to MISP and pull IOC data back later in this lab.
+MISP (Malware Information Sharing Platform) can be installed alongside Morgana or on a separate machine. Configuring it now allows you to push threat intelligence from Merlino to MISP and pull IOC data back later in this lab.
 
 ### Create a MISP API Key
 
@@ -338,8 +292,8 @@ MISP (Malware Information Sharing Platform) is included in the Morgana Arsenal V
 ### Enter MISP Details in Merlino Settings
 
 1. Back in the Merlino **Settings** taskpane, scroll to the **MISP** section.
-2. In the **MISP URL** field, enter: `https://<VM-IP>:8443`
-   - This is the same IP as Morgana Arsenal, but on port **8443** for MISP.
+2. In the **MISP URL** field, enter: `https://<MISP-IP>:8443`
+   - This can be the same machine as Morgana or a separate MISP server.
 3. In the **API Key** field, paste the MISP authentication key you just created.
 4. Click **Save**.
 5. Click **Test Connection** for MISP.
@@ -352,9 +306,9 @@ MISP (Malware Information Sharing Platform) is included in the Morgana Arsenal V
 
 ---
 
-## 7. Step 6 -- Deploy a Caldera Agent on the Target Machine
+## 7. Step 6 -- Deploy a Morgana Agent on the Target Machine
 
-Before Morgana Arsenal can execute any operations, it needs an **agent** running on the target machine. The agent is a lightweight process that communicates with the Caldera server, receives instructions, executes abilities (attack techniques), and reports results back.
+Before Morgana can execute any tests, it needs an **agent** running on the target machine. The Morgana agent is a lightweight Go binary (~5 MB) that installs as a persistent OS service, polls the Morgana server for jobs, executes scripts (attack techniques), and reports results back.
 
 ### Prepare a Target Machine
 
@@ -362,154 +316,135 @@ For this lab, you need a **Windows virtual machine** to serve as the attack targ
 
 - A Windows 10/11 VM in VMware or VirtualBox
 - A Windows Server VM
-- Any Windows machine on the same network as the Morgana Arsenal VM
+- Any Windows machine on the same network as the Morgana server
+- The same machine running Morgana (all-in-one topology for quick lab setup)
 
 > **WARNING:** Only deploy agents on machines you own and control. Never deploy agents on production systems without explicit authorization. This lab should be conducted in an isolated lab environment.
 
-### Deploy the Agent from Morgana Arsenal
+### Deploy the Agent from the Morgana Web UI
 
-1. Open the Morgana Arsenal web interface in your browser: `http://<VM-IP>`.
-2. Log in with the Caldera credentials (default: `morgana` / `morgana`).
-3. Navigate to **Agents** in the left menu.
-4. Click **Deploy an Agent**.
-5. Select the **Manx** agent (or **Sandcat** -- Manx is recommended for Windows).
-6. Click the **Windows** icon to generate the deployment command.
-7. A `curl` command is displayed similar to:
+1. Open the Morgana web UI in your browser: `https://<SERVER-IP>:8888/ui/`.
+2. Navigate to the **Agents** section.
+3. Click **Deploy Agent**.
+4. The deploy modal shows a one-liner command for Windows and Linux. For Windows, the command looks like:
 
 ```powershell
-curl -s -X POST http://192.168.124.133/file/download -d "{\"platform\":\"windows\",\"file\":\"sandcat.go-windows\"}" -o sandcat.exe; .\sandcat.exe -server http://192.168.124.133 -group red
+curl.exe -k -o morgana-agent.exe https://<SERVER-IP>:8888/download/morgana-agent.exe; .\morgana-agent.exe install --server https://<SERVER-IP>:8888 --token <API_KEY>
 ```
 
-> **NOTE:** On some Windows versions, you may need to split this into two separate commands:
-> ```powershell
-> # Command 1: Download the agent
-> curl -s -X POST http://192.168.124.133/file/download -d "{\"platform\":\"windows\",\"file\":\"sandcat.go-windows\"}" -o sandcat.exe
-> 
-> # Command 2: Run the agent
-> .\sandcat.exe -server http://192.168.124.133 -group red
-> ```
-> Run each command separately if the combined command fails.
+5. Open **PowerShell as Administrator** on the target Windows machine.
+6. Navigate to a working folder (e.g., `cd C:\Temp`).
+7. Paste and execute the command.
 
-8. Open **PowerShell as Administrator** on the target Windows machine.
-9. Navigate to a working folder (e.g., `cd C:\Temp`).
-10. Paste and execute the command(s).
-11. The agent starts and connects to Morgana Arsenal.
+The command does two things:
+1. **Downloads** the Morgana agent binary from the server
+2. **Installs** the agent as a Windows NT Service (`MorganaAgent`) that:
+   - Registers with the Morgana server (one-time enrollment)
+   - Creates a persistent service that starts automatically on boot
+   - Begins polling the server every 30 seconds for jobs
 
-![Caldera web UI showing the Deploy Agent page with Windows curl command](img/306-caldera-deploy-agent.png)
-*Figure 306: Deploying a Caldera agent from Morgana Arsenal. Select the agent type and platform, then copy the deployment command to run on the target machine.*
+**For Linux targets**, the equivalent one-liner installs the agent as a systemd service:
 
-### Execute the Agent on the Windows Target
+```bash
+curl -ksSL -o morgana-agent https://<SERVER-IP>:8888/download/morgana-agent && chmod +x morgana-agent && sudo ./morgana-agent install --server https://<SERVER-IP>:8888 --token <API_KEY>
+```
 
-The following screenshot shows the agent deployment script running on the Windows target machine. The PowerShell window displays the curl download followed by the agent execution -- once started, the agent connects back to Morgana Arsenal and begins listening for instructions.
+### Agent Execution on the Windows Target
 
-![PowerShell window on Windows target machine executing the Morgana agent deployment script](img/313-windows-agent-execution.png)
-*Figure 313: The Morgana Arsenal agent script running on the Windows target machine. The agent binary is downloaded and executed, establishing a connection back to the Caldera server.*
+The following screenshot shows the agent deployment running on the Windows target machine. Once the install command completes, the agent registers with the Morgana server, creates the NT Service, and begins its beacon loop.
+
+![PowerShell window on Windows target machine executing the Morgana agent deployment](img/313-windows-agent-execution.png)
+*Figure 313: The Morgana agent installing on the Windows target machine. The binary is downloaded, the NT Service is created, and the agent establishes a connection to the Morgana server.*
 
 ### Verify the Agent is Connected
 
-1. Back in the Morgana Arsenal web interface, go to **Agents**.
-2. You should see the newly deployed agent listed with its hostname, platform (Windows), and status (alive).
-3. The agent's **group** should be `red` (the default group for Red Team operations).
+1. Back in the Morgana web UI, go to **Agents**.
+2. You should see the newly deployed agent listed with its hostname, platform (Windows), IP address, and status (online).
+3. The agent's **last seen** timestamp should be recent (within the last 30 seconds, matching the beacon interval).
 
-![Agents page showing the connected Windows agent with host details](img/307-caldera-agent-connected.png)
-*Figure 307: The Windows agent is connected and alive. Morgana Arsenal can now execute operations against this machine.*
-
-> **About Groups:** The agent group (`red` by default) determines which operations target which agents. Merlino's Tests table includes a **Group** column that maps to Caldera's group concept. All agents in the `red` group will receive operations directed at that group.
+> **Agent Details:** Each agent is identified by a unique **paw** (short ID). The agent configuration, token, and work directories are stored in `C:\ProgramData\Morgana\` on Windows or `/var/lib/morgana/` on Linux. The agent writes an immutable execution audit log for every job it runs.
 
 ---
 
-## 8. Step 7 -- Synchronize Morgana Arsenal (First Sync)
+## 8. Step 7 -- Synchronize Tests (First Sync)
 
 Now that you have:
-- A populated Tests table (from Step 2)
-- Morgana Arsenal running and connected (from Steps 3-4)
+- Chains created in Morgana (from Step 2)
+- Morgana running and connected (from Steps 3-4)
 - An agent deployed on the target machine (from Step 6)
 
-You are ready to push the test definitions from Merlino to Morgana Arsenal.
+You are ready to create and execute tests from those chains.
 
 ### Open the Tests & Operations Taskpane
 
 1. Click the **Tests & Operations** button in the Merlino ribbon.
 2. You see the two synchronization buttons and the Operations Intelligence Dashboard below them.
 
-### Click Synchronize Morgana
+### Click Synchronize Tests
 
-1. Click the **Synchronize Morgana** button.
+1. Click the **Synchronize Tests** button.
 2. Merlino performs several steps automatically:
-   - **Checks for agents** -- verifies at least one agent exists in Morgana Arsenal. If no agents are found, the sync is aborted with a message: *"No agents found in Morgana Arsenal. Please deploy at least one agent before synchronizing."*
+   - **Checks for agents** -- verifies at least one agent exists in Morgana. If no agents are found, the sync is aborted with a message: *"No agents found in Morgana. Please deploy at least one agent before synchronizing."*
    - **Reads the Tests table** -- collects all rows from the Tests sheet.
-   - **Sends data to Morgana Arsenal** via the dedicated API endpoint (`/api/v2/merlino/synchronize`).
-   - **Creates adversaries and operations** in Caldera for each entry.
-   - **Receives updated data** back from Morgana Arsenal, including operation IDs, adversary IDs, and current state.
+   - **Sends data to Morgana** via the dedicated API endpoint (`/api/v2/merlino/synchronize`).
+   - **Creates tests** in Morgana for each chain entry.
+   - **Receives updated data** back from Morgana, including test IDs, chain IDs, and current state.
    - **Updates the Tests table** with the response data.
    - **Updates the Operations Intelligence Dashboard** with real-time metrics.
 
-3. A status message appears: *"Sync completed! X operations, Y abilities, Z agents"*.
+3. A status message appears: *"Sync completed! X tests, Y scripts, Z agents"*.
 
-![Synchronize Morgana button clicked, showing sync progress and completed status](img/308-sync-morgana-first.png)
-*Figure 308: After clicking Synchronize Morgana, the status shows the number of operations created and abilities available. The Operations Intelligence Dashboard below updates with real-time metrics.*
+### What Happened in Morgana
 
-### What Happened in Morgana Arsenal
+After synchronization, go to the Morgana web UI and check:
 
-After synchronization, go to the Morgana Arsenal web interface and check:
+- **Chains**: You will see new chains, each named after a Catalogue entry. These chains contain the ATT&CK techniques mapped in the TCodes column as ordered scripts.
 
-- **Adversaries** (left menu): You will see new adversary profiles, each named after a Catalogue entry. These adversaries contain the ATT&CK techniques mapped in the TCodes column.
+![Morgana Chains list showing the chains created by the synchronization](img/314-morgana-adversaries-list.png)
+*Figure 314: The Chains page in Morgana after synchronization. Each chain corresponds to a Catalogue entry and contains the ATT&CK techniques from the TCodes column as ordered scripts.*
 
-![Morgana Arsenal Adversaries list showing the adversary profiles created by the synchronization](img/314-morgana-adversaries-list.png)
-*Figure 314: The Adversaries page in Morgana Arsenal after synchronization. Each adversary profile corresponds to a Catalogue entry and contains the ATT&CK techniques from the TCodes column.*
+- **Tests**: You will see corresponding tests, ready to be executed. Each test is linked to its chain and targeted at the available agents.
 
-- **Operations** (left menu): You will see corresponding operations, ready to be executed. Each operation is linked to its adversary and targeted at the agent group.
-
-![Morgana Arsenal Operations list showing the operations created by the synchronization](img/315-morgana-operations-list.png)
-*Figure 315: The Operations page in Morgana Arsenal after synchronization. Each operation is linked to an adversary profile and targeted at the agent group, ready to be executed.*
-
-> **Key Concept:** The **Name** column in Merlino's Catalogue is the unique identifier that links entries across both systems. When you modify an adversary name in Morgana Arsenal, Merlino will track it through the operation ID. The names in Merlino's Catalogue, Tests, and Morgana Arsenal's Adversaries and Operations all correspond.
+> **Key Concept:** The **Name** column in Merlino's Catalogue is the unique identifier that links entries across both systems. When you modify a chain name in Morgana, Merlino will track it through the test ID. The names in Merlino's Catalogue, Tests, and Morgana's Chains and Tests all correspond.
 
 ---
 
-## 9. Step 8 -- Run Operations in Morgana Arsenal
+## 9. Step 8 -- Run Tests in Morgana
 
-Now comes the actual Red Team testing. You will execute operations against the target machine.
+Now comes the actual Red Team testing. You will execute tests against the target machine.
 
-### Navigate to Operations in Morgana Arsenal
+### Navigate to Tests in Morgana
 
-1. In the Morgana Arsenal web interface, click **Operations** in the left menu.
-2. You will see the list of operations created during synchronization.
-3. Select the operation you want to execute.
+1. In the Morgana web UI, click **Tests** in the navigation.
+2. You will see the list of tests created during synchronization.
+3. Select the test you want to execute.
 
-### Prepare and Run an Operation
+### Prepare and Run a Test
 
-1. Click on the operation name to open it.
+1. Click on the test name to open it.
 2. Review the details:
-   - **Adversary:** The adversary profile linked to this operation (contains the ATT&CK abilities).
-   - **Group:** The agent group that will be targeted (default: `red`).
-3. Scroll down to the bottom of the operation page.
-4. Click the **Cleanup** button to start the operation. Despite the name, this is the button that launches the execution.
-5. When you click Cleanup, Caldera **creates a copy of the operation** with a timestamp appended to the name (e.g., `APT28 - 2026-03-09 14:32:17`). The original operation remains untouched in the Operations list. This behavior is intentional and valuable: it allows you to keep the original operation definition as a reusable template for future customizations, while each execution is tracked as a separate, timestamped copy.
+   - **Chain:** The chain linked to this test (contains the ATT&CK scripts in execution order).
+   - **Agents:** The target agents that will execute the scripts.
+3. Click the **Execute** button to start the test.
+4. Morgana dispatches jobs to the target agents. Each job contains a script to execute. The agent runs the scripts in the order defined by the chain and reports results back to the server.
 
-![Morgana Arsenal showing the cloned operation with timestamp after clicking Cleanup](img/316-morgana-operation-cleanup-clone.png)
-*Figure 316: After clicking Cleanup, Caldera creates a timestamped copy of the operation. The original operation remains available for future use and customization.*
-
-6. The cloned operation starts running immediately. Caldera begins deploying abilities against all agents in the target group. Each ability corresponds to an ATT&CK technique (e.g., T1003.001 -- LSASS Memory is executed by running a credential dumping tool on the target's LSASS process).
-
-![Morgana Arsenal operation running with agent executing abilities in real-time](img/317-morgana-operation-running.png)
-*Figure 317: An operation running in Morgana Arsenal. The agent executes abilities (attack techniques) against the target machine. Each ability shows its execution status in real-time.*
+5. As the test runs, Morgana dispatches scripts to the agents. Each script corresponds to an ATT&CK technique (e.g., T1003.001 -- LSASS Memory is executed by running a credential dumping tool on the target's LSASS process).
 
 ### Monitor Execution
 
-- The operation view shows abilities being executed in real-time.
-- Each ability shows a **status**:
-  - **Green (0):** Ability executed successfully -- the technique was performed on the target.
-  - **Red (-1):** Ability failed or was blocked -- the target's defenses prevented execution.
-  - **Blue (1):** Ability is currently running.
-- You can click on individual abilities to see command output, execution time, and detailed results.
+- The test view shows scripts being executed in real-time.
+- Each script shows a **status**:
+  - **Green (0):** Script executed successfully -- the technique was performed on the target.
+  - **Red (-1):** Script failed or was blocked -- the target's defenses prevented execution.
+  - **Blue (1):** Script is currently running.
+- You can click on individual scripts to see command output, execution time, and detailed results.
 
-> **What a Successful Execution Means:** A successfully executed ability (status 0) means the adversary technique was carried out on the target machine. This is valuable information regardless of whether it was "good" or "bad":
+> **What a Successful Execution Means:** A successfully executed script (status 0) means the adversary technique was carried out on the target machine. This is valuable information regardless of whether it was "good" or "bad":
 > - If your Sentinel rule **did not fire**, you have a confirmed detection gap.
 > - If your Sentinel rule **did fire**, the detection is validated.
-> - If your EDR **blocked** the ability (status -1), your endpoint protection is working for that technique.
+> - If your EDR **blocked** the script (status -1), your endpoint protection is working for that technique.
 
-Run as many operations as needed. You can execute multiple operations sequentially or in parallel (depending on your agent and server capacity).
+Run as many tests as needed. You can execute multiple tests sequentially or in parallel (depending on your agent and server capacity).
 
 ---
 
@@ -522,23 +457,23 @@ After running one or more operations, you need to pull the results back into Mer
 1. Go back to Excel and the Merlino workbook.
 2. Open the **Tests & Operations** taskpane.
 
-### Click Synchronize Morgana Again
+### Click Synchronize Tests Again
 
-1. Click the **Synchronize Morgana** button.
-2. This time, the synchronization pulls execution results from Morgana Arsenal:
-   - **Ability execution status** (success, failed, or running) for each technique.
-   - **Agent information** (which agents executed which abilities).
+1. Click the **Synchronize Tests** button.
+2. This time, the synchronization pulls execution results from Morgana:
+   - **Script execution status** (success, failed, or running) for each technique.
+   - **Agent information** (which agents executed which scripts).
    - **Command output** and execution details.
-3. The Tests table is updated with the latest data from Morgana Arsenal.
+3. The Tests table is updated with the latest data from Morgana.
 4. The **Operations Intelligence Dashboard** refreshes with updated metrics:
-   - **Success Rate** -- percentage of abilities that executed successfully.
-   - **Error Rate** -- percentage of abilities that failed or were blocked.
-   - **Total Abilities** -- total number of individual abilities executed across all operations.
+   - **Success Rate** -- percentage of scripts that executed successfully.
+   - **Error Rate** -- percentage of scripts that failed or were blocked.
+   - **Total Scripts** -- total number of individual scripts executed across all tests.
    - **Agent Count** -- number of active agents involved.
 
 The dashboard provides five analytical views:
 - **Graph** -- Force-directed graph showing relationships between operations, techniques, and agents.
-- **Success** -- Detailed breakdown of successful vs. failed abilities.
+- **Success** -- Detailed breakdown of successful vs. failed scripts.
 - **Health** -- Agent health and connectivity status.
 - **Errors** -- Error analysis and troubleshooting information.
 - **Metrics** -- Aggregated KPIs and performance metrics.
@@ -550,21 +485,21 @@ The dashboard provides five analytical views:
 
 ## 11. Step 10 -- Understanding the Tests Table After Synchronization
 
-After synchronizing with Morgana Arsenal, the Tests table will contain **more rows than you originally had in the Catalogue**. This is expected and correct.
+After synchronizing with Morgana, the Tests table will contain **more rows than you originally had in the Catalogue**. This is expected and correct.
 
 ### Why More Rows?
 
-Each entry in your Catalogue maps to a single ATT&CK technique (or a small set of techniques). But when Caldera executes an operation, each technique is implemented by one or more **abilities**. An ability is a specific, concrete action that implements the technique on a particular platform.
+Each entry in your Catalogue maps to a single ATT&CK technique (or a small set of techniques). But when Morgana executes a test, each technique is implemented by one or more **scripts**. A script is a specific, concrete action that implements the technique on a particular platform (sourced from the Atomic Red Team library or custom-defined).
 
 For example:
 
-| Catalogue Entry | Technique | Caldera Abilities |
+| Catalogue Entry | Technique | Morgana Scripts |
 |---|---|---|
 | LSASS Credential Dumping | T1003.001 | Dump LSASS with Mimikatz, Dump LSASS with procdump, Dump LSASS with comsvcs.dll, Dump LSASS via direct memory access |
 | PowerShell Execution | T1059.001 | Download cradle via PowerShell, Encoded PowerShell command, PowerShell without logging, PowerShell bypass execution policy |
 | Disable Security Tools | T1562.001 | Disable Windows Defender real-time, Disable Windows Firewall, Stop security service, Modify registry security settings |
 
-A single Catalogue entry for T1003 may produce 4-8 rows in the Tests table -- one for each ability that Morgana Arsenal used to test that technique. This is the expected behavior and provides granular visibility into which specific implementations of a technique succeeded or failed.
+A single Catalogue entry for T1003 may produce 4-8 rows in the Tests table -- one for each script that Morgana used to test that technique. This is the expected behavior and provides granular visibility into which specific implementations of a technique succeeded or failed.
 
 ### Key Columns in the Tests Table
 
@@ -573,19 +508,17 @@ A single Catalogue entry for T1003 may produce 4-8 rows in the Tests table -- on
 | **Pick** | Boolean flag for filtering | TRUE / FALSE |
 | **CrossPick** | Cross-table coverage percentage | 0-100 |
 | **TCodes** | ATT&CK technique codes | T1003.001, T1059.001 |
-| **Name** | Catalogue entry name (operation) | LSASS Credential Dumping |
-| **Operation** | Caldera operation name | LSASS Credential Dumping |
-| **Adversary** | Caldera adversary profile name | LSASS Credential Dumping |
-| **State** | Operation state | running, finished, cleanup |
-| **Status** | Ability execution status | 0 (success), -1 (failed), 1 (running) |
+| **Name** | Catalogue entry name | LSASS Credential Dumping |
+| **Test** | Morgana test name | LSASS Credential Dumping |
+| **Chain** | Morgana chain name | LSASS Credential Dumping |
+| **State** | Test execution state | running, finished, cleanup |
+| **Status** | Script execution status | 0 (success), -1 (failed), 1 (running) |
 | **Output** | Command output from the agent | Base64-encoded execution output |
 | **Command** | The command that was executed | mimikatz.exe sekurlsa::logonpasswords |
 | **Agents** | Number of participating agents | 1, 2, 3... |
 | **Group** | Agent group | red |
 
-> **For more information** about MITRE Caldera, abilities, adversaries, and operations, visit the official Caldera repository: [https://github.com/mitre/caldera](https://github.com/mitre/caldera)
->
-> For video tutorials and demonstrations, visit the official Caldera YouTube channel: [https://www.youtube.com/@MITRECalderaOfficial](https://www.youtube.com/@MITRECalderaOfficial)
+> **For more information** about Morgana scripts, chains, and tests, visit the official Morgana repository: [https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana)
 
 ### Operations Intelligence Dashboard -- Analytical Views
 
@@ -593,40 +526,40 @@ Beyond the raw data in the Tests table, the **Operations Intelligence Dashboard*
 
 #### OPS Graph
 
-The OPS Graph is an **interactive force-directed graph** that visualizes the relationships between your operations, tactics, techniques, and procedures (TTPs). Nodes represent operations, ATT&CK tactics, and individual techniques. Edges show which techniques belong to which tactics and which operations tested them.
+The OPS Graph is an **interactive force-directed graph** that visualizes the relationships between your tests, tactics, techniques, and procedures (TTPs). Nodes represent tests, ATT&CK tactics, and individual techniques. Edges show which techniques belong to which tactics and which tests validated them.
 
 You can **drag** nodes to rearrange the layout, **hover** over any node to highlight its connections, and **click** on a node to isolate its neighborhood. The graph automatically clusters related elements together, making it easy to spot which tactical areas have the most test coverage and which are underrepresented.
 
 This view is particularly useful for briefings and reports -- it provides an immediate, visual answer to the question: *"What did we test and how does it map to the ATT&CK framework?"*
 
-![OPS Graph showing the interactive force-directed visualization of operations, tactics, and techniques](img/318-ops-graph.png)
-*Figure 318: The OPS Graph -- an interactive force-directed visualization showing the relationships between operations, ATT&CK tactics, and techniques. Drag, hover, and click nodes to explore the data.*
+![OPS Graph showing the interactive force-directed visualization of tests, tactics, and techniques](img/318-ops-graph.png)
+*Figure 318: The OPS Graph -- an interactive force-directed visualization showing the relationships between tests, ATT&CK tactics, and techniques. Drag, hover, and click nodes to explore the data.*
 
-#### Ability Success Rate Analysis
+#### Script Success Rate Analysis
 
-The Ability Success Rate Analysis view breaks down the execution results across all operations. It shows the **percentage of abilities that succeeded (status 0), failed (status -1), and are still running (status 1)** -- both as an aggregate summary and per-operation breakdown.
+The Script Success Rate Analysis view breaks down the execution results across all tests. It shows the **percentage of scripts that succeeded (status 0), failed (status -1), and are still running (status 1)** -- both as an aggregate summary and per-test breakdown.
 
-This view answers the critical question: *"Of everything we tested, how much actually worked?"* A high success rate (many green/status 0) means the adversary techniques were executed successfully on the target -- which is valuable for identifying detection gaps. A high failure rate (many red/status -1) indicates that your endpoint defenses are blocking those specific technique implementations.
+This view answers the critical question: *"Of everything we tested, how much actually worked?"* A high success rate (many green/status 0) means the attack techniques were executed successfully on the target -- which is valuable for identifying detection gaps. A high failure rate (many red/status -1) indicates that your endpoint defenses are blocking those specific technique implementations.
 
 Use this view to prioritize follow-up actions: techniques that succeeded without triggering a Sentinel alert are your highest-priority detection gaps.
 
-![Ability Success Rate Analysis showing success and failure percentages across operations](img/319-ability-success-rate.png)
-*Figure 319: The Ability Success Rate Analysis view. Green bars represent successful ability executions, red bars represent blocked or failed abilities. Use this data to identify which techniques bypassed your defenses.*
+![Script Success Rate Analysis showing success and failure percentages across tests](img/319-ability-success-rate.png)
+*Figure 319: The Script Success Rate Analysis view. Green bars represent successful script executions, red bars represent blocked or failed scripts. Use this data to identify which techniques bypassed your defenses.*
 
-#### Operations Health Matrix
+#### Test Health Matrix
 
-The Operations Health Matrix provides a comprehensive overview of **agent health, connectivity, and operation state** across your entire Red Team campaign. It shows which agents are alive, which have gone offline, how long each agent has been connected, and the current state of every operation (running, finished, or cleanup).
+The Test Health Matrix provides a comprehensive overview of **agent health, connectivity, and test state** across your entire Red Team campaign. It shows which agents are alive, which have gone offline, how long each agent has been connected, and the current state of every test (running, finished, or cleanup).
 
-This view is essential for **operational awareness during active testing**. If an agent disconnects mid-operation, the Health Matrix highlights it immediately so you can troubleshoot (e.g., the target machine rebooted, the agent process was killed by an EDR, or a network issue interrupted communication). It also tracks operation completion status so you know which operations have finished and which are still in progress.
+This view is essential for **operational awareness during active testing**. If an agent disconnects mid-test, the Health Matrix highlights it immediately so you can troubleshoot (e.g., the target machine rebooted, the agent process was killed by an EDR, or a network issue interrupted communication). It also tracks test completion status so you know which tests have finished and which are still in progress.
 
-![Operations Health Matrix showing agent connectivity and operation states](img/320-operations-health-matrix.png)
-*Figure 320: The Operations Health Matrix. Each row represents an agent with its hostname, platform, group, and connectivity status. Operation states are shown alongside agent health indicators.*
+![Test Health Matrix showing agent connectivity and test states](img/320-operations-health-matrix.png)
+*Figure 320: The Test Health Matrix. Each row represents an agent with its hostname, platform, group, and connectivity status. Test states are shown alongside agent health indicators.*
 
 #### Error Analytics and Troubleshooting
 
-The Error Analytics view aggregates all **errors, failures, and anomalies** from your operations into a single diagnostic interface. It categorizes errors by type (agent communication failures, ability execution errors, timeout issues, permission denied) and provides the detailed error messages and command output for each failed ability.
+The Error Analytics view aggregates all **errors, failures, and anomalies** from your tests into a single diagnostic interface. It categorizes errors by type (agent communication failures, script execution errors, timeout issues, permission denied) and provides the detailed error messages and command output for each failed script.
 
-This view is your **first stop when something goes wrong**. Instead of manually reviewing each failed ability across multiple operations, the Error Analytics view consolidates everything and highlights patterns. For example, if multiple abilities fail with "Access Denied", it likely means the agent does not have sufficient privileges -- you may need to run the agent as Administrator. If abilities time out consistently, the agent may be under heavy load or the network connection to Morgana Arsenal is unstable.
+This view is your **first stop when something goes wrong**. Instead of manually reviewing each failed script across multiple tests, the Error Analytics view consolidates everything and highlights patterns. For example, if multiple scripts fail with "Access Denied", it likely means the agent does not have sufficient privileges -- you may need to run the agent as Administrator. If scripts time out consistently, the agent may be under heavy load or the network connection to Morgana is unstable.
 
 ![Error Analytics showing categorized errors and troubleshooting information](img/321-error-analytics.png)
 *Figure 321: The Error Analytics and Troubleshooting view. Errors are categorized by type with detailed messages and command output. Use this view to diagnose and resolve operational issues.*
@@ -635,17 +568,17 @@ This view is your **first stop when something goes wrong**. Instead of manually 
 
 The Real-Time Operations Metrics view displays **live KPIs and aggregated statistics** for your entire Red Team campaign. Key metrics include:
 
-- **Total Operations** -- number of operations executed
-- **Total Abilities** -- total number of individual ability executions across all operations
-- **Overall Success Rate** -- percentage of abilities that completed successfully
-- **Average Execution Time** -- mean time per ability execution
+- **Total Tests** -- number of tests executed
+- **Total Scripts** -- total number of individual script executions across all tests
+- **Overall Success Rate** -- percentage of scripts that completed successfully
+- **Average Execution Time** -- mean time per script execution
 - **Agent Utilization** -- how many agents are actively participating vs. idle
 - **Technique Coverage** -- number of unique ATT&CK techniques tested vs. total in your threat profile
 
-This view provides the **executive summary** of your Red Team engagement. The metrics are updated in real-time as operations run and are refreshed each time you synchronize with Morgana Arsenal. Use these numbers for reporting to management, compliance documentation, and tracking improvement over time as you repeat the validation cycle.
+This view provides the **executive summary** of your Red Team engagement. The metrics are updated in real-time as tests run and are refreshed each time you click Synchronize Tests. Use these numbers for reporting to management, compliance documentation, and tracking improvement over time as you repeat the validation cycle.
 
 ![Real-Time Operations Metrics showing KPIs and aggregated campaign statistics](img/322-realtime-metrics.png)
-*Figure 322: Real-Time Operations Metrics displaying live KPIs including total operations, abilities executed, success rates, average execution time, and technique coverage against your threat profile.*
+*Figure 322: Real-Time Operations Metrics displaying live KPIs including total tests, scripts executed, success rates, average execution time, and technique coverage against your threat profile.*
 
 ---
 
@@ -751,53 +684,53 @@ The final analytical step is to visualize the relationships between your IOC dat
 
 ## 15. Step 14 -- Explore the Agents Dashboard
 
-While the Tests & Operations taskpane focuses on operations and abilities, the **Agents** taskpane provides a dedicated view into the agents that execute those operations. This is where you monitor your Red Team infrastructure -- the machines you control, their status, and their activity across the entire campaign.
+While the Tests & Operations taskpane focuses on tests and scripts, the **Agents** taskpane provides a dedicated view into the agents that execute those tests. This is where you monitor your Red Team infrastructure -- the machines you control, their status, and their activity across the entire campaign.
 
 ### Open the Agents Taskpane
 
 1. Click the **Agents** button in the Merlino ribbon (Operations group).
-2. The Agents taskpane opens and immediately queries Morgana Arsenal for the current agent inventory.
+2. The Agents taskpane opens and immediately queries Morgana for the current agent inventory.
 
 ### Agents Overview
 
-The first view you see is the **Agents Overview** -- a summary panel showing all agents currently registered in Morgana Arsenal. For each agent, the overview displays:
+The first view you see is the **Agents Overview** -- a summary panel showing all agents currently registered in Morgana. For each agent, the overview displays:
 
 - **Hostname** -- the machine name where the agent is running.
 - **Platform** -- the operating system (Windows, Linux, Darwin).
 - **Architecture** -- the CPU architecture (x86_64, ARM, etc.).
-- **Agent Group** -- the group assignment (e.g., `red`) that determines which operations target this agent.
-- **Contact** -- the communication protocol the agent uses to reach the Caldera server (HTTP, TCP, UDP).
+- **Agent Group** -- the group assignment (e.g., `red`) that determines which tests target this agent.
+- **Contact** -- the communication protocol the agent uses to reach the Morgana server (HTTPS).
 - **Status** -- whether the agent is **alive** (actively communicating) or **dead** (no heartbeat received within the timeout window).
 - **Last Seen** -- the timestamp of the last heartbeat, so you can tell at a glance how recently each agent checked in.
 
-This overview is essential for operational awareness: before launching new operations, you need to confirm that your agents are alive and reachable. If an agent shows as dead, the target machine may have rebooted, the agent process may have been terminated by an EDR, or a network issue may be preventing communication.
+This overview is essential for operational awareness: before launching new tests, you need to confirm that your agents are alive and reachable. If an agent shows as dead, the target machine may have rebooted, the agent process may have been terminated by an EDR, or a network issue may be preventing communication.
 
 ![Agents Overview panel showing active agents with hostname, platform, group, and status](img/323-agents-overview.png)
-*Figure 323: The Agents Overview in the Agents taskpane. Each agent is listed with its hostname, platform, architecture, group, contact method, and live status. Use this view to confirm agent availability before running operations.*
+*Figure 323: The Agents Overview in the Agents taskpane. Each agent is listed with its hostname, platform, architecture, group, contact method, and live status. Use this view to confirm agent availability before running tests.*
 
 ### Agents Relationship Graph and Timeline
 
 Below the overview, the Agents taskpane provides an **interactive force-directed graph** that visualizes the relationships between agents and their activities. The graph contains three types of nodes:
 
 - **Agent nodes** (center) -- represent each registered agent, labeled with the hostname.
-- **Operation nodes** -- represent operations that the agent participated in, connected by edges to the agent that executed them.
-- **Ability nodes** -- represent individual abilities (attack techniques) executed by the agent, connected to the operation they belong to.
+- **Test nodes** -- represent tests that the agent participated in, connected by edges to the agent that executed them.
+- **Script nodes** -- represent individual scripts (attack techniques) executed by the agent, connected to the test they belong to.
 
-Edges encode the execution flow: Agent --> Operation --> Ability. The thickness and color of each edge can indicate the execution status (success, failure, or running), giving you an immediate visual understanding of how each agent contributed to your Red Team campaign.
+Edges encode the execution flow: Agent --> Test --> Script. The thickness and color of each edge can indicate the execution status (success, failure, or running), giving you an immediate visual understanding of how each agent contributed to your Red Team campaign.
 
-You can **drag** nodes to rearrange the layout, **hover** over a node to highlight its connections, and **click** on a node to see details such as the operation name, ability description, and execution status.
+You can **drag** nodes to rearrange the layout, **hover** over a node to highlight its connections, and **click** on a node to see details such as the test name, script description, and execution status.
 
-Below the graph, a **timeline** shows agent activity over time -- when each agent first connected, when it executed abilities, and when it last reported in. The timeline helps you reconstruct the chronological sequence of events during a multi-agent, multi-operation campaign.
+Below the graph, a **timeline** shows agent activity over time -- when each agent first connected, when it executed scripts, and when it last reported in. The timeline helps you reconstruct the chronological sequence of events during a multi-agent, multi-test campaign.
 
-![Agents force-directed graph showing relationships between agents, operations, and abilities, with timeline below](img/324-agents-graph-timeline.png)
-*Figure 324: The Agents Relationship Graph and Timeline. Agent nodes connect to the operations they executed and the individual abilities within those operations. The timeline below shows agent activity chronologically. Use this view to understand how your Red Team infrastructure participated in the campaign.*
+![Agents force-directed graph showing relationships between agents, tests, and scripts, with timeline below](img/324-agents-graph-timeline.png)
+*Figure 324: The Agents Relationship Graph and Timeline. Agent nodes connect to the tests they executed and the individual scripts within those tests. The timeline below shows agent activity chronologically. Use this view to understand how your Red Team infrastructure participated in the campaign.*
 
 ### When to Use the Agents Dashboard
 
-- **Before running operations** -- verify that all target agents are alive and in the correct group.
-- **During active operations** -- monitor agent participation and spot disconnections in real-time.
-- **After operations complete** -- review the graph to understand which agents tested which techniques, and use the timeline to reconstruct the sequence of events for reporting.
-- **Troubleshooting** -- if an operation produced unexpected results, the Agents dashboard helps you determine whether the issue was with a specific agent (e.g., dead agent, wrong group) rather than with the operation definition itself.
+- **Before running tests** -- verify that all target agents are alive and in the correct group.
+- **During active tests** -- monitor agent participation and spot disconnections in real-time.
+- **After tests complete** -- review the graph to understand which agents tested which techniques, and use the timeline to reconstruct the sequence of events for reporting.
+- **Troubleshooting** -- if a test produced unexpected results, the Agents dashboard helps you determine whether the issue was with a specific agent (e.g., dead agent, wrong group) rather than with the test or chain definition itself.
 
 ---
 
@@ -824,7 +757,7 @@ LAB 03: RED TEAM VALIDATION
   |
   |   Can we actually execute those techniques against our infrastructure?
   |   Does our detection work when the attack happens for real?
-  |   --> Execution Results (abilities tested, success/failure data)
+  |   --> Execution Results (scripts tested, success/failure data)
   |
   v
 MISP: THREAT INTELLIGENCE SHARING
@@ -838,7 +771,7 @@ This is not a one-time exercise. The loop is designed to be repeated:
 
 1. **New threat intelligence** emerges (a new APT group targets your industry) --> Repeat Lab 01 to update the threat profile.
 2. **New Sentinel rules** are deployed --> Repeat Lab 02 to measure improved coverage.
-3. **New Caldera abilities** are available --> Repeat Lab 03 to validate against the latest attack implementations.
+3. **New Morgana scripts** are available --> Repeat Lab 03 to validate against the latest attack implementations.
 4. **MISP feeds** update with fresh IOCs --> Re-import and re-visualize to catch new relationships.
 
 Each iteration tightens the security posture. Each iteration produces measurable, evidence-based data. Each iteration is documented in the Merlino workbook -- a living, auditable artifact.
@@ -852,30 +785,29 @@ Each iteration tightens the security posture. Each iteration produces measurable
 | Step | What You Did | What It Produced |
 |---|---|---|
 | Prepared Tests sheet | Cleared existing data, preserved header | A clean Tests table ready for synchronization |
-| Synchronized Catalogue | Transferred all Catalogue entries to Tests | Test records for every technique in your profile |
-| Installed Morgana Arsenal | Set up Caldera + Morgana plugin (source or OVA) | A running Red Team server with MISP integration |
+| Synchronized Chains | Pushed Catalogue entries to Morgana as chains | Chains with scripts created in Morgana for every technique in your profile |
+| Installed Morgana | Set up Morgana server (Python/FastAPI or pre-built EXE) | A running Red Team server ready for testing |
 | Configured connections | Entered Morgana and MISP details in Settings | Verified green-status connections to both services |
-| Deployed agent | Installed a Caldera agent on a Windows target | A connected agent ready to receive and execute abilities |
-| First sync | Pushed test definitions to Morgana Arsenal | Adversaries and operations created in Caldera |
-| Ran operations | Executed attack techniques against the target | Ability execution results (success/failure per technique) |
-| Post-execution sync | Pulled results back into Merlino | Updated Tests table with status, output, and metrics |
+| Deployed agent | Installed a Morgana agent on a Windows target | A connected agent ready to receive and execute scripts |
+| First test sync | Created and executed tests from chains in Morgana | Test executions dispatched to agents |
+| Ran tests | Executed attack techniques against the target | Script execution results (success/failure per technique) |
+| Post-execution sync | Pulled results back into Merlino via Synchronize Tests | Updated Tests table with status, output, and metrics |
 | Pushed to MISP | Exported Catalogue data to MISP events | Correlated threat intelligence in MISP |
 | Imported from MISP | Pulled enriched IOC data into IOC sheet | IP, domain, hash, and CVE indicators linked to your profile |
 | Visualized IOCs | Generated IOC Cluster Graph | Interactive visualization of threat intelligence relationships |
 
 ### Key Takeaways
 
-1. **Detection rules are hypotheses. Red Team operations are experiments.** You cannot know if your defenses work until you test them. Lab 02 measured what you have on paper; Lab 03 validated what works in practice.
-2. **More rows in the Tests table is a good thing.** Each row represents a specific ability -- a concrete action that was attempted against your target. Granularity is precision.
-3. **Failed abilities (status -1) are not failures -- they are evidence that your defenses work.** An ability that was blocked by your EDR means that specific technique implementation is covered. Document it. Celebrate it.
-4. **The bidirectional Morgana Arsenal sync is designed for iteration.** Run operations, sync results, run more operations, sync again. Each cycle adds more data to your workbook.
+1. **Detection rules are hypotheses. Red Team tests are experiments.** You cannot know if your defenses work until you test them. Lab 02 measured what you have on paper; Lab 03 validated what works in practice.
+2. **More rows in the Tests table is a good thing.** Each row represents a specific script -- a concrete action that was attempted against your target. Granularity is precision.
+3. **Failed scripts (status -1) are not failures -- they are evidence that your defenses work.** A script that was blocked by your EDR means that specific technique implementation is covered. Document it. Celebrate it.
+4. **The bidirectional Morgana sync is designed for iteration.** Run tests, sync results, run more tests, sync again. Each cycle adds more data to your workbook.
 5. **MISP integration transforms isolated Red Team data into shareable intelligence.** By pushing to MISP and pulling IOCs back, you connect your internal validation program to the broader threat intelligence ecosystem.
 
 ### Resources
 
-- **Morgana Arsenal:** [https://github.com/x3m-ai/morgana-arsenal](https://github.com/x3m-ai/morgana-arsenal) -- Installation, configuration, and plugin documentation.
-- **MITRE Caldera:** [https://github.com/mitre/caldera](https://github.com/mitre/caldera) -- The upstream project that powers Morgana Arsenal. Comprehensive documentation on agents, abilities, adversaries, and operations.
-- **MITRE Caldera YouTube Channel:** [https://www.youtube.com/@MITRECalderaOfficial](https://www.youtube.com/@MITRECalderaOfficial) -- Video tutorials, demonstrations, and deep dives into Caldera capabilities.
+- **Morgana:** [https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana) -- Installation, configuration, architecture documentation, and API reference.
+- **Atomic Red Team:** [https://github.com/redcanaryco/atomic-red-team](https://github.com/redcanaryco/atomic-red-team) -- The open-source library of ATT&CK technique tests that Morgana loads as its scripts library.
 - **MISP Project:** [https://www.misp-project.org](https://www.misp-project.org) -- The open-source threat intelligence platform documentation.
 
 ### What's Next
@@ -892,7 +824,7 @@ You have now completed all three Merlino laboratories. Your workbook contains:
 - **Run the AI Assistant** (AI button in the ribbon) to generate automated analysis and recommendations based on your combined data.
 - **Generate a Report** (Reports button) to produce a comprehensive HTML report covering all three layers of analysis.
 - **Share the workbook** with your SOC team, management, or auditors as evidence of your security validation program.
-- **Schedule regular cycles** -- update threat intelligence quarterly, re-measure Sentinel coverage after rule changes, and re-run Red Team operations as new abilities are released.
+- **Schedule regular cycles** -- update threat intelligence quarterly, re-measure Sentinel coverage after rule changes, and re-run Red Team tests as new scripts are released.
 
 ---
 
