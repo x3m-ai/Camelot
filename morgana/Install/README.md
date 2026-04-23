@@ -45,9 +45,9 @@ Script library is powered by **Red Canary Atomic Red Team** (4,500+ techniques).
 
 ## Download
 
-Download the latest Windows installer from this folder:
+Download the latest Windows installer directly:
 
-**[Morgana-Server-Setup.exe](./Morgana-Server-Setup.exe)**
+**[Download Morgana-Server-Setup.exe](https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe)**
 
 > The installer is self-contained (~25 MB). No internet connection required after download.  
 > Always use the latest version from this folder.
