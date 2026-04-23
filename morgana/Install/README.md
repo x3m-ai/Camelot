@@ -66,6 +66,7 @@ Download the latest Windows installer directly:
    - Generate a self-signed TLS certificate
    - **Install the certificate into the Windows Trusted Root store** (so your browser shows a padlock, not a warning)
    - Open firewall port 8888 (TCP Inbound)
+   - Optionally create a **desktop shortcut** (if selected during setup) — double-click it to open the Morgana web UI directly
 
 ### Step 2 - Open the web UI
 

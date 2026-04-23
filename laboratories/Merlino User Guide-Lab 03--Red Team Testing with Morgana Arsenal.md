@@ -176,6 +176,7 @@ Morgana is distributed as a self-contained Windows installer through the **Camel
    - Generate a self-signed TLS certificate and **install it into the Windows Trusted Root store**
    - Open firewall port 8888 (TCP Inbound)
    - Load the Atomic Red Team script library (4,500+ techniques)
+   - Optionally create a **desktop shortcut** (if selected during setup) — double-click it to open the Morgana web UI directly
 
 > **No Git, no Python, no dependencies required.** The installer is fully self-contained (~25 MB).
 
