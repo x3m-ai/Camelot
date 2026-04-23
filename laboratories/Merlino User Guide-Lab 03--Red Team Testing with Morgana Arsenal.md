@@ -402,6 +402,9 @@ Now comes the actual Red Team testing. You will execute the chains directly from
 1. In the Morgana web UI, click **Chains** in the navigation.
 2. You will see the list of chains created by Synchronize Chains from Merlino.
 
+![Morgana Chains list ready for execution](img/325-morgana-chains-execute.png)
+*Morgana — Chains list ready for execution. Select one or all chains and click Execute to start Red Team testing.*
+
 ### Execute Chains
 
 You have two options:
