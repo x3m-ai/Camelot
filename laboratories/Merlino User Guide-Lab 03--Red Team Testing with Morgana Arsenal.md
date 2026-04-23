@@ -126,8 +126,8 @@ Now you will push your Catalogue entries to Morgana as chains. Each Catalogue en
 
 1. Click the **Tests & Operations** button in the Merlino ribbon (Operations group).
 2. The taskpane opens with two main buttons at the top:
-   - **Synchronize Chains** -- reads the Catalogue, connects to Morgana, and creates chains with scripts for each entry
-   - **Synchronize Tests** -- creates tests from chains, executes them, and syncs results back
+   - **Synchronize Chains** -- reads the Catalogue, connects to Morgana, and creates chains with attack scripts for each entry. After this you go to Morgana and execute the chains.
+   - **Synchronize Tests** -- pulls execution results back from Morgana into the Tests table after you have run chains in Morgana
 
 ### Click Synchronize Chains
 
@@ -141,7 +141,7 @@ Now you will push your Catalogue entries to Morgana as chains. Each Catalogue en
 
 5. A notification appears confirming how many chains were created and how many scripts were mapped.
 
-At this point, your Catalogue entries exist as chains in Morgana -- the same techniques and rules you analyzed in Lab 01 and Lab 02. These chains are now ready to be executed as tests against the target machine.
+At this point, your Catalogue entries exist as chains in Morgana -- the same techniques and rules you analyzed in Lab 01 and Lab 02. The chains are ready to be executed directly from the Morgana web UI (see Step 8).
 
 ---
 
@@ -306,7 +306,9 @@ For this lab, you need a **Windows virtual machine** to serve as the attack targ
 1. Open the Morgana web UI in your browser: `https://<SERVER-IP>:8888/ui/`.
 2. Navigate to the **Agents** section.
 3. Click **Deploy Agent**.
-4. The deploy modal shows a one-liner command for Windows and Linux. For Windows, the command looks like:
+4. The deploy modal shows a one-liner command for Windows and Linux. Copy it and run it as Administrator on the target machine.
+
+   For Windows, the command looks like:
 
 ```powershell
 curl.exe -k -o morgana-agent.exe https://<SERVER-IP>:8888/download/morgana-agent.exe; .\morgana-agent.exe install --server https://<SERVER-IP>:8888 --token <API_KEY>
@@ -344,6 +346,14 @@ The following screenshot shows the agent deployment running on the Windows targe
 
 > **Agent Details:** Each agent is identified by a unique **paw** (short ID). The agent configuration, token, and work directories are stored in `C:\ProgramData\Morgana\` on Windows or `/var/lib/morgana/` on Linux. The agent writes an immutable execution audit log for every job it runs.
 
+### Agent Source Code (Optional -- Advanced)
+
+The agent binary deployed by Morgana is pre-compiled and served directly by the server. If you prefer to audit the source code, build your own binary, or distribute a custom-compiled agent, the full Go 1.22 source code is publicly available in the **Camelot community repository**:
+
+**[github.com/x3m-ai/Camelot -- morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)**
+
+That folder contains the complete source and build instructions for Windows and Linux. You can compile it yourself and install it using the same `--server` and `--token` arguments as the pre-built binary. This is completely transparent -- there are no differences between the pre-built binary and what you build from that source.
+
 ---
 
 ## 8. Step 7 -- Synchronize Tests (First Sync)
@@ -353,7 +363,7 @@ Now that you have:
 - Morgana running and connected (from Steps 3-4)
 - An agent deployed on the target machine (from Step 6)
 
-You are ready to create and execute tests from those chains.
+You are ready to do the first synchronization. This registers the chains in the Merlino Tests table so you can track results after execution.
 
 ### Open the Tests & Operations Taskpane
 
@@ -363,68 +373,71 @@ You are ready to create and execute tests from those chains.
 ### Click Synchronize Tests
 
 1. Click the **Synchronize Tests** button.
-2. Merlino performs several steps automatically:
-   - **Checks for agents** -- verifies at least one agent exists in Morgana. If no agents are found, the sync is aborted with a message: *"No agents found in Morgana. Please deploy at least one agent before synchronizing."*
-   - **Reads the Tests table** -- collects all rows from the Tests sheet.
-   - **Sends data to Morgana** via the dedicated API endpoint (`/api/v2/merlino/synchronize`).
-   - **Creates tests** in Morgana for each chain entry.
-   - **Receives updated data** back from Morgana, including test IDs, chain IDs, and current state.
-   - **Updates the Tests table** with the response data.
-   - **Updates the Operations Intelligence Dashboard** with real-time metrics.
-
+2. Merlino reads the chains from Morgana via the API (`/api/v2/merlino/synchronize`) and populates the Tests table:
+   - Chain names, IDs, associated scripts
+   - Current state of each chain
 3. A status message appears: *"Sync completed! X tests, Y scripts, Z agents"*.
 
-### What Happened in Morgana
+After this first sync the Tests table is populated. You will then execute the chains in Morgana (Step 8) and sync again afterwards to pull results back into Merlino (Step 9).
+
+### What You Will See in Morgana
 
 After synchronization, go to the Morgana web UI and check:
 
-- **Chains**: You will see new chains, each named after a Catalogue entry. These chains contain the ATT&CK techniques mapped in the TCodes column as ordered scripts.
+- **Chains**: You will see the chains created by Synchronize Chains, each named after a Catalogue entry, containing the ATT&CK techniques from the TCodes column as ordered scripts.
 
 ![Morgana Chains list showing the chains created by the synchronization](img/314-morgana-adversaries-list.png)
 *Figure 314: The Chains page in Morgana after synchronization. Each chain corresponds to a Catalogue entry and contains the ATT&CK techniques from the TCodes column as ordered scripts.*
 
-- **Tests**: You will see corresponding tests, ready to be executed. Each test is linked to its chain and targeted at the available agents.
+> **Key Concept:** The **Name** column in Merlino's Catalogue is the unique identifier that links entries across both systems. The names in Merlino's Catalogue, Tests, and Morgana's Chains all correspond.
 
-> **Key Concept:** The **Name** column in Merlino's Catalogue is the unique identifier that links entries across both systems. When you modify a chain name in Morgana, Merlino will track it through the test ID. The names in Merlino's Catalogue, Tests, and Morgana's Chains and Tests all correspond.
+Now go to Step 8 to execute the chains from the Morgana web UI.
 
 ---
 
 ## 9. Step 8 -- Run Tests in Morgana
 
-Now comes the actual Red Team testing. You will execute tests against the target machine.
+Now comes the actual Red Team testing. You will execute the chains directly from the Morgana web UI against the target machine.
 
-### Navigate to Tests in Morgana
+### Navigate to Chains in Morgana
 
-1. In the Morgana web UI, click **Tests** in the navigation.
-2. You will see the list of tests created during synchronization.
-3. Select the test you want to execute.
+1. In the Morgana web UI, click **Chains** in the navigation.
+2. You will see the list of chains created by Synchronize Chains from Merlino.
 
-### Prepare and Run a Test
+### Execute Chains
 
-1. Click on the test name to open it.
-2. Review the details:
-   - **Chain:** The chain linked to this test (contains the ATT&CK scripts in execution order).
-   - **Agents:** The target agents that will execute the scripts.
-3. Click the **Execute** button to start the test.
-4. Morgana dispatches jobs to the target agents. Each job contains a script to execute. The agent runs the scripts in the order defined by the chain and reports results back to the server.
+You have two options:
 
-5. As the test runs, Morgana dispatches scripts to the agents. Each script corresponds to an ATT&CK technique (e.g., T1003.001 -- LSASS Memory is executed by running a credential dumping tool on the target's LSASS process).
+**Option A -- Execute all chains at once:**
+1. Select all chains using the checkbox at the top of the list.
+2. Click the **Execute** button.
+3. Morgana dispatches all chains to the available agents simultaneously.
+
+**Option B -- Execute chains one by one:**
+1. Click on a chain name to open it.
+2. Review the scripts in execution order.
+3. Click **Execute** to start that chain on the target agent.
+4. Repeat for each chain you want to run.
+
+### Agent Assignment
+
+If a chain has no agent associated, Morgana will prompt you to select a temporary agent for execution before proceeding. Select the target agent from the dropdown and confirm.
 
 ### Monitor Execution
 
-- The test view shows scripts being executed in real-time.
-- Each script shows a **status**:
+As chains run, each script shows a **status**:
   - **Green (0):** Script executed successfully -- the technique was performed on the target.
   - **Red (-1):** Script failed or was blocked -- the target's defenses prevented execution.
   - **Blue (1):** Script is currently running.
-- You can click on individual scripts to see command output, execution time, and detailed results.
 
-> **What a Successful Execution Means:** A successfully executed script (status 0) means the adversary technique was carried out on the target machine. This is valuable information regardless of whether it was "good" or "bad":
+You can click on any script to see its command output, execution time, and detailed results.
+
+> **What a Successful Execution Means:** A successfully executed script (status 0) means the adversary technique was carried out on the target machine:
 > - If your Sentinel rule **did not fire**, you have a confirmed detection gap.
 > - If your Sentinel rule **did fire**, the detection is validated.
 > - If your EDR **blocked** the script (status -1), your endpoint protection is working for that technique.
 
-Run as many tests as needed. You can execute multiple tests sequentially or in parallel (depending on your agent and server capacity).
+Once you have executed the chains you want to test, return to Merlino to pull the results back (next step).
 
 ---
 
