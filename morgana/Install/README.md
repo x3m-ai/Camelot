@@ -106,13 +106,14 @@ Do the same on every machine where you install the Morgana Agent.
 
 ## API Key
 
-The installer generates a unique API key stored at:
+To get the API key needed to connect Merlino (or to install agents):
 
-```
-C:\ProgramData\Morgana\config\master-api-key.txt
-```
+1. Open the Morgana web UI: `https://localhost:8888/ui/`
+2. Go to **Admin** in the left sidebar
+3. Click **Generate API Key**
+4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
 
-You will need this key to connect Merlino and to install agents.
+> **Keep this key secret. Treat it like a password.**
 
 ---
 
@@ -174,7 +175,7 @@ Morgana is designed as a drop-in replacement for Caldera in Merlino.
 1. In Merlino, open **Settings**
 2. Under **Caldera / Morgana**, enter:
    - **URL:** `https://YOUR_MORGANA_SERVER:8888`
-   - **API Key:** contents of `C:\ProgramData\Morgana\config\master-api-key.txt`
+   - **API Key:** the key generated from the Morgana web UI (Admin → Generate API Key)
 3. Click **Save**
 
 That is all. No other changes are needed in Merlino.  

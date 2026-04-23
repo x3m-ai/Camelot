@@ -189,15 +189,11 @@ https://localhost:8888/ui/
 
 The Morgana web UI shows the full dashboard for managing agents, scripts, chains, tests, and campaigns.
 
-> **Note:** If your browser shows a certificate warning, the certificate may not yet be trusted in your current browser session. Close all tabs and reopen, or run the following as Administrator:
-> ```powershell
-> certutil -addstore -f Root "C:\ProgramData\Morgana\certs\server.crt"
-> ```
-> Then restart Excel.
+> **Note:** The installer installs the certificate into the Windows Trusted Root store automatically. On a clean machine the browser and Excel will trust it immediately — no manual steps required.
 
 ### SSL Certificate
 
-HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all unencrypted HTTP communication. The installer handles certificate generation and trust automatically for lab environments.
+HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all unencrypted HTTP communication. The installer handles certificate generation and trust automatically — on a fresh installation everything works out of the box.
 
 **For production environments**, replace the self-signed certificate by placing your own files at:
 - `C:\ProgramData\Morgana\certs\server.crt`
@@ -207,13 +203,14 @@ Then restart the Morgana service.
 
 ### API Key
 
-The installer generates a unique API key stored at:
+To get the API key you need to connect Merlino to Morgana:
 
-```
-C:\ProgramData\Morgana\config\master-api-key.txt
-```
+1. Open the Morgana web UI: `https://localhost:8888/ui/` (or `https://<SERVER-IP>:8888/ui/` if on a separate machine)
+2. Go to **Admin** in the left sidebar
+3. Click **Generate API Key**
+4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
 
-You will need this key in the next step to connect Merlino to Morgana.
+You will paste this key into Merlino Settings in the next step.
 
 > **IMPORTANT:** Keep this key secret. Treat it like a password.
 
@@ -237,7 +234,7 @@ Now that Morgana is running, you need to tell Merlino where to find it.
 1. In the **Server URL** field, enter the Morgana URL: `https://<SERVER-IP>:8888`
    - Replace `<SERVER-IP>` with the actual IP address of your Morgana server (e.g., `https://192.168.1.10:8888`)
    - If Morgana runs on the same machine as Excel, use `https://localhost:8888`
-2. In the **API Key** field, enter the Morgana API key (found in `C:\ProgramData\Morgana\config\master-api-key.txt` on the server machine).
+2. In the **API Key** field, paste the Morgana API key you generated from the Admin section of the Morgana web UI.
 3. Click **Save**.
 4. Click **Test Connection**.
 5. If the connection is successful, the status indicator turns **green** with a confirmation message.
