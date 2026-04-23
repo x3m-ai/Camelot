@@ -118,26 +118,52 @@ You will need this key to connect Merlino and to install agents.
 
 ## Agent Installation
 
-The Morgana Agent is a lightweight Windows service you install on target machines.  
-It polls the server for jobs and executes scripts locally.
+The Morgana Agent is a lightweight OS service installed on **target machines**.  
+It beacons to the server, receives jobs, executes scripts, and reports results.
 
-### Windows (run as Administrator on the target machine)
+Three options are available — choose the one that fits your workflow:
 
-```powershell
-# Download and install the agent - replace with your server IP and API key
-$serverUrl = "https://YOUR_MORGANA_SERVER:8888"
-$apiKey    = "YOUR_API_KEY"
+---
 
-Invoke-RestMethod "$serverUrl/ui/install.ps1" | Invoke-Expression
+### Option 1 — Morgana UI — Deploy Agent button (recommended)
+
+1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
+2. Go to **Agents** in the left sidebar
+3. Click **Deploy Agent**
+4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
+
+The server generates the install script automatically, pre-configured with your URL and API key.
+
+---
+
+### Option 2 — Manual install with pre-built binary
+
+The agent binary ships inside the Morgana Server installer and is available at:
+
+```
+C:\Program Files\Morgana Server\morgana-agent.exe
 ```
 
-Or manually:
+Copy it to the target machine and run as Administrator:
 
 ```powershell
-.\install-agent-windows.ps1 -ServerUrl https://192.168.1.10:8888 -Token YOUR_API_KEY
+.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY
 ```
 
-After installation the agent appears in the **Agents** page of the web UI within seconds.
+---
+
+### Option 3 — Build from source (Camelot community repo)
+
+The full agent source code (Go 1.22) is published in the Camelot community repository for transparency.  
+You can audit it, build your own binary, and install it — no trust required.
+
+**Source code:** [github.com/x3m-ai/Camelot — morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)
+
+The `morgana-agent` folder contains a full README with build instructions for Windows and Linux.
+
+---
+
+After installation the agent appears in the **Agents** page of the web UI within one beacon interval (default 30 seconds).
 
 ---
 
