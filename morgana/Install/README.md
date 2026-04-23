@@ -1,6 +1,6 @@
 # Morgana - Installation Guide
 
-> **Current release: v0.2.3** (23 April 2026) — detailed console diagnostics (session ID, WTS/CreateProcess error codes), auto-build Go agent if missing
+> **Current release: v0.2.4** (23 April 2026) — fix: console window closes immediately on VM (Windows Defender was terminating PowerShell in C:\Windows\Temp; PS1 now written to Defender-excluded C:\ProgramData\Morgana\temp\)
 
 > **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
 > Free, open-source, Windows-native. Tightly integrated with [Merlino](https://merlino.x3m.ai).
