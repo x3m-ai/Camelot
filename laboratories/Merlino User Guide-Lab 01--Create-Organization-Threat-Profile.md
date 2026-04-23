@@ -145,7 +145,7 @@ Click **Add Provider** to add a new row, fill in the fields, then click **Save A
 
 If you have a Morgana Red Team server, enter its HTTPS URL here.
 
-- **Morgana Arsenal Server URL** -- e.g., `https://192.168.124.133`
+- **Morgana Server URL** -- e.g., `https://192.168.124.133`
 - Click **Check Morgana** to test the connection
 - Click **Save Morgana** to persist the URL
 
@@ -153,7 +153,7 @@ This is required for the Agents, Tests & Operations, and Red Team features.
 
 ![Settings Morgana Configuration](img/05-settings-morgana.png)
 
-*The Morgana Arsenal Configuration section with a URL entered and connection status.*
+*The Morgana Configuration section with a URL entered and connection status.*
 
 ### 2.4 MISP Configuration
 
@@ -616,7 +616,7 @@ The combination of all four columns creates a powerful decision matrix:
 | High CrossPick + Low Data Components + Any Tests | Likely attack vector with blind spot | Onboard log sources urgently |
 | Low CrossPick + Any coverage | Lower priority in current profile | Address after higher priorities |
 
-Merlino can be **directly integrated with Morgana** and updates attack test and simulation data in real time. The Tests Coverage column reflects the live status of your adversary emulation program. This gives you a continuous, quantitative measure of how thoroughly your organization is actually testing its threat detection capabilities -- not just theoretically, but through actual attack simulation. A dedicated laboratory covers this integration in detail: see *Merlino User Guide-Lab 03--Red Team Testing with Morgana Arsenal.md*.
+Merlino can be **directly integrated with Morgana** and updates attack test and simulation data in real time. The Tests Coverage column reflects the live status of your adversary emulation program. This gives you a continuous, quantitative measure of how thoroughly your organization is actually testing its threat detection capabilities -- not just theoretically, but through actual attack simulation. A dedicated laboratory covers this integration in detail: see *Merlino User Guide-Lab 03--Red Team Testing with Morgana.md*.
 
 ### How to Read the Matrix
 
@@ -1208,7 +1208,7 @@ Merlino's features are organized into five ribbon groups:
 | **Exploit Database** | Import 46,000+ exploits mapped to MITRE |
 | **AI** | AI-powered threat analysis |
 
-### Morgana Arsenal Group
+### Morgana Group
 | Button | Function |
 |---|---|
 | **IOC** | Indicator of Compromise management and MISP integration |

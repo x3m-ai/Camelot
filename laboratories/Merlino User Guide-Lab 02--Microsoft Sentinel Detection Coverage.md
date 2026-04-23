@@ -369,7 +369,7 @@ Merlino makes this problem visible. Without this analysis, the gap remains hidde
 
 ### What's Next
 
-- **Lab 03 -- Red Team Testing with Morgana Arsenal:** Take the techniques that are NOT covered by Sentinel and run Red Team operations to validate whether your defenses can detect them through other means (EDR, network monitoring, manual investigation). This closes the loop: intelligence (Lab 01) > detection measurement (Lab 02) > validation testing (Lab 03).
+- **Lab 03 -- Red Team Testing with Morgana:** Take the techniques that are NOT covered by Sentinel and run Red Team operations to validate whether your defenses can detect them through other means (EDR, network monitoring, manual investigation). This closes the loop: intelligence (Lab 01) > detection measurement (Lab 02) > validation testing (Lab 03).
 - **Combine all data:** Import both your threat groups AND Sentinel rules into the same Catalogue for a unified view of threats vs. defenses.
 - **Use AI Analysis:** Click the **AI** button in the Merlino ribbon and run an AI-powered review of your coverage gaps for automated prioritization and detection rule suggestions.
 

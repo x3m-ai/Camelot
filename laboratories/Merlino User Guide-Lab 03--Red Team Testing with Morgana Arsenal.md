@@ -1,4 +1,4 @@
-# Merlino User Guide -- Lab 03 -- Red Team Testing with Morgana Arsenal
+# Merlino User Guide -- Lab 03 -- Red Team Testing with Morgana
 
 **Product:** Merlino v1.5.0  
 **Publisher:** X3M.AI Ltd  
@@ -26,12 +26,12 @@ If you have not completed Lab 01 and Lab 02, go back and complete them first. Th
 1. [Introduction -- Why Red Team Validation Matters](#1-introduction----why-red-team-validation-matters)
 2. [Step 1 -- Prepare the Tests Sheet](#2-step-1----prepare-the-tests-sheet)
 3. [Step 2 -- Synchronize Chains](#3-step-2----synchronize-chains)
-4. [Step 3 -- Install Morgana Arsenal](#4-step-3----install-morgana-arsenal)
-5. [Step 4 -- Configure Merlino to Connect to Morgana Arsenal](#5-step-4----configure-merlino-to-connect-to-morgana-arsenal)
+4. [Step 3 -- Install Morgana](#4-step-3----install-morgana)
+5. [Step 4 -- Configure Merlino to Connect to Morgana](#5-step-4----configure-merlino-to-connect-to-morgana)
 6. [Step 5 -- Configure MISP Connection](#6-step-5----configure-misp-connection)
 7. [Step 6 -- Deploy a Morgana Agent on the Target Machine](#7-step-6----deploy-a-morgana-agent-on-the-target-machine)
 8. [Step 7 -- Synchronize Tests (First Sync)](#8-step-7----synchronize-tests-first-sync)
-9. [Step 8 -- Run Operations in Morgana Arsenal](#9-step-8----run-operations-in-morgana-arsenal)
+9. [Step 8 -- Run Tests in Morgana](#9-step-8----run-tests-in-morgana)
 10. [Step 9 -- Synchronize Back to Merlino (Post-Execution)](#10-step-9----synchronize-back-to-merlino-post-execution)
 11. [Step 10 -- Understanding the Tests Table After Synchronization](#11-step-10----understanding-the-tests-table-after-synchronization)
 12. [Step 11 -- Push Intelligence to MISP](#12-step-11----push-intelligence-to-misp)
@@ -147,95 +147,75 @@ At this point, your Catalogue entries exist as chains in Morgana -- the same tec
 
 ## 4. Step 3 -- Install Morgana
 
-Morgana is X3M.AI's dedicated Red Team execution platform, purpose-built for Purple Teaming and tight integration with Merlino. It is a fully independent platform -- not a Caldera plugin or fork -- featuring a Python/FastAPI server, a Go-based agent, and its own web UI.
+Morgana is X3M.AI's dedicated Red Team execution platform, purpose-built for Purple Teaming and tight integration with Merlino. It features a Python/FastAPI server, a Go-based agent, and its own web UI.
 
 ### Requirements
 
-- **Windows 10/11** or **Windows Server 2019+** -- can be the same machine running Excel (all-in-one topology) or a separate server
-- Minimum 4 GB RAM, 2 CPU cores
-- Internet access for downloading the repository (first install only)
+| Component | Requirement |
+|-----------|-------------|
+| Server OS | Windows 10 / 11 / Server 2019 or later |
+| RAM | 512 MB minimum, 1 GB recommended |
+| Disk | 500 MB minimum |
+| Network | Agent machines must reach the server on **TCP 8888** |
+| Browser | Chrome 120+ or Edge 120+ (for the web UI) |
 
-### Download
+### Download and Install
 
-1. Visit the official Morgana repository: **[https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana)**
-2. Clone the repository or download the latest release:
+Morgana is distributed as a self-contained Windows installer through the **Camelot community repository**.
 
-```powershell
-git clone https://github.com/x3m-ai/Morgana.git
-cd Morgana
-```
+1. Download the latest installer:
 
-3. Initialize the Atomic Red Team scripts library (Git submodule):
+   **[Download Morgana-Server-Setup.exe](https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe)**
 
-```powershell
-git submodule update --init --recursive
-```
+2. Right-click the downloaded file and choose **Run as Administrator**.
 
-### Install as a Windows Service (Recommended)
+3. Follow the installer wizard (or use `/VERYSILENT` for a silent install).
 
-The recommended way to run Morgana is as a **Windows NT Service**. This ensures automatic startup on boot, automatic recovery on failure, and standard Windows service management.
+   The installer will automatically:
+   - Install Morgana Server as a Windows NT Service (`Morgana`) with auto-start on boot
+   - Generate a self-signed TLS certificate and **install it into the Windows Trusted Root store**
+   - Open firewall port 8888 (TCP Inbound)
+   - Load the Atomic Red Team script library (4,500+ techniques)
 
-Open **PowerShell as Administrator** and run:
-
-```powershell
-cd Morgana
-.\Morgana.ps1 install -LogLevel INFO -AutoStart
-.\Morgana.ps1 start
-```
-
-This does three things:
-1. **Registers** `Morgana` as a Windows NT Service with automatic start and failure recovery
-2. **Starts** the server on port **8888** with built-in HTTPS
-3. **Loads** all Atomic Red Team scripts from the `atomics/` submodule into the SQLite database
-
-To check the service status at any time:
-
-```powershell
-.\Morgana.ps1 status
-```
-
-### Quick Start (Process-Based, Development)
-
-If you prefer to run Morgana as a regular process (e.g., during development or quick testing), use:
-
-```powershell
-.\Morgana.ps1 start 8888 -NoWindow   # start in background
-.\Morgana.ps1 status                  # check
-.\Morgana.ps1 stop                    # stop
-```
+> **No Git, no Python, no dependencies required.** The installer is fully self-contained (~25 MB).
 
 ### Verify the Installation
 
-Once started, open a browser and navigate to:
+Once the installer completes, open a browser and navigate to:
 
 ```
 https://localhost:8888/ui/
 ```
 
-The Morgana web UI provides a full dashboard for managing agents, scripts, chains, tests, and campaigns. It uses a dark theme consistent with Merlino's visual identity.
+The Morgana web UI shows the full dashboard for managing agents, scripts, chains, tests, and campaigns.
 
-> **Note:** Your browser will show a certificate warning because Morgana uses a self-signed TLS certificate. Accept the warning to proceed -- this is expected for local and LAN lab environments.
+> **Note:** If your browser shows a certificate warning, the certificate may not yet be trusted in your current browser session. Close all tabs and reopen, or run the following as Administrator:
+> ```powershell
+> certutil -addstore -f Root "C:\ProgramData\Morgana\certs\server.crt"
+> ```
+> Then restart Excel.
 
 ### SSL Certificate
 
-Morgana generates a **self-signed TLS certificate** automatically on first start. HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all uncertified HTTP communication. Without HTTPS, Merlino cannot connect to Morgana.
+HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all unencrypted HTTP communication. The installer handles certificate generation and trust automatically for lab environments.
 
-**For lab environments**, the self-signed certificate works out of the box. You need to import it into the **Windows Trusted Root Certificate Store** on the machine running Excel so that Merlino can connect without errors:
+**For production environments**, replace the self-signed certificate by placing your own files at:
+- `C:\ProgramData\Morgana\certs\server.crt`
+- `C:\ProgramData\Morgana\certs\server.key`
 
-1. Open the Morgana folder and locate `server\certs\server.crt`.
-2. Double-click the `.crt` file and click **Install Certificate**.
-3. Select **Local Machine** and click **Next**.
-4. Choose **Place all certificates in the following store**, click **Browse**, and select **Trusted Root Certification Authorities**.
-5. Click **Next**, then **Finish**.
-6. Restart Excel.
+Then restart the Morgana service.
 
-> **For production environments**, replace the self-signed certificate with a proper one from a trusted Certificate Authority. Place your certificate files at `server\certs\server.crt` and `server\certs\server.key`, then restart the service. Alternatively, set `MORGANA_SSL=false` and put Morgana behind a reverse proxy (nginx or Caddy) with its own certificate.
+### API Key
 
-### Default API Key
+The installer generates a unique API key stored at:
 
-The Morgana server uses an API key for authentication. The default key is set via the `MORGANA_API_KEY` environment variable (default: `MORGANA_ADMIN_KEY`).
+```
+C:\ProgramData\Morgana\config\master-api-key.txt
+```
 
-> **IMPORTANT:** Change the default API key immediately in production environments. Set the `MORGANA_API_KEY` environment variable to a strong, random value before deploying.
+You will need this key in the next step to connect Merlino to Morgana.
+
+> **IMPORTANT:** Keep this key secret. Treat it like a password.
 
 ### Server IP Address
 
@@ -257,7 +237,7 @@ Now that Morgana is running, you need to tell Merlino where to find it.
 1. In the **Server URL** field, enter the Morgana URL: `https://<SERVER-IP>:8888`
    - Replace `<SERVER-IP>` with the actual IP address of your Morgana server (e.g., `https://192.168.1.10:8888`)
    - If Morgana runs on the same machine as Excel, use `https://localhost:8888`
-2. In the **API Key** field, enter the Morgana API key (default: `MORGANA_ADMIN_KEY`, or the value you set for `MORGANA_API_KEY`).
+2. In the **API Key** field, enter the Morgana API key (found in `C:\ProgramData\Morgana\config\master-api-key.txt` on the server machine).
 3. Click **Save**.
 4. Click **Test Connection**.
 5. If the connection is successful, the status indicator turns **green** with a confirmation message.
@@ -300,7 +280,7 @@ MISP (Malware Information Sharing Platform) can be installed alongside Morgana o
 6. If successful, the status indicator turns **green**.
 
 ![Settings taskpane showing both Morgana and MISP connections with green indicators](img/305-settings-morgana-misp-green.png)
-*Figure 305: Both Morgana Arsenal and MISP connections configured and verified (green status indicators).*
+*Figure 305: Both Morgana and MISP connections configured and verified (green status indicators).*
 
 > **Note:** If the MISP connection test fails with a certificate error, this is expected for self-signed certificates. Merlino handles self-signed certificates, but some corporate proxy configurations may interfere. Check the Logs taskpane for details.
 
@@ -786,7 +766,7 @@ Each iteration tightens the security posture. Each iteration produces measurable
 |---|---|---|
 | Prepared Tests sheet | Cleared existing data, preserved header | A clean Tests table ready for synchronization |
 | Synchronized Chains | Pushed Catalogue entries to Morgana as chains | Chains with scripts created in Morgana for every technique in your profile |
-| Installed Morgana | Set up Morgana server (Python/FastAPI or pre-built EXE) | A running Red Team server ready for testing |
+| Installed Morgana | Installed Morgana Server using the community installer | A running Red Team server ready for testing |
 | Configured connections | Entered Morgana and MISP details in Settings | Verified green-status connections to both services |
 | Deployed agent | Installed a Morgana agent on a Windows target | A connected agent ready to receive and execute scripts |
 | First test sync | Created and executed tests from chains in Morgana | Test executions dispatched to agents |
