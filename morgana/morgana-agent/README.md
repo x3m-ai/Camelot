@@ -155,5 +155,5 @@ go.mod / go.sum            Go module dependencies
 
 ## Note on this folder
 
-This source code is automatically synced from the private `x3m-ai/Morgana` development repository  
+This source code is automatically synced from the `x3m-ai/Morgana` repository  
 every time the agent code changes. You are always looking at the latest released version.
