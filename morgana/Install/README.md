@@ -1,6 +1,6 @@
 # Morgana - Installation Guide
 
-> **Current release: v0.2.5** (28 April 2026) — AGPL-3.0 open source release, in-app auto-update system, stale log fix on startup
+> **Current release: v0.2.6** (28 April 2026) — Uninstall Agent modal, CDN migrated to merlino.x3m.ai, in-app auto-update, Linux support
 
 > **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
 > Free, open-source, Windows-native. Tightly integrated with [Merlino](https://merlino.x3m.ai).
