@@ -69,10 +69,13 @@ powershell-export-scripts/     Community PowerShell utility scripts
 Camelot is updated as part of the **Morgana or Merlino release pipeline**:
 
 ### When a new Morgana version is released:
-1. New `Morgana-Server-Setup.exe` is built in the Morgana repo
-2. File is copied to `morgana/Install/Morgana-Server-Setup.exe` (overwrite)
-3. `morgana/Install/README.md` version header is updated
-4. Commit + push to Camelot (user must ask explicitly)
+1. New `Morgana-Server-Setup.exe` is built in the Morgana repo (`scripts/build-installer.ps1`)
+2. The build script **automatically** copies the installer + raw EXE + `version.json` to `Merlino/docs/morgana/` (primary CDN at `https://merlino.x3m.ai/morgana/`)
+3. File is also copied to `morgana/Install/Morgana-Server-Setup.exe` here in Camelot (overwrite)
+4. `morgana/Install/README.md` version header is updated
+5. Commit + push to Camelot and Merlino (user must ask explicitly)
+
+> **Note:** The Morgana in-app auto-update system fetches `https://merlino.x3m.ai/morgana/version.json`. Camelot's `morgana/Install/version.json` is kept in sync but is no longer the primary source.
 
 ### When new community content is added:
 - Templates → `standard-templates/` or `merlino/`
