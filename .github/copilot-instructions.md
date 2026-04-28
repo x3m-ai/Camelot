@@ -13,7 +13,7 @@ All three projects are open simultaneously in the same VS Code window:
 | Folder | Repo | copilot-instructions | Role |
 |--------|------|----------------------|------|
 | `Merlino/` | `x3m-ai/Merlino` (private) | `Merlino/.github/copilot-instructions.md` | Excel Add-in — command & intelligence layer |
-| `Morgana/` | `x3m-ai/Morgana` (private) | `Morgana/.github/copilot-instructions.md` | Red Team Server + Agent — execution layer |
+| `Morgana/` | `x3m-ai/Morgana` (public) | `Morgana/.github/copilot-instructions.md` | Red Team Server + Agent — execution layer |
 | `Camelot/` | `x3m-ai/Camelot` (public) | `Camelot/.github/copilot-instructions.md` | Community releases, installers, templates, labs |
 
 All three `copilot-instructions.md` files are loaded simultaneously by Copilot when the workspace is open.
@@ -24,7 +24,7 @@ All three `copilot-instructions.md` files are loaded simultaneously by Copilot w
 
 **Camelot is the public community repository** for both Merlino and Morgana. It is the single point of distribution for everything that end users download, install, or reference.
 
-Merlino and Morgana are private development repos. When something is ready for the community, it is published here.
+Merlino is a private development repo. Morgana is public. When something is ready for the community, it is published here.
 
 **This repo is PUBLIC** — never commit sensitive data, API keys, credentials, or internal notes.
 
