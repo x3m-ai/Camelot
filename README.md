@@ -48,8 +48,8 @@
 
 | Tool | What It Does | Where It Lives |
 |---|---|---|
-| **Merlino** | [Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino.x3m.ai) |
-| **Morgana Arsenal** | Caldera-based Red Team platform for adversary emulation -- attack simulation, agent management, operation automation | [GitHub repo](https://github.com/x3m-ai/Morgana-Arsenal) |
+| **Merlino** | [Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino.x3m.ai) |
+| **Morgana** | Open-source Red Team execution platform -- adversary emulation, agent management, 6000+ Atomic Red Team scripts mapped to MITRE ATT&CK | [GitHub repo](https://github.com/x3m-ai/Morgana) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
 
@@ -89,20 +89,21 @@ Requirements:
 | [Getting Started](docs/merlino/getting-started.md) | Quick start guide for first-time users |
 | [Lab 01: Create Organization Threat Profile](laboratories/Merlino%20User%20Guide-Lab%2001--Create-Organization-Threat-Profile.md) | Complete walkthrough building a threat profile from six APT groups |
 | [Lab 02: Microsoft Sentinel Detection Coverage](laboratories/Merlino%20User%20Guide-Lab%2002--Microsoft%20Sentinel%20Detection%20Coverage.md) | Analyze your Sentinel rules against your threat profile |
-| [Lab 03: Red Team Testing with Morgana Arsenal](laboratories/Merlino%20User%20Guide-Lab%2003--Red%20Team%20Testing%20with%20Morgana%20Arsenal.md) | Connect Merlino to Morgana and run adversary emulations |
+| [Lab 03: Red Team Testing with Morgana](laboratories/Merlino%20User%20Guide-Lab%2003--Red%20Team%20Testing%20with%20Morgana%20Arsenal.md) | Connect Merlino to Morgana and run adversary emulations |
 
 ---
 
-## Morgana Arsenal -- Red Team Platform
+## Morgana -- Open-Source Red Team Platform
 
-Morgana Arsenal is X3M.AI's fork of MITRE Caldera, enhanced for seamless integration with Merlino. It provides:
+Morgana is X3M.AI's open-source Red Team execution engine, built from the ground up for Purple Teaming and tightly integrated with Merlino. Licensed under AGPL-3.0.
 
 - Adversary emulation and Red Team operations
-- Agent deployment and management
-- Attack ability execution across the ATT&CK framework
+- Agent deployment as native OS services (Windows NT Service, Linux systemd)
+- 6000+ scripts from Atomic Red Team, indexed by MITRE ATT&CK technique
 - Automated operation creation from Merlino's threat profiles
+- In-app auto-update — always stay current with one click
 
-**[Morgana Arsenal Repository](https://github.com/x3m-ai/Morgana-Arsenal)**
+**[Morgana Repository](https://github.com/x3m-ai/Morgana)**
 
 ### The Merlino + Morgana Pipeline
 
@@ -139,7 +140,7 @@ Merlino and Morgana are growing fast and we are looking for passionate people wh
 | Role | What You Would Do |
 |---|---|
 | **TypeScript / React Developer** | Build new taskpanes, improve UI, extend Excel integrations |
-| **Python Developer** | Contribute to Morgana Arsenal (Caldera plugins, agents, abilities) |
+| **Python Developer** | Contribute to Morgana (server, agents, routers, execution engine) |
 | **CTI Analyst** | Create threat profiles, write use cases, validate ATT&CK mappings |
 | **Red Team Operator** | Test Morgana operations, build adversary profiles, write attack chains |
 | **Detection Engineer** | Map Sentinel/Defender rules to ATT&CK, improve detection coverage analysis |
@@ -202,8 +203,8 @@ For partnership inquiries or enterprise collaboration, contact us at **support@x
 
 This repository (documentation and community content) is licensed under the [MIT License](LICENSE).
 
-- **Merlino Add-in** is free, distributed under its own EULA
-- **Morgana Arsenal** is open source under the Apache 2.0 License (inherited from Caldera)
+- **Merlino Add-in** is free, no registration, distributed under its own EULA
+- **Morgana** is open source under the GNU Affero General Public License v3.0 (AGPL-3.0)
 
 ---
 
@@ -211,6 +212,6 @@ This repository (documentation and community content) is licensed under the [MIT
 
 *Camelot -- Where Intelligence Meets Offense*
 
-**[X3M.AI](https://x3m.ai)** | **[Merlino](https://merlino.x3m.ai)** | **[Morgana Arsenal](https://github.com/x3m-ai/Morgana-Arsenal)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
+**[X3M.AI](https://x3m.ai)** | **[Merlino](https://merlino.x3m.ai)** | **[Morgana](https://github.com/x3m-ai/Morgana)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
 
 </div>
