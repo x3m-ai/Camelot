@@ -8,13 +8,41 @@ This document defines the development work required to integrate a new capabilit
 
 > **AI-assisted review of Morgana test results**, using local multi-agent analysis to enrich each executed test with technical interpretation, evidence validation, detection guidance, and script improvement recommendations.
 
+However, do not design the AI implementation as a single-purpose Test Review feature only.
+
+Design it as a reusable:
+
+## Morgana AI Mission Engine
+
+Version 1 must implement the first mission:
+
+```text
+mission_type = test_review
+```
+
+The architecture must also be ready for future missions, especially:
+
+```text
+mission_type = cyber_intelligence
+```
+
+The future Cyber Intelligence mission will allow Merlino to send TTPs, techniques, sectors or threat profiles to Morgana. Morgana will then use AI agents to collect, analyse, normalise and map OSINT/CTI information back to MITRE ATT&CK and return enriched intelligence to Merlino.
+
 This is not a greenfield project. The implementation must be integrated into the existing production project with minimum disruption, clean modularity, and backward compatibility.
 
 ---
 
 # 1. Feature Name
 
-Use the working name:
+Use the broader architectural name:
+
+## Morgana AI Mission Engine
+
+The first implemented mission is:
+
+## AI Test Review
+
+The original working name for this first mission can remain:
 
 ## Morgana AI Test Review Engine
 
@@ -32,6 +60,73 @@ The preferred user-facing label is:
 Short description:
 
 > Morgana uses AI agents to review each executed test, validate what really happened, identify missing evidence, recommend detection checks, and suggest controlled improvements to the emulation script.
+
+Broader product direction:
+
+> Morgana should use AI agents through a reusable mission-based architecture. Test Review is the first mission. Cyber Intelligence is the next planned mission.
+
+---
+
+# 1.1 AI Mission Engine Concept
+
+Do not hardcode the AI architecture only around test result enrichment.
+
+Implement a reusable AI mission structure where different AI workflows can be added over time.
+
+Initial mission types:
+
+```text
+test_review
+cyber_intelligence
+```
+
+Version 1 must fully implement:
+
+```text
+test_review
+```
+
+Version 1 should prepare clean extension points for:
+
+```text
+cyber_intelligence
+```
+
+Suggested high-level structure:
+
+```text
+Morgana AI Mission Engine
+│
+├── Test Review Mission
+│   ├── Execution Validator Agent
+│   ├── Behaviour Validator Agent
+│   ├── Detection Guidance Agent
+│   ├── Script Improver Agent
+│   ├── MITRE Validator Agent
+│   └── Output Formatter Agent
+│
+└── Cyber Intelligence Mission
+    ├── Collection Planner Agent
+    ├── OSINT Query Builder Agent
+    ├── Source Reliability Agent
+    ├── IOC Extractor Agent
+    ├── TTP Mapper Agent
+    ├── Threat Actor / Campaign Correlator Agent
+    └── CTI Output Formatter Agent
+```
+
+The Cyber Intelligence agents do not need to be fully implemented in version 1, but the architecture must not prevent them from being added later.
+
+Core design principle:
+
+```text
+Mission = purpose-specific workflow
+Agent = reusable AI capability
+Provider = Ollama/local model runtime
+Prompt = configurable per agent
+Model = configurable per agent
+Output = structured JSON validated by schema
+```
 
 ---
 
@@ -155,10 +250,18 @@ Ollama
 Preferred model family:
 
 ```text
-Qwen / Qwen Coder
+Qwen
 ```
 
-Initial model mapping:
+Initial default model for version 1:
+
+```text
+qwen3.5:4b
+```
+
+Use `qwen3.5:4b` as the first model for all agents unless the user changes the model in the Morgana AI settings page.
+
+Initial model mapping for version 1:
 
 | Agent | Suggested model |
 |---|---|
@@ -179,8 +282,8 @@ Example config:
     "enabled": true,
     "provider": "ollama",
     "base_url": "http://localhost:11434",
-    "default_model": "qwen3",
-    "coder_model": "qwen3-coder",
+    "default_model": "qwen3.5:4b",
+    "coder_model": "qwen3.5:4b",
     "temperature": 0.1,
     "timeout_seconds": 120,
     "max_retries": 2,
@@ -193,25 +296,19 @@ Use the actual config pattern already present in Morgana/Merlino.
 
 ---
 
-# 6. What Not To Use as the Core Runtime
+# 6. Runtime Direction
 
-Do not use OpenCode as the Morgana runtime engine.
+Use **Ollama** as the local AI runtime for this implementation.
 
-OpenCode can be useful during development, but it should not become the production AI review engine.
-
-Reason:
-
-> OpenCode is primarily a coding agent/developer assistant. Morgana needs a controlled, deterministic, evidence-based review pipeline.
-
-Do not use Hermes Agent as the first production implementation.
-
-Hermes may be useful later for experimental long-running learning, but it introduces too much autonomy, memory behaviour, and non-determinism for this first production feature.
+The objective is to develop the Morgana AI Test Review Engine directly inside the existing Morgana/Merlino ecosystem. Do not introduce external coding-agent products or autonomous-agent platforms as part of the runtime design.
 
 The core implementation should be:
 
 ```text
-Python/service code + Ollama + controlled prompts + strict JSON schema + validation
+Morgana service code + Ollama + configurable models per agent + configurable prompts per agent + strict JSON schema + validation
 ```
+
+Keep the implementation focused, production-oriented, modular, and easy to maintain.
 
 ---
 
@@ -878,7 +975,7 @@ Suggested structure:
   "metadata": {
     "ai_review_version": "1.0",
     "provider": "ollama",
-    "model": "qwen3",
+    "model": "qwen3.5:4b",
     "review_timestamp": "2026-05-10T22:15:00Z"
   }
 }
@@ -1027,7 +1124,7 @@ For version 1, only generate recommendations.
 
 # 22. Configuration Flags
 
-Add config options similar to:
+Add config options similar to the structure below. The important point is that global defaults exist, but each agent can override the model, prompt and runtime settings.
 
 ```json
 {
@@ -1035,17 +1132,30 @@ Add config options similar to:
     "enabled": true,
     "mode": "local",
     "provider": "ollama",
-    "base_url": "http://localhost:11434",
-    "default_model": "qwen3",
-    "coder_model": "qwen3-coder",
-    "temperature": 0.1,
-    "timeout_seconds": 120,
-    "max_retries": 2,
+    "ollama_base_url": "http://localhost:11434",
+    "global_defaults": {
+      "model": "qwen3.5:4b",
+      "temperature": 0.1,
+      "timeout_seconds": 120,
+      "max_retries": 2
+    },
     "strict_json": true,
     "store_prompt_input": false,
     "store_raw_model_output": true,
     "allow_script_suggestions": true,
-    "allow_auto_script_update": false
+    "allow_auto_script_update": false,
+    "agents": {
+      "execution_validator": {
+        "enabled": true,
+        "model": "qwen3.5:4b",
+        "prompt": "custom or default prompt"
+      },
+      "script_improver": {
+        "enabled": true,
+        "model": "qwen3.5:4b",
+        "prompt": "custom or default prompt"
+      }
+    }
   }
 }
 ```
@@ -1088,7 +1198,12 @@ Implement version 1 with this scope:
 
 - Post-test AI review pipeline.
 - Ollama client.
-- Configurable model.
+- Dedicated Morgana AI page in the left menu above Admin.
+- Reusable AI Mission Engine structure.
+- `test_review` mission implemented in version 1.
+- `cyber_intelligence` mission extension point prepared for future use.
+- Configurable model per agent.
+- Configurable prompt per agent.
 - Normalised test result input.
 - Strict JSON output.
 - Execution assessment.
@@ -1117,8 +1232,193 @@ Implement version 1 with this scope:
 - Direct Defender querying.
 - Direct Wiz querying.
 - Persistent self-learning agents.
-- Hermes integration.
-- OpenCode runtime integration.
+
+---
+
+# 24A. Future Mission: Cyber Intelligence
+
+Version 1 should not fully implement Cyber Intelligence collection, but the AI architecture must be ready for it.
+
+This is a planned mission:
+
+```text
+mission_type = cyber_intelligence
+```
+
+Expected future workflow:
+
+```text
+1. Merlino sends TTPs, techniques, sector, region or threat profile to Morgana
+2. Morgana starts a Cyber Intelligence mission
+3. Morgana AI agents build a collection plan
+4. Morgana collects or prepares OSINT/CTI queries from approved sources
+5. AI agents normalise and analyse the collected information
+6. AI agents map intelligence back to MITRE ATT&CK
+7. Morgana returns a structured CTI enrichment package to Merlino
+8. Merlino displays the CTI context, TTP mapping, recommended tests and report content
+```
+
+## Cyber Intelligence Mission Inputs
+
+Suggested input object:
+
+```json
+{
+  "mission_type": "cyber_intelligence",
+  "input_type": "mitre_techniques",
+  "techniques": ["T1566.002", "T1059.001", "T1105"],
+  "sector": "energy",
+  "region": "UK/EU",
+  "objective": "Find relevant public threat intelligence and map it to the selected TTPs"
+}
+```
+
+## Future Cyber Intelligence Agents
+
+Prepare extension points for agents such as:
+
+| Agent | Purpose |
+|---|---|
+| Collection Planner Agent | Defines what intelligence should be collected |
+| OSINT Query Builder Agent | Builds safe OSINT and Google dork style queries |
+| Source Reliability Agent | Scores source reliability and relevance |
+| Telegram Source Agent | Reads approved public Telegram intelligence sources only |
+| IOC Extractor Agent | Extracts hashes, domains, IPs, URLs and emails from collected data |
+| TTP Mapper Agent | Maps collected intelligence to MITRE ATT&CK |
+| Threat Actor / Campaign Correlator Agent | Correlates actors, campaigns, tools and malware |
+| CTI Output Formatter Agent | Produces structured JSON for Merlino |
+
+## Safe OSINT / Google Dork Use
+
+The system may later support Google dork style query generation, but only for safe OSINT and CTI purposes.
+
+Allowed intent:
+
+```text
+Find public reports, advisories, write-ups, indicators, campaign descriptions, malware references and MITRE mappings.
+```
+
+Do not design this as an offensive data exposure search feature.
+
+The query builder should produce safe and explainable queries, for example:
+
+```text
+site:cisa.gov "T1059.001" "PowerShell"
+site:mandiant.com "T1105" "campaign"
+site:unit42.paloaltonetworks.com "T1566.002"
+"MITRE ATT&CK" "T1071.001" "ransomware"
+```
+
+Each generated query should include:
+
+```json
+{
+  "query": "site:cisa.gov \"T1059.001\" \"PowerShell\"",
+  "purpose": "Find authoritative advisory references for PowerShell execution",
+  "risk": "safe"
+}
+```
+
+## Telegram Guardrails
+
+If Telegram support is added later, it must be passive, read-only and controlled.
+
+Requirements:
+
+```text
+- approved public channels only;
+- configured manually by the user;
+- no interaction with threat actors;
+- no buying or selling;
+- no requests for illegal material;
+- no automated engagement;
+- no downloads unless explicitly reviewed and allowed by policy;
+- source logging must be clear;
+- collection must remain defensive CTI oriented.
+```
+
+Suggested config:
+
+```json
+{
+  "telegram_intelligence": {
+    "enabled": false,
+    "mode": "read_only",
+    "approved_channels_only": true,
+    "allow_interaction": false,
+    "allow_downloads": false,
+    "source_list": []
+  }
+}
+```
+
+## Cyber Intelligence Output Contract
+
+Future output should be structured so Merlino can consume it without free-text parsing.
+
+Example:
+
+```json
+{
+  "cti_mission_id": "cti-2026-001",
+  "input_techniques": ["T1566.002", "T1059.001", "T1105"],
+  "summary": "Public reporting links these behaviours to phishing-led intrusion chains followed by PowerShell execution and tool transfer.",
+  "confidence_score": 78,
+  "related_threat_actors": [],
+  "related_campaigns": [],
+  "related_malware_tools": [],
+  "related_cves": [],
+  "mapped_ttps": [
+    {
+      "technique_id": "T1059.001",
+      "relevance": "High",
+      "reason": "Multiple sources describe PowerShell execution in the intrusion chain."
+    }
+  ],
+  "iocs": {
+    "domains": [],
+    "ips": [],
+    "hashes": [],
+    "urls": [],
+    "emails": []
+  },
+  "recommended_morgana_tests": [
+    {
+      "technique_id": "T1059.001",
+      "test_type": "PowerShell execution validation",
+      "priority": "High"
+    }
+  ],
+  "recommended_detections": [],
+  "sources": [
+    {
+      "source_name": "Example Source",
+      "url": "source reference",
+      "reliability": "High",
+      "date": "YYYY-MM-DD",
+      "notes": "Relevant public reporting"
+    }
+  ]
+}
+```
+
+## Product Relationship
+
+The future Cyber Intelligence mission must follow the same product relationship:
+
+```text
+Morgana = AI execution, collection support, enrichment and mapping
+Merlino = analysis, correlation, visibility and reporting
+```
+
+Merlino should be able to use Cyber Intelligence output to enrich:
+
+- technique views;
+- coverage analysis;
+- recommended Morgana tests;
+- detection engineering recommendations;
+- Operational Report sections;
+- CTI context for selected TTPs.
 
 ---
 
