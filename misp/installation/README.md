@@ -70,22 +70,58 @@ At the end of the script you will see a summary like this:
   CA Certificate:  http://192.168.1.50/merlino-ca.crt
 ```
 
-### Install the CA certificate on Windows (to avoid browser warnings)
+---
 
-1. Open `http://<SERVER_IP>/merlino-ca.crt` in your browser and download the file.
-2. Double-click the `.crt` file → **Install Certificate** → **Local Machine** → **Trusted Root Certification Authorities**.
+## Step A: Add the DNS entry on the Windows (Merlino) machine
+
+MISP redirects to `https://misp.merlino.local:8443` after login. You must tell Windows how to resolve that name.
+
+Open **Notepad as Administrator**, then open `C:\Windows\System32\drivers\etc\hosts` and add this line at the bottom (replace with your server IP):
+
+```
+192.168.1.50    misp.merlino.local
+```
 
 Or via PowerShell (Administrator):
 
 ```powershell
-# Remove any old Merlino certificate first
-Get-ChildItem Cert:\LocalMachine\Root |
-  Where-Object { $_.Subject -like "*Merlino*" } |
-  Remove-Item -Force
-
-# Install the new certificate
-certutil -addstore Root merlino-ca.crt
+Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "192.168.1.50`tmisp.merlino.local"
+ipconfig /flushdns
 ```
+
+---
+
+## Step B: Install the CA certificate on the Windows (Merlino) machine
+
+The MISP server uses a self-signed certificate issued by the **Merlino Root CA**. You must install this CA certificate on the Windows machine so that Excel (WebView2), Chrome, and Edge trust it without warnings.
+
+> This step is **required** — without it the Merlino Settings taskpane will get `ERR_CERT_AUTHORITY_INVALID` and the Test Connection will fail.
+
+### Option 1 — via browser (manual)
+
+1. Open `http://<SERVER_IP>/merlino-ca.crt` in Chrome or Edge (use HTTP, not HTTPS).
+2. The browser will download `merlino-ca.crt`.
+3. Double-click the downloaded file.
+4. Click **Install Certificate**.
+5. Select **Local Machine** → click **Next**.
+6. Select **Place all certificates in the following store** → click **Browse**.
+7. Choose **Trusted Root Certification Authorities** → **OK** → **Next** → **Finish**.
+8. Confirm the security warning if prompted.
+
+### Option 2 — via PowerShell (Administrator, one-liner)
+
+```powershell
+# Remove any old Merlino certs first
+Get-ChildItem Cert:\LocalMachine\Root |
+  Where-Object { $_.Subject -like "*Merlino*" -or $_.Subject -like "*misp.merlino*" } |
+  ForEach-Object { certutil -delstore Root $_.Thumbprint }
+
+# Download and install the new CA cert
+(New-Object System.Net.WebClient).DownloadFile("http://<SERVER_IP>/merlino-ca.crt", "$env:TEMP\merlino-ca.crt")
+certutil -addstore Root "$env:TEMP\merlino-ca.crt"
+```
+
+After installing the certificate, **close and reopen Excel** so WebView2 picks up the new trust.
 
 ---
 
