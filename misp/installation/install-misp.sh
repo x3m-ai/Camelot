@@ -301,8 +301,8 @@ log_cmd "apt-get install -y [common packages]"
 # Common dependencies
 apt-get install -y \
     git curl wget gnupg \
+    software-properties-common \
     python3 python3-pip python3-venv python3-dev \
-    python3.12 python3.12-venv python3.12-dev \
     build-essential libssl-dev libffi-dev \
     libxml2-dev libxslt1-dev \
     nginx \
@@ -312,6 +312,18 @@ apt-get install -y \
     dnsmasq
 
 log_info "Common dependencies installed successfully"
+
+# Ensure Python 3.12 is available (lxml 4.9.x is not compatible with Python 3.14+)
+log_substep "Ensuring Python 3.12 is available..."
+if ! command -v python3.12 &>/dev/null; then
+    log_info "python3.12 not found -- adding deadsnakes PPA and installing..."
+    add-apt-repository -y ppa:deadsnakes/ppa
+    apt-get update -y
+    apt-get install -y python3.12 python3.12-venv python3.12-dev
+    log_info "python3.12 installed from deadsnakes PPA"
+else
+    log_info "python3.12 already available: $(python3.12 --version)"
+fi
 
 log_substep "Installing PHP and extensions for MISP..."
 log_debug "Packages: php php-fpm php-cli php-dev php-json php-xml php-mysql php-opcache php-readline php-mbstring php-zip php-curl php-redis php-gd php-gnupg php-intl php-bcmath php-apcu php-bz2"
