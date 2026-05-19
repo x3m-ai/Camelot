@@ -213,7 +213,25 @@ apt-get install -y \
     php-json php-xml php-mysql php-opcache \
     php-readline php-mbstring php-zip php-curl \
     php-redis php-gd php-gnupg php-intl php-bcmath \
-    php-apcu php-bz2 2>/dev/null || true
+    php-apcu php-bz2
+
+# Ensure 'php' binary is in PATH (on some systems it's php8.x not php)
+if ! command -v php &>/dev/null; then
+    log_warn "'php' not in PATH -- looking for versioned binary..."
+    PHP_ALT=$(update-alternatives --list php 2>/dev/null | head -1)
+    if [ -n "$PHP_ALT" ]; then
+        ln -sf "$PHP_ALT" /usr/local/bin/php
+        log_info "Linked $PHP_ALT -> /usr/local/bin/php"
+    else
+        PHP_ALT=$(find /usr/bin -name 'php*' -executable 2>/dev/null | sort -V | tail -1)
+        [ -n "$PHP_ALT" ] && ln -sf "$PHP_ALT" /usr/local/bin/php && log_info "Linked $PHP_ALT -> /usr/local/bin/php"
+    fi
+fi
+
+if ! command -v php &>/dev/null; then
+    log_error "PHP is not available. Check apt output above."
+    exit 1
+fi
 
 # Disable Apache2 if installed (conflicts with Nginx on port 80)
 log_substep "Disabling Apache2 if present..."
@@ -821,6 +839,19 @@ ${CYAN}${BOLD}CA Certificate (avoid browser warnings):${NC}
 ${CYAN}${BOLD}DNS -- point clients to: ${SERVER_IP}${NC}
   Or add to /etc/hosts:
     ${SERVER_IP}  ${MISP_DOMAIN}  ${LAUNCHER_DOMAIN}
+
+${CYAN}${BOLD}Open MISP in your browser:${NC}
+────────────────────────────────────
+  From this server:  https://localhost:8443
+  From your network: https://${SERVER_IP}:8443
+  Via DNS (if set):  https://${MISP_DOMAIN}:8443
+
+  If you see a certificate warning:
+    1. Download the CA cert:  http://${SERVER_IP}/merlino-ca.crt
+    2. Windows: double-click > Install Certificate > Trusted Root CAs
+    3. Linux:   sudo cp merlino-ca.crt /usr/local/share/ca-certificates/
+                sudo update-ca-certificates
+    4. Retry:   https://${SERVER_IP}:8443
 
 ${CYAN}${BOLD}Logs:${NC}
   Install: ${LOG_FILE}
