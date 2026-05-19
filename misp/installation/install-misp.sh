@@ -302,6 +302,7 @@ log_cmd "apt-get install -y [common packages]"
 apt-get install -y \
     git curl wget gnupg \
     python3 python3-pip python3-venv python3-dev \
+    python3.12 python3.12-venv python3.12-dev \
     build-essential libssl-dev libffi-dev \
     libxml2-dev libxslt1-dev \
     nginx \
@@ -371,9 +372,16 @@ if [ "$FRESH_INSTALL" = true ]; then
     
     # Create Python virtual environment
     log_substep "Creating Python virtual environment..."
-    log_cmd "python3 -m venv venv"
-    sudo -u ${MORGANA_USER} python3 -m venv venv
-    log_debug "Virtual environment created"
+    # lxml 4.9.x is not compatible with Python 3.14+. Force Python 3.12.
+    if command -v python3.12 &>/dev/null; then
+        PYTHON_BIN="python3.12"
+    else
+        PYTHON_BIN="python3"
+        log_warn "python3.12 not found, using default python3 (may fail if version is 3.14+)"
+    fi
+    log_cmd "${PYTHON_BIN} -m venv venv"
+    sudo -u ${MORGANA_USER} ${PYTHON_BIN} -m venv venv
+    log_debug "Virtual environment created with ${PYTHON_BIN}"
     
     log_substep "Installing Python dependencies..."
     log_cmd "pip install --upgrade pip && pip install -r requirements.txt"
