@@ -10,7 +10,7 @@ This folder contains the automated installation script for **MISP** (Malware Inf
 - **nginx** — reverse proxy with self-signed SSL certificate (auto-generated CA)
 - **CORS headers** — pre-configured for Merlino Excel Add-in bidirectional integration
 - **dnsmasq** — local DNS so `misp.merlino.local` resolves on the same machine
-- Log file: `morgana-install.log` in the same directory as the script
+- Log file: `misp-install.log` in the same directory as the script
 
 ## Requirements
 
@@ -101,12 +101,8 @@ certutil -addstore Root merlino-ca.crt
 
 ## Script version
 
-`install-misp.sh` — v1.4.2 (2026-01-11)
+`install-misp.sh` — v1.1 (2026-05-19)
 
-Changelog highlights:
-- v1.4.2 — Installation summary always displayed in terminal
-- v1.4.1 — CORS headers for MISP port 8443 (Merlino integration)
-- v1.4.0 — CORS headers for nginx
-- v1.3.x — Composer install fixes, nginx config validation, PHP-FPM restart
-- v1.2.0 — Disable Apache2 (conflicts with nginx)
-- v1.0.0 — Initial release
+Changelog:
+- v1.1 — Fix: removed php-opcache/php-json (built into PHP 8.x, not standalone packages)
+- v1.0 — Initial release: MISP-only install (removed Morgana Arsenal legacy component)
