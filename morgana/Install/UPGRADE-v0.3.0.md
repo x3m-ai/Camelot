@@ -91,6 +91,76 @@ If you want to upgrade agents to the latest binary:
 
 ---
 
+## Clean reinstall (uninstall + reinstall from scratch)
+
+Use this procedure when you want a completely fresh installation — empty database, new API key, new TLS certificate. Useful when upgrading across major schema changes or when troubleshooting a broken installation.
+
+> **Warning:** this deletes all data — scripts, agents, tests, chains, campaigns, API key. There is no undo.
+
+### Step 1 — Stop and uninstall the service
+
+Run as Administrator:
+
+```powershell
+# Stop the service
+Stop-Service Morgana -Force -ErrorAction SilentlyContinue
+
+# Uninstall via the standard uninstaller
+Start-Process -FilePath "C:\Program Files\Morgana Server\unins000.exe" `
+    -ArgumentList "/VERYSILENT" -Verb RunAs -Wait
+```
+
+If the uninstaller is not found (e.g. previous install was damaged):
+
+```powershell
+sc.exe stop Morgana
+sc.exe delete Morgana
+```
+
+### Step 2 — Delete all runtime data
+
+```powershell
+# Remove the installation folder
+Remove-Item "C:\Program Files\Morgana Server" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Remove ALL persistent data (database, key, certs, logs, atomics cache)
+Remove-Item "C:\ProgramData\Morgana" -Recurse -Force -ErrorAction SilentlyContinue
+```
+
+### Step 3 — Verify nothing remains
+
+```powershell
+Get-Service Morgana -ErrorAction SilentlyContinue
+Test-Path "C:\Program Files\Morgana Server"
+Test-Path "C:\ProgramData\Morgana"
+```
+
+All three should return nothing / `False`.
+
+### Step 4 — Install v0.3.0
+
+```powershell
+Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
+    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -Verb RunAs -Wait
+```
+
+The installer creates a fresh database, generates a new TLS certificate and a new API key.
+
+### Step 5 — Get the new API key
+
+1. Open `https://localhost:8888/ui/`
+2. Go to **Admin** → **Generate API Key**
+3. Copy the key and update it in **Merlino Settings** (Caldera/Morgana section)
+
+### Step 6 — Reload Atomic Red Team scripts
+
+1. Go to **Scripts** in the left sidebar
+2. Click **Refresh Canary Scripts**
+3. Wait ~30 seconds
+
+---
+
 ## Rollback
 
 If you need to roll back to a previous version:
