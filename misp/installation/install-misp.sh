@@ -296,13 +296,14 @@ log_cmd "apt-get update"
 apt-get update
 
 log_substep "Installing common dependencies..."
-log_debug "Packages: git curl wget gnupg python3 python3-pip python3-venv python3-dev build-essential libssl-dev libffi-dev nginx mariadb-server mariadb-client redis-server zip unzip jq dnsmasq"
+log_debug "Packages: git curl wget gnupg python3 python3-pip python3-venv python3-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev nginx mariadb-server mariadb-client redis-server zip unzip jq dnsmasq"
 log_cmd "apt-get install -y [common packages]"
 # Common dependencies
 apt-get install -y \
     git curl wget gnupg \
     python3 python3-pip python3-venv python3-dev \
     build-essential libssl-dev libffi-dev \
+    libxml2-dev libxslt1-dev \
     nginx \
     mariadb-server mariadb-client \
     redis-server \
