@@ -39,6 +39,7 @@
 # Log file: misp-install.log (same directory as the script)
 #
 # Changelog:
+#   1.2 (2026-05-19) - Fix: CA cert now uses explicit v3_ca extensions (basicConstraints,keyUsage) for WebView2/Chrome compatibility
 #   1.1 (2026-05-19) - Fix: removed php-opcache/php-json (not standalone packages on PHP 8.x)
 #   1.0 (2026-05-19) - Initial release: MISP-only automated install
 # =============================================================================
@@ -60,7 +61,7 @@ touch "$LOG_FILE"
 chmod 644 "$LOG_FILE"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-SCRIPT_VERSION="1.1"
+SCRIPT_VERSION="1.2"
 
 echo "============================================"
 echo "MISP INSTALLATION"
@@ -359,12 +360,35 @@ IP.2  = 127.0.0.1
 EOF
 
 log_substep "Generating CA key + certificate..."
+# Separate CA config with explicit v3_ca extensions required by WebView2/Chrome
+cat > /tmp/misp-ca.cnf << EOF
+[req]
+default_bits = 4096
+prompt = no
+default_md = sha256
+distinguished_name = dn
+
+[dn]
+C = IT
+ST = Italy
+L = Rome
+O = Merlino CA
+CN = Merlino Root CA
+
+[v3_ca]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+EOF
+
 openssl genrsa -out /etc/nginx/ssl/merlino-ca.key 4096
 openssl req -x509 -new -nodes \
     -key /etc/nginx/ssl/merlino-ca.key \
     -sha256 -days 3650 \
     -out /etc/nginx/ssl/merlino-ca.crt \
-    -subj "/C=IT/ST=Italy/L=Rome/O=Merlino CA/CN=Merlino Root CA"
+    -config /tmp/misp-ca.cnf \
+    -extensions v3_ca
 
 log_substep "Generating server key + certificate..."
 openssl genrsa -out /etc/nginx/ssl/misp.key 2048
@@ -382,7 +406,7 @@ openssl x509 -req \
     -extfile /tmp/misp-openssl.cnf \
     -extensions v3_req
 
-rm -f /tmp/misp-openssl.cnf /tmp/misp.csr
+rm -f /tmp/misp-openssl.cnf /tmp/misp-ca.cnf /tmp/misp.csr
 
 chmod 600 /etc/nginx/ssl/misp.key /etc/nginx/ssl/merlino-ca.key
 chmod 644 /etc/nginx/ssl/misp.crt /etc/nginx/ssl/merlino-ca.crt

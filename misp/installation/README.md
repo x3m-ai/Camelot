@@ -101,8 +101,9 @@ certutil -addstore Root merlino-ca.crt
 
 ## Script version
 
-`install-misp.sh` — v1.1 (2026-05-19)
+`install-misp.sh` — v1.2 (2026-05-19)
 
 Changelog:
+- v1.2 — Fix: CA cert uses explicit v3_ca extensions (basicConstraints, keyUsage) for WebView2/Chrome compatibility
 - v1.1 — Fix: removed php-opcache/php-json (built into PHP 8.x, not standalone packages)
 - v1.0 — Initial release: MISP-only install (removed Morgana Arsenal legacy component)
