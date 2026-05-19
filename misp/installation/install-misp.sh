@@ -3,7 +3,7 @@
 # =============================================================================
 # MISP Installation Script
 # =============================================================================
-# Version : 1.0
+# Version : 1.1
 # Date    : 2026-05-19
 # Author  : X3M.AI Ltd (https://x3m.ai)
 # Repo    : https://github.com/x3m-ai/Camelot
@@ -39,6 +39,7 @@
 # Log file: misp-install.log (same directory as the script)
 #
 # Changelog:
+#   1.1 (2026-05-19) - Fix: removed php-opcache/php-json (not standalone packages on PHP 8.x)
 #   1.0 (2026-05-19) - Initial release: MISP-only automated install
 # =============================================================================
 #
@@ -59,7 +60,7 @@ touch "$LOG_FILE"
 chmod 644 "$LOG_FILE"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-SCRIPT_VERSION="1.0"
+SCRIPT_VERSION="1.1"
 
 echo "============================================"
 echo "MISP INSTALLATION"
@@ -208,12 +209,14 @@ else
 fi
 
 log_substep "Installing PHP for MISP..."
+# Note: php-json and php-opcache are built into PHP 8.x and have no standalone package
 apt-get install -y \
     php php-fpm php-cli php-dev \
-    php-json php-xml php-mysql php-opcache \
-    php-readline php-mbstring php-zip php-curl \
+    php-xml php-mysql \
+    php-mbstring php-zip php-curl \
     php-redis php-gd php-gnupg php-intl php-bcmath \
-    php-apcu php-bz2
+    php-apcu php-bz2 2>/dev/null || \
+apt-get install -y php php-fpm php-cli php-xml php-mysql php-mbstring php-zip php-curl php-bcmath php-apcu
 
 # Ensure 'php' binary is in PATH (on some systems it's php8.x not php)
 if ! command -v php &>/dev/null; then
