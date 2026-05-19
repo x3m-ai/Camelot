@@ -1,20 +1,46 @@
 ﻿#!/bin/bash
 #
-# MISP - Complete Installation Script
-# Version: 2.0.0
-# Date: 2026-05-19
+# =============================================================================
+# MISP Installation Script
+# =============================================================================
+# Version : 1.0
+# Date    : 2026-05-19
+# Author  : X3M.AI Ltd (https://x3m.ai)
+# Repo    : https://github.com/x3m-ai/Camelot
 #
-# For Ubuntu 22.04/24.04 (local VM, AWS, or bare metal)
+# Description:
+#   Fully automated installation of MISP (Malware Information Sharing Platform)
+#   on Ubuntu 22.04 / 24.04. This script installs MISP only -- no other
+#   components from the X3M.AI stack are installed.
 #
-# Installs: MISP + MariaDB + Redis + PHP + Nginx + dnsmasq + SSL
+#   What this script installs:
+#     - MISP (latest 2.5 branch from https://github.com/MISP/MISP)
+#     - MariaDB  (MISP database)
+#     - Redis    (MISP background jobs)
+#     - PHP      (MISP web application)
+#     - Nginx    (HTTPS reverse proxy on port 8443)
+#     - dnsmasq  (local DNS: misp.merlino.local)
+#     - SSL      (self-signed CA + server certificate)
+#     - MISP Modules (enrichment via misp-modules)
 #
-# Usage: sudo bash install-misp.sh [--user ubuntu] [--ip 1.2.3.4]
+# Usage:
+#   sudo bash install-misp.sh
+#   sudo bash install-misp.sh --user ubuntu --ip 192.168.1.10
+#
+# Arguments:
+#   --user <username>   System user that owns the installation (auto-detected)
+#   --ip   <address>    Server IP address (auto-detected)
+#
+# After installation:
+#   MISP web UI : https://<server-ip>:8443
+#   Credentials : admin@admin.test / admin
+#   CA cert     : http://<server-ip>/merlino-ca.crt
 #
 # Log file: misp-install.log (same directory as the script)
 #
 # Changelog:
-#   2.0.0 (2026-05-19) - Full rewrite: MISP-only install (removed Morgana Arsenal legacy fork)
-#   1.4.x (2026-01-11) - Previous version with Morgana Arsenal + MISP
+#   1.0 (2026-05-19) - Initial release: MISP-only automated install
+# =============================================================================
 #
 
 set -e
@@ -33,7 +59,7 @@ touch "$LOG_FILE"
 chmod 644 "$LOG_FILE"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-SCRIPT_VERSION="2.0.0"
+SCRIPT_VERSION="1.0"
 
 echo "============================================"
 echo "MISP INSTALLATION"
