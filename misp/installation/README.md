@@ -26,10 +26,16 @@ This folder contains the automated installation script for **MISP** (Malware Inf
 ## Quick start
 
 ```bash
-# 1. Install curl if not already present
+# 1. Update package lists
+sudo apt update
+
+# 2. Install curl if not already present
 sudo apt install -y curl
 
-# 2. Copy install-misp.sh to the Ubuntu machine, then run:
+# 3. Download the script from Camelot
+curl -O https://raw.githubusercontent.com/x3m-ai/Camelot/main/misp/installation/install-misp.sh
+
+# 4. Run the installation script
 sudo bash install-misp.sh
 ```
 
