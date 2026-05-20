@@ -45,7 +45,25 @@ The agent installs itself as a Windows NT Service (`MorganaAgent`) and starts au
 
 ---
 
-### Option 3 — Build from source (this folder)
+### Option 3 — Direct download from Morgana Server (internal network / lab environment)
+
+Use this when the target machine is on the **same network as the Morgana Server** and you know the server's internal IP address.
+The Morgana Server exposes the agent binary at `/download/morgana-agent.exe` — no external CDN required.
+
+```powershell
+# Run as Administrator on the target machine
+# Replace 10.0.0.4 with your Morgana Server internal IP
+curl.exe -k -o morgana-agent.exe https://10.0.0.4:8888/download/morgana-agent.exe; .\morgana-agent.exe install --server https://10.0.0.4:8888
+```
+
+> **Note:** `-k` skips TLS certificate verification — required when Morgana Server uses a self-signed certificate (default installation).
+
+The agent downloads, installs itself as a Windows NT Service (`MorganaAgent`), and starts automatically.
+It will appear in the **Agents** page of the Morgana web UI within one beacon interval (default: 30 seconds).
+
+---
+
+### Option 4 — Build from source (this folder)
 
 Use this if you want to audit the code, make customisations, or avoid running pre-built binaries.
 
