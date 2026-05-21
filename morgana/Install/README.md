@@ -1,6 +1,6 @@
-# Morgana - Installation Guide
+﻿# Morgana - Installation Guide
 
-> **Current release: v0.3.0** (18 May 2026) — AI Review engine, Purple Team intel reports, version alignment with Merlino 0.3.0
+> **Current release: v0.3.0** (18 May 2026) â€” AI Review engine, Purple Team intel reports, version alignment with Merlino 0.3.0
 
 > **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
 > Free, open-source, Windows-native. Tightly integrated with [Merlino](https://merlino.x3m.ai).
@@ -66,7 +66,7 @@ Download the latest Windows installer directly:
    - Generate a self-signed TLS certificate
    - **Install the certificate into the Windows Trusted Root store** (so your browser shows a padlock, not a warning)
    - Open firewall port 8888 (TCP Inbound)
-   - Optionally create a **desktop shortcut** (if selected during setup) — double-click it to open the Morgana web UI directly
+   - Optionally create a **desktop shortcut** (if selected during setup) â€” double-click it to open the Morgana web UI directly
 
 ### Step 2 - Open the web UI
 
@@ -112,7 +112,7 @@ To get the API key needed to connect Merlino (or to install agents):
 1. Open the Morgana web UI: `https://localhost:8888/ui/`
 2. Go to **Admin** in the left sidebar
 3. Click **Generate API Key**
-4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
+4. **Copy the key immediately** and save it somewhere safe â€” it will not be shown again
 
 > **Keep this key secret. Treat it like a password.**
 
@@ -123,11 +123,11 @@ To get the API key needed to connect Merlino (or to install agents):
 The Morgana Agent is a lightweight OS service installed on **target machines**.  
 It beacons to the server, receives jobs, executes scripts, and reports results.
 
-Three options are available — choose the one that fits your workflow:
+Three options are available â€” choose the one that fits your workflow:
 
 ---
 
-### Option 1 — Morgana UI — Deploy Agent button (recommended)
+### Option 1 â€” Morgana UI â€” Deploy Agent button (recommended)
 
 1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
 2. Go to **Agents** in the left sidebar
@@ -138,7 +138,7 @@ The server generates the install script automatically, pre-configured with your 
 
 ---
 
-### Option 2 — Manual install with pre-built binary
+### Option 2 â€” Manual install with pre-built binary
 
 The agent binary ships inside the Morgana Server installer and is available at:
 
@@ -154,12 +154,12 @@ Copy it to the target machine and run as Administrator:
 
 ---
 
-### Option 3 — Build from source (Camelot community repo)
+### Option 3 â€” Build from source (Camelot community repo)
 
 The full agent source code (Go 1.22) is published in the Camelot community repository for transparency.  
-You can audit it, build your own binary, and install it — no trust required.
+You can audit it, build your own binary, and install it â€” no trust required.
 
-**Source code:** [github.com/x3m-ai/Camelot — morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)
+**Source code:** [github.com/x3m-ai/Camelot â€” morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)
 
 The `morgana-agent` folder contains a full README with build instructions for Windows and Linux.
 
@@ -176,7 +176,7 @@ Morgana is designed as a drop-in replacement for Caldera in Merlino.
 1. In Merlino, open **Settings**
 2. Under **Caldera / Morgana**, enter:
    - **URL:** `https://YOUR_MORGANA_SERVER:8888`
-   - **API Key:** the key generated from the Morgana web UI (Admin → Generate API Key)
+   - **API Key:** the key generated from the Morgana web UI (Admin â†’ Generate API Key)
 3. Click **Save**
 
 That is all. No other changes are needed in Merlino.  
