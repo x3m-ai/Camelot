@@ -3,7 +3,7 @@
 > **Current release: v0.3.5** (22 May 2026) - auto-update, SHA256 verification, rollback
 
 > **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
-> Free, open-source, Windows-native. Tightly integrated with [Merlino](https://merlino.x3m.ai).
+> Free, Windows-native, zero dependencies. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
 ---
 
@@ -66,7 +66,7 @@ Download the latest Windows installer directly:
    - Generate a self-signed TLS certificate
    - **Install the certificate into the Windows Trusted Root store** (so your browser shows a padlock, not a warning)
    - Open firewall port 8888 (TCP Inbound)
-   - Optionally create a **desktop shortcut** (if selected during setup) â€” double-click it to open the Morgana web UI directly
+   - Optionally create a **desktop shortcut** (if selected during setup) — double-click it to open the Morgana web UI directly
 
 ### Step 2 - Open the web UI
 
@@ -112,7 +112,7 @@ To get the API key needed to connect Merlino (or to install agents):
 1. Open the Morgana web UI: `https://localhost:8888/ui/`
 2. Go to **Admin** in the left sidebar
 3. Click **Generate API Key**
-4. **Copy the key immediately** and save it somewhere safe â€” it will not be shown again
+4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
 
 > **Keep this key secret. Treat it like a password.**
 
@@ -123,11 +123,9 @@ To get the API key needed to connect Merlino (or to install agents):
 The Morgana Agent is a lightweight OS service installed on **target machines**.  
 It beacons to the server, receives jobs, executes scripts, and reports results.
 
-Three options are available â€” choose the one that fits your workflow:
-
 ---
 
-### Option 1 â€” Morgana UI â€” Deploy Agent button (recommended)
+### Morgana UI — Deploy Agent button (recommended)
 
 1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
 2. Go to **Agents** in the left sidebar
@@ -135,35 +133,6 @@ Three options are available â€” choose the one that fits your workflow:
 4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
 
 The server generates the install script automatically, pre-configured with your URL and API key.
-
----
-
-### Option 2 â€” Manual install with pre-built binary
-
-The agent binary ships inside the Morgana Server installer and is available at:
-
-```
-C:\Program Files\Morgana Server\morgana-agent.exe
-```
-
-Copy it to the target machine and run as Administrator:
-
-```powershell
-.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY
-```
-
----
-
-### Option 3 â€” Build from source (Camelot community repo)
-
-The full agent source code (Go 1.22) is published in the Camelot community repository for transparency.  
-You can audit it, build your own binary, and install it â€” no trust required.
-
-**Source code:** [github.com/x3m-ai/Camelot â€” morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)
-
-The `morgana-agent` folder contains a full README with build instructions for Windows and Linux.
-
----
 
 After installation the agent appears in the **Agents** page of the web UI within one beacon interval (default 30 seconds).
 
@@ -197,7 +166,7 @@ Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
 
 ## Upgrading
 
-1. Download the new `Morgana-Server-Setup.exe`
+1. Download the new installer from the **[Morgana Install page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install)**
 2. Run it - the installer stops the existing service, replaces the binary and restarts
 3. Your database, API key and settings are **preserved automatically**
 
@@ -243,12 +212,11 @@ Delete it manually if you want a complete clean removal.
 
 ## Links
 
-- **Merlino (Excel Add-in):** https://merlino.x3m.ai
-- **Merlino Add-in:** https://merlino-addin.pages.dev
+- **Merlino (Excel Add-in):** https://x3m.ai/merlino/
 - **Community (Camelot):** https://github.com/x3m-ai/Camelot
 - **Support:** open an issue on the [Camelot community repo](https://github.com/x3m-ai/Camelot/issues)
 
 ---
 
-> Morgana is developed by [X3M.AI Ltd](https://merlino.x3m.ai) (UK).  
+> Morgana is developed by [X3M.AI Ltd](https://x3m.ai) (UK).  
 > Free to use. No registration, no telemetry, no data collection.

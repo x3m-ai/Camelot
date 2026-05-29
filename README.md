@@ -118,7 +118,7 @@ Morgana is X3M.AI's Red Team execution engine, built from the ground up for Purp
 
 The Morgana installer is distributed directly from this repository.
 
-**[Download Morgana-Server-Setup.exe](morgana/Install/Morgana-Server-Setup.exe)**
+**[Morgana Install page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install)**
 
 > Current release: **v0.3.5** (22 May 2026)
 
