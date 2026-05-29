@@ -8,7 +8,7 @@
 <tr>
 <td align="left" width="20%">
 
-[![Merlino](https://img.shields.io/badge/Merlino-CTI%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://merlino.x3m.ai)
+[![Merlino](https://img.shields.io/badge/Merlino-CTI%20Add--in-667eea?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://x3m.ai/merlino/)
 
 </td>
 <td align="center">
@@ -33,8 +33,8 @@
 
 ---
 
-> ### Merlino is free. If it helps you, consider sponsoring the project.
-> *One tool. One developer. Zero subscription fees. Your support keeps it alive.*
+> ### Merlino and Morgana are free. If they help you, consider sponsoring the project.
+> *Two tools. One developer. Zero subscription fees. Your support keeps them alive.*
 >
 > [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
 
@@ -46,10 +46,10 @@
 
 **Camelot** is the community hub for the X3M.AI cybersecurity ecosystem. It brings together two powerful tools under one roof:
 
-| Tool | What It Does | Where It Lives |
+| Tool | What It Does | Install |
 |---|---|---|
-| **Merlino** | [Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration](https://merlino.x3m.ai) | [Install free](https://merlino.x3m.ai) |
-| **Morgana** | Open-source Red Team execution platform -- adversary emulation, agent management, 6000+ Atomic Red Team scripts mapped to MITRE ATT&CK | [GitHub repo](https://github.com/x3m-ai/Morgana) |
+| **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
+| **Morgana** | Free Red Team execution platform -- adversary emulation, agent management, 6000+ Atomic Red Team scripts mapped to MITRE ATT&CK | [Install free](morgana/Install/Morgana-Server-Setup.exe) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
 
@@ -74,13 +74,24 @@ Merlino transforms Microsoft Excel into a full-featured Cyber Threat Intelligenc
 
 ### Install Merlino
 
-Merlino is a free Microsoft Excel Add-in. Install it directly from Cloudflare Pages:
+Merlino is a free Microsoft Excel Add-in available in the Microsoft AppSource marketplace.
 
-**[Install Merlino](https://merlino.x3m.ai)**
+**[Merlino Portal](https://x3m.ai/merlino/)**
 
 Requirements:
-- Microsoft Excel (Desktop or Web)
-- Windows, macOS, or Excel Online
+- Microsoft Excel Desktop (Windows or macOS) or Excel Online
+- No installation on the server side -- everything runs in Excel
+
+#### Installation steps
+
+1. Open **Microsoft Excel**
+2. Go to **Insert** tab → **Add-ins** → **Get Add-ins**
+3. Search for **Merlino** in the Office Add-ins store
+4. Click **Add**
+
+![Search for Merlino in the Office Add-ins store](merlino/merlino-installation-step01.fw.png)
+
+Merlino will appear in your Excel ribbon under **Add-ins**. Click it to open the taskpane and get started.
 
 ### Documentation
 
@@ -93,17 +104,33 @@ Requirements:
 
 ---
 
-## Morgana -- Open-Source Red Team Platform
+## Morgana -- Free Red Team Platform
 
-Morgana is X3M.AI's open-source Red Team execution engine, built from the ground up for Purple Teaming and tightly integrated with Merlino. Licensed under AGPL-3.0.
+Morgana is X3M.AI's Red Team execution engine, built from the ground up for Purple Teaming and tightly integrated with Merlino. Free, Windows-native, zero dependencies.
 
 - Adversary emulation and Red Team operations
 - Agent deployment as native OS services (Windows NT Service, Linux systemd)
 - 6000+ scripts from Atomic Red Team, indexed by MITRE ATT&CK technique
 - Automated operation creation from Merlino's threat profiles
-- In-app auto-update — always stay current with one click
+- In-app auto-update -- always stay current with one click
 
-**[Morgana Repository](https://github.com/x3m-ai/Morgana)**
+### Install Morgana
+
+The Morgana installer is distributed directly from this repository.
+
+**[Download Morgana-Server-Setup.exe](morgana/Install/Morgana-Server-Setup.exe)**
+
+> Current release: **v0.3.5** (22 May 2026)
+
+#### Installation steps
+
+1. Download `Morgana-Server-Setup.exe` from the link above
+2. Run the installer as **Administrator**
+3. Follow the on-screen steps -- Morgana installs as a Windows NT Service and starts automatically
+4. Open your browser at **https://localhost:8888/ui/**
+5. The master API key is displayed on first launch -- save it in your Merlino Settings
+
+For the full installation guide, see [morgana/Install/README.md](morgana/Install/README.md).
 
 ### The Merlino + Morgana Pipeline
 
@@ -168,9 +195,9 @@ If you have built something with Merlino -- a useful script, a creative template
 
 <div align="center">
 
-### Merlino is free. If it helps you, consider sponsoring the project.
+### Merlino and Morgana are free. If they help you, consider sponsoring the project.
 
-*One tool. One developer. Zero subscription fees. Your support keeps it alive.*
+*Two tools. One developer. Zero subscription fees. Your support keeps them alive.*
 
 <br>
 
@@ -204,7 +231,7 @@ For partnership inquiries or enterprise collaboration, contact us at **support@x
 This repository (documentation and community content) is licensed under the [MIT License](LICENSE).
 
 - **Merlino Add-in** is free, no registration, distributed under its own EULA
-- **Morgana** is open source under the GNU Affero General Public License v3.0 (AGPL-3.0)
+- **Morgana** is free, distributed as a binary installer from this repository
 
 ---
 
@@ -212,6 +239,6 @@ This repository (documentation and community content) is licensed under the [MIT
 
 *Camelot -- Where Intelligence Meets Offense*
 
-**[X3M.AI](https://x3m.ai)** | **[Merlino](https://merlino.x3m.ai)** | **[Morgana](https://github.com/x3m-ai/Morgana)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
+**[X3M.AI](https://x3m.ai)** | **[Merlino](https://x3m.ai/merlino/)** | **[Discussions](https://github.com/x3m-ai/Camelot/discussions)**
 
 </div>
