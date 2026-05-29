@@ -1,6 +1,6 @@
 # Merlino User Guide -- Lab 03 -- Red Team Testing with Morgana
 
-**Product:** Merlino v1.5.0  
+**Product:** Merlino v0.3.0  
 **Publisher:** X3M.AI Ltd  
 **Date:** March 2026  
 **Audience:** Red Team operators, SOC analysts, detection engineers, and security architects  
@@ -166,6 +166,8 @@ Morgana is distributed as a self-contained Windows installer through the **Camel
 1. Download the latest installer:
 
    **[Download Morgana-Server-Setup.exe](https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe)**
+
+   > **Browser / SmartScreen warning:** Your browser or Windows SmartScreen may show a security warning on download. This is expected — the executable is **digitally signed by X3M.AI Ltd** and is safe to run. Click **Keep** in the browser or **Run anyway** in SmartScreen to proceed.
 
 2. Right-click the downloaded file and choose **Run as Administrator**.
 
@@ -512,7 +514,7 @@ A single Catalogue entry for T1003 may produce 4-8 rows in the Tests table -- on
 | **Agents** | Number of participating agents | 1, 2, 3... |
 | **Group** | Agent group | red |
 
-> **For more information** about Morgana scripts, chains, and tests, visit the official Morgana repository: [https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana)
+> **For more information** about Morgana scripts, chains, and tests, see the [Morgana Install & Documentation page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) in the Camelot community repository.
 
 ### Operations Intelligence Dashboard -- Analytical Views
 
@@ -800,7 +802,7 @@ Each iteration tightens the security posture. Each iteration produces measurable
 
 ### Resources
 
-- **Morgana:** [https://github.com/x3m-ai/Morgana](https://github.com/x3m-ai/Morgana) -- Installation, configuration, architecture documentation, and API reference.
+- **Morgana:** [github.com/x3m-ai/Camelot -- morgana/Install/](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) -- Installer, release notes, and full installation guide.
 - **Atomic Red Team:** [https://github.com/redcanaryco/atomic-red-team](https://github.com/redcanaryco/atomic-red-team) -- The open-source library of ATT&CK technique tests that Morgana loads as its scripts library.
 - **MISP Project:** [https://www.misp-project.org](https://www.misp-project.org) -- The open-source threat intelligence platform documentation.
 
