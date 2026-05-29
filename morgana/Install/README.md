@@ -52,6 +52,8 @@ Download the latest Windows installer directly:
 > The installer is self-contained (~25 MB). No internet connection required after download.  
 > Always use the latest version from this folder.
 
+> **Browser / SmartScreen warning:** Your browser or Windows SmartScreen may flag the download with a security warning. This is expected for new software — the executable is **digitally signed by X3M.AI Ltd** and is safe to run. Click **Keep** (browser) or **Run anyway** (SmartScreen) to proceed.
+
 ---
 
 ## Installation (Windows - Recommended)
