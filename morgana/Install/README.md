@@ -145,12 +145,25 @@ Morgana is designed as a drop-in replacement for Caldera in Merlino.
 1. In Merlino, open **Settings**
 2. Under **Caldera / Morgana**, enter:
    - **URL:** `https://YOUR_MORGANA_SERVER:8888`
-   - **API Key:** the key generated from the Morgana web UI (Admin â†’ Generate API Key)
+   - **API Key:** the key generated from the Morgana web UI (Admin → Generate API Key)
 3. Click **Save**
 
 That is all. No other changes are needed in Merlino.  
 All existing Merlino workflows (Synchronize, Tests & Operations, Agents view) work identically.
+### Merlino AI Assistant
 
+Merlino has its own built-in AI assistant that can analyze your threat coverage, generate Red Team scenarios, and correlate Morgana test results with MITRE ATT&CK data. Configure it in Merlino under **Settings → AI**:
+
+| Provider | Notes |
+|----------|-------|
+| **GitHub Copilot** | Free with a GitHub Copilot subscription — no extra API key |
+| **OpenAI** | Requires an OpenAI API key |
+| **Mistral** | Requires a Mistral API key |
+| **Ollama** | Local inference — zero data egress |
+| **Anthropic** | Requires an Anthropic API key |
+| **AWS Bedrock** | Requires AWS credentials |
+
+Once configured, the AI assistant is available in the **AI Assistant** taskpane inside Excel.
 ---
 
 ## Silent / Unattended Installation
@@ -167,8 +180,46 @@ Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
 ## Upgrading
 
 1. Download the new installer from the **[Morgana Install page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install)**
-2. Run it - the installer stops the existing service, replaces the binary and restarts
+2. Run it — the installer stops the existing service, replaces the binary and restarts
 3. Your database, API key and settings are **preserved automatically**
+4. **Restart the machine** after upgrading — recommended to ensure the new NT Service version loads cleanly
+
+---
+
+## AI Review Engine
+
+Morgana includes a built-in AI engine that automatically reviews completed test results and generates a structured analysis: what ran, what was detected, what was missed, and recommended detections.
+
+### How it works
+
+After a test finishes, the AI engine analyses the execution output against MITRE ATT&CK context and returns a structured review visible in the **Tests** page of the web UI.
+
+### Default provider — GitHub Models (recommended, no API key needed)
+
+Morgana uses the **GitHub Models** API by default, authenticated via the GitHub CLI (`gh`) OAuth token already on your machine.
+
+**Prerequisites:**
+1. Install the [GitHub CLI](https://cli.github.com/) (`winget install GitHub.cli`)
+2. Log in once: `gh auth login`
+
+That is all — no API keys, no extra accounts. The AI engine activates automatically.
+
+### Alternative providers
+
+If you prefer a different model, go to the Morgana web UI → **Settings → AI** and select one of:
+
+| Provider | What you need |
+|----------|---------------|
+| **GitHub Models** | GitHub CLI logged in (default) |
+| **GitHub Copilot** | GitHub Copilot subscription + `gh auth login` |
+| **OpenAI** | OpenAI API key |
+| **Ollama** | Ollama running locally (`ollama serve`) |
+| **Anthropic** | Anthropic API key |
+| **Azure OpenAI** | Azure OpenAI resource + API key |
+
+### Enable / disable
+
+The AI review engine is enabled by default. Toggle it in the web UI under **Settings → AI → Enable AI Review**.
 
 ---
 
