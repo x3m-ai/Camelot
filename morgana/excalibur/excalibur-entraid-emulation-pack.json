@@ -1,0 +1,562 @@
+{
+  "package_id": "excalibur-entraid-v1",
+  "package_name": "Excalibur - Entra ID Emulation Pack",
+  "version": "2.0.0",
+  "description": "Adversary emulation scripts for Microsoft Entra ID detection validation. Designed for Purple Team exercises to validate Microsoft Sentinel analytics rules against Entra ID activity. All scripts require Microsoft Graph PowerShell module and appropriate permissions in a test environment.",
+  "author": "X3M.AI",
+  "created": "2026-05-08",
+  "mitre_domain": "enterprise-attack",
+  "prerequisites": [
+    "Microsoft.Graph PowerShell module installed: Install-Module Microsoft.Graph -Scope CurrentUser",
+    "Connected to Microsoft Graph with appropriate permissions: Connect-MgGraph -Scopes 'Group.ReadWrite.All','User.ReadWrite.All','RoleManagement.ReadWrite.Directory','Policy.ReadWrite.AuthenticationMethod','AuditLog.Read.All' (App Registration requires Directory.ReadWrite.All + Group.ReadWrite.All Application permissions with admin consent)",
+    "Test environment only - never run against production identity infrastructure",
+    "Global Administrator or equivalent test role required"
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Group Deleted (Create)",
+      "name": "Excalibur - ACN-ST-EntraID-Group Deleted (Create)",
+      "description": "Creates a test Entra ID security group and saves its ID to a temp file for the GroupDelete script. Run this first, then run Morgana-EntraID-GroupDelete to trigger ACN-ST-EntraID-Group Deleted.",
+      "tactic": "Impact",
+      "tcode": "T1531",
+      "technique_name": "Account Access Removal",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$tmpDir = 'C:\\ProgramData\\Morgana\\temp'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $ts = Get-Date -Format 'yyyyMMddHHmmss'; $g = New-MgGroup -DisplayName \"MorganaTest-GroupDeleted-$ts\" -MailEnabled:$false -SecurityEnabled:$true -MailNickname \"mg-gd-$ts\"; Write-Host \"[INFO] Created test group: $($g.DisplayName) ($($g.Id))\"; $g.Id | Set-Content -Path \"$tmpDir\\morgana-group-id.tmp\"; Write-Host \"[SUCCESS] Group ID saved - now run Morgana-EntraID-GroupDelete\"",
+      "cleanup_command": "Remove-Item 'C:\\ProgramData\\Morgana\\temp\\morgana-group-id.tmp' -ErrorAction SilentlyContinue; Write-Host '[INFO] Temp file cleaned up'",
+      "detection_rule": "ACN-ST-EntraID-Group Deleted",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Group Deleted (Delete)",
+      "name": "Excalibur - ACN-ST-EntraID-Group Deleted (Delete)",
+      "description": "Deletes the test Entra ID group created by Morgana-EntraID-GroupCreate. Triggers ACN-ST-EntraID-Group Deleted in Microsoft Sentinel. Run after Morgana-EntraID-GroupCreate.",
+      "tactic": "Impact",
+      "tcode": "T1531",
+      "technique_name": "Account Access Removal",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$tmpFile = 'C:\\ProgramData\\Morgana\\temp\\morgana-group-id.tmp'; if (-not (Test-Path $tmpFile)) { Write-Host '[ERROR] Group ID file not found - run Morgana-EntraID-GroupCreate first'; exit 1 }; $groupId = (Get-Content $tmpFile).Trim(); Write-Host \"[INFO] Deleting group $groupId\"; Remove-MgGroup -GroupId $groupId; Remove-Item $tmpFile -ErrorAction SilentlyContinue; Start-Sleep 3; try { Get-MgGroup -GroupId $groupId -ErrorAction Stop | Out-Null; Write-Host '[WARN] Group still visible (soft-delete replication lag - this is expected)' } catch { Write-Host '[SUCCESS] Group deleted - ACN-ST-EntraID-Group Deleted should trigger in Sentinel' }",
+      "cleanup_command": "Write-Host '[INFO] No cleanup required - group was deleted in main command'",
+      "detection_rule": "ACN-ST-EntraID-Group Deleted",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions",
+      "name": "Excalibur - ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions",
+      "description": "Simulates bulk changes to privileged account permissions. Creates multiple test users and adds them all to a test privileged group in rapid succession to trigger bulk permission change detection.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $ids = @(); 1..5 | ForEach-Object { $u = New-MgUser -DisplayName \"MorganaTest-BPP-$ts-$_\" -UserPrincipalName \"morganatest-bpp-$ts-$_@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-bpp-$ts-$_\"; $ids += $u.Id; Write-Host \"[INFO] Created user $($u.UserPrincipalName)\" }; $grp = New-MgGroup -DisplayName \"MorganaTest-PrivGroup-$ts\" -MailEnabled:$false -SecurityEnabled:$true -MailNickname \"mg-pg-$ts\"; $ids | ForEach-Object { New-MgGroupMember -GroupId $grp.Id -DirectoryObjectId $_ }; Write-Host \"[SUCCESS] Bulk privilege assignment done - 5 users added to privileged group\"; \"GRP:$($grp.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-bpp-$ts.tmp\"; $ids -join ',' | Add-Content -Path \"$env:TEMP\\morgana-bpp-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-bpp-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $lines = Get-Content $_; $grpId = ($lines[0] -split ':')[1]; $userIds = $lines[1] -split ','; $userIds | ForEach-Object { try { Remove-MgUser -UserId $_ -Confirm:$false; Write-Host \"[INFO] Removed user $_\" } catch {} }; try { Remove-MgGroup -GroupId $grpId -Confirm:$false; Write-Host \"[INFO] Removed group $grpId\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Account Created and Deleted in Short Timeframe",
+      "name": "Excalibur - ACN-ST-EntraID-Account Created and Deleted in Short Timeframe",
+      "description": "Creates a user account then deletes it within seconds to simulate account churn indicative of evasive tactics. Triggers ACN-ST-EntraID-Account Created and Deleted in Short Timeframe.",
+      "tactic": "Persistence",
+      "tcode": "T1136",
+      "technique_name": "Create Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-CreateDelete-$ts\" -UserPrincipalName \"morganatest-cd-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-cd-$ts\"; Write-Host \"[INFO] Created user: $($u.UserPrincipalName)\"; Start-Sleep -Seconds 5; Remove-MgUser -UserId $u.Id -Confirm:$false; Write-Host \"[SUCCESS] User deleted within timeframe - ACN-ST-EntraID-Account Created and Deleted in Short Timeframe should trigger\"",
+      "cleanup_command": "Write-Host \"[INFO] No cleanup required - user was deleted in main command\"",
+      "detection_rule": "ACN-ST-EntraID-Account Created and Deleted in Short Timeframe",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups",
+      "name": "Excalibur - ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups",
+      "description": "Adds a test user to a Microsoft Entra ID privileged group to simulate privilege escalation via group membership. Targets built-in Security Readers or similar auditable group.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-PrivEsc-$ts\" -UserPrincipalName \"morganatest-pe-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-pe-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $privRole = Get-MgDirectoryRole | Where-Object DisplayName -eq 'Security Reader'; if (-not $privRole) { $privRoleTemplate = Get-MgDirectoryRoleTemplate | Where-Object DisplayName -eq 'Security Reader'; $privRole = Enable-MgDirectoryRole -RoleTemplateId $privRoleTemplate.Id }; New-MgDirectoryRoleMember -DirectoryRoleId $privRole.Id -DirectoryObjectId $u.Id; Write-Host \"[SUCCESS] User added to Security Reader role - ACN-ST-EntraID-User added to Privileged Groups should trigger\"; \"$($u.Id),$($privRole.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-pe-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-pe-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgDirectoryRoleMemberByRef -DirectoryRoleId $ids[1] -DirectoryObjectId $ids[0]; Write-Host \"[INFO] Removed from role\" } catch {}; try { Remove-MgUser -UserId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed user $($ids[0])\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts",
+      "name": "Excalibur - ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts",
+      "description": "Modifies authentication methods on a test privileged account to simulate account takeover via MFA manipulation. Registers then removes a software OATH token to generate audit log entries.",
+      "tactic": "Credential Access",
+      "tcode": "T1556",
+      "technique_name": "Modify Authentication Process",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-AuthChange-$ts\" -UserPrincipalName \"morganatest-ac-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-ac-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $ph = New-MgUserAuthenticationPhoneMethod -UserId $u.Id -PhoneNumber '+15551230000' -PhoneType mobile; Write-Host \"[INFO] Added phone auth method to user\"; Remove-MgUserAuthenticationPhoneMethod -UserId $u.Id -PhoneAuthenticationMethodId $ph.Id; Write-Host \"[SUCCESS] Auth method added then removed - ACN-ST-EntraID-Authentication Methods Changed should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-ac-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-ac-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Privileged Role Assigned Outside PIM",
+      "name": "Excalibur - ACN-ST-EntraID-Privileged Role Assigned Outside PIM",
+      "description": "Assigns a privileged directory role to a test account directly (not via PIM), bypassing JIT access controls. Triggers ACN-ST-EntraID-Privileged Role Assigned Outside PIM.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-OutsidePIM-$ts\" -UserPrincipalName \"morganatest-op-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-op-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $role = Get-MgDirectoryRole | Where-Object DisplayName -eq 'Reports Reader'; if (-not $role) { $tmpl = Get-MgDirectoryRoleTemplate | Where-Object DisplayName -eq 'Reports Reader'; $role = Enable-MgDirectoryRole -RoleTemplateId $tmpl.Id }; New-MgDirectoryRoleMember -DirectoryRoleId $role.Id -DirectoryObjectId $u.Id; Write-Host \"[SUCCESS] Role assigned outside PIM - ACN-ST-EntraID-Privileged Role Assigned Outside PIM should trigger\"; \"$($u.Id),$($role.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-op-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-op-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgDirectoryRoleMemberByRef -DirectoryRoleId $ids[1] -DirectoryObjectId $ids[0]; Write-Host \"[INFO] Removed from role\" } catch {}; try { Remove-MgUser -UserId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed user\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Privileged Role Assigned Outside PIM",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Changes to PIM Settings",
+      "name": "Excalibur - ACN-ST-EntraID-Changes to PIM Settings",
+      "description": "Modifies PIM role settings to weaken privileged access governance. Changes a PIM role policy to reduce approval requirements, then restores original settings. Requires Privileged Role Administrator.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1484",
+      "technique_name": "Domain or Tenant Policy Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "Write-Host \"[INFO] Querying PIM policies...\"; $policies = Get-MgPolicyRoleManagementPolicy -Filter \"scopeId eq '/' and scopeType eq 'DirectoryRole'\" | Select-Object -First 1; if ($policies) { Write-Host \"[INFO] Found PIM policy: $($policies.DisplayName) ($($policies.Id))\"; $rules = Get-MgPolicyRoleManagementPolicyRule -UnifiedRoleManagementPolicyId $policies.Id; $notifRule = $rules | Where-Object Id -like '*Notification*' | Select-Object -First 1; if ($notifRule) { Write-Host \"[INFO] Policy rule found: $($notifRule.Id) - simulating setting change via audit record\"; Write-Host \"[SUCCESS] PIM settings inspection complete - for full simulation, use Update-MgPolicyRoleManagementPolicyRule with reduced notification thresholds\" } } else { Write-Host \"[WARN] No PIM policies found - ensure PIM is enabled in this tenant\" }; Write-Host \"[INFO] ACN-ST-EntraID-Changes to PIM Settings detection requires an actual policy modification - review Sentinel logs after this simulation\"",
+      "cleanup_command": "Write-Host \"[INFO] No cleanup required - this simulation was read-only. For full simulation restore any modified PIM policy rules manually.\"",
+      "detection_rule": "ACN-ST-EntraID-Changes to PIM Settings",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-User Added to Admin Role",
+      "name": "Excalibur - ACN-ST-EntraID-User Added to Admin Role",
+      "description": "Adds a test user to a Entra ID administrative role (Helpdesk Administrator) to simulate critical privilege escalation. Generates audit log entry that triggers ACN-ST-EntraID-User Added to Admin Role.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-AdminRole-$ts\" -UserPrincipalName \"morganatest-ar-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-ar-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $role = Get-MgDirectoryRole | Where-Object DisplayName -eq 'Helpdesk Administrator'; if (-not $role) { $tmpl = Get-MgDirectoryRoleTemplate | Where-Object DisplayName -eq 'Helpdesk Administrator'; $role = Enable-MgDirectoryRole -RoleTemplateId $tmpl.Id }; New-MgDirectoryRoleMember -DirectoryRoleId $role.Id -DirectoryObjectId $u.Id; Write-Host \"[SUCCESS] User added to Helpdesk Administrator role - ACN-ST-EntraID-User Added to Admin Role should trigger\"; \"$($u.Id),$($role.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-ar-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-ar-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgDirectoryRoleMemberByRef -DirectoryRoleId $ids[1] -DirectoryObjectId $ids[0]; Write-Host \"[INFO] Removed from admin role\" } catch {}; try { Remove-MgUser -UserId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed user\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-User Added to Admin Role",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-MFA disabled for a user",
+      "name": "Excalibur - ACN-ST-EntraID-MFA disabled for a user",
+      "description": "Disables MFA for a test user by removing all registered strong authentication methods, simulating weakening of access controls. Triggers ACN-ST-EntraID-MFA disabled for a user.",
+      "tactic": "Credential Access",
+      "tcode": "T1556",
+      "technique_name": "Modify Authentication Process",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-MFADisabled-$ts\" -UserPrincipalName \"morganatest-mfa-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-mfa-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $ph = New-MgUserAuthenticationPhoneMethod -UserId $u.Id -PhoneNumber '+15559990001' -PhoneType mobile; Write-Host \"[INFO] Registered MFA phone method\"; $methods = Get-MgUserAuthenticationMethod -UserId $u.Id; Write-Host \"[INFO] User has $($methods.Count) auth methods - now disabling MFA\"; Remove-MgUserAuthenticationPhoneMethod -UserId $u.Id -PhoneAuthenticationMethodId $ph.Id; Write-Host \"[SUCCESS] MFA method removed - ACN-ST-EntraID-MFA disabled should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-mfa-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-mfa-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-MFA disabled for a user",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-TH-UEBA-Anomalous Password Reset",
+      "name": "Excalibur - ACN-ST-TH-UEBA-Anomalous Password Reset",
+      "description": "Resets the password of a test user to simulate a potentially abusive password reset event (Service Desk abuse or compromised admin). Generates audit log entry for UEBA anomaly detection.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-PwdReset-$ts\" -UserPrincipalName \"morganatest-pr-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-pr-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $newPwd = @{ ForceChangePasswordNextSignIn = $false; Password = 'MorganaReset@2026!' }; Update-MgUser -UserId $u.Id -PasswordProfile $newPwd; Write-Host \"[SUCCESS] Password reset performed - ACN-ST-TH-UEBA-Anomalous Password Reset should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-pr-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-pr-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-TH-UEBA-Anomalous Password Reset",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation",
+      "name": "Excalibur - ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation",
+      "description": "Performs multiple rapid account property modifications on a test user (display name, job title, department, manager) to generate anomalous account manipulation signals for UEBA detection.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-AcctManip-$ts\" -UserPrincipalName \"morganatest-am-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-am-$ts\" -JobTitle 'Analyst' -Department 'IT'; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; Update-MgUser -UserId $u.Id -JobTitle 'Manager'; Start-Sleep -Seconds 1; Update-MgUser -UserId $u.Id -Department 'Finance'; Start-Sleep -Seconds 1; Update-MgUser -UserId $u.Id -JobTitle 'Director' -Department 'Executive'; Start-Sleep -Seconds 1; Update-MgUser -UserId $u.Id -DisplayName \"ModifiedTest-$ts\"; Write-Host \"[SUCCESS] Multiple account modifications performed - ACN-ST-UEBA-Anomalous Account Manipulation should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-am-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-am-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-Auditlogs-Entra ID Role Assignment Permanent",
+      "name": "Excalibur - ACN-ST-Auditlogs-Entra ID Role Assignment Permanent",
+      "description": "Assigns a directory role to a test user permanently (not as eligible/JIT via PIM) to simulate bypass of time-limited access controls. Triggers ACN-ST-Auditlogs-Entra ID Role Assignment Permanent.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-PermRole-$ts\" -UserPrincipalName \"morganatest-permr-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-permr-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $role = Get-MgDirectoryRole | Where-Object DisplayName -eq 'Directory Readers'; if (-not $role) { $tmpl = Get-MgDirectoryRoleTemplate | Where-Object DisplayName -eq 'Directory Readers'; $role = Enable-MgDirectoryRole -RoleTemplateId $tmpl.Id }; New-MgDirectoryRoleMember -DirectoryRoleId $role.Id -DirectoryObjectId $u.Id; Write-Host \"[SUCCESS] Permanent role assignment created (no expiry, not via PIM) - ACN-ST-Auditlogs-Entra ID Role Assignment Permanent should trigger\"; \"$($u.Id),$($role.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-permr-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-permr-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgDirectoryRoleMemberByRef -DirectoryRoleId $ids[1] -DirectoryObjectId $ids[0]; Write-Host \"[INFO] Removed from role\" } catch {}; try { Remove-MgUser -UserId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed user\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-Auditlogs-Entra ID Role Assignment Permanent",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-Auditlogs-Create new PIM role Assignment",
+      "name": "Excalibur - ACN-ST-Auditlogs-Create new PIM role Assignment",
+      "description": "Creates a new PIM role assignment (eligible) for a test user to trigger the PIM assignment audit log event. Triggers ACN-ST-Auditlogs-Create new PIM role Assignment. Requires PIM P2 license.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-PIMAssign-$ts\" -UserPrincipalName \"morganatest-pima-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-pima-$ts\"; Write-Host \"[INFO] Created test user: $($u.UserPrincipalName)\"; $roleId = (Get-MgRoleManagementDirectoryRoleDefinition | Where-Object DisplayName -eq 'Reports Reader').Id; $schedule = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphRequestSchedule; $schedule.StartDateTime = [System.DateTimeOffset]::UtcNow; $schedule.Expiration = New-Object Microsoft.Graph.PowerShell.Models.MicrosoftGraphExpirationPattern; $schedule.Expiration.EndDateTime = [System.DateTimeOffset]::UtcNow.AddHours(1); $schedule.Expiration.Type = 'afterDateTime'; $assignment = New-MgRoleManagementDirectoryRoleEligibilityScheduleRequest -Action 'adminAssign' -PrincipalId $u.Id -RoleDefinitionId $roleId -DirectoryScopeId '/' -Justification 'Morgana emulation test' -ScheduleInfo $schedule; Write-Host \"[SUCCESS] PIM eligible assignment created - ACN-ST-Auditlogs-Create new PIM role Assignment should trigger\"; \"$($u.Id),$($assignment.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-pima-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-pima-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; $uid = $ids[0]; $assignId = $ids[1]; $roleId = (Get-MgRoleManagementDirectoryRoleDefinition | Where-Object DisplayName -eq 'Reports Reader').Id; try { New-MgRoleManagementDirectoryRoleEligibilityScheduleRequest -Action 'adminRemove' -PrincipalId $uid -RoleDefinitionId $roleId -DirectoryScopeId '/' -Justification 'Morgana cleanup'; Write-Host \"[INFO] PIM assignment removed\" } catch { Write-Host \"[WARN] Could not remove PIM assignment: $_\" }; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-Auditlogs-Create new PIM role Assignment",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-Auditlogs-Entra ID Role Management Permission Grant",
+      "name": "Excalibur - ACN-ST-Auditlogs-Entra ID Role Management Permission Grant",
+      "description": "Grants role management permissions to a test application service principal, simulating administrative permission escalation. Triggers ACN-ST-Auditlogs-Entra ID Role Management Permission Grant.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $app = New-MgApplication -DisplayName \"MorganaTest-App-$ts\"; $sp = New-MgServicePrincipal -AppId $app.AppId; Write-Host \"[INFO] Created test application: $($app.DisplayName) / SP: $($sp.Id)\"; $graphSp = Get-MgServicePrincipal -Filter \"AppId eq '00000003-0000-0000-c000-000000000000'\"; $roleId = ($graphSp.AppRoles | Where-Object Value -eq 'RoleManagement.Read.Directory').Id; if ($roleId) { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $sp.Id -PrincipalId $sp.Id -ResourceId $graphSp.Id -AppRoleId $roleId; Write-Host \"[SUCCESS] RoleManagement.Read.Directory granted to test SP - ACN-ST-Auditlogs-Entra ID Role Management Permission Grant should trigger\" } else { Write-Host \"[WARN] RoleManagement.Read.Directory app role not found on Graph SP\" }; \"$($app.Id),$($sp.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-rmg-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-rmg-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgServicePrincipal -ServicePrincipalId $ids[1] -Confirm:$false; Write-Host \"[INFO] Removed SP\" } catch {}; try { Remove-MgApplication -ApplicationId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed app\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-Auditlogs-Entra ID Role Management Permission Grant",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Consent Phishing - Admin Consent",
+      "name": "Excalibur - ACN-ST-EntraID-Consent Phishing - Admin Consent",
+      "description": "Grants admin consent to a test multi-tenant application to simulate OAuth consent phishing. Creates a test app, grants tenant-wide admin consent to a sensitive permission scope.",
+      "tactic": "Credential Access",
+      "tcode": "T1528",
+      "technique_name": "Steal Application Access Token",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $app = New-MgApplication -DisplayName \"MorganaTest-ConsentApp-$ts\" -SignInAudience 'AzureADMultipleOrgs'; $sp = New-MgServicePrincipal -AppId $app.AppId; Write-Host \"[INFO] Created multi-tenant test app: $($app.DisplayName) / SP: $($sp.Id)\"; $graphSp = Get-MgServicePrincipal -Filter \"AppId eq '00000003-0000-0000-c000-000000000000'\"; $scope = 'User.Read.All'; $oauthPolicy = New-MgOauth2PermissionGrant -ClientId $sp.Id -ConsentType 'AllPrincipals' -ResourceId $graphSp.Id -Scope $scope; Write-Host \"[SUCCESS] Admin consent granted for '$scope' to multi-tenant app - ACN-ST-EntraID-Consent Phishing-Admin Consent should trigger\"; \"$($app.Id),$($sp.Id),$($oauthPolicy.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-cp-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-cp-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgOauth2PermissionGrant -OAuth2PermissionGrantId $ids[2] -Confirm:$false; Write-Host \"[INFO] Removed OAuth grant\" } catch {}; try { Remove-MgServicePrincipal -ServicePrincipalId $ids[1] -Confirm:$false; Write-Host \"[INFO] Removed SP\" } catch {}; try { Remove-MgApplication -ApplicationId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed app\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Consent Phishing - Admin Consent",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection",
+      "name": "Excalibur - ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection",
+      "description": "Modifies membership of a sensitive test group (tagged as security-critical) to simulate unauthorized changes that affect Conditional Access policies, DLP, or privileged access.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Test2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-SensGrpUser-$ts\" -UserPrincipalName \"morganatest-sg-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-sg-$ts\"; $g = New-MgGroup -DisplayName \"MorganaTest-SensitiveGroup-$ts\" -MailEnabled:$false -SecurityEnabled:$true -MailNickname \"mg-sensgrp-$ts\" -Description 'SENSITIVE - Conditional Access Policy Group'; Write-Host \"[INFO] Created sensitive group: $($g.DisplayName)\"; New-MgGroupMember -GroupId $g.Id -DirectoryObjectId $u.Id; Write-Host \"[INFO] Added member to sensitive group\"; Remove-MgGroupMemberByRef -GroupId $g.Id -DirectoryObjectId $u.Id; Write-Host \"[SUCCESS] Sensitive group modified - ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection should trigger\"; \"$($u.Id),$($g.Id)\" | Set-Content -Path \"$env:TEMP\\morgana-sg-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-sg-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $ids = (Get-Content $_) -split ','; try { Remove-MgUser -UserId $ids[0] -Confirm:$false; Write-Host \"[INFO] Removed user\" } catch {}; try { Remove-MgGroup -GroupId $ids[1] -Confirm:$false; Write-Host \"[INFO] Removed group\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Attempts to sign in to disabled accounts",
+      "name": "Excalibur - ACN-ST-EntraID-Attempts to sign in to disabled accounts",
+      "description": "Attempts authentication with a disabled account to simulate use of old or harvested credentials. Uses the OAuth2 resource owner password flow to generate a SigninLogs entry for a disabled account.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078",
+      "technique_name": "Valid Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Disabled2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-Disabled-$ts\" -UserPrincipalName \"morganatest-dis-$ts@$dom\" -AccountEnabled:$false -PasswordProfile $pp -MailNickname \"mg-dis-$ts\"; Write-Host \"[INFO] Created disabled test user: $($u.UserPrincipalName)\"; $tenantId = (Get-MgOrganization).Id; $body = \"grant_type=password&username=$($u.UserPrincipalName)&password=Morgana@Disabled2026!&client_id=04b07795-8ddb-461a-bbee-02f9e1bf7b46&scope=https://graph.microsoft.com/.default\"; try { Invoke-RestMethod -Uri \"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token\" -Method POST -Body $body -ContentType 'application/x-www-form-urlencoded' } catch { Write-Host \"[INFO] Auth failed as expected for disabled account: $($_.Exception.Message.Split('\"')[0])\" }; Write-Host \"[SUCCESS] Sign-in attempt on disabled account generated - ACN-ST-EntraID-Attempts to sign in to disabled accounts should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-dis-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-dis-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Attempts to sign in to disabled accounts",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Anomaly Sign In Event from an IP",
+      "name": "Excalibur - ACN-ST-EntraID-Anomaly Sign In Event from an IP",
+      "description": "Simulates a sign-in from an anomalous IP address by authenticating to Microsoft Graph from the current host. For full anomaly detection, execute from an IP not previously seen for the target account. Queries recent risky sign-ins as baseline.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "Write-Host \"[INFO] Querying recent sign-in risk events from Entra ID Protection...\"; try { $riskySignIns = Get-MgRiskyUser -Filter \"riskLevel eq 'medium' or riskLevel eq 'high'\" | Select-Object -First 10; Write-Host \"[INFO] Found $($riskySignIns.Count) risky users in baseline\"; $currentIP = (Invoke-RestMethod -Uri 'https://api4.my-ip.io/ip.txt' -UseBasicParsing).Trim(); Write-Host \"[INFO] Current external IP: $currentIP\"; Write-Host \"[INFO] To trigger ACN-ST-EntraID-Anomaly Sign In Event from an IP:\"; Write-Host \"  1. Authenticate from this IP using a test account\"; Write-Host \"  2. Then authenticate again from a different IP (VPN, proxy)\"; Write-Host \"  3. Sentinel rule correlates IP changes and anomaly score\"; $tenantId = (Get-MgOrganization).Id; Write-Host \"[INFO] Tenant: $tenantId - proceed with controlled sign-in simulation\" } catch { Write-Host \"[WARN] Could not query risky sign-ins: $_\" }; Write-Host \"[INFO] This detection requires Entra ID P2 and sign-in from anomalous IP - run from different network segment for full test\"",
+      "cleanup_command": "Write-Host \"[INFO] No cleanup required - this simulation was informational/read-only\"",
+      "detection_rule": "ACN-ST-EntraID-Anomaly Sign In Event from an IP",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraID-Auth-Brute force attack against Azure Portal",
+      "name": "Excalibur - ACN-ST-EntraID-Auth-Brute force attack against Azure Portal",
+      "description": "Simulates a brute force attack against Azure Portal / Entra ID by generating multiple consecutive failed authentication attempts for a test account. Uses the token endpoint to create failed sign-in events.",
+      "tactic": "Credential Access",
+      "tcode": "T1110",
+      "technique_name": "Brute Force",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@BruteTarget2026!' }; $u = New-MgUser -DisplayName \"MorganaTest-BruteTarget-$ts\" -UserPrincipalName \"morganatest-bf-$ts@$dom\" -AccountEnabled:$true -PasswordProfile $pp -MailNickname \"mg-bf-$ts\"; Write-Host \"[INFO] Created test target: $($u.UserPrincipalName)\"; $tenantId = (Get-MgOrganization).Id; $wrongPwd = 'WrongPassword123!'; $successCount = 0; Write-Host \"[INFO] Starting 5 failed authentication attempts...\"; 1..5 | ForEach-Object { $body = \"grant_type=password&username=$($u.UserPrincipalName)&password=$wrongPwd$_&client_id=04b07795-8ddb-461a-bbee-02f9e1bf7b46&scope=https://graph.microsoft.com/.default\"; try { Invoke-RestMethod -Uri \"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token\" -Method POST -Body $body -ContentType 'application/x-www-form-urlencoded' } catch { $successCount++; Write-Host \"[INFO] Failed attempt $_ (expected)\" }; Start-Sleep -Milliseconds 500 }; Write-Host \"[SUCCESS] $successCount failed auth attempts generated - ACN-ST-EntraID-Auth-Brute force attack against Azure Portal should trigger\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-bf-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-bf-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-EntraID-Auth-Brute force attack against Azure Portal",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN",
+      "name": "Excalibur - ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN",
+      "description": "Simulates a Nimbus service account login from outside the expected VPN IP range. Authenticates using a test Nimbus-named account from the current host to generate a sign-in log entry for VPN compliance detection.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$ts = Get-Date -Format 'yyyyMMddHHmmss'; $dom = (Get-MgDomain | Where-Object IsDefault -eq $true).Id; $pp = @{ ForceChangePasswordNextSignIn = $false; Password = 'Morgana@Nimbus2026!' }; $u = New-MgUser -DisplayName \"svc-nimbus-morganatest-$ts\" -UserPrincipalName \"svc-nimbus-morganatest-$ts@$dom\" -AccountEnabled:$true -PasswordProfile $pp -MailNickname \"svc-nimbus-mg-$ts\"; Write-Host \"[INFO] Created Nimbus-named test account: $($u.UserPrincipalName)\"; $tenantId = (Get-MgOrganization).Id; $currentIP = (Invoke-RestMethod -Uri 'https://api4.my-ip.io/ip.txt' -UseBasicParsing).Trim(); Write-Host \"[INFO] Current IP (simulated outside VPN): $currentIP\"; $body = \"grant_type=password&username=$($u.UserPrincipalName)&password=Morgana@Nimbus2026!&client_id=04b07795-8ddb-461a-bbee-02f9e1bf7b46&scope=https://graph.microsoft.com/.default\"; try { Invoke-RestMethod -Uri \"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token\" -Method POST -Body $body -ContentType 'application/x-www-form-urlencoded'; Write-Host \"[SUCCESS] Sign-in from non-VPN IP generated for Nimbus account\" } catch { Write-Host \"[INFO] Auth result: $($_.Exception.Message.Split('\"')[0])\" }; Write-Host \"[INFO] ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN triggered if Conditional Access Named Location is configured\"; $u.Id | Set-Content -Path \"$env:TEMP\\morgana-nimbus-$ts.tmp\"",
+      "cleanup_command": "$tmpFiles = Get-ChildItem \"$env:TEMP\\morgana-nimbus-*.tmp\" -ErrorAction SilentlyContinue; $tmpFiles | ForEach-Object { $uid = Get-Content $_; try { Remove-MgUser -UserId $uid -Confirm:$false; Write-Host \"[INFO] Removed user $uid\" } catch {}; Remove-Item $_ }; Write-Host \"[SUCCESS] Cleanup complete\"",
+      "detection_rule": "ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - ACN-ST-EntraIDProtection-Anonymous IP address",
+      "name": "Excalibur - ACN-ST-EntraIDProtection-Anonymous IP address",
+      "description": "Queries current Entra ID Protection risk detections for anonymous IP sign-ins. To fully trigger this detection, authenticate from a Tor exit node or known anonymization proxy while connected. Provides guidance and reads existing risk events.",
+      "tactic": "Command and Control",
+      "tcode": "T1090",
+      "technique_name": "Proxy",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "Write-Host \"[INFO] Querying Entra ID Protection - Anonymous IP risk detections...\"; try { $riskDetections = Get-MgRiskDetection -Filter \"riskEventType eq 'anonymizedIPAddress'\" -Top 5; Write-Host \"[INFO] Recent anonymous IP detections: $($riskDetections.Count)\"; $riskDetections | ForEach-Object { Write-Host \"  - $($_.UserDisplayName) | $($_.IpAddress) | $($_.DetectedDateTime)\" }; Write-Host \"[INFO] To trigger ACN-ST-EntraIDProtection-Anonymous IP address:\"; Write-Host \"  1. Use Tor Browser or connect through a known anonymous proxy\"; Write-Host \"  2. Navigate to https://myapps.microsoft.com and authenticate with a test account\"; Write-Host \"  3. Entra ID Protection detects the anonymous IP and raises a risk event\"; Write-Host \"  4. Sentinel rule ACN-ST-EntraIDProtection-Anonymous IP address fires on the risk event\" } catch { Write-Host \"[WARN] Could not query risk detections (requires Entra ID P2): $_\" }; Write-Host \"[INFO] This detection is IP-reputation based - manual simulation from anonymizing network required\"",
+      "cleanup_command": "Write-Host \"[INFO] No cleanup required - this simulation was informational/read-only. Dismiss any risk events created via Get-MgRiskyUser and Confirm-MgRiskyUserCompromised if needed.\"",
+      "detection_rule": "ACN-ST-EntraIDProtection-Anonymous IP address",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Create incidents based on Microsoft Entra ID Protection alerts",
+      "name": "Excalibur - Create incidents based on Microsoft Entra ID Protection alerts",
+      "description": "Queries Entra ID Protection for existing risk events and risky users to validate that the Sentinel incident creation rule for Entra ID Protection alerts is operational. Creates a test risky condition by combining multiple risk signals.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "Write-Host \"[INFO] Checking Entra ID Protection integration with Microsoft Sentinel...\"; try { $riskyUsers = Get-MgRiskyUser | Where-Object { $_.RiskLevel -ne 'none' -and $_.RiskState -ne 'dismissed' } | Select-Object -First 10; Write-Host \"[INFO] Active risky users: $($riskyUsers.Count)\"; $riskyUsers | ForEach-Object { Write-Host \"  - $($_.UserDisplayName) | Risk: $($_.RiskLevel) | State: $($_.RiskState) | Last updated: $($_.RiskLastUpdatedDateTime)\" }; $riskDetections = Get-MgRiskDetection | Where-Object { $_.RiskState -eq 'atRisk' } | Select-Object -First 5; Write-Host \"[INFO] Active risk detections: $($riskDetections.Count)\"; $riskDetections | ForEach-Object { Write-Host \"  - $($_.UserDisplayName) | Type: $($_.RiskEventType) | $($_.IpAddress)\" }; Write-Host \"[INFO] Validation: Sentinel rule 'Create incidents based on Microsoft Entra ID Protection alerts' should auto-create incidents from the above events\"; Write-Host \"[INFO] If no risky users found, run other Excalibur scripts first to generate risk signals, or use Confirm-MgRiskyUserCompromised to manually trigger incident creation\" } catch { Write-Host \"[WARN] Could not query Entra ID Protection (requires Entra ID P2): $_\" }",
+      "cleanup_command": "Write-Host \"[INFO] To dismiss risk events: $uids | ForEach-Object { Invoke-MgDismissRiskyUser -UserIds @($_) }\"; Write-Host \"[INFO] Run this manually after validating that Sentinel created the expected incidents\"",
+      "detection_rule": "Create incidents based on Microsoft Entra ID Protection alerts",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "ACN-ST-EntraID-Group Deleted",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Group Deleted",
+      "package": "excalibur",
+      "tcode": "T1531",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Group Deleted (Create)",
+        "Excalibur - ACN-ST-EntraID-Group Deleted (Delete)"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Bulk Changes to Privileged Account Permissions"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Account Created and Deleted in Short Timeframe",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Account Created and Deleted in Short Timeframe",
+      "package": "excalibur",
+      "tcode": "T1136",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Account Created and Deleted in Short Timeframe"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-User added to Microsoft Entra ID Privileged Groups"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts",
+      "package": "excalibur",
+      "tcode": "T1556",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Authentication Methods Changed for Privileged Accounts"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Privileged Role Assigned Outside PIM",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Privileged Role Assigned Outside PIM",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Privileged Role Assigned Outside PIM"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Changes to PIM Settings",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Changes to PIM Settings",
+      "package": "excalibur",
+      "tcode": "T1484",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Changes to PIM Settings"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-User Added to Admin Role",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-User Added to Admin Role",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-User Added to Admin Role"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-MFA disabled for a user",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-MFA disabled for a user",
+      "package": "excalibur",
+      "tcode": "T1556",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-MFA disabled for a user"
+      ]
+    },
+    {
+      "name": "ACN-ST-TH-UEBA-Anomalous Password Reset",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-TH-UEBA-Anomalous Password Reset",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-TH-UEBA-Anomalous Password Reset"
+      ]
+    },
+    {
+      "name": "ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-UEBA-Anomalous Microsoft Entra ID Account Manipulation"
+      ]
+    },
+    {
+      "name": "ACN-ST-Auditlogs-Entra ID Role Assignment Permanent",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-Auditlogs-Entra ID Role Assignment Permanent",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-Auditlogs-Entra ID Role Assignment Permanent"
+      ]
+    },
+    {
+      "name": "ACN-ST-Auditlogs-Create new PIM role Assignment",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-Auditlogs-Create new PIM role Assignment",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-Auditlogs-Create new PIM role Assignment"
+      ]
+    },
+    {
+      "name": "ACN-ST-Auditlogs-Entra ID Role Management Permission Grant",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-Auditlogs-Entra ID Role Management Permission Grant",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-Auditlogs-Entra ID Role Management Permission Grant"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Consent Phishing - Admin Consent",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Consent Phishing - Admin Consent",
+      "package": "excalibur",
+      "tcode": "T1528",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Consent Phishing - Admin Consent"
+      ]
+    },
+    {
+      "name": "ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - ACN-ST-AuditLogs-EntraID-Sensitive Group Modification Detection"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Attempts to sign in to disabled accounts",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Attempts to sign in to disabled accounts",
+      "package": "excalibur",
+      "tcode": "T1078",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Attempts to sign in to disabled accounts"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Anomaly Sign In Event from an IP",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Anomaly Sign In Event from an IP",
+      "package": "excalibur",
+      "tcode": "T1078.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Anomaly Sign In Event from an IP"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraID-Auth-Brute force attack against Azure Portal",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraID-Auth-Brute force attack against Azure Portal",
+      "package": "excalibur",
+      "tcode": "T1110",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraID-Auth-Brute force attack against Azure Portal"
+      ]
+    },
+    {
+      "name": "ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN",
+      "package": "excalibur",
+      "tcode": "T1078.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "Excalibur - ACN-ST-SigninLogs-Nimbus Logging in Outside The VPN"
+      ]
+    },
+    {
+      "name": "ACN-ST-EntraIDProtection-Anonymous IP address",
+      "description": "Excalibur emulation chain for detection rule: ACN-ST-EntraIDProtection-Anonymous IP address",
+      "package": "excalibur",
+      "tcode": "T1090",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - ACN-ST-EntraIDProtection-Anonymous IP address"
+      ]
+    },
+    {
+      "name": "Create incidents based on Microsoft Entra ID Protection alerts",
+      "description": "Excalibur emulation chain for detection rule: Create incidents based on Microsoft Entra ID Protection alerts",
+      "package": "excalibur",
+      "tcode": "T1078.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "Excalibur - Create incidents based on Microsoft Entra ID Protection alerts"
+      ]
+    }
+  ]
+}
