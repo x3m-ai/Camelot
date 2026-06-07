@@ -1,0 +1,613 @@
+{
+  "package_id": "excalibur-execution-v1",
+  "package_name": "Excalibur - Execution Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Execution tactic (TA0002). Covers 12 scriptable parent techniques. Local scripts (T1047-T1620) require the Morgana agent on a Windows test machine onboarded to Microsoft Defender for Endpoint. Cloud scripts (T1648, T1651) require an Azure subscription. All scripts target Microsoft Sentinel built-in analytics rules.",
+  "author": "X3M.AI",
+  "created": "2026-06-07",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0002",
+  "mitre_tactic_name": "Execution",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "Windows Security Events via AMA connector active in Microsoft Sentinel (Event ID 4688, 7045)",
+    "For T1569 (services): Morgana agent must run as SYSTEM or local Administrator",
+    "For T1106 (native API): .NET Framework 4.5+ required (standard on all modern Windows)",
+    "For cloud scripts T1648 and T1651: Az PowerShell module: Install-Module Az -Scope CurrentUser -Force",
+    "For cloud scripts: Azure App Registration with Contributor on target subscription",
+    "Test environment only - never run against production systems or monitored production environments"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "common_local",
+      "label": "Common - Local Environment (all local scripts)",
+      "description": "Shared settings used by all local PowerShell execution scripts (T1047-T1620). Set once before running any local script. The default temp path is already Defender-excluded in a standard Morgana installation.",
+      "scope": "local",
+      "used_by_tcodes": ["T1047", "T1053", "T1059", "T1072", "T1106", "T1129", "T1204", "T1559", "T1569", "T1620"],
+      "tags": [
+        {
+          "key": "excalibur_exec_temp_dir",
+          "label": "Temp Directory (Defender-excluded)",
+          "description": "Directory for temporary test artefacts (scripts, compiled files). Must be excluded from Microsoft Defender to prevent interference. Default is the standard Morgana data path configured as a Defender exclusion during installation.",
+          "default": "C:\\ProgramData\\Morgana\\temp",
+          "example": "C:\\ProgramData\\Morgana\\temp",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "common_azure_identity",
+      "label": "Common - Azure Identity (all cloud scripts)",
+      "description": "Azure App Registration credentials shared by all cloud execution scripts (T1648, T1651). Set these once. The app registration requires Contributor on the target subscription.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1648", "T1651"],
+      "tags": [
+        {
+          "key": "excalibur_client_id",
+          "label": "Azure App Client ID",
+          "description": "Application (client) ID of the Azure App Registration. Found in Azure Portal > App Registrations > Overview.",
+          "default": "",
+          "example": "4974f4b3-bfb2-4da6-9f39-d785e0e92cdd",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_client_secret",
+          "label": "Azure App Client Secret",
+          "description": "Client secret value from App Registrations > Certificates & secrets. Treat as a password - set in Morgana Tags and never share.",
+          "default": "",
+          "example": "B2J8Q~xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "sensitive": true,
+          "required": true
+        },
+        {
+          "key": "excalibur_tenant_id",
+          "label": "Azure Tenant ID",
+          "description": "Directory (tenant) ID. Found in Azure Portal > Microsoft Entra ID > Overview.",
+          "default": "",
+          "example": "af65d60d-6cea-4881-9ce3-caecd6f5023d",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1047_wmi",
+      "label": "T1047 - Windows Management Instrumentation",
+      "description": "Settings for the WMI process creation script. The spawned process is terminated immediately - no lasting impact. Detection fires on Win32_Process.Create WMI telemetry captured by MDE.",
+      "scope": "local",
+      "used_by_tcodes": ["T1047"],
+      "tags": [
+        {
+          "key": "excalibur_exec_wmi_process",
+          "label": "Process to spawn via WMI",
+          "description": "Benign executable to launch via Win32_Process.Create. Terminated within 2 seconds. Must exist on the target machine.",
+          "default": "calc.exe",
+          "example": "notepad.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1053_sched",
+      "label": "T1053 - Scheduled Task / Job",
+      "description": "Settings for the scheduled task script. Task fires once 10 seconds after registration then is unregistered automatically. Detection fires on Event ID 4698 (Scheduled task created).",
+      "scope": "local",
+      "used_by_tcodes": ["T1053"],
+      "tags": [
+        {
+          "key": "excalibur_exec_sched_task_name",
+          "label": "Test Scheduled Task Name",
+          "description": "Name for the temporary scheduled task. Automatically unregistered after execution. Must be unique on the target machine.",
+          "default": "MorganaTest-SchedExec",
+          "example": "MorganaTest-SchedExec",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_exec_sched_payload",
+          "label": "Task Action Payload",
+          "description": "Argument string passed to cmd.exe when the task fires. Keep benign - the task creation event (Event ID 4698) is what detection rules target, not the payload.",
+          "default": "whoami > NUL",
+          "example": "whoami > NUL",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1059_ps",
+      "label": "T1059 - Command and Scripting Interpreter (PowerShell)",
+      "description": "Settings for the PowerShell -EncodedCommand execution script. The payload is automatically base64-encoded at runtime and launched via powershell.exe -EncodedCommand. Detection fires on the encoding pattern (Sentinel: Base64 encoded PowerShell expression detected).",
+      "scope": "local",
+      "used_by_tcodes": ["T1059"],
+      "tags": [
+        {
+          "key": "excalibur_exec_ps_payload",
+          "label": "PowerShell payload (plain text - auto base64-encoded at runtime)",
+          "description": "Plain text PowerShell command. Automatically converted to Unicode base64 and launched via -EncodedCommand. Keep benign - the obfuscation pattern is what triggers detection.",
+          "default": "Write-Host 'MorganaTest-T1059'",
+          "example": "Write-Host 'MorganaTest-T1059'",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1204_userexec",
+      "label": "T1204 - User Execution",
+      "description": "Settings for the user execution simulation. Creates a .bat file with a lure-style name and executes it as if a user opened a suspicious attachment. File is cleaned up automatically.",
+      "scope": "local",
+      "used_by_tcodes": ["T1204"],
+      "tags": [
+        {
+          "key": "excalibur_exec_userexec_filename",
+          "label": "Lure file name (.bat extension required)",
+          "description": "Name of the test file created in the temp directory. Use a name resembling a phishing lure to increase detection rule match probability.",
+          "default": "MorganaTest-Invoice-2026.bat",
+          "example": "MorganaTest-Shipment-Document.bat",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1559_com",
+      "label": "T1559 - Inter-Process Communication (COM Objects)",
+      "description": "Settings for the COM object execution script. WScript.Shell is the most commonly abused COM object for code execution and is well-covered by MDE behavioral detection rules.",
+      "scope": "local",
+      "used_by_tcodes": ["T1559"],
+      "tags": [
+        {
+          "key": "excalibur_exec_com_progid",
+          "label": "COM ProgID to instantiate",
+          "description": "ProgID of the COM object to create via New-Object -ComObject. WScript.Shell is recommended - widely abused and well-detected by default MDE rules.",
+          "default": "WScript.Shell",
+          "example": "WScript.Shell",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_exec_com_command",
+          "label": "Command to execute via COM .Run()",
+          "description": "Command string passed to WScript.Shell.Run(). The COM object instantiation and Run() invocation are the detection indicators - keep the command itself benign.",
+          "default": "cmd.exe /c whoami > NUL",
+          "example": "cmd.exe /c echo MorganaTest",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1569_services",
+      "label": "T1569 - System Services",
+      "description": "Settings for the service creation and execution script. Requires Administrator or SYSTEM privileges. Service is removed automatically after execution. Detection fires on Event ID 7045 (A new service was installed).",
+      "scope": "local",
+      "used_by_tcodes": ["T1569"],
+      "tags": [
+        {
+          "key": "excalibur_exec_svc_name",
+          "label": "Test Service Name",
+          "description": "Name for the temporary test Windows service. Automatically removed after execution. Must be unique on the target machine.",
+          "default": "MorganaTestSvc",
+          "example": "MorganaTestSvc",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_exec_svc_binary",
+          "label": "Service Binary Path (LOLBin)",
+          "description": "Full path to the binary registered as the service executable. Use a system LOLBin to avoid AV interference while still generating the Event ID 7045 detection signal.",
+          "default": "C:\\Windows\\System32\\cmd.exe",
+          "example": "C:\\Windows\\System32\\cmd.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1648_serverless",
+      "label": "T1648 - Serverless Execution (Azure Automation Runbook)",
+      "description": "Settings for the Azure Automation Runbook script. Creates a runbook, publishes and runs it, then deletes it. Detection fires on Azure Activity Logs captured by the Microsoft Sentinel Azure Activity connector. Requires an existing Azure Automation Account.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1648"],
+      "tags": [
+        {
+          "key": "excalibur_exec_azure_sub_id",
+          "label": "Azure Subscription ID",
+          "description": "Subscription ID where the Azure Automation Account is deployed. Found in Azure Portal > Subscriptions.",
+          "default": "",
+          "example": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_azure_rg",
+          "label": "Azure Resource Group (Automation Account)",
+          "description": "Name of the Resource Group containing the Azure Automation Account.",
+          "default": "",
+          "example": "rg-morgana-test",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_automation_account",
+          "label": "Azure Automation Account Name",
+          "description": "Name of the Azure Automation Account. Create one in Azure Portal > Automation Accounts if not available.",
+          "default": "",
+          "example": "morgana-automation-test",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_runbook_name",
+          "label": "Test Runbook Name",
+          "description": "Name for the test runbook to be created and executed. Deleted by the script after execution. Must be unique in the Automation Account.",
+          "default": "MorganaTest-Runbook",
+          "example": "MorganaTest-Runbook",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1651_cloudadmin",
+      "label": "T1651 - Cloud Administration Command (VM Run Command)",
+      "description": "Settings for the Azure VM Run Command script. Executes a command on a target VM via Invoke-AzVMRunCommand. Detection fires on Azure Activity Logs. Requires a test VM in the target subscription.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1651"],
+      "tags": [
+        {
+          "key": "excalibur_exec_vm_sub_id",
+          "label": "Azure Subscription ID (VM)",
+          "description": "Subscription ID where the test VM resides. May be the same as excalibur_exec_azure_sub_id.",
+          "default": "",
+          "example": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_vm_rg",
+          "label": "VM Resource Group",
+          "description": "Name of the Resource Group containing the target test virtual machine.",
+          "default": "",
+          "example": "rg-morgana-test",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_vm_name",
+          "label": "Target VM Name",
+          "description": "Name of the test virtual machine on which Run Command will be invoked.",
+          "default": "",
+          "example": "morgana-test-vm01",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_exec_vm_command",
+          "label": "Command to run on VM",
+          "description": "PowerShell command executed on the target VM. The Run Command invocation is the detection target - keep the command benign.",
+          "default": "Write-Host 'MorganaTest-T1651'",
+          "example": "Write-Host 'MorganaTest-T1651'",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - Execution-T1047-WMI Process Creation",
+      "name": "Excalibur - Execution-T1047-WMI Process Creation",
+      "description": "Spawns a process via Windows Management Instrumentation Win32_Process.Create, simulating WMI-based execution used by APTs to evade process creation monitoring. Process is terminated immediately after spawn. Generates WMI telemetry visible in MDE DeviceProcessEvents and Windows Security Events.",
+      "tactic": "Execution",
+      "tcode": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir", "excalibur_exec_wmi_process"],
+      "command": "Write-Host '[START] T1047 - WMI process creation via Win32_Process.Create'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $procName = '#{excalibur_exec_wmi_process}'; try { $wmi = [wmiclass]'Win32_Process'; $result = $wmi.Create($procName); if ($result.ReturnValue -eq 0) { $spawnedPid = $result.ProcessId; Write-Host ('[INFO] Process spawned via WMI: ' + $procName + ' (PID: ' + $spawnedPid + ')'); Start-Sleep 2; Stop-Process -Id $spawnedPid -Force -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1047 - WMI process creation logged. Sentinel target: WMI used to execute payload' } else { Write-Host ('[ERROR] WMI Create returned code: ' + $result.ReturnValue) } } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1047 cleanup: no persistent artefacts - process terminated in main command'",
+      "detection_rule": "WMI used to execute payload",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1053-Scheduled Task",
+      "name": "Excalibur - Execution-T1053-Scheduled Task",
+      "description": "Creates a Windows scheduled task via PowerShell Register-ScheduledTask, triggers it 10 seconds after registration, then unregisters it. Simulates adversary use of task scheduler for persistent execution. Generates Event ID 4698 (Scheduled task created).",
+      "tactic": "Execution",
+      "tcode": "T1053",
+      "technique_name": "Scheduled Task/Job",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_sched_task_name", "excalibur_exec_sched_payload"],
+      "command": "Write-Host '[START] T1053 - Scheduled task creation and execution'; $taskName = '#{excalibur_exec_sched_task_name}'; $payload = '#{excalibur_exec_sched_payload}'; try { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument ('/c ' + $payload); $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10); $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter 00:00:30 -ExecutionTimeLimit 00:01:00; Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Force | Out-Null; Write-Host ('[INFO] Task registered: ' + $taskName + ' - triggers in 10 seconds'); Start-Sleep 18; $info = Get-ScheduledTaskInfo -TaskName $taskName -ErrorAction SilentlyContinue; if ($info) { Write-Host ('[INFO] Last run: ' + $info.LastRunTime + ' - Result: ' + $info.LastTaskResult) }; Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1053 - Scheduled task executed and removed. Sentinel target: Scheduled Task Created or Modified' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Unregister-ScheduledTask -TaskName '#{excalibur_exec_sched_task_name}' -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[INFO] T1053 cleanup: task removed if still present'",
+      "detection_rule": "Scheduled Task Created or Modified",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1059-PowerShell EncodedCommand",
+      "name": "Excalibur - Execution-T1059-PowerShell EncodedCommand",
+      "description": "Executes a PowerShell payload via the -EncodedCommand argument (Unicode base64), a technique widely used to obfuscate commands and bypass basic command-line logging. Automatically base64-encodes the payload at runtime. Triggers Sentinel rules monitoring for base64-encoded PowerShell.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_ps_payload"],
+      "command": "Write-Host '[START] T1059 - PowerShell encoded command execution (-EncodedCommand)'; $psPayload = '#{excalibur_exec_ps_payload}'; try { $encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($psPayload)); $argStr = '-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand ' + $encoded; Write-Host '[INFO] Launching powershell.exe -EncodedCommand [base64 payload]'; $proc = Start-Process -FilePath 'powershell.exe' -ArgumentList $argStr -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] Process exited with code: ' + $proc.ExitCode); Write-Host '[SUCCESS] T1059 - Encoded PowerShell executed. Sentinel target: Base64 encoded PowerShell expression detected' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1059 cleanup: no persistent artefacts'",
+      "detection_rule": "Base64 encoded PowerShell expression detected",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1072-Software Deployment Tools",
+      "name": "Excalibur - Execution-T1072-Software Deployment Tools",
+      "description": "Simulates software deployment tool execution patterns: invokes msiexec.exe as a LOLBin and launches a payload script via silent PowerShell with -ExecutionPolicy Bypass. These patterns are characteristic of adversaries abusing SCCM, PDQ Deploy, or Ansible for code execution. Note: full-fidelity simulation requires a live deployment system.",
+      "tactic": "Execution",
+      "tcode": "T1072",
+      "technique_name": "Software Deployment Tools",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir"],
+      "command": "Write-Host '[START] T1072 - Software deployment tools execution pattern'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; try { $scriptPath = Join-Path $tmpDir 'MorganaTest-T1072-DeployPayload.ps1'; 'Write-Host MorganaTest-T1072-SoftwareDeployment' | Set-Content $scriptPath -Encoding UTF8; Write-Host '[INFO] Step 1 - msiexec.exe invocation (software installer LOLBin pattern)'; $msiArgs = '/quiet /i ' + (Join-Path $tmpDir 'nonexistent.msi'); Start-Process -FilePath 'msiexec.exe' -ArgumentList $msiArgs -Wait -ErrorAction SilentlyContinue; Write-Host '[INFO] msiexec invocation complete (MSI not found - expected, process creation telemetry generated)'; Write-Host '[INFO] Step 2 - Silent PowerShell -ExecutionPolicy Bypass (deployment agent execution pattern)'; $psArgs = '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File ' + $scriptPath; $proc = Start-Process -FilePath 'powershell.exe' -ArgumentList $psArgs -PassThru -Wait; Write-Host ('[INFO] Deployed script exit code: ' + $proc.ExitCode); Remove-Item $scriptPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1072 - Software deployment pattern complete. Sentinel target: Suspicious msiexec usage / PowerShell -ExecutionPolicy Bypass' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' 'MorganaTest-T1072-DeployPayload.ps1') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1072 cleanup: payload script removed'",
+      "detection_rule": "Suspicious msiexec usage / PowerShell -ExecutionPolicy Bypass",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1106-Native API",
+      "name": "Excalibur - Execution-T1106-Native API",
+      "description": "Demonstrates native API (kernel32.dll) access via .NET P/Invoke compiled at runtime with Add-Type inline C#. Calls OpenProcess on the current process as a benign demonstration. This pattern is used by adversaries to bypass PowerShell-level monitoring by calling Win32 API directly. C# source compiled in the Defender-excluded temp directory.",
+      "tactic": "Execution",
+      "tcode": "T1106",
+      "technique_name": "Native API",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir"],
+      "command": "Write-Host '[START] T1106 - Native API kernel32.dll via .NET P/Invoke'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $csPath = Join-Path $tmpDir 'MorganaT1106.cs'; try { $q = [char]34; $lines = @(); $lines += 'using System;'; $lines += 'using System.Runtime.InteropServices;'; $lines += 'public class MorganaT1106 {'; $lines += ('[DllImport(' + $q + 'kernel32.dll' + $q + ', SetLastError=true)] public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);'); $lines += ('[DllImport(' + $q + 'kernel32.dll' + $q + ', SetLastError=true)] public static extern bool CloseHandle(IntPtr hObject);'); $lines += ('[DllImport(' + $q + 'kernel32.dll' + $q + ')] public static extern uint GetCurrentProcessId();'); $lines += '}'; $lines | Set-Content $csPath -Encoding UTF8; Add-Type -Path $csPath -ErrorAction Stop; $selfPid = [MorganaT1106]::GetCurrentProcessId(); $hProc = [MorganaT1106]::OpenProcess(0x0400, $false, $selfPid); if ($hProc -ne [IntPtr]::Zero) { Write-Host ('[INFO] OpenProcess via P/Invoke succeeded - PID: ' + $selfPid + ' handle: ' + $hProc); [MorganaT1106]::CloseHandle($hProc) | Out-Null; Write-Host '[SUCCESS] T1106 - Native API P/Invoke kernel32.dll executed. Sentinel target: Suspicious API call pattern via .NET reflection (MDE behavioral)' } else { Write-Host ('[WARN] OpenProcess returned null - error code: ' + [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()) }; Remove-Item $csPath -ErrorAction SilentlyContinue } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $csPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' 'MorganaT1106.cs') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1106 cleanup: C# source file removed'",
+      "detection_rule": "Suspicious API call pattern via .NET P/Invoke",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1129-Shared Modules",
+      "name": "Excalibur - Execution-T1129-Shared Modules",
+      "description": "Loads a .NET assembly from disk using Assembly.LoadFile, simulating adversary use of shared module loading to execute code. Targets a benign system .NET DLL. This technique is used to load malicious assemblies into a process, bypassing application whitelisting that focuses on process creation rather than module loads.",
+      "tactic": "Execution",
+      "tcode": "T1129",
+      "technique_name": "Shared Modules",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1129 - Shared modules loading via Assembly.LoadFile'; try { $runtimeDir = [System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory(); $candidates = @('System.dll', 'System.Core.dll', 'Microsoft.CSharp.dll'); $asmPath = $null; foreach ($candidate in $candidates) { $fp = Join-Path $runtimeDir $candidate; if (Test-Path $fp) { $asmPath = $fp; break } }; if (-not $asmPath) { $asmPath = (Get-ChildItem $runtimeDir -Filter '*.dll' | Select-Object -First 1).FullName }; Write-Host ('[INFO] Loading assembly from disk: ' + $asmPath); $asm = [System.Reflection.Assembly]::LoadFile($asmPath); Write-Host ('[INFO] Module loaded: ' + $asm.GetName().Name + ' v' + $asm.GetName().Version); Write-Host '[SUCCESS] T1129 - Shared module loaded via Assembly.LoadFile. Sentinel target: Suspicious .NET assembly load (MDE behavioral detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1129 cleanup: no persistent artefacts - loaded assembly unloads with the process'",
+      "detection_rule": "Suspicious .NET assembly load",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1204-User Execution",
+      "name": "Excalibur - Execution-T1204-User Execution",
+      "description": "Creates a .bat file with a phishing-lure style name in the Defender-excluded temp directory and executes it as if a user opened a malicious attachment. Generates script execution telemetry from a non-standard path, a key indicator for user execution detection rules.",
+      "tactic": "Execution",
+      "tcode": "T1204",
+      "technique_name": "User Execution",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir", "excalibur_exec_userexec_filename"],
+      "command": "Write-Host '[START] T1204 - User execution simulation (lure file execution)'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $fileName = '#{excalibur_exec_userexec_filename}'; $filePath = Join-Path $tmpDir $fileName; try { '@echo off' | Set-Content $filePath -Encoding ASCII; 'echo MorganaTest-T1204-UserExecutedPayload' | Add-Content $filePath -Encoding ASCII; 'exit 0' | Add-Content $filePath -Encoding ASCII; Write-Host ('[INFO] Lure file created: ' + $filePath); Write-Host '[INFO] Simulating user execution of downloaded file'; $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList ('/c ' + $filePath) -WindowStyle Normal -PassThru -Wait; Write-Host ('[INFO] Payload exit code: ' + $proc.ExitCode); Remove-Item $filePath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1204 - User execution simulated. Sentinel target: Suspicious script execution from unusual path (MDE behavioral)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $filePath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' '#{excalibur_exec_userexec_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1204 cleanup: lure file removed'",
+      "detection_rule": "Suspicious script execution from unusual path",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1559-COM Object Execution",
+      "name": "Excalibur - Execution-T1559-COM Object Execution",
+      "description": "Instantiates a COM object (WScript.Shell by default) and uses it to execute a command via the .Run() method, simulating adversary abuse of COM for code execution. WScript.Shell is among the most commonly abused COM objects and is well-covered by MDE behavioral detection.",
+      "tactic": "Execution",
+      "tcode": "T1559",
+      "technique_name": "Inter-Process Communication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_com_progid", "excalibur_exec_com_command"],
+      "command": "Write-Host '[START] T1559 - Inter-Process Communication via COM object execution'; $progId = '#{excalibur_exec_com_progid}'; $comCmd = '#{excalibur_exec_com_command}'; try { $com = New-Object -ComObject $progId -ErrorAction Stop; Write-Host ('[INFO] COM object instantiated: ' + $progId); $result = $com.Run($comCmd, 0, $true); Write-Host ('[INFO] COM.Run() completed - exit code: ' + $result); [System.Runtime.InteropServices.Marshal]::ReleaseComObject($com) | Out-Null; Write-Host '[SUCCESS] T1559 - COM object execution completed. Sentinel target: Suspicious COM object used for process execution (MDE behavioral)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1559 cleanup: no persistent artefacts - COM object was released'",
+      "detection_rule": "Suspicious COM object used for process execution",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1569-System Services",
+      "name": "Excalibur - Execution-T1569-System Services",
+      "description": "Creates a Windows service using New-Service (requires Administrator or SYSTEM), attempts to start it, then removes it. Simulates adversary use of service creation for persistent execution. Generates Event ID 7045 (A new service was installed), one of the highest-fidelity execution detection signals in Windows Security Events.",
+      "tactic": "Execution",
+      "tcode": "T1569",
+      "technique_name": "System Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_svc_name", "excalibur_exec_svc_binary"],
+      "command": "Write-Host '[START] T1569 - System services execution (New-Service)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1569 requires local Administrator or SYSTEM. Ensure Morgana agent is running with elevated privileges.'; exit 1 }; $svcName = '#{excalibur_exec_svc_name}'; $binPath = '#{excalibur_exec_svc_binary}'; try { $null = & sc.exe delete $svcName 2>&1; Start-Sleep 1; $svc = New-Service -Name $svcName -BinaryPathName $binPath -StartupType Manual -Description 'MorganaTest service - will be removed' -ErrorAction Stop; Write-Host ('[INFO] Service created: ' + $svcName + ' | Binary: ' + $binPath); Start-Service -Name $svcName -ErrorAction SilentlyContinue; Start-Sleep 2; Stop-Service -Name $svcName -Force -ErrorAction SilentlyContinue; $null = & sc.exe delete $svcName 2>&1; Write-Host '[SUCCESS] T1569 - Service created, start attempted, and removed. Sentinel target: New Windows Service Created (Event ID 7045)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); $null = & sc.exe delete $svcName 2>&1 }",
+      "cleanup_command": "$null = & sc.exe delete '#{excalibur_exec_svc_name}' 2>&1; Write-Host '[INFO] T1569 cleanup: service removed if still present'",
+      "detection_rule": "New Windows Service Created",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1620-Reflective Code Loading",
+      "name": "Excalibur - Execution-T1620-Reflective Code Loading",
+      "description": "Loads a .NET assembly directly from memory byte array using Assembly.Load(byte[]), simulating reflective loading used by post-exploitation frameworks (Cobalt Strike, Metasploit). This bypasses file-based detection because the assembly never touches disk as a standalone file. Generates AMSI and MDE in-memory behavioral telemetry.",
+      "tactic": "Execution",
+      "tcode": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1620 - Reflective code loading (in-memory assembly via Assembly.Load)'; try { $runtimeDir = [System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory(); $candidates = @('System.dll', 'System.Core.dll'); $asmPath = $null; foreach ($c in $candidates) { $fp = Join-Path $runtimeDir $c; if (Test-Path $fp) { $asmPath = $fp; break } }; if (-not $asmPath) { $asmPath = (Get-ChildItem $runtimeDir -Filter '*.dll' | Select-Object -First 1).FullName }; Write-Host ('[INFO] Reading assembly bytes from: ' + $asmPath); $bytes = [System.IO.File]::ReadAllBytes($asmPath); Write-Host ('[INFO] Loaded ' + $bytes.Length + ' bytes into memory'); $asm = [System.Reflection.Assembly]::Load($bytes); Write-Host ('[INFO] Assembly loaded from memory: ' + $asm.GetName().Name + ' v' + $asm.GetName().Version); Write-Host '[SUCCESS] T1620 - Reflective in-memory assembly load completed. Sentinel target: Suspicious in-memory .NET assembly load (MDE AMSI behavioral detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1620 cleanup: no persistent artefacts - in-memory assembly unloads with the AppDomain'",
+      "detection_rule": "Suspicious in-memory .NET assembly load",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1648-Serverless Execution",
+      "name": "Excalibur - Execution-T1648-Serverless Execution",
+      "description": "Creates, publishes, and executes an Azure Automation PowerShell runbook, then removes it. Simulates adversary use of cloud-native serverless compute for code execution without managing infrastructure. Generates Azure Activity Log events captured by the Microsoft Sentinel Azure Activity connector.",
+      "tactic": "Execution",
+      "tcode": "T1648",
+      "technique_name": "Serverless Execution",
+      "executor": "powershell",
+      "platform": "azure",
+      "required_tags": ["excalibur_client_id", "excalibur_client_secret", "excalibur_tenant_id", "excalibur_exec_azure_sub_id", "excalibur_exec_azure_rg", "excalibur_exec_automation_account", "excalibur_exec_runbook_name"],
+      "command": "Write-Host '[START] T1648 - Serverless execution via Azure Automation Runbook'; $secSecret = ConvertTo-SecureString '#{excalibur_client_secret}' -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential('#{excalibur_client_id}', $secSecret); try { Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant '#{excalibur_tenant_id}' -Subscription '#{excalibur_exec_azure_sub_id}' -ErrorAction Stop | Out-Null; Write-Host '[INFO] Connected to Azure subscription'; $rg = '#{excalibur_exec_azure_rg}'; $aa = '#{excalibur_exec_automation_account}'; $rbName = '#{excalibur_exec_runbook_name}'; $rbPath = Join-Path $env:TEMP ($rbName + '.ps1'); 'Write-Output MorganaTest-T1648-ServerlessExecution' | Set-Content $rbPath -Encoding UTF8; Write-Host ('[INFO] Creating runbook: ' + $rbName + ' in account: ' + $aa); Import-AzAutomationRunbook -ResourceGroupName $rg -AutomationAccountName $aa -Name $rbName -Type PowerShell -Path $rbPath -Force -ErrorAction Stop | Out-Null; Publish-AzAutomationRunbook -ResourceGroupName $rg -AutomationAccountName $aa -Name $rbName -ErrorAction Stop | Out-Null; $job = Start-AzAutomationRunbook -ResourceGroupName $rg -AutomationAccountName $aa -Name $rbName -ErrorAction Stop; Write-Host ('[INFO] Runbook job started: ' + $job.JobId); Start-Sleep 15; $status = Get-AzAutomationJob -ResourceGroupName $rg -AutomationAccountName $aa -Id $job.JobId -ErrorAction SilentlyContinue; if ($status) { Write-Host ('[INFO] Job status: ' + $status.Status) }; Remove-AzAutomationRunbook -ResourceGroupName $rg -AutomationAccountName $aa -Name $rbName -Force -ErrorAction SilentlyContinue; Remove-Item $rbPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1648 - Azure Automation Runbook executed and removed. Sentinel target: Azure Automation runbook created or modified (Azure Activity connector)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item (Join-Path $env:TEMP ($rbName + '.ps1')) -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Write-Host '[INFO] T1648 cleanup: runbook removed in main command. Verify in Azure Portal > Automation Accounts if needed.'",
+      "detection_rule": "Azure Automation runbook created or modified",
+      "sentinel_connector": "Azure Activity",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1651-Cloud Admin Command",
+      "name": "Excalibur - Execution-T1651-Cloud Admin Command",
+      "description": "Executes a command on a target Azure virtual machine via Invoke-AzVMRunCommand, simulating adversary abuse of cloud administration features for VM code execution. Bypasses traditional endpoint security by leveraging the cloud management plane. Generates Azure Activity Log events captured by Microsoft Sentinel.",
+      "tactic": "Execution",
+      "tcode": "T1651",
+      "technique_name": "Cloud Administration Command",
+      "executor": "powershell",
+      "platform": "azure",
+      "required_tags": ["excalibur_client_id", "excalibur_client_secret", "excalibur_tenant_id", "excalibur_exec_vm_sub_id", "excalibur_exec_vm_rg", "excalibur_exec_vm_name", "excalibur_exec_vm_command"],
+      "command": "Write-Host '[START] T1651 - Cloud administration command via Azure VM Run Command'; $secSecret = ConvertTo-SecureString '#{excalibur_client_secret}' -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential('#{excalibur_client_id}', $secSecret); try { Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant '#{excalibur_tenant_id}' -Subscription '#{excalibur_exec_vm_sub_id}' -ErrorAction Stop | Out-Null; Write-Host '[INFO] Connected to Azure subscription'; $rg = '#{excalibur_exec_vm_rg}'; $vmName = '#{excalibur_exec_vm_name}'; $vmCmd = '#{excalibur_exec_vm_command}'; Write-Host ('[INFO] Invoking Run Command on VM: ' + $vmName + ' in resource group: ' + $rg); $result = Invoke-AzVMRunCommand -ResourceGroupName $rg -VMName $vmName -CommandId 'RunPowerShellScript' -ScriptString $vmCmd -ErrorAction Stop; $output = $result.Value | Where-Object { $_.Code -like 'ComponentStatus/StdOut/*' } | Select-Object -ExpandProperty Message -ErrorAction SilentlyContinue; Write-Host ('[INFO] Run Command output: ' + $output); Write-Host '[SUCCESS] T1651 - Azure VM Run Command executed. Sentinel target: Azure VM Run Command invoked from unusual source (Azure Activity connector)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1651 cleanup: no persistent artefacts - Run Command is ephemeral'",
+      "detection_rule": "Azure VM Run Command invoked from unusual source",
+      "sentinel_connector": "Azure Activity",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - Execution-T1047-WMI Process Creation",
+      "description": "Emulation chain for T1047: WMI Win32_Process.Create. Validates detection of WMI-based process spawning.",
+      "package": "excalibur",
+      "tcode": "T1047",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1047-WMI Process Creation"]
+    },
+    {
+      "name": "Excalibur - Execution-T1053-Scheduled Task",
+      "description": "Emulation chain for T1053: Scheduled task creation and execution. Validates Event ID 4698 detection.",
+      "package": "excalibur",
+      "tcode": "T1053",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1053-Scheduled Task"]
+    },
+    {
+      "name": "Excalibur - Execution-T1059-PowerShell EncodedCommand",
+      "description": "Emulation chain for T1059: PowerShell -EncodedCommand. Validates base64 obfuscation detection.",
+      "package": "excalibur",
+      "tcode": "T1059",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1059-PowerShell EncodedCommand"]
+    },
+    {
+      "name": "Excalibur - Execution-T1072-Software Deployment Tools",
+      "description": "Emulation chain for T1072: Software deployment LOLBin pattern. Validates msiexec and silent PowerShell detection.",
+      "package": "excalibur",
+      "tcode": "T1072",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1072-Software Deployment Tools"]
+    },
+    {
+      "name": "Excalibur - Execution-T1106-Native API",
+      "description": "Emulation chain for T1106: Native API P/Invoke via .NET. Validates kernel32 API call behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1106",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1106-Native API"]
+    },
+    {
+      "name": "Excalibur - Execution-T1129-Shared Modules",
+      "description": "Emulation chain for T1129: Shared module loading via Assembly.LoadFile. Validates .NET module load detection.",
+      "package": "excalibur",
+      "tcode": "T1129",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1129-Shared Modules"]
+    },
+    {
+      "name": "Excalibur - Execution-T1204-User Execution",
+      "description": "Emulation chain for T1204: User execution of lure file. Validates suspicious script execution from unusual path.",
+      "package": "excalibur",
+      "tcode": "T1204",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1204-User Execution"]
+    },
+    {
+      "name": "Excalibur - Execution-T1559-COM Object Execution",
+      "description": "Emulation chain for T1559: COM object execution via WScript.Shell. Validates COM misuse behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1559",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1559-COM Object Execution"]
+    },
+    {
+      "name": "Excalibur - Execution-T1569-System Services",
+      "description": "Emulation chain for T1569: Service creation and execution. Validates Event ID 7045 (New Windows Service).",
+      "package": "excalibur",
+      "tcode": "T1569",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1569-System Services"]
+    },
+    {
+      "name": "Excalibur - Execution-T1620-Reflective Code Loading",
+      "description": "Emulation chain for T1620: In-memory .NET assembly load. Validates AMSI/MDE behavioral detection of reflective loading.",
+      "package": "excalibur",
+      "tcode": "T1620",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1620-Reflective Code Loading"]
+    },
+    {
+      "name": "Excalibur - Execution-T1648-Serverless Execution",
+      "description": "Emulation chain for T1648: Azure Automation Runbook. Validates Azure Activity Log detection.",
+      "package": "excalibur",
+      "tcode": "T1648",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1648-Serverless Execution"]
+    },
+    {
+      "name": "Excalibur - Execution-T1651-Cloud Admin Command",
+      "description": "Emulation chain for T1651: Azure VM Run Command. Validates Azure Activity Log detection of management plane abuse.",
+      "package": "excalibur",
+      "tcode": "T1651",
+      "tactic": "Execution",
+      "script_refs": ["Excalibur - Execution-T1651-Cloud Admin Command"]
+    },
+    {
+      "name": "Excalibur - Execution Full Sweep (Local)",
+      "description": "Full sweep of all 10 local Execution technique emulations (T1047-T1620). Runs sequentially on the Morgana Windows agent. Requires MDE + Windows Security Events connectors active in Sentinel. T1569 requires agent to run as Administrator.",
+      "package": "excalibur",
+      "tcode": "TA0002",
+      "tactic": "Execution",
+      "script_refs": [
+        "Excalibur - Execution-T1047-WMI Process Creation",
+        "Excalibur - Execution-T1053-Scheduled Task",
+        "Excalibur - Execution-T1059-PowerShell EncodedCommand",
+        "Excalibur - Execution-T1072-Software Deployment Tools",
+        "Excalibur - Execution-T1106-Native API",
+        "Excalibur - Execution-T1129-Shared Modules",
+        "Excalibur - Execution-T1204-User Execution",
+        "Excalibur - Execution-T1559-COM Object Execution",
+        "Excalibur - Execution-T1569-System Services",
+        "Excalibur - Execution-T1620-Reflective Code Loading"
+      ]
+    }
+  ]
+}

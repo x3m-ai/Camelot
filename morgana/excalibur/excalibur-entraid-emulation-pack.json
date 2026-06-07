@@ -12,6 +12,125 @@
     "Test environment only - never run against production identity infrastructure",
     "Global Administrator or equivalent test role required"
   ],
+  "tag_categories": [
+    {
+      "category_id": "common_identity",
+      "label": "Common - Azure Identity (ALL scripts)",
+      "description": "Azure App Registration credentials. Set these ONCE before running any script in this pack. All 23 scripts use these four tags to authenticate to Microsoft Graph.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1531", "T1098", "T1136", "T1556", "T1484", "T1606", "T1078", "T1110", "T1528", "T1090"],
+      "tags": [
+        {
+          "key": "excalibur_client_id",
+          "label": "Azure App Client ID",
+          "description": "Application (client) ID of the Azure App Registration. Found in Azure Portal > App Registrations > Overview.",
+          "default": "",
+          "example": "4974f4b3-bfb2-4da6-9f39-d785e0e92cdd",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_client_secret",
+          "label": "Azure App Client Secret",
+          "description": "Client secret value. Found in App Registrations > Certificates & secrets. Treat as a password - set in Morgana Tags and never share.",
+          "default": "",
+          "example": "B2J8Q~xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "sensitive": true,
+          "required": true
+        },
+        {
+          "key": "excalibur_tenant_id",
+          "label": "Azure Tenant ID",
+          "description": "Directory (tenant) ID. Found in Azure Portal > Microsoft Entra ID > Overview.",
+          "default": "",
+          "example": "af65d60d-6cea-4881-9ce3-caecd6f5023d",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "excalibur_tenant_domain",
+          "label": "Tenant Domain (UPN suffix)",
+          "description": "Primary UPN domain suffix for the tenant. Used to construct test user UPNs (e.g. testuser@yourdomain.onmicrosoft.com). Must be a verified domain in the tenant.",
+          "default": "",
+          "example": "yourtenant.onmicrosoft.com",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "entraid_test_accounts",
+      "label": "Entra ID - Test Account Passwords",
+      "description": "Passwords used when creating temporary test user accounts. Used by scripts that create users (Bulk Changes, Account Created/Deleted, User Added to Group, etc.). Accounts are disabled at creation - the password is set but never used for actual sign-in during the test.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1098", "T1136"],
+      "tags": [
+        {
+          "key": "excalibur_test_password",
+          "label": "Test Account Password",
+          "description": "Password assigned to newly created test accounts. Must meet the tenant password complexity policy. Accounts are created as disabled - this password is not used for sign-in.",
+          "default": "CHANGE_ME_Test2026!",
+          "example": "MyTest@2026!",
+          "sensitive": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "entraid_password_reset",
+      "label": "Entra ID - Anomalous Password Reset",
+      "description": "Password used as the target value in the anomalous password reset simulation (script: Anomalous Password Reset). Only required for that specific script.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1098"],
+      "tags": [
+        {
+          "key": "excalibur_reset_password",
+          "label": "Reset Target Password",
+          "description": "The new password set on the target account during the password reset simulation. Must meet tenant complexity policy.",
+          "default": "CHANGE_ME_Reset2026!",
+          "example": "MyReset@2026!",
+          "sensitive": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "entraid_mfa",
+      "label": "Entra ID - MFA / Authentication Methods",
+      "description": "Phone number used by the Authentication Methods Changed simulation. Only required for the script that adds an SMS/voice authentication method.",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1556"],
+      "tags": [
+        {
+          "key": "excalibur_phone_number",
+          "label": "Test Phone Number (E.164 format)",
+          "description": "Phone number registered as an authentication method on the test account. Use a real number you control or a test number. Format: +CountryCodeNumber (e.g. +441234567890).",
+          "default": "",
+          "example": "+441234567890",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "entraid_oauth_consent",
+      "label": "Entra ID - OAuth Consent Phishing",
+      "description": "OAuth scope used by the Admin Consent / Consent Phishing simulation. Only required for the consent phishing script (T1528).",
+      "scope": "cloud",
+      "used_by_tcodes": ["T1528"],
+      "tags": [
+        {
+          "key": "excalibur_consent_scope",
+          "label": "OAuth Consent Scope",
+          "description": "Microsoft Graph permission scope to request admin consent for. Use a read-only scope to limit blast radius during testing.",
+          "default": "User.Read.All",
+          "example": "User.Read.All",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    }
+  ],
   "scripts": [
     {
       "id": "Excalibur - ACN-ST-EntraID-Group Deleted (Create)",
