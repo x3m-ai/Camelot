@@ -1,0 +1,459 @@
+{
+  "package_id": "excalibur-lateralmovement-v1",
+  "package_name": "Excalibur - Lateral Movement Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Lateral Movement tactic (TA0008). Covers 10 scriptable parent techniques targeting remote hosts: RDP connection attempt (mstsc LOLBin), SMB Admin Share access attempt (net use C$), WinRM remote command attempt (Test-WSMan + Invoke-Command), SSH connection attempt (built-in ssh.exe), WMI remote execution attempt (wmic /node:), Pass-the-Hash NTLM credential relay simulation, lateral tool transfer via UNC copy (robocopy), internal spearphishing via .NET SmtpClient, taint shared content via network share write, and remote session hijacking reconnaissance via qwinsta/query session. All scripts target a configurable remote host. Connection attempts generate MDE network connection and process creation telemetry even when the target is unreachable. Scripts fail gracefully on unreachable targets.",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0008",
+  "mitre_tactic_name": "Lateral Movement",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "Windows Security Events via AMA connector active in Microsoft Sentinel (Event IDs: 4624, 4648, 4648)",
+    "A configurable target host IP or hostname (excalibur_lm_target_host) - can be unreachable. The connection ATTEMPT is the detection signal.",
+    "For T1021.002 (SMB Admin Shares): net.exe requires the target to be reachable to fully authenticate - the attempt itself generates MDE network telemetry regardless",
+    "For T1021.006 (WinRM): Test-WSMan and Invoke-Command generate telemetry on the source machine even on timeout",
+    "For T1021.004 (SSH): Windows OpenSSH client must be installed (standard on Windows 10 1809+ and Server 2019+)",
+    "For T1534 (internal spearphishing): the configured SMTP server must be reachable. On isolated test machines the script logs a graceful failure",
+    "For T1570 (tool transfer) and T1080 (taint shared content): a writable UNC share on the target is required. Scripts fail gracefully if the share is not accessible",
+    "Test environment only - never run against production systems or monitored production environments"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "common_target",
+      "label": "Common - Target Host (all remote scripts)",
+      "description": "Remote host to use as the lateral movement target. Set once. Used by all scripts in this pack. The host does not need to be reachable - the connection attempt itself generates MDE network telemetry. Use a dedicated test lab host or a non-routable IP in your lab range.",
+      "scope": "local",
+      "used_by_tcodes": ["T1021", "T1047", "T1534", "T1550", "T1563", "T1570", "T1080"],
+      "tags": [
+        {
+          "key": "excalibur_lm_target_host",
+          "label": "Target Host (IP or hostname)",
+          "description": "IP address or hostname of the target for lateral movement attempts. Use a dedicated test machine. If unreachable, all scripts fail gracefully and still generate source-side MDE telemetry.",
+          "default": "192.168.1.100",
+          "example": "192.168.1.100",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1021_rdp",
+      "label": "T1021.001 - Remote Desktop Protocol",
+      "description": "Settings for the RDP connection attempt. Uses mstsc.exe (Remote Desktop Client LOLBin) to initiate a connection. The mstsc.exe process creation and outbound TCP:3389 connection attempt are the MDE detection indicators.",
+      "scope": "local",
+      "used_by_tcodes": ["T1021"],
+      "tags": [
+        {
+          "key": "excalibur_lm_rdp_port",
+          "label": "RDP Port",
+          "description": "TCP port for the RDP connection attempt. Default is 3389. The mstsc.exe process creation is the detection signal regardless of connectivity.",
+          "default": "3389",
+          "example": "3389",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1021_smb",
+      "label": "T1021.002 - SMB / Windows Admin Shares",
+      "description": "Settings for the SMB Admin Share connection attempt. Uses net.exe use (LOLBin) to attempt a connection to the target's C$ or ADMIN$ share. The net use process creation and SMB outbound connection attempt generate MDE and Sentinel lateral movement telemetry.",
+      "scope": "local",
+      "used_by_tcodes": ["T1021"],
+      "tags": [
+        {
+          "key": "excalibur_lm_smb_share",
+          "label": "Admin Share to Access",
+          "description": "Admin share name on the target host. C$ and ADMIN$ are the most commonly targeted admin shares for lateral movement.",
+          "default": "C$",
+          "example": "ADMIN$",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1021_winrm",
+      "label": "T1021.006 - Windows Remote Management (WinRM)",
+      "description": "Settings for the WinRM remote command attempt. Uses Test-WSMan to probe the target's WinRM service and Invoke-Command to attempt remote execution. Both generate source-side MDE outbound network telemetry even on failure.",
+      "scope": "local",
+      "used_by_tcodes": ["T1021"],
+      "tags": [
+        {
+          "key": "excalibur_lm_winrm_port",
+          "label": "WinRM HTTP Port",
+          "description": "TCP port for WinRM HTTP listener on the target. Default is 5985. HTTPS uses 5986.",
+          "default": "5985",
+          "example": "5985",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1021_ssh",
+      "label": "T1021.004 - SSH",
+      "description": "Settings for the SSH connection attempt. Uses the Windows built-in OpenSSH client (ssh.exe, standard on Windows 10 1809+ and Server 2019+). The ssh.exe process creation and outbound TCP:22 attempt are the MDE detection indicators.",
+      "scope": "local",
+      "used_by_tcodes": ["T1021"],
+      "tags": [
+        {
+          "key": "excalibur_lm_ssh_user",
+          "label": "SSH Username",
+          "description": "Username for the SSH connection attempt. Authentication will fail (no valid key/password) - the connection attempt telemetry is the detection signal.",
+          "default": "MorganaTest",
+          "example": "administrator",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1047_wmi_remote",
+      "label": "T1047 - WMI Remote Execution Attempt",
+      "description": "Settings for the WMI remote execution attempt. Uses wmic.exe /node:<target> (LOLBin) to attempt remote WMI process creation. The wmic.exe /node: process creation and DCOM/WMI outbound connection are high-fidelity lateral movement indicators in MDE.",
+      "scope": "local",
+      "used_by_tcodes": ["T1047"],
+      "tags": [
+        {
+          "key": "excalibur_lm_wmi_process",
+          "label": "Process to Spawn via Remote WMI",
+          "description": "Benign process to attempt to launch on the target via wmic /node: process call create. The attempt generates lateral movement telemetry even if authentication fails.",
+          "default": "cmd.exe",
+          "example": "calc.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1550_pth",
+      "label": "T1550 - Use Alternate Authentication Material (Pass-the-Hash simulation)",
+      "description": "Settings for the Pass-the-Hash simulation. Calls Invoke-Command with an explicit PSCredential containing a fake NTLM hash-length password toward the target, simulating the NTLMv2 relay authentication pattern used by Pass-the-Hash tools (Mimikatz sekurlsa::pth). The failed NTLM authentication attempt generates Event ID 4648 on the source and 4625 on the target.",
+      "scope": "local",
+      "used_by_tcodes": ["T1550"],
+      "tags": [
+        {
+          "key": "excalibur_lm_pth_username",
+          "label": "Username for PtH Simulation",
+          "description": "Username for the Pass-the-Hash credential attempt. Use a non-existent or unprivileged account to ensure failure. The NTLM authentication attempt itself is the detection signal.",
+          "default": "MorganaTest-PtH",
+          "example": "MorganaTest-PtH",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1570_transfer",
+      "label": "T1570 - Lateral Tool Transfer",
+      "description": "Settings for the lateral tool transfer script. Copies a small test file to a UNC path on the target using robocopy (LOLBin). If the share is not accessible, the script logs a graceful failure. robocopy to UNC paths and the SMB connection attempt are the MDE detection indicators.",
+      "scope": "local",
+      "used_by_tcodes": ["T1570"],
+      "tags": [
+        {
+          "key": "excalibur_lm_transfer_share",
+          "label": "Target UNC Share for Tool Transfer",
+          "description": "UNC path on the target machine to copy the test file to. Must be accessible from the test machine. If not accessible, the script fails gracefully. Example: C$ writes to the root of the target C drive.",
+          "default": "C$",
+          "example": "temp$",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "lm_t1534_spearphish",
+      "label": "T1534 - Internal Spearphishing (SMTP)",
+      "description": "Settings for the internal spearphishing SMTP attempt. Uses .NET SmtpClient to send a simulated phishing email via an internal SMTP relay. The SMTP connection attempt from a workstation (not a mail server) is a Sentinel lateral movement detection signal.",
+      "scope": "local",
+      "used_by_tcodes": ["T1534"],
+      "tags": [
+        {
+          "key": "excalibur_lm_smtp_host",
+          "label": "Internal SMTP Host",
+          "description": "Hostname or IP of the internal SMTP relay server. If unreachable, the script logs a graceful failure. The outbound TCP:25 connection attempt from a workstation is still a detection signal.",
+          "default": "192.168.1.1",
+          "example": "mail.corp.local",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_lm_smtp_to",
+          "label": "Target Email Address",
+          "description": "Recipient email address for the simulated internal phishing email. Use a test mailbox in your lab domain.",
+          "default": "victim@lab.local",
+          "example": "victim@corp.local",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - LateralMovement-T1021-RDP Connection Attempt",
+      "name": "Excalibur - LateralMovement-T1021-RDP Connection Attempt",
+      "description": "Initiates an RDP connection attempt to the target host using mstsc.exe (Remote Desktop Client LOLBin) with a 3-second timeout. The mstsc.exe process creation and outbound TCP:3389 network connection attempt are MDE lateral movement detection indicators. The window is hidden and the process is killed after 3 seconds. Also probes port 3389 directly via .NET TcpClient to generate an additional network connection event.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021",
+      "technique_name": "Remote Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_rdp_port"],
+      "command": "Write-Host '[START] T1021.001 - Remote Desktop Protocol (RDP) lateral movement attempt'; $target = '#{excalibur_lm_target_host}'; $port = [int]'#{excalibur_lm_rdp_port}'; Write-Host ('[INFO] Target: ' + $target + ':' + $port); Write-Host '[INFO] Step 1/2: Direct TCP probe to RDP port (outbound network connection event)'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, $port, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); if ($connected -and $tcpClient.Connected) { Write-Host ('[INFO] TCP:' + $port + ' OPEN on ' + $target + ' - RDP port reachable') } else { Write-Host ('[INFO] TCP:' + $port + ' CLOSED/TIMEOUT on ' + $target + ' - connection attempt was still generated as network telemetry') }; $tcpClient.Close() } catch { Write-Host ('[INFO] TCP probe: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/2: mstsc.exe LOLBin launch (RDP client process creation - generates MDE lateral movement telemetry)'; try { $mstscArgs = '/v:' + $target + ':' + $port; $proc = Start-Process -FilePath 'mstsc.exe' -ArgumentList $mstscArgs -PassThru -ErrorAction Stop; Write-Host ('[INFO] mstsc.exe PID: ' + $proc.Id + ' | Target: ' + $target + ':' + $port); Start-Sleep 3; if (-not $proc.HasExited) { $proc.Kill(); Write-Host '[INFO] mstsc.exe terminated after 3s timeout' } else { Write-Host ('[INFO] mstsc.exe exited with code: ' + $proc.ExitCode) } } catch { Write-Host ('[WARN] mstsc.exe error: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1021.001 - RDP lateral movement attempt completed. Sentinel target: Lateral movement via Remote Desktop (MDE - mstsc.exe outbound RDP connection attempt)'",
+      "cleanup_command": "Get-Process -Name mstsc -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Write-Host '[INFO] T1021 RDP cleanup: mstsc.exe terminated if still running'",
+      "detection_rule": "Lateral movement via Remote Desktop (mstsc.exe outbound RDP connection attempt)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1021-SMB Admin Share Access",
+      "name": "Excalibur - LateralMovement-T1021-SMB Admin Share Access",
+      "description": "Attempts to connect to the target's C$ (or configured admin share) via net.exe use (LOLBin) and PowerShell New-PSDrive, simulating SMB-based lateral movement to administrative shares. Also tests TCP:445 connectivity directly. Both net.exe and the outbound SMB connection attempt generate MDE network telemetry and are covered by Sentinel lateral movement analytics rules. The connection will fail if the current user has no admin rights on the target - the attempt itself is the detection signal.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021",
+      "technique_name": "Remote Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_smb_share"],
+      "command": "Write-Host '[START] T1021.002 - SMB Admin Share lateral movement attempt'; $target = '#{excalibur_lm_target_host}'; $share = '#{excalibur_lm_smb_share}'; $uncPath = '\\\\' + $target + '\\' + $share; Write-Host ('[INFO] Target UNC: ' + $uncPath); Write-Host '[INFO] Step 1/3: TCP:445 SMB port probe'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, 445, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); Write-Host ('[INFO] TCP:445 ' + $(if ($connected -and $tcpClient.Connected) { 'OPEN - SMB reachable' } else { 'CLOSED/TIMEOUT - attempt telemetry generated' })); $tcpClient.Close() } catch { Write-Host ('[INFO] TCP:445 probe: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: net.exe use (LOLBin admin share connection)'; try { $netOutput = & net.exe use $uncPath 2>&1; Write-Host ('[INFO] net use result: ' + ($netOutput -join ' ').Trim()); if ($LASTEXITCODE -eq 0) { & net.exe use $uncPath /delete 2>&1 | Out-Null; Write-Host '[INFO] net use: connection established and disconnected' } } catch { Write-Host ('[INFO] net use: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/3: Test-Path UNC (SMB path access attempt)'; try { $testResult = Test-Path -Path $uncPath -ErrorAction SilentlyContinue; Write-Host ('[INFO] Test-Path ' + $uncPath + ' = ' + $testResult + ' (SMB access attempt generates network telemetry regardless of result)') } catch { Write-Host ('[INFO] Test-Path: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1021.002 - SMB admin share access attempt completed. Sentinel target: Lateral movement via SMB admin share (MDE - net.exe use outbound SMB connection to C$/ADMIN$)'",
+      "cleanup_command": "& net.exe use ('\\\\#{excalibur_lm_target_host}\\#{excalibur_lm_smb_share}') /delete 2>&1 | Out-Null; Write-Host '[INFO] T1021 SMB cleanup: net use disconnected if still connected'",
+      "detection_rule": "Lateral movement via SMB admin share (net.exe use C$/ADMIN$ connection attempt)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1021-WinRM Remote Execution",
+      "name": "Excalibur - LateralMovement-T1021-WinRM Remote Execution",
+      "description": "Attempts remote command execution on the target via Windows Remote Management using Test-WSMan (WinRM service probe) and Invoke-Command (PSRemoting remote execution attempt). Uses a 3-second connection timeout. Both generate source-side MDE outbound network telemetry to TCP:5985 (WinRM HTTP) even on timeout or authentication failure. WinRM lateral movement is one of the most commonly used techniques by ransomware operators and APT groups.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021",
+      "technique_name": "Remote Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_winrm_port"],
+      "command": "Write-Host '[START] T1021.006 - Windows Remote Management (WinRM) lateral movement attempt'; $target = '#{excalibur_lm_target_host}'; $port = [int]'#{excalibur_lm_winrm_port}'; Write-Host ('[INFO] Target: ' + $target + ':' + $port); Write-Host '[INFO] Step 1/3: TCP:' + $port + ' port probe'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, $port, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); Write-Host ('[INFO] TCP:' + $port + ' ' + $(if ($connected -and $tcpClient.Connected) { 'OPEN - WinRM reachable' } else { 'CLOSED/TIMEOUT' })); $tcpClient.Close() } catch { Write-Host ('[INFO] TCP probe: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: Test-WSMan (WinRM service identification)'; try { $wsmanResult = Test-WSMan -ComputerName $target -Port $port -ErrorAction SilentlyContinue; if ($wsmanResult) { Write-Host ('[INFO] Test-WSMan succeeded: ' + $wsmanResult.ProductVersion) } else { Write-Host '[INFO] Test-WSMan: no response (target WinRM not reachable or disabled - outbound connection attempt was generated)' } } catch { Write-Host ('[INFO] Test-WSMan: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 3/3: Invoke-Command remote execution attempt (3s timeout)'; try { $sessOpt = New-PSSessionOption -OpenTimeout 3000 -OperationTimeout 3000; $result = Invoke-Command -ComputerName $target -Port $port -SessionOption $sessOpt -ScriptBlock { 'MorganaTest-T1021-WinRM-RemoteExecution' } -ErrorAction SilentlyContinue; if ($result) { Write-Host ('[INFO] Remote execution succeeded: ' + $result) } else { Write-Host '[INFO] Invoke-Command: failed or timeout (expected if target unreachable - WinRM connection attempt telemetry was generated on source)' } } catch { Write-Host ('[INFO] Invoke-Command: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1021.006 - WinRM lateral movement attempt completed. Sentinel target: Lateral movement via Windows Remote Management (MDE - outbound WinRM connection + Test-WSMan behavioral pattern)'",
+      "cleanup_command": "Get-PSSession -ComputerName '#{excalibur_lm_target_host}' -ErrorAction SilentlyContinue | Remove-PSSession -ErrorAction SilentlyContinue; Write-Host '[INFO] T1021 WinRM cleanup: PS sessions removed'",
+      "detection_rule": "Lateral movement via Windows Remote Management (WinRM outbound connection attempt)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1021-SSH Connection Attempt",
+      "name": "Excalibur - LateralMovement-T1021-SSH Connection Attempt",
+      "description": "Attempts an SSH connection to the target using the Windows built-in OpenSSH client (ssh.exe, standard on Windows 10 1809+ and Server 2019+). Uses -o BatchMode=yes -o ConnectTimeout=3 to ensure the process exits cleanly without prompting. The ssh.exe process creation and outbound TCP:22 connection attempt are MDE lateral movement indicators. SSH lateral movement is increasingly common in cloud-native and hybrid environments.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021",
+      "technique_name": "Remote Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_ssh_user"],
+      "command": "Write-Host '[START] T1021.004 - SSH lateral movement attempt'; $target = '#{excalibur_lm_target_host}'; $sshUser = '#{excalibur_lm_ssh_user}'; Write-Host '[INFO] Step 1/2: Checking for Windows OpenSSH client'; $sshPath = (Get-Command ssh.exe -ErrorAction SilentlyContinue)?.Source; if (-not $sshPath) { $sshPath = 'C:\\Windows\\System32\\OpenSSH\\ssh.exe' }; if (-not (Test-Path $sshPath)) { Write-Host '[WARN] ssh.exe not found. Windows OpenSSH client is required (standard on Windows 10 1809+ / Server 2019+). Install via: Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0'; exit 0 }; Write-Host ('[INFO] ssh.exe found: ' + $sshPath); Write-Host '[INFO] Step 2/2: TCP:22 probe + SSH connection attempt'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, 22, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); Write-Host ('[INFO] TCP:22 ' + $(if ($connected -and $tcpClient.Connected) { 'OPEN - SSH reachable' } else { 'CLOSED/TIMEOUT' })); $tcpClient.Close() } catch {}; try { $sshArgs = '-o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no ' + $sshUser + '@' + $target + ' echo MorganaTest-T1021-SSH'; Write-Host ('[INFO] Launching: ssh.exe ' + $sshArgs); $proc = Start-Process -FilePath $sshPath -ArgumentList $sshArgs -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] ssh.exe exit code: ' + $proc.ExitCode + ' (255=connection refused/timeout, 1=auth failure - all generate detection telemetry)') } catch { Write-Host ('[WARN] ssh.exe error: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1021.004 - SSH lateral movement attempt completed. Sentinel target: Lateral movement via SSH (MDE - ssh.exe outbound TCP:22 connection attempt)'",
+      "cleanup_command": "Write-Host '[INFO] T1021 SSH cleanup: no persistent artefacts - process-only execution'",
+      "detection_rule": "Lateral movement via SSH (ssh.exe outbound TCP:22 connection attempt)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1047-WMI Remote Execution",
+      "name": "Excalibur - LateralMovement-T1047-WMI Remote Execution",
+      "description": "Attempts remote WMI process creation on the target host using wmic.exe /node:<target> process call create (LOLBin), the classic WMI lateral movement command. Also attempts a direct DCOM/WMI connection via [wmiclass] with a remote namespace. The wmic.exe /node: process creation and DCOM outbound connection attempt (TCP:135 + dynamic RPC ports) are high-fidelity MDE lateral movement indicators.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_wmi_process"],
+      "command": "Write-Host '[START] T1047 (lateral) - WMI Remote Execution attempt via wmic.exe /node:'; $target = '#{excalibur_lm_target_host}'; $remoteProcess = '#{excalibur_lm_wmi_process}'; Write-Host ('[INFO] Target: ' + $target + ' | Remote process: ' + $remoteProcess); Write-Host '[INFO] Step 1/3: TCP:135 (RPC endpoint mapper) probe'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, 135, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); Write-Host ('[INFO] TCP:135 (DCOM/RPC) ' + $(if ($connected -and $tcpClient.Connected) { 'OPEN' } else { 'CLOSED/TIMEOUT' })); $tcpClient.Close() } catch {}; Write-Host '[INFO] Step 2/3: wmic.exe /node: process call create (LOLBin remote WMI execution - generates process creation telemetry)'; try { $wmicArgs = '/node:' + $target + ' process call create ' + $remoteProcess; Write-Host ('[INFO] Command: wmic.exe ' + $wmicArgs); $proc = Start-Process -FilePath 'wmic.exe' -ArgumentList $wmicArgs -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] wmic.exe /node: exit code: ' + $proc.ExitCode + ' (non-zero = access denied/unreachable - WMI lateral movement attempt was still logged)') } catch { Write-Host ('[WARN] wmic.exe error: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/3: Direct .NET WMI remote connection attempt'; try { $scope = New-Object System.Management.ManagementScope (('\\\\' + $target + '\\root\\cimv2')); $connOptions = New-Object System.Management.ConnectionOptions; $connOptions.Timeout = [System.TimeSpan]::FromSeconds(3); $scope.Options = $connOptions; $scope.Connect(); Write-Host '[INFO] WMI remote scope connected successfully' } catch { Write-Host ('[INFO] WMI remote connect: ' + $_.Exception.Message.Split([char]10)[0] + ' (expected if target unreachable)') }; Write-Host '[SUCCESS] T1047 (lateral) - WMI remote execution attempt completed. Sentinel target: WMI lateral movement via wmic.exe /node: (MDE - wmic.exe process creation + DCOM outbound connection telemetry)'",
+      "cleanup_command": "Write-Host '[INFO] T1047 lateral cleanup: no persistent artefacts'",
+      "detection_rule": "WMI lateral movement via wmic.exe /node: (wmic.exe process creation + DCOM outbound)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1550-Pass-the-Hash Simulation",
+      "name": "Excalibur - LateralMovement-T1550-Pass-the-Hash Simulation",
+      "description": "Simulates the Pass-the-Hash authentication pattern by making an explicit NTLM credential authentication attempt toward the target host using both the Windows LogonUser API (LOGON32_LOGON_NEW_CREDENTIALS, type 9 - network logon that passes credentials to remote systems) and Invoke-Command with an explicit PSCredential. Type 9 network logons with explicit credentials generate Event ID 4648 (Logon with explicit credentials), which is a Sentinel built-in rule detection trigger for lateral movement with alternate credentials.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1550",
+      "technique_name": "Use Alternate Authentication Material",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_pth_username"],
+      "command": "Write-Host '[START] T1550 - Pass-the-Hash simulation (NTLM explicit credential lateral movement pattern)'; $target = '#{excalibur_lm_target_host}'; $pthUser = '#{excalibur_lm_pth_username}'; Write-Host ('[INFO] Target: ' + $target + ' | PtH user: ' + $pthUser); Write-Host '[INFO] Step 1/2: LogonUser LOGON32_LOGON_NEW_CREDENTIALS (Type 9) - network logon with explicit credentials (Event ID 4648)'; try { Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class MorganaT1550 { [DllImport(\"advapi32.dll\", SetLastError=true, CharSet=CharSet.Unicode)] public static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken); [DllImport(\"kernel32.dll\", SetLastError=true)] public static extern bool CloseHandle(IntPtr hObject); }' -ErrorAction Stop; $LOGON32_LOGON_NEW_CREDENTIALS = 9; $LOGON32_PROVIDER_WINNT50 = 3; $token = [IntPtr]::Zero; $fakeHash = 'aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0'; $result = [MorganaT1550]::LogonUser($pthUser, $target, $fakeHash, $LOGON32_LOGON_NEW_CREDENTIALS, $LOGON32_PROVIDER_WINNT50, [ref]$token); $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error(); if ($token -ne [IntPtr]::Zero) { [MorganaT1550]::CloseHandle($token) | Out-Null }; Write-Host ('[INFO] LogonUser Type9 result: ' + $result + ' | Win32Error: ' + $errCode + ' | Event ID 4648 generated (Logon with explicit credentials toward ' + $target + ')') } catch { Write-Host ('[WARN] LogonUser Type9: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/2: Invoke-Command with PSCredential (WinRM explicit credential attempt)'; try { $secPwd = ConvertTo-SecureString 'MorganaTest-FakeHash!2026' -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential ($target + '\\' + $pthUser, $secPwd); $sessOpt = New-PSSessionOption -OpenTimeout 3000 -OperationTimeout 3000; Invoke-Command -ComputerName $target -Credential $cred -SessionOption $sessOpt -ScriptBlock { 'test' } -ErrorAction SilentlyContinue } catch { Write-Host ('[INFO] Invoke-Command explicit cred: ' + $_.Exception.Message.Split([char]10)[0] + ' (expected - authentication attempt was logged)') }; Write-Host '[SUCCESS] T1550 - Pass-the-Hash simulation completed. Sentinel target: Explicit credential use for lateral movement (Event ID 4648 - Logon with explicit credentials + WinRM failed auth attempt)'",
+      "cleanup_command": "Write-Host '[INFO] T1550 cleanup: no artefacts - API calls only'",
+      "detection_rule": "Explicit credential use for lateral movement (Event ID 4648 + WinRM auth attempt)",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1570-Lateral Tool Transfer",
+      "name": "Excalibur - LateralMovement-T1570-Lateral Tool Transfer",
+      "description": "Copies a small test file to the target host via a UNC path using robocopy (LOLBin) and also attempts a direct copy via Copy-Item to UNC. Simulates adversary lateral tool transfer to stage tools on a compromised host. The robocopy process creation, SMB outbound connection, and file creation via UNC path are MDE lateral movement detection indicators. If the UNC share is not accessible, the script fails gracefully and still generates the network connection attempt telemetry.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host", "excalibur_lm_transfer_share"],
+      "command": "Write-Host '[START] T1570 - Lateral Tool Transfer via SMB UNC path'; $target = '#{excalibur_lm_target_host}'; $share = '#{excalibur_lm_transfer_share}'; $uncDest = '\\\\' + $target + '\\' + $share; $sourceFile = Join-Path $env:TEMP 'MorganaTest-T1570-tool.txt'; $remoteFile = $uncDest + '\\MorganaTest-T1570-tool.txt'; Write-Host ('[INFO] Source: ' + $sourceFile + ' | Destination UNC: ' + $uncDest); try { 'MorganaTest-T1570-LateralToolTransfer' | Set-Content -Path $sourceFile -Encoding ASCII -ErrorAction Stop; Write-Host ('[INFO] Source file created: ' + $sourceFile); Write-Host '[INFO] Step 1/2: robocopy LOLBin to UNC destination'; $robocopyArgs = $env:TEMP + ' ' + $uncDest + ' MorganaTest-T1570-tool.txt /R:0 /W:0'; $proc = Start-Process -FilePath 'robocopy.exe' -ArgumentList $robocopyArgs -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] robocopy exit code: ' + $proc.ExitCode + ' (1=success, 0=no files, 16+=error - MDE process creation + SMB outbound attempt logged regardless)'); Write-Host '[INFO] Step 2/2: Copy-Item to UNC (PowerShell SMB file transfer)'; Copy-Item -Path $sourceFile -Destination $remoteFile -Force -ErrorAction SilentlyContinue; Write-Host ('[INFO] Copy-Item to ' + $remoteFile + ': attempt complete (success depends on share access)'); Remove-Item $sourceFile -ErrorAction SilentlyContinue; try { Remove-Item $remoteFile -ErrorAction SilentlyContinue } catch {} } catch { Write-Host ('[WARN] T1570 error (expected if share inaccessible): ' + $_.Exception.Message); Remove-Item $sourceFile -ErrorAction SilentlyContinue }; Write-Host '[SUCCESS] T1570 - Lateral tool transfer attempt completed. Sentinel target: File copied to remote host via SMB UNC path (MDE - robocopy.exe process creation + SMB outbound connection + file creation event on target)'",
+      "cleanup_command": "Remove-Item (Join-Path $env:TEMP 'MorganaTest-T1570-tool.txt') -ErrorAction SilentlyContinue; Remove-Item ('\\\\#{excalibur_lm_target_host}\\#{excalibur_lm_transfer_share}\\MorganaTest-T1570-tool.txt') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1570 cleanup: test files removed'",
+      "detection_rule": "File copied to remote host via SMB UNC path (robocopy.exe + SMB outbound)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1534-Internal Spearphishing",
+      "name": "Excalibur - LateralMovement-T1534-Internal Spearphishing",
+      "description": "Sends a simulated internal spearphishing email via .NET SmtpClient to the configured internal SMTP relay, simulating adversary use of internal email infrastructure for lateral movement. The SMTP connection from a workstation (not a mail server) to TCP:25/587 is a Sentinel lateral movement detection signal. If the SMTP host is unreachable, the script fails gracefully and still logs the outbound connection attempt. The email contains no malicious content.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1534",
+      "technique_name": "Internal Spearphishing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_smtp_host", "excalibur_lm_smtp_to"],
+      "command": "Write-Host '[START] T1534 - Internal Spearphishing via SMTP'; $smtpHost = '#{excalibur_lm_smtp_host}'; $toAddr = '#{excalibur_lm_smtp_to}'; $fromAddr = $env:USERNAME + '@lab.local'; Write-Host ('[INFO] SMTP host: ' + $smtpHost + ':25 | From: ' + $fromAddr + ' | To: ' + $toAddr); Write-Host '[INFO] Step 1/2: TCP:25 SMTP port probe'; try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($smtpHost, 25, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(2000); Write-Host ('[INFO] TCP:25 ' + $(if ($connected -and $tcpClient.Connected) { 'OPEN - SMTP reachable' } else { 'CLOSED/TIMEOUT - outbound connection attempt telemetry still generated' })); $tcpClient.Close() } catch {}; Write-Host '[INFO] Step 2/2: .NET SmtpClient send attempt (outbound SMTP connection from workstation)'; try { $smtp = New-Object System.Net.Mail.SmtpClient($smtpHost, 25); $smtp.Timeout = 3000; $smtp.EnableSsl = $false; $msg = New-Object System.Net.Mail.MailMessage; $msg.From = $fromAddr; $msg.To.Add($toAddr); $msg.Subject = 'MorganaTest-T1534 - Internal Phishing Simulation'; $msg.Body = 'This is a simulated internal phishing email for Excalibur Defense Validation testing. No action required.'; $smtp.Send($msg); $msg.Dispose(); $smtp.Dispose(); Write-Host '[INFO] SMTP send succeeded - email delivered to internal relay' } catch { Write-Host ('[INFO] SMTP send: ' + $_.Exception.Message.Split([char]10)[0] + ' (expected if SMTP host unreachable - outbound TCP:25 attempt was logged as source-side network telemetry)') }; Write-Host '[SUCCESS] T1534 - Internal spearphishing SMTP attempt completed. Sentinel target: Outbound SMTP from non-mail-server workstation (MDE outbound TCP:25 network connection from endpoint)'",
+      "cleanup_command": "Write-Host '[INFO] T1534 cleanup: no artefacts - SMTP attempt only'",
+      "detection_rule": "Outbound SMTP from non-mail-server workstation (outbound TCP:25 from endpoint)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1080-Taint Shared Content",
+      "name": "Excalibur - LateralMovement-T1080-Taint Shared Content",
+      "description": "Writes a test file to a network share on the target host to simulate content tainting, where adversaries place malicious files on shared drives to infect users who access them. Also enumerates accessible shares on the target via net.exe view. If the share is not writable, the script fails gracefully. The UNC path write attempt generates both SMB outbound network telemetry and a file creation event on the target - both are MDE lateral movement detection signals.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1080",
+      "technique_name": "Taint Shared Content",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host"],
+      "command": "Write-Host '[START] T1080 - Taint Shared Content (write to network share)'; $target = '#{excalibur_lm_target_host}'; Write-Host '[INFO] Step 1/2: Enumerate accessible shares on target via net.exe view'; try { $netViewOutput = & net.exe view ('\\\\' + $target) 2>&1 | Where-Object { $_ -match '\\S' }; if ($netViewOutput -match 'System error') { Write-Host ('[INFO] net view failed: ' + (@($netViewOutput)[0])) } else { Write-Host ('[INFO] Shares on ' + $target + ':'); $netViewOutput | Where-Object { $_ -notmatch '^The command|^Share name|Disk|---' } | ForEach-Object { Write-Host ('    ' + $_.ToString().Trim()) } } } catch { Write-Host ('[INFO] net view: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/2: Write taint file to target share (UNC path file creation attempt)'; $taintContent = '# MorganaTest-T1080 - Taint Shared Content test file' + [char]13 + [char]10 + '# Created by Excalibur for Purple Team detection validation' + [char]13 + [char]10 + '# File date: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'); $shareTargets = @(('\\\\' + $target + '\\NETLOGON'), ('\\\\' + $target + '\\SYSVOL'), ('\\\\' + $target + '\\Users')); foreach ($sharePath in $shareTargets) { try { $taintPath = $sharePath + '\\MorganaTest-T1080-taint.txt'; Set-Content -Path $taintPath -Value $taintContent -Encoding ASCII -ErrorAction Stop; Write-Host ('[INFO] Taint file written: ' + $taintPath + ' - removing immediately'); Remove-Item $taintPath -ErrorAction SilentlyContinue; break } catch { Write-Host ('[INFO] Write to ' + $sharePath + ' failed: ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[SUCCESS] T1080 - Taint shared content attempt completed. Sentinel target: File written to network share (MDE - outbound SMB + file creation event on target share path)'",
+      "cleanup_command": "Write-Host '[INFO] T1080 cleanup: taint files removed within main script'",
+      "detection_rule": "File written to network share from endpoint (SMB outbound + UNC file creation)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - LateralMovement-T1563-Remote Session Hijacking",
+      "name": "Excalibur - LateralMovement-T1563-Remote Session Hijacking",
+      "description": "Enumerates active Remote Desktop and interactive sessions on both the local machine and the target host using qwinsta.exe and query.exe session (LOLBins), simulating adversary reconnaissance of active sessions prior to session hijacking. Also queries WMI Win32_LogonSession for active interactive logons. Session hijacking reconnaissance is a pre-requisite step for T1563. The qwinsta/query LOLBin process creation events and SMB outbound to the target for remote session queries generate MDE telemetry.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1563",
+      "technique_name": "Remote Service Session Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_lm_target_host"],
+      "command": "Write-Host '[START] T1563 - Remote Service Session Hijacking (session enumeration recon)'; $target = '#{excalibur_lm_target_host}'; Write-Host '[INFO] Step 1/3: Local session enumeration via qwinsta.exe (LOLBin)'; try { $qwinstaLocal = & qwinsta.exe 2>&1 | Where-Object { $_ -match '\\S' }; Write-Host ('[INFO] Local sessions (' + @($qwinstaLocal).Count + ' lines):'); $qwinstaLocal | ForEach-Object { Write-Host ('    ' + $_.ToString().Trim()) } } catch { Write-Host ('[WARN] qwinsta local: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: WMI Win32_LogonSession enumeration (active interactive + network logons)'; try { $logonSessions = Get-WmiObject -Class Win32_LogonSession -ErrorAction SilentlyContinue | Where-Object { $_.LogonType -in @(2, 10) }; Write-Host ('[INFO] Active interactive/remote logon sessions: ' + $logonSessions.Count); $logonSessions | ForEach-Object { Write-Host ('    SessionId=' + $_.LogonId + ' LogonType=' + $_.LogonType + ' StartTime=' + $_.ConvertToDateTime($_.StartTime)) } } catch { Write-Host ('[WARN] Win32_LogonSession: ' + $_.Exception.Message) }; Write-Host ('[INFO] Step 3/3: Remote session query on target via qwinsta /server: (LOLBin - outbound connection attempt)'); try { $proc = Start-Process -FilePath 'qwinsta.exe' -ArgumentList ('/server:' + $target) -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] qwinsta /server:' + $target + ' exit code: ' + $proc.ExitCode + ' (non-zero = access denied/unreachable - process creation + outbound connection logged by MDE)') } catch { Write-Host ('[WARN] qwinsta /server: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1563 - Session hijacking reconnaissance completed. Sentinel target: Remote session enumeration via qwinsta LOLBin (MDE - qwinsta.exe process creation + outbound RDP/WinStation connection telemetry)'",
+      "cleanup_command": "Write-Host '[INFO] T1563 cleanup: no artefacts - read-only session enumeration'",
+      "detection_rule": "Remote session enumeration via qwinsta LOLBin (qwinsta.exe /server: process creation)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - LateralMovement-T1021-RDP Connection Attempt",
+      "description": "Emulation chain for T1021.001: RDP lateral movement attempt via mstsc.exe LOLBin. Validates MDE outbound TCP:3389 connection + mstsc.exe process creation telemetry.",
+      "package": "excalibur",
+      "tcode": "T1021",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1021-RDP Connection Attempt"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1021-SMB Admin Share Access",
+      "description": "Emulation chain for T1021.002: SMB admin share access via net.exe use C$/ADMIN$. Validates MDE outbound SMB + net.exe LOLBin lateral movement telemetry.",
+      "package": "excalibur",
+      "tcode": "T1021",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1021-SMB Admin Share Access"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1021-WinRM Remote Execution",
+      "description": "Emulation chain for T1021.006: WinRM lateral movement via Test-WSMan + Invoke-Command. Validates MDE outbound WinRM TCP:5985 connection + PSRemoting attempt telemetry.",
+      "package": "excalibur",
+      "tcode": "T1021",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1021-WinRM Remote Execution"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1021-SSH Connection Attempt",
+      "description": "Emulation chain for T1021.004: SSH lateral movement via Windows built-in ssh.exe client. Validates MDE outbound TCP:22 connection + ssh.exe process creation telemetry.",
+      "package": "excalibur",
+      "tcode": "T1021",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1021-SSH Connection Attempt"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1047-WMI Remote Execution",
+      "description": "Emulation chain for T1047 lateral: WMI remote process creation via wmic.exe /node: LOLBin. Validates MDE DCOM outbound connection + wmic.exe /node: process creation telemetry.",
+      "package": "excalibur",
+      "tcode": "T1047",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1047-WMI Remote Execution"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1550-Pass-the-Hash Simulation",
+      "description": "Emulation chain for T1550: Pass-the-Hash NTLM credential relay simulation via LogonUser Type 9 + Invoke-Command with explicit credentials. Validates Event ID 4648 (logon with explicit credentials).",
+      "package": "excalibur",
+      "tcode": "T1550",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1550-Pass-the-Hash Simulation"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1570-Lateral Tool Transfer",
+      "description": "Emulation chain for T1570: file transfer to target via robocopy LOLBin UNC path. Validates MDE outbound SMB + robocopy.exe process creation lateral movement telemetry.",
+      "package": "excalibur",
+      "tcode": "T1570",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1570-Lateral Tool Transfer"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1534-Internal Spearphishing",
+      "description": "Emulation chain for T1534: internal spearphishing email via .NET SmtpClient. Validates MDE detection of outbound SMTP TCP:25 from a non-mail-server workstation.",
+      "package": "excalibur",
+      "tcode": "T1534",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1534-Internal Spearphishing"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1080-Taint Shared Content",
+      "description": "Emulation chain for T1080: write test file to network share (NETLOGON/SYSVOL/Users). Validates MDE outbound SMB + UNC file creation lateral movement telemetry.",
+      "package": "excalibur",
+      "tcode": "T1080",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1080-Taint Shared Content"]
+    },
+    {
+      "name": "Excalibur - LateralMovement-T1563-Remote Session Hijacking",
+      "description": "Emulation chain for T1563: remote session enumeration recon via qwinsta.exe /server: LOLBin. Validates MDE process creation + outbound RDP session query telemetry for session hijacking pre-attack recon.",
+      "package": "excalibur",
+      "tcode": "T1563",
+      "tactic": "Lateral Movement",
+      "script_refs": ["Excalibur - LateralMovement-T1563-Remote Session Hijacking"]
+    },
+    {
+      "name": "Excalibur - LateralMovement Full Sweep",
+      "description": "Full sweep of all 10 Lateral Movement technique emulations. Runs sequentially on the Morgana Windows agent. All scripts target the configured excalibur_lm_target_host and fail gracefully if it is unreachable - connection ATTEMPTS generate MDE telemetry regardless. Set excalibur_lm_target_host to a test lab machine IP for maximum detection signal fidelity.",
+      "package": "excalibur",
+      "tcode": "TA0008",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "Excalibur - LateralMovement-T1021-RDP Connection Attempt",
+        "Excalibur - LateralMovement-T1021-SMB Admin Share Access",
+        "Excalibur - LateralMovement-T1021-WinRM Remote Execution",
+        "Excalibur - LateralMovement-T1021-SSH Connection Attempt",
+        "Excalibur - LateralMovement-T1047-WMI Remote Execution",
+        "Excalibur - LateralMovement-T1550-Pass-the-Hash Simulation",
+        "Excalibur - LateralMovement-T1570-Lateral Tool Transfer",
+        "Excalibur - LateralMovement-T1534-Internal Spearphishing",
+        "Excalibur - LateralMovement-T1080-Taint Shared Content",
+        "Excalibur - LateralMovement-T1563-Remote Session Hijacking"
+      ]
+    }
+  ]
+}

