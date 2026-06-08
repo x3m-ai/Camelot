@@ -147,24 +147,26 @@
   ],
   "chains": [
     {
-      "id": "Excalibur - General-Chain-Full Connectivity Check",
       "name": "Excalibur - General-Chain-Full Connectivity Check",
       "description": "Runs all three utility scripts in sequence: sleep -> directory listing -> parameter test. Use this as a complete agent health check after initial installation or after changing agent configuration.",
-      "steps": [
-        { "script_id": "Excalibur - General-T0000-Sleep Wait",               "order": 1, "on_failure": "continue" },
-        { "script_id": "Excalibur - General-T0001-Directory Listing Test",    "order": 2, "on_failure": "continue" },
-        { "script_id": "Excalibur - General-T0002-PowerShell Parameter Test", "order": 3, "on_failure": "continue" }
-      ],
-      "package": "excalibur-general-v1"
+      "package": "excalibur-general-v1",
+      "tcode": "T0000",
+      "tactic": "Utilities",
+      "script_refs": [
+        "Excalibur - General-T0000-Sleep Wait",
+        "Excalibur - General-T0001-Directory Listing Test",
+        "Excalibur - General-T0002-PowerShell Parameter Test"
+      ]
     },
     {
-      "id": "Excalibur - General-Chain-Tag Substitution Smoke Test",
       "name": "Excalibur - General-Chain-Tag Substitution Smoke Test",
       "description": "Runs only the parameter test script. Minimal chain to quickly verify that tag substitution works correctly from admin or per-script override values.",
-      "steps": [
-        { "script_id": "Excalibur - General-T0002-PowerShell Parameter Test", "order": 1, "on_failure": "stop" }
-      ],
-      "package": "excalibur-general-v1"
+      "package": "excalibur-general-v1",
+      "tcode": "T0002",
+      "tactic": "Utilities",
+      "script_refs": [
+        "Excalibur - General-T0002-PowerShell Parameter Test"
+      ]
     }
   ]
 }
