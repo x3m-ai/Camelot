@@ -1,0 +1,339 @@
+{
+  "package_id": "excalibur-reconnaissance-v1",
+  "package_name": "Excalibur - Reconnaissance Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Reconnaissance tactic (TA0043). All scripts execute FROM the Morgana agent already deployed on a target machine, simulating post-initial-access reconnaissance conducted from a foothold. Covers 10 techniques: active scanning TCP port scan (nmap-style from foothold using .NET sockets), gather victim network information DNS deep enumeration (NS/MX/TXT/DMARC/SPF/zone transfer attempt/subdomain brute-force), gather victim host information WinPEAS-style comprehensive local enumeration (OS/hotfixes/software/services/scheduled tasks/shares/autoruns/weak permissions/credential files), gather victim identity information (LDAP user/group/privileged account enum), search open technical databases (external IP intel via ipinfo.io + Shodan-style), search open websites (WHOIS + certificate transparency crt.sh + GitHub org search pattern), gather victim org information (AD domain/DC/forest/trust/GPO enum), search victim-owned websites (HTTP fingerprinting + header extraction of internal web services), search closed sources (HaveIBeenPwned API breach data lookup pattern), phishing for information recon (browser credential path enum + Windows Credential Manager + saved password locations). Generates MDE network and process telemetry. All scripts are read-only and safe for test environments.",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0043",
+  "mitre_tactic_name": "Reconnaissance",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "No Administrator privileges required for any script in this pack",
+    "Internet access recommended for external recon scripts (T1596, T1593, T1597, T1598). Scripts fail gracefully on isolated machines.",
+    "Domain join recommended for T1589 and T1591 (LDAP/AD enumeration). Scripts enumerate local accounts gracefully on workgroup machines.",
+    "All scripts are READ-ONLY: no files are created, no registry keys are modified, no system configuration is changed.",
+    "T1595 (Active Scanning) targets: use TEST-NET IPs (198.51.100.x) for the scan target tag or an internal lab host you own."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "recon_t1595_scan",
+      "label": "T1595 - Active Scanning Target",
+      "description": "Settings for the TCP port scan simulation. Use a TEST-NET IP (RFC 5737: 198.51.100.x) or an internal lab host you own as the scan target.",
+      "scope": "local",
+      "used_by_tcodes": ["T1595"],
+      "tags": [
+        {
+          "key": "excalibur_recon_scan_target",
+          "label": "Port Scan Target IP or Hostname",
+          "description": "Target for the TCP port scan simulation. Use a TEST-NET IP (198.51.100.x) or an internal lab host you own. The script scans 20 common ports.",
+          "default": "198.51.100.1",
+          "example": "192.168.1.1",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "recon_t1590_dns",
+      "label": "T1590 / T1593 - DNS and Domain Recon Target",
+      "description": "Domain name used for DNS deep enumeration, WHOIS-style recon, certificate transparency lookup, and subdomain brute-force simulation. Use a domain you own or a public test domain.",
+      "scope": "local",
+      "used_by_tcodes": ["T1590", "T1591", "T1593", "T1594"],
+      "tags": [
+        {
+          "key": "excalibur_recon_target_domain",
+          "label": "Target Domain for Recon",
+          "description": "Domain used for DNS enumeration, WHOIS, certificate transparency, and HTTP fingerprinting recon. Use a domain you own or a benign public domain.",
+          "default": "microsoft.com",
+          "example": "example.com",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "recon_t1597_breach",
+      "label": "T1597 - Breach Database Recon",
+      "description": "Corporate email domain used for breach database lookup simulation (HaveIBeenPwned API pattern). The domain is used to check for known data breach exposure of corporate email accounts.",
+      "scope": "local",
+      "used_by_tcodes": ["T1597"],
+      "tags": [
+        {
+          "key": "excalibur_recon_email_domain",
+          "label": "Corporate Email Domain for Breach Lookup",
+          "description": "Email domain to check against breach databases (HaveIBeenPwned domain search API pattern). Use your own test domain.",
+          "default": "example.com",
+          "example": "contoso.com",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - Recon-T1595-Active Scanning",
+      "name": "Excalibur - Recon-T1595-Active Scanning",
+      "description": "Simulates active port scanning from a foothold machine (nmap-style TCP connect scan using .NET TcpClient): scans 20 common ports on the configured target (SSH/22, FTP/21, Telnet/23, SMTP/25, HTTP/80, HTTPS/443, SMB/445, RDP/3389, WinRM/5985/5986, MSSQL/1433, MySQL/3306, PostgreSQL/5432, RabbitMQ/5672, Redis/6379, Elasticsearch/9200, Kubernetes/6443, VNC/5900, LDAP/389, LDAPS/636). Also performs an ICMP reachability check and a UDP DNS probe. The combination of rapid sequential TCP connections to multiple well-known service ports from a non-network-tool process is a high-fidelity MDE active scanning behavioral signal. Used by adversaries after initial access to map the internal network from the foothold.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1595",
+      "technique_name": "Active Scanning",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_scan_target"],
+      "command": "Write-Host '[START] T1595 - Active Scanning (TCP port scan from foothold - nmap-style)'; $target = '#{excalibur_recon_scan_target}'; $scanPorts = @( @{Port=21;Service='FTP'}, @{Port=22;Service='SSH'}, @{Port=23;Service='Telnet'}, @{Port=25;Service='SMTP'}, @{Port=80;Service='HTTP'}, @{Port=135;Service='MS-RPC'}, @{Port=139;Service='NetBIOS'}, @{Port=389;Service='LDAP'}, @{Port=443;Service='HTTPS'}, @{Port=445;Service='SMB'}, @{Port=636;Service='LDAPS'}, @{Port=1433;Service='MSSQL'}, @{Port=3306;Service='MySQL'}, @{Port=3389;Service='RDP'}, @{Port=5432;Service='PostgreSQL'}, @{Port=5985;Service='WinRM-HTTP'}, @{Port=5986;Service='WinRM-HTTPS'}, @{Port=6379;Service='Redis'}, @{Port=8080;Service='HTTP-Alt'}, @{Port=9200;Service='Elasticsearch'} ); Write-Host ('[INFO] Scanning target: ' + $target + ' | Ports: ' + $scanPorts.Count + ' | Timeout: 1000ms per port'); $open = @(); $closed = @(); $startTime = Get-Date; foreach ($entry in $scanPorts) { try { $tcp = New-Object System.Net.Sockets.TcpClient; $conn = $tcp.BeginConnect($target, $entry.Port, $null, $null); $ok = $conn.AsyncWaitHandle.WaitOne(1000); if ($ok -and $tcp.Connected) { $open += $entry; Write-Host ('[INFO]   ' + $entry.Port + '/tcp OPEN [' + $entry.Service + ']') } else { $closed += $entry }; $tcp.Close() } catch { $closed += $entry } }; $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds, 1); Write-Host ('[INFO] Scan complete in ' + $elapsed + 's | Open: ' + $open.Count + ' | Closed/Filtered: ' + $closed.Count); Write-Host ('[INFO] Open ports summary: ' + $(if ($open.Count -gt 0) { ($open | ForEach-Object { [string]$_.Port + '/' + $_.Service }) -join ', ' } else { 'none (all filtered or unreachable)' })); Write-Host '[INFO] ICMP reachability check (ping sweep pattern)'; try { $ping = [System.Net.NetworkInformation.Ping]::new(); $reply = $ping.Send($target, 1000); Write-Host ('[INFO] ICMP to ' + $target + ': ' + $reply.Status + $(if ($reply.Status -eq 'Success') { ' RTT=' + $reply.RoundtripTime + 'ms' } else { '' })); $ping.Dispose() } catch { Write-Host ('[INFO] ICMP: ' + $_.Exception.Message) }; Write-Host '[INFO] UDP DNS probe (service version detection on port 53)'; try { $udp = New-Object System.Net.Sockets.UdpClient; $udp.Client.ReceiveTimeout = 1000; $dnsQuery = [byte[]](0x00,0x01,0x01,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x07,0x76,0x65,0x72,0x73,0x69,0x6F,0x6E,0x04,0x62,0x69,0x6E,0x64,0x00,0x00,0x10,0x00,0x03); $udp.Send($dnsQuery, $dnsQuery.Length, $target, 53) | Out-Null; $ep = New-Object System.Net.IPEndPoint([System.Net.IPAddress]::Any, 0); try { $resp = $udp.Receive([ref]$ep); Write-Host ('[INFO] UDP/53 DNS response from ' + $target + ': ' + $resp.Length + ' bytes (DNS service detected)') } catch { Write-Host ('[INFO] UDP/53: no response (timeout)') }; $udp.Close() } catch { Write-Host ('[INFO] UDP DNS: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1595 - Active scanning simulation completed. Sentinel target: Rapid sequential TCP connections to multiple service ports from non-network-tool process (MDE - active scanning from foothold behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1595 cleanup: no artefacts - network connection attempts only'",
+      "detection_rule": "Rapid sequential TCP connections to multiple service ports from non-network-tool process (nmap-style scan from foothold)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1590-Gather Victim Network Information",
+      "name": "Excalibur - Recon-T1590-Gather Victim Network Information",
+      "description": "Performs DNS deep enumeration against a configured target domain from the foothold, simulating adversary network infrastructure mapping: enumerates A, AAAA, MX, NS, TXT (SPF/DKIM/DMARC), SOA, and CNAME records; attempts a DNS zone transfer (AXFR) — adversaries always try this even if it fails; performs subdomain brute-force using a common 20-entry wordlist; does a reverse DNS lookup on the domain's A record IPs; and checks for DNSSEC configuration. High-volume DNS queries with diverse record types from a non-DNS-tool process are MDE DNS reconnaissance behavioral signals.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1590",
+      "technique_name": "Gather Victim Network Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_target_domain"],
+      "command": "Write-Host '[START] T1590 - Gather Victim Network Information (DNS deep enumeration from foothold)'; $domain = '#{excalibur_recon_target_domain}'; Write-Host ('[INFO] Target domain: ' + $domain); $recordTypes = @('A','AAAA','MX','NS','TXT','SOA','CNAME'); foreach ($rtype in $recordTypes) { try { $recs = Resolve-DnsName -Name $domain -Type $rtype -ErrorAction SilentlyContinue -DnsOnly; if ($recs) { Write-Host ('[INFO] ' + $rtype + ' records (' + @($recs).Count + '):'); $recs | Select-Object -First 5 | ForEach-Object { $val = if ($_.IPAddress) { $_.IPAddress } elseif ($_.NameHost) { $_.NameHost } elseif ($_.NameExchange) { $_.NameExchange } elseif ($_.PrimaryServer) { $_.PrimaryServer } elseif ($_.Strings) { $_.Strings -join ' ' } else { $_.ToString() }; Write-Host ('    ' + $rtype + ': ' + [string]$val) } } else { Write-Host ('[INFO] ' + $rtype + ': no records found') } } catch { Write-Host ('[INFO] ' + $rtype + ': ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[INFO] DNS zone transfer attempt (AXFR) - adversaries always try this'; try { $axfrResult = & nslookup.exe -type=axfr $domain 2>&1; $axfrSuccess = $axfrResult | Where-Object { $_ -match 'internet address|mail exchanger' }; Write-Host ('[INFO] AXFR result: ' + $(if (@($axfrSuccess).Count -gt 0) { 'ZONE TRANSFER SUCCEEDED (' + @($axfrSuccess).Count + ' records)' } else { 'REFUSED/FAILED (expected - zone transfer disabled)' })) } catch { Write-Host ('[INFO] AXFR: ' + $_.Exception.Message) }; Write-Host '[INFO] Subdomain brute-force (20 common subdomains)'; $subdomains = @('www','mail','ftp','vpn','remote','portal','intranet','dev','staging','api','admin','owa','autodiscover','smtp','mx','ns1','ns2','webmail','shop','app'); foreach ($sub in $subdomains) { $fqdn = $sub + '.' + $domain; try { $r = Resolve-DnsName -Name $fqdn -Type A -ErrorAction SilentlyContinue -DnsOnly; if ($r) { Write-Host ('[INFO]   FOUND: ' + $fqdn + ' -> ' + ($r | Where-Object { $_.IPAddress } | Select-Object -First 1 -ExpandProperty IPAddress)) } } catch {} }; Write-Host '[INFO] Reverse DNS lookup (PTR records on A record IPs)'; try { $aRecs = Resolve-DnsName -Name $domain -Type A -ErrorAction SilentlyContinue -DnsOnly | Where-Object { $_.IPAddress }; foreach ($aRec in @($aRecs)[0..2]) { try { $ptr = Resolve-DnsName -Name $aRec.IPAddress -Type PTR -ErrorAction SilentlyContinue; Write-Host ('[INFO]   PTR ' + $aRec.IPAddress + ' -> ' + $(if ($ptr) { $ptr[0].NameHost } else { 'no PTR' })) } catch {} } } catch {}; Write-Host '[SUCCESS] T1590 - DNS network info gathering completed. Sentinel target: High-volume multi-type DNS queries including AXFR attempt from non-DNS-tool process (MDE DNS telemetry - network recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1590 cleanup: no artefacts - DNS queries only'",
+      "detection_rule": "High-volume multi-type DNS queries + AXFR zone transfer attempt from non-DNS-tool process",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)",
+      "name": "Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)",
+      "description": "WinPEAS-style comprehensive local host enumeration: OS version, build, hotfixes/patches, system uptime, architecture, domain membership, installed software (registry uninstall keys), running services with binary paths, scheduled tasks with actions, local shares, open TCP/UDP ports (netstat-style), startup entries (Run/RunOnce registry), AutoRun locations (HKLM+HKCU Run keys), world-writable directories in system paths, unquoted service path enumeration, weak permission services, clear-text credential file locations (web.config, .env, *.config with 'password', SAM/NTDS/SYSTEM hive presence check). This is the most comprehensive single recon script in the pack — output mirrors a WinPEAS run and generates extensive process and file access telemetry in MDE.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1592",
+      "technique_name": "Gather Victim Host Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1592 - WinPEAS-style Host Enumeration (comprehensive local recon)'; Write-Host ''; Write-Host '[INFO] === SYSTEM INFORMATION ==='; try { $os = Get-WmiObject -Class Win32_OperatingSystem; $cs = Get-WmiObject -Class Win32_ComputerSystem; Write-Host ('    OS: ' + $os.Caption + ' Build ' + $os.BuildNumber + ' | ' + $os.OSArchitecture); Write-Host ('    Hostname: ' + $env:COMPUTERNAME + ' | Domain: ' + $cs.Domain + ' | Workgroup: ' + $cs.Workgroup); Write-Host ('    Uptime: ' + [math]::Round(((Get-Date) - $os.ConvertToDateTime($os.LastBootUpTime)).TotalHours,1) + 'h'); $ps = [System.Security.Principal.WindowsPrincipal][System.Security.Principal.WindowsIdentity]::GetCurrent(); Write-Host ('    Running as: ' + $env:USERDOMAIN + '\\' + $env:USERNAME + ' | Admin: ' + $ps.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) } catch { Write-Host ('[WARN] System info: ' + $_.Exception.Message) }; Write-Host ''; Write-Host '[INFO] === HOTFIXES / PATCHES (last 10) ==='; try { Get-HotFix | Sort-Object InstalledOn -Descending -ErrorAction SilentlyContinue | Select-Object -First 10 | ForEach-Object { Write-Host ('    ' + $_.HotFixID + ' | ' + $_.Description + ' | ' + $_.InstalledOn) } } catch {}; Write-Host ''; Write-Host '[INFO] === INSTALLED SOFTWARE (registry uninstall keys) ==='; try { $swPaths = @('HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); $sw = $swPaths | ForEach-Object { Get-ItemProperty $_ -ErrorAction SilentlyContinue } | Where-Object { $_.DisplayName } | Select-Object DisplayName,DisplayVersion,Publisher | Sort-Object DisplayName -Unique; Write-Host ('    Total installed: ' + @($sw).Count + ' applications'); $sw | Select-Object -First 15 | ForEach-Object { Write-Host ('    ' + $_.DisplayName + ' ' + $_.DisplayVersion) } } catch {}; Write-Host ''; Write-Host '[INFO] === SERVICES WITH BINARY PATHS (potential DLL hijack / unquoted paths) ==='; try { $svcs = Get-WmiObject -Class Win32_Service -ErrorAction SilentlyContinue | Where-Object { $_.PathName -and $_.StartMode -ne 'Disabled' }; $unquoted = $svcs | Where-Object { $_.PathName -notmatch '^\"' -and $_.PathName -match ' ' -and $_.PathName -notmatch '^[A-Za-z]:\\Windows' }; Write-Host ('    Total services: ' + @($svcs).Count + ' | Potential unquoted path (non-Windows): ' + @($unquoted).Count); $unquoted | Select-Object -First 5 | ForEach-Object { Write-Host ('[WARN]   UNQUOTED: ' + $_.Name + ' -> ' + $_.PathName) } } catch {}; Write-Host ''; Write-Host '[INFO] === SCHEDULED TASKS (non-Microsoft, enabled) ==='; try { $tasks = Get-ScheduledTask -ErrorAction SilentlyContinue | Where-Object { $_.State -ne 'Disabled' -and $_.TaskPath -notmatch 'Microsoft' }; Write-Host ('    Non-Microsoft enabled tasks: ' + @($tasks).Count); $tasks | Select-Object -First 10 | ForEach-Object { $action = if ($_.Actions) { $_.Actions[0].Execute + ' ' + $_.Actions[0].Arguments } else { 'N/A' }; Write-Host ('    [' + $_.State + '] ' + $_.TaskName + ' -> ' + $action.Trim().Substring(0,[math]::Min(80,$action.Trim().Length))) } } catch {}; Write-Host ''; Write-Host '[INFO] === STARTUP REGISTRY ENTRIES (Run/RunOnce) ==='; $runKeys = @('HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run','HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce'); foreach ($key in $runKeys) { try { $entries = Get-ItemProperty -Path $key -ErrorAction SilentlyContinue; if ($entries) { $entries.PSObject.Properties | Where-Object { $_.Name -notmatch '^PS' } | ForEach-Object { Write-Host ('    [RUN] ' + $key.Split('\\')[-1] + ' ' + $key.Split('\\')[0] + ': ' + $_.Name + ' = ' + [string]$_.Value) } } } catch {} }; Write-Host ''; Write-Host '[INFO] === LOCAL SHARES ==='; try { $shares = Get-WmiObject -Class Win32_Share -ErrorAction SilentlyContinue; Write-Host ('    Shares: ' + @($shares).Count); $shares | ForEach-Object { Write-Host ('    \\\\' + $env:COMPUTERNAME + '\\' + $_.Name + ' -> ' + $_.Path + ' [' + $_.Type + ']') } } catch {}; Write-Host ''; Write-Host '[INFO] === OPEN PORTS (netstat-style) ==='; try { $listening = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Sort-Object LocalPort; Write-Host ('    Listening TCP ports: ' + @($listening).Count); $listening | Select-Object -First 15 | ForEach-Object { $procName = try { (Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue).ProcessName } catch { 'unknown' }; Write-Host ('    ' + $_.LocalAddress + ':' + $_.LocalPort + ' [' + $procName + ']') } } catch {}; Write-Host ''; Write-Host '[INFO] === CREDENTIAL FILE RECON (clear-text cred search) ==='; $credPatterns = @( @{Path='C:\\inetpub';Filter='web.config';Label='IIS web.config (may contain DB passwords)'}, @{Path=$env:APPDATA;Filter='*.rdp';Label='RDP saved connection files'}, @{Path=$env:USERPROFILE;Filter='.env';Label='.env files (API keys/passwords)'}, @{Path='C:\\Program Files';Filter='*.config';Label='Program .config files'} ); foreach ($cp in $credPatterns) { try { if (Test-Path $cp.Path) { $found = Get-ChildItem -Path $cp.Path -Filter $cp.Filter -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { -not $_.PSIsContainer }; if (@($found).Count -gt 0) { Write-Host ('[WARN]   FOUND ' + @($found).Count + ' files: [' + $cp.Label + '] -> ' + ($found | Select-Object -First 3 -ExpandProperty FullName) -join ', ') } } } catch {} }; $samCheck = 'C:\\Windows\\System32\\config\\SAM'; if (Test-Path $samCheck) { Write-Host ('[WARN]   SAM hive accessible: ' + $samCheck + ' (shadow copy dump target)') }; Write-Host ''; Write-Host '[SUCCESS] T1592 - WinPEAS-style host enumeration completed. Sentinel target: Bulk system registry/WMI/file enumeration + credential file search + unquoted path scan (MDE - comprehensive host recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1592 cleanup: no artefacts - read-only enumeration'",
+      "detection_rule": "Bulk registry/WMI/file enumeration + credential file search + unquoted path discovery (WinPEAS pattern)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1589-Gather Victim Identity Information",
+      "name": "Excalibur - Recon-T1589-Gather Victim Identity Information",
+      "description": "Enumerates victim identity information from the foothold: local users and groups (net user / net localgroup), members of privileged groups (Administrators, Remote Desktop Users, Remote Management Users), domain users and privileged group membership via LDAP if domain-joined (falls back gracefully on workgroup), service account enumeration (services running as non-SYSTEM/LocalService accounts), and Active Directory user enumeration via System.DirectoryServices.DirectorySearcher. The combination of net.exe user/group commands and LDAP queries from a non-admin-tool process is a MDE identity reconnaissance signal.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1589 - Gather Victim Identity Information (user/group/LDAP enumeration)'; Write-Host '[INFO] Step 1/5: Local users (net user)'; try { $netUserOutput = & net.exe user 2>&1; $localUsers = $netUserOutput | Where-Object { $_ -match '^\\s+\\S' } | ForEach-Object { $_.Trim() -split '\\s{2,}' } | Where-Object { $_ -ne '' -and $_ -notmatch '^-' }; Write-Host ('[INFO] Local users: ' + @($localUsers).Count + ' -> ' + ($localUsers -join ', ')) } catch { Write-Host ('[INFO] net user: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/5: Local privileged group membership'; $privGroups = @('Administrators','Remote Desktop Users','Remote Management Users','Backup Operators','Power Users','Network Configuration Operators'); foreach ($grp in $privGroups) { try { $members = & net.exe localgroup $grp 2>&1 | Where-Object { $_ -match '^\\S' -and $_ -notmatch 'Alias|Comment|Members|command|----' }; if (@($members).Count -gt 0) { Write-Host ('[INFO]   ' + $grp + ': ' + ($members | Where-Object {$_} | ForEach-Object {$_.Trim()}) -join ', ') } else { Write-Host ('[INFO]   ' + $grp + ': empty or access denied') } } catch {} }; Write-Host '[INFO] Step 3/5: Service accounts (services NOT running as SYSTEM/LocalService/NetworkService)'; try { $svcAccounts = Get-WmiObject -Class Win32_Service -ErrorAction SilentlyContinue | Where-Object { $_.StartName -and $_.StartName -notmatch 'LocalSystem|LocalService|NetworkService|NT AUTHORITY' -and $_.State -eq 'Running' }; Write-Host ('[INFO] Non-default service accounts running: ' + @($svcAccounts).Count); $svcAccounts | Select-Object -First 10 | ForEach-Object { Write-Host ('    ' + $_.Name + ' runs as: ' + $_.StartName) } } catch {}; Write-Host '[INFO] Step 4/5: Active Directory user enumeration (LDAP - domain-joined only)'; try { $domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain(); $dcName = $domain.FindDomainController().Name; Write-Host ('[INFO] Domain: ' + $domain.Name + ' | DC: ' + $dcName); $searcher = New-Object System.DirectoryServices.DirectorySearcher; $searcher.Filter = '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))'; $searcher.PropertiesToLoad.AddRange(@('sAMAccountName','displayName','memberOf','adminCount')) | Out-Null; $searcher.SizeLimit = 50; $results = $searcher.FindAll(); Write-Host ('[INFO] Active users in AD (max 50): ' + $results.Count); $results | Select-Object -First 10 | ForEach-Object { $sam = $_.Properties['sAMAccountName']; $admin = $_.Properties['adminCount']; Write-Host ('    ' + $sam + $(if ($admin -and $admin[0] -eq 1) { ' [ADMIN-COUNT=1 - privileged account]' } else { '' })) }; $results.Dispose() } catch { Write-Host ('[INFO] LDAP user enum: ' + $_.Exception.Message.Split([char]10)[0] + ' (workgroup machine or access denied)') }; Write-Host '[INFO] Step 5/5: Domain admin group LDAP query'; try { $daSearcher = New-Object System.DirectoryServices.DirectorySearcher; $daSearcher.Filter = '(&(objectCategory=group)(cn=Domain Admins))'; $daSearcher.PropertiesToLoad.Add('member') | Out-Null; $daResult = $daSearcher.FindOne(); if ($daResult) { $members = $daResult.Properties['member']; Write-Host ('[INFO] Domain Admins members: ' + @($members).Count); $members | Select-Object -First 10 | ForEach-Object { Write-Host ('    ' + ($_ -split ',')[0] -replace 'CN=','') } } } catch { Write-Host ('[INFO] Domain Admins LDAP: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1589 - Identity information gathering completed. Sentinel target: net.exe user/localgroup + LDAP DirectorySearcher user enumeration (MDE - identity recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1589 cleanup: no artefacts - read-only user/group enumeration'",
+      "detection_rule": "net.exe user/localgroup + LDAP DirectorySearcher user enumeration from non-admin-tool process",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1596-Search Open Technical Databases",
+      "name": "Excalibur - Recon-T1596-Search Open Technical Databases",
+      "description": "Simulates adversary use of open technical databases (Shodan, Censys, ipinfo.io) from the foothold to identify the target's external IP, ASN, geolocation, and exposed services as seen from the internet. Queries ipinfo.io for the machine's egress IP metadata, then queries bgpview.io for ASN information, and constructs the Shodan search query URL that an adversary would use to enumerate exposed services. Adversaries use these databases immediately after gaining a foothold to understand the target's attack surface from the outside. The outbound queries to IP intelligence APIs from a non-browser process are MDE behavioral indicators.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1596",
+      "technique_name": "Search Open Technical Databases",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_target_domain"],
+      "command": "Write-Host '[START] T1596 - Search Open Technical Databases (IP intel + Shodan-style external recon)'; $targetDomain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1596-OSTINTRecon/1.0'; Write-Host '[INFO] Step 1/4: External IP discovery (egress IP - what the target looks like from the internet)'; try { $ipResp = Invoke-WebRequest -Uri 'https://ipinfo.io/json' -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $ipData = $ipResp.Content | ConvertFrom-Json; Write-Host ('[INFO] Egress IP: ' + $ipData.ip + ' | City: ' + $ipData.city + ' | Region: ' + $ipData.region + ' | Country: ' + $ipData.country); Write-Host ('[INFO] Org/ASN: ' + $ipData.org + ' | Hostname: ' + $ipData.hostname); $egressIp = $ipData.ip } catch { Write-Host ('[INFO] ipinfo.io: ' + $_.Exception.Message.Split([char]10)[0]); $egressIp = $null }; Write-Host '[INFO] Step 2/4: ASN/BGP information (network ownership + BGP prefix)'; try { $bgpResp = Invoke-WebRequest -Uri ('https://api.bgpview.io/ip/' + $(if ($egressIp) { $egressIp } else { '8.8.8.8' })) -Headers @{'User-Agent'=$ua;'Accept'='application/json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $bgpData = $bgpResp.Content | ConvertFrom-Json; $prefixes = $bgpData.data.prefixes; Write-Host ('[INFO] BGP prefixes: ' + @($prefixes).Count); $prefixes | Select-Object -First 3 | ForEach-Object { Write-Host ('    ' + $_.prefix + ' | ASN: AS' + $_.asn.asn + ' | ' + $_.asn.name + ' | Country: ' + $_.asn.country_code) } } catch { Write-Host ('[INFO] BGP lookup: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 3/4: DNS A records for target domain (external IP of target org)'; try { $domainIPs = Resolve-DnsName -Name $targetDomain -Type A -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress }; Write-Host ('[INFO] ' + $targetDomain + ' resolves to: ' + ($domainIPs | Select-Object -ExpandProperty IPAddress) -join ', '); foreach ($ip in @($domainIPs)[0..1]) { try { $ipDetails = Invoke-WebRequest -Uri ('https://ipinfo.io/' + $ip.IPAddress + '/json') -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $det = $ipDetails.Content | ConvertFrom-Json; Write-Host ('    ' + $ip.IPAddress + ' -> Org: ' + $det.org + ' | Hosted: ' + $det.city + ', ' + $det.country) } catch {} } } catch { Write-Host ('[INFO] Domain IP intel: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 4/4: Shodan/Censys search URL construction (adversary would use these to find exposed services)'; Write-Host ('[INFO] Shodan search URL: https://www.shodan.io/search?query=hostname%3A' + $targetDomain); Write-Host ('[INFO] Censys search URL: https://search.censys.io/search?resource=hosts&q=' + $targetDomain); Write-Host ('[INFO] Shodan API query would return: open ports, TLS cert details, web server versions, exposed services'); Write-Host '[SUCCESS] T1596 - Open technical database search completed. Sentinel target: Outbound queries to IP intelligence APIs (ipinfo.io/bgpview.io) from non-browser process (MDE - OSINT recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1596 cleanup: no artefacts - HTTP queries only'",
+      "detection_rule": "Outbound queries to IP intelligence APIs (ipinfo.io/bgpview.io) from non-browser process (OSINT recon)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1593-Search Open Websites",
+      "name": "Excalibur - Recon-T1593-Search Open Websites",
+      "description": "Simulates adversary OSINT via open websites and public repositories: (1) certificate transparency log search via crt.sh API to enumerate all TLS certificates issued for the target domain (reveals subdomains, server names, internal hostnames exposed in certs); (2) WHOIS/RDAP query via the IANA RDAP bootstrap endpoint; (3) GitHub code search for the target domain (adversaries search GitHub for leaked credentials, config files, and source code containing the target's domain); (4) LinkedIn-style employee name pattern construction via Bing search query simulation (User-Agent based). Certificate transparency is a particularly powerful recon technique that reveals internal infrastructure.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1593",
+      "technique_name": "Search Open Websites/Domains",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_target_domain"],
+      "command": "Write-Host '[START] T1593 - Search Open Websites/Domains (crt.sh + RDAP + GitHub OSINT from foothold)'; $domain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1593-OSINTRecon/1.0'; Write-Host '[INFO] Method 1/4: Certificate Transparency (crt.sh) - enumerate TLS certs for all subdomains'; try { $crtUrl = 'https://crt.sh/?q=%25.' + $domain + '&output=json'; $crtResp = Invoke-WebRequest -Uri $crtUrl -Headers @{'User-Agent'=$ua;'Accept'='application/json'} -TimeoutSec 10 -UseBasicParsing -ErrorAction Stop; $crtData = $crtResp.Content | ConvertFrom-Json -ErrorAction SilentlyContinue; if ($crtData) { $uniqueNames = $crtData | Select-Object -ExpandProperty name_value | Where-Object { $_ -notmatch '\\*' } | Sort-Object -Unique; Write-Host ('[INFO] crt.sh: ' + @($crtData).Count + ' certificates found | ' + @($uniqueNames).Count + ' unique hostnames'); $uniqueNames | Select-Object -First 15 | ForEach-Object { Write-Host ('    ' + $_) }; if (@($uniqueNames).Count -gt 15) { Write-Host ('    ... and ' + (@($uniqueNames).Count - 15) + ' more') } } else { Write-Host '[INFO] crt.sh: no certificates found or domain too new' } } catch { Write-Host ('[INFO] crt.sh: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound logged by MDE)') }; Write-Host '[INFO] Method 2/4: RDAP WHOIS (domain registration and ownership info)'; try { $rdapUrl = 'https://rdap.org/domain/' + $domain; $rdapResp = Invoke-WebRequest -Uri $rdapUrl -Headers @{'User-Agent'=$ua;'Accept'='application/rdap+json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $rdapData = $rdapResp.Content | ConvertFrom-Json; Write-Host ('[INFO] RDAP: Domain=' + $rdapData.ldhName + ' | Status: ' + ($rdapData.status -join ',') + ' | Registrar: ' + $(($rdapData.entities | Where-Object { $_.roles -contains 'registrar' } | Select-Object -First 1).vcardArray[-1][-1] -join '' 2>$null)) } catch { Write-Host ('[INFO] RDAP: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Method 3/4: GitHub code search (leaked credentials/config files containing target domain)'; $ghSearchUrls = @( 'https://api.github.com/search/code?q=' + [System.Uri]::EscapeDataString('"' + $domain + '" password') + '&per_page=5', 'https://api.github.com/search/repositories?q=' + [System.Uri]::EscapeDataString($domain) + '&per_page=5' ); foreach ($ghUrl in $ghSearchUrls) { try { $ghResp = Invoke-WebRequest -Uri $ghUrl -Headers @{'User-Agent'=$ua;'Accept'='application/vnd.github.v3+json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $ghData = $ghResp.Content | ConvertFrom-Json; $count = if ($ghData.total_count) { $ghData.total_count } else { @($ghData.items).Count }; $label = if ($ghUrl -match 'search/code') { 'Code results (leaked creds/config)' } else { 'Public repositories' }; Write-Host ('[INFO] GitHub ' + $label + ': ' + $count + ' results'); if ($ghData.items) { $ghData.items | Select-Object -First 3 | ForEach-Object { Write-Host ('    ' + $_.full_name + ' | ' + $_.html_url) } } } catch { Write-Host ('[INFO] GitHub search: ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[INFO] Method 4/4: Bing OSINT search (employee names, email format, org structure)'; try { $searchQueries = @( 'site:linkedin.com "' + $domain + '"', '"@' + $domain + '" filetype:xlsx OR filetype:csv' ); foreach ($q in $searchQueries) { $bingUrl = 'https://www.bing.com/search?q=' + [System.Uri]::EscapeDataString($q); $bingResp = Invoke-WebRequest -Uri $bingUrl -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] Bing query [' + $q.Substring(0,[math]::Min(50,$q.Length)) + ']: HTTP ' + $bingResp.StatusCode + ' | ' + $bingResp.RawContentLength + ' bytes') } } catch { Write-Host ('[INFO] Bing OSINT: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1593 - Open website OSINT completed. Sentinel target: crt.sh + RDAP + GitHub API + Bing queries from non-browser process (MDE - OSINT recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1593 cleanup: no artefacts - HTTP queries only'",
+      "detection_rule": "crt.sh + RDAP + GitHub API + Bing OSINT queries from non-browser process (certificate transparency recon)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1591-Gather Victim Org Information",
+      "name": "Excalibur - Recon-T1591-Gather Victim Org Information",
+      "description": "Enumerates victim organization information from Active Directory and domain configuration: domain name, domain functional level, domain controller list, forest name and trusts, organizational unit structure, domain group policy objects, and Exchange/Office 365 Autodiscover endpoint (reveals mail infrastructure). Falls back gracefully to local machine DNS domain info on workgroup machines. The combination of LDAP DirectorySearcher OU queries, trust enumeration, and Autodiscover HTTP probe are MDE organizational recon behavioral signals.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_target_domain"],
+      "command": "Write-Host '[START] T1591 - Gather Victim Org Information (AD/domain/Exchange org recon)'; $targetDomain = '#{excalibur_recon_target_domain}'; Write-Host '[INFO] Step 1/5: Local domain membership + DNS domain info'; Write-Host ('[INFO] Machine domain: ' + $env:USERDNSDOMAIN + ' | Computer domain: ' + (Get-WmiObject Win32_ComputerSystem).Domain); Write-Host '[INFO] Step 2/5: Active Directory domain information (if domain-joined)'; try { $adDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain(); Write-Host ('[INFO] AD Domain: ' + $adDomain.Name + ' | Forest: ' + $adDomain.Forest.Name); Write-Host ('[INFO] Domain functional level: ' + $adDomain.DomainMode); Write-Host ('[INFO] Domain controllers (' + @($adDomain.DomainControllers).Count + '):'); $adDomain.DomainControllers | Select-Object -First 5 | ForEach-Object { Write-Host ('    DC: ' + $_.Name + ' | OS: ' + $_.OSVersion + ' | Site: ' + $_.SiteName) }; Write-Host '[INFO] Forest trusts:'; try { $trusts = $adDomain.Forest.GetAllTrustRelationships(); if (@($trusts).Count -gt 0) { $trusts | ForEach-Object { Write-Host ('    Trust: ' + $_.SourceName + ' <-> ' + $_.TargetName + ' [' + $_.TrustDirection + '] [' + $_.TrustType + ']') } } else { Write-Host '    No forest trusts found' } } catch { Write-Host ('    Trust enum: ' + $_.Exception.Message.Split([char]10)[0]) } } catch { Write-Host ('[INFO] AD domain: ' + $_.Exception.Message.Split([char]10)[0] + ' (workgroup or access denied - using DNS domain fallback)') }; Write-Host '[INFO] Step 3/5: Organizational Unit structure (LDAP OU enumeration)'; try { $ouSearcher = New-Object System.DirectoryServices.DirectorySearcher; $ouSearcher.Filter = '(objectCategory=organizationalUnit)'; $ouSearcher.PropertiesToLoad.AddRange(@('distinguishedName','name')) | Out-Null; $ouSearcher.SizeLimit = 30; $ous = $ouSearcher.FindAll(); Write-Host ('[INFO] Organizational Units found: ' + $ous.Count); $ous | Select-Object -First 10 | ForEach-Object { Write-Host ('    OU: ' + $_.Properties['name'] + ' | DN: ' + [string]($_.Properties['distinguishedname'])) } } catch { Write-Host ('[INFO] OU enum: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 4/5: Group Policy Objects enumeration'; try { $gpoSearcher = New-Object System.DirectoryServices.DirectorySearcher; $gpoSearcher.Filter = '(objectClass=groupPolicyContainer)'; $gpoSearcher.PropertiesToLoad.AddRange(@('displayName','cn','gPCFileSysPath')) | Out-Null; $gpoSearcher.SizeLimit = 20; $gpos = $gpoSearcher.FindAll(); Write-Host ('[INFO] Group Policy Objects: ' + $gpos.Count); $gpos | Select-Object -First 10 | ForEach-Object { Write-Host ('    GPO: ' + $_.Properties['displayname'] + ' | Path: ' + [string]($_.Properties['gpcfilesyspath'])) } } catch { Write-Host ('[INFO] GPO enum: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 5/5: Exchange/O365 Autodiscover probe (mail infrastructure fingerprint)'; $autodiscoverUrls = @( 'https://autodiscover.' + $targetDomain + '/autodiscover/autodiscover.xml', 'https://' + $targetDomain + '/autodiscover/autodiscover.xml' ); foreach ($adUrl in $autodiscoverUrls) { try { $adResp = Invoke-WebRequest -Uri $adUrl -Method GET -Headers @{'User-Agent'='Microsoft Office/16.0'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] Autodiscover ' + ([System.Uri]$adUrl).Host + ': HTTP ' + $adResp.StatusCode + ' (Exchange/O365 confirmed)') } catch { Write-Host ('[INFO] Autodiscover ' + ([System.Uri]$adUrl).Host + ': ' + $_.Exception.Message.Split([char]10)[0] + ' (expected if not Exchange)') } }; Write-Host '[SUCCESS] T1591 - Org information gathering completed. Sentinel target: LDAP OU/GPO/trust enumeration + Autodiscover probe (MDE - AD org structure recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1591 cleanup: no artefacts - read-only LDAP and HTTP queries'",
+      "detection_rule": "LDAP OU/GPO/trust enumeration + Autodiscover HTTP probe (AD organizational recon)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1594-Search Victim-Owned Websites",
+      "name": "Excalibur - Recon-T1594-Search Victim-Owned Websites",
+      "description": "Simulates adversary fingerprinting of victim-owned web services from the foothold: enumerates internal/intranet web services by scanning common internal web ports (80, 443, 8080, 8443, 8888, 9090, 5000, 3000) on localhost and the default gateway; extracts Server, X-Powered-By, X-AspNet-Version, and X-Frame-Options headers from any responsive HTTP services (reveals web server and framework versions); probes the target domain's public-facing web infrastructure for technology fingerprinting; enumerates common web application paths (robots.txt, sitemap.xml, /admin, /api, /.git/HEAD, /wp-login.php). Technology fingerprinting via HTTP headers and path enumeration generates MDE behavioral signals.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1594",
+      "technique_name": "Search Victim-Owned Websites",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_target_domain"],
+      "command": "Write-Host '[START] T1594 - Search Victim-Owned Websites (HTTP fingerprinting + path enumeration)'; $targetDomain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1594-WebRecon/1.0'; Write-Host '[INFO] Phase 1/3: Internal web service discovery (localhost + gateway scan)'; $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object RouteMetric | Select-Object -First 1).NextHop; $scanTargets = @('127.0.0.1'); if ($gw) { $scanTargets += $gw }; $webPorts = @(80,443,8080,8443,8888,9090,5000,3000,8000,7001); foreach ($scanTarget in $scanTargets) { Write-Host ('[INFO] Scanning ' + $scanTarget + ' for web services...'); foreach ($port in $webPorts) { try { $proto = if ($port -in @(443,8443)) { 'https' } else { 'http' }; $url = $proto + '://' + $scanTarget + ':' + $port + '/'; $webReq = [System.Net.WebRequest]::Create($url); $webReq.Timeout = 2000; $webReq.Method = 'HEAD'; if ($proto -eq 'https') { $webReq.ServerCertificateValidationCallback = {$true} }; try { $webResp = $webReq.GetResponse(); $server = $webResp.Headers['Server']; $xpow = $webResp.Headers['X-Powered-By']; $xasp = $webResp.Headers['X-AspNet-Version']; Write-Host ('[INFO]   OPEN ' + $url + ' | Server: ' + $server + ' | X-Powered-By: ' + $xpow + ' | X-AspNet: ' + $xasp); $webResp.Close() } catch [System.Net.WebException] { if ($_.Exception.Response) { $sc = [int]$_.Exception.Response.StatusCode; if ($sc -gt 0) { $svr = $_.Exception.Response.Headers['Server']; Write-Host ('[INFO]   HTTP ' + $sc + ' at ' + $url + ' (Server: ' + $svr + ')') } } } } catch {} } }; Write-Host '[INFO] Phase 2/3: Target domain technology fingerprinting'; $targetUrl = 'https://' + $targetDomain + '/'; try { $fpReq = [System.Net.WebRequest]::Create($targetUrl); $fpReq.Timeout = 5000; $fpReq.Method = 'GET'; $fpReq.Headers.Add('User-Agent', $ua); $fpReq.ServerCertificateValidationCallback = {$true}; $fpResp = $fpReq.GetResponse(); $headers = @('Server','X-Powered-By','X-AspNet-Version','X-Frame-Options','Strict-Transport-Security','Content-Security-Policy','X-Generator','X-Drupal-Cache','X-WordPress-Cache'); Write-Host ('[INFO] HTTP headers for ' + $targetUrl + ':'); foreach ($h in $headers) { $val = $fpResp.Headers[$h]; if ($val) { Write-Host ('    ' + $h + ': ' + $val) } }; $fpResp.Close() } catch { Write-Host ('[INFO] Target fingerprint: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Phase 3/3: Common path enumeration (robots.txt, admin, API, .git)'; $probePaths = @('/robots.txt','/sitemap.xml','/.git/HEAD','/admin','/administrator','/wp-login.php','/api/v1','/api/v2','/swagger/index.html','/.env','/phpinfo.php','/server-status'); foreach ($path in $probePaths) { try { $probeUrl = 'https://' + $targetDomain + $path; $probeReq = [System.Net.WebRequest]::Create($probeUrl); $probeReq.Timeout = 3000; $probeReq.Method = 'HEAD'; $probeReq.ServerCertificateValidationCallback = {$true}; $probeReq.Headers.Add('User-Agent', $ua); try { $probeResp = $probeReq.GetResponse(); $sc = [int]$probeResp.StatusCode; $probeResp.Close(); if ($sc -lt 400) { Write-Host ('[INFO]   FOUND ' + $path + ' -> HTTP ' + $sc + ' (potential sensitive path)') } } catch [System.Net.WebException] { $sc = if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 }; if ($sc -in @(200,301,302,401,403)) { Write-Host ('[INFO]   ' + $path + ' -> HTTP ' + $sc) } } } catch {} }; Write-Host '[SUCCESS] T1594 - Web service fingerprinting completed. Sentinel target: HTTP header extraction + common path enumeration from non-browser process (MDE - web recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1594 cleanup: no artefacts - HTTP requests only'",
+      "detection_rule": "HTTP header fingerprinting + common path enumeration (robots.txt/.git/admin) from non-browser process",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1597-Search Closed Sources",
+      "name": "Excalibur - Recon-T1597-Search Closed Sources",
+      "description": "Simulates adversary use of breach databases and threat intelligence platforms (closed/semi-closed sources) from the foothold: (1) queries HaveIBeenPwned domain search API to check for known breaches exposing corporate email accounts; (2) queries the HaveIBeenPwned pastes API for the domain; (3) queries the DeHashed-style API search pattern for the corporate email domain; (4) checks for the presence of common breach data files in local user directories that adversaries look for after gaining access (prior breach dumps from the victim's own incident history). These queries generate MDE outbound behavioral telemetry and are a documented APT reconnaissance technique.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1597",
+      "technique_name": "Search Closed Sources",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_recon_email_domain"],
+      "command": "Write-Host '[START] T1597 - Search Closed Sources (breach database + threat intel platform recon)'; $emailDomain = '#{excalibur_recon_email_domain}'; $ua = 'MorganaTest-T1597-BreachRecon/1.0'; Write-Host '[INFO] Method 1/4: HaveIBeenPwned domain breach search (corporate email exposure)'; try { $hibpHeaders = @{ 'User-Agent'=$ua; 'hibp-api-key'='MorganaSimKey-NotReal'; 'Accept'='application/json' }; $hibpResp = Invoke-WebRequest -Uri ('https://haveibeenpwned.com/api/v3/breacheddomain/' + $emailDomain) -Headers $hibpHeaders -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $breaches = $hibpResp.Content | ConvertFrom-Json; Write-Host ('[INFO] HIBP domain breaches: ' + @($breaches).Count + ' breaches found for @' + $emailDomain); $breaches | Select-Object -First 5 | ForEach-Object { Write-Host ('    ' + $_) } } catch { Write-Host ('[INFO] HIBP domain search: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound to HIBP logged by MDE - breach recon pattern)') }; Write-Host '[INFO] Method 2/4: HaveIBeenPwned pastes search (corporate email in public pastes)'; try { $pasteResp = Invoke-WebRequest -Uri ('https://haveibeenpwned.com/api/v3/pasteaccount/admin@' + $emailDomain) -Headers @{'User-Agent'=$ua;'hibp-api-key'='MorganaSimKey-NotReal'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] HIBP pastes: ' + $pasteResp.StatusCode) } catch { Write-Host ('[INFO] HIBP pastes: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Method 3/4: DeHashed-style API (breach data aggregator pattern)'; try { $dhHeaders = @{ 'User-Agent'=$ua; 'Accept'='application/json'; 'Authorization'='Basic ' + [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('admin@' + $emailDomain + ':MorganaSimKey')) }; $dhResp = Invoke-WebRequest -Uri ('https://api.dehashed.com/search?query=' + [System.Uri]::EscapeDataString('domain:' + $emailDomain)) -Headers $dhHeaders -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] DeHashed API: HTTP ' + $dhResp.StatusCode + ' (' + $dhResp.RawContentLength + ' bytes)') } catch { Write-Host ('[INFO] DeHashed API: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound to breach aggregator logged by MDE)') }; Write-Host '[INFO] Method 4/4: Local breach data file search (prior incident dump files on victim machine)'; $breachPatterns = @( @{Path=$env:USERPROFILE;Filter='*breach*';Label='Breach data files'}, @{Path=$env:USERPROFILE;Filter='*combo*';Label='Credential combo list'}, @{Path=$env:USERPROFILE;Filter='*dump*';Label='Credential dump files'}, @{Path=$env:USERPROFILE;Filter='*leak*';Label='Data leak files'}, @{Path='C:\\Users\\Public';Filter='*.txt';Label='Public text files (credential lists)'} ); foreach ($bp in $breachPatterns) { try { if (Test-Path $bp.Path) { $found = Get-ChildItem -Path $bp.Path -Filter $bp.Filter -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { $_.Length -gt 1024 }; if (@($found).Count -gt 0) { Write-Host ('[WARN]   FOUND: ' + @($found).Count + ' [' + $bp.Label + '] files in ' + $bp.Path) } } } catch {} }; Write-Host '[SUCCESS] T1597 - Closed source breach search completed. Sentinel target: Outbound to HIBP/DeHashed + local breach file search (MDE - threat intel platform recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1597 cleanup: no artefacts - HTTP queries and read-only file search only'",
+      "detection_rule": "Outbound queries to HIBP/DeHashed breach APIs + local breach file enumeration from non-browser process",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Recon-T1598-Phishing for Information Recon",
+      "name": "Excalibur - Recon-T1598-Phishing for Information Recon",
+      "description": "Simulates the credential pre-harvest reconnaissance phase: enumerates all locations where credentials may be stored on the victim machine that an adversary would map before launching a credential harvesting campaign or spear-phishing attack. Covers: browser credential database paths (Chrome/Edge Login Data SQLite, Firefox logins.json), Windows Credential Manager (cmdkey /list), Outlook credential registry paths, cached domain credentials (klist - Kerberos ticket cache), .ssh/known_hosts and key files, and PowerShell history (which often contains passwords typed in commands). Read-only enumeration only - no credential extraction. Maps the credential surface to inform subsequent T1555/T1003 credential access.",
+      "tactic": "Reconnaissance",
+      "tcode": "T1598",
+      "technique_name": "Phishing for Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1598 - Phishing for Information Recon (credential surface enumeration)'; Write-Host '[INFO] Step 1/6: Browser credential database paths (Chrome/Edge/Firefox Login Data)'; $browserCredPaths = @( @{Label='Chrome Login Data (SQLite)'; Path=Join-Path $env:LOCALAPPDATA 'Google\\Chrome\\User Data\\Default\\Login Data'}, @{Label='Chrome Login Data Backup'; Path=Join-Path $env:LOCALAPPDATA 'Google\\Chrome\\User Data\\Default\\Login Data For Account'}, @{Label='Edge Login Data (SQLite)'; Path=Join-Path $env:LOCALAPPDATA 'Microsoft\\Edge\\User Data\\Default\\Login Data'}, @{Label='Firefox logins.json'; Path=Join-Path $env:APPDATA 'Mozilla\\Firefox\\Profiles'}, @{Label='Opera Login Data'; Path=Join-Path $env:APPDATA 'Opera Software\\Opera Stable\\Login Data'}, @{Label='Brave Login Data'; Path=Join-Path $env:LOCALAPPDATA 'BraveSoftware\\Brave-Browser\\User Data\\Default\\Login Data'} ); foreach ($bc in $browserCredPaths) { $exists = Test-Path $bc.Path; $size = if ($exists -and (Get-Item $bc.Path -ErrorAction SilentlyContinue).PSIsContainer -eq $false) { (Get-Item $bc.Path).Length } else { 0 }; Write-Host ('[INFO]   [' + $(if ($exists) { 'FOUND' } else { 'absent' }) + '] ' + $bc.Label + ': ' + $bc.Path + $(if ($size -gt 0) { ' (' + $size + ' bytes)' } else { '' })) }; Write-Host '[INFO] Step 2/6: Windows Credential Manager (cmdkey /list)'; try { $ckOutput = & cmdkey.exe /list 2>&1; $ckEntries = $ckOutput | Where-Object { $_ -match 'Target|Type|User' }; Write-Host ('[INFO] cmdkey entries: ' + @($ckEntries).Count); $ckEntries | Select-Object -First 15 | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] cmdkey: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/6: Kerberos ticket cache (klist - cached domain credentials)'; try { $klistOutput = & klist.exe 2>&1; $tickets = $klistOutput | Where-Object { $_ -match 'Server:|Client:|Ticket flags' }; Write-Host ('[INFO] Kerberos tickets cached: ' + ([math]::Ceiling(@($tickets).Count / 3))); $tickets | Select-Object -First 9 | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] klist: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 4/6: Outlook/Exchange credential registry'; $outlookRegPaths = @( 'HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Profiles', 'HKCU:\\Software\\Microsoft\\Office\\15.0\\Outlook\\Profiles' ); foreach ($orp in $outlookRegPaths) { if (Test-Path $orp) { $profiles = Get-ChildItem -Path $orp -ErrorAction SilentlyContinue; Write-Host ('[INFO] Outlook profiles at ' + $orp + ': ' + @($profiles).Count) } }; Write-Host '[INFO] Step 5/6: SSH keys and known_hosts'; $sshPaths = @( @{Path=Join-Path $env:USERPROFILE '.ssh\\known_hosts';Label='SSH known_hosts (target host recon)'}, @{Path=Join-Path $env:USERPROFILE '.ssh\\id_rsa';Label='SSH RSA private key'}, @{Path=Join-Path $env:USERPROFILE '.ssh\\id_ed25519';Label='SSH Ed25519 private key'}, @{Path=Join-Path $env:USERPROFILE '.ssh\\config';Label='SSH config (stored hosts/users)'} ); foreach ($sp in $sshPaths) { $e = Test-Path $sp.Path; Write-Host ('[INFO]   [' + $(if ($e) { 'FOUND' } else { 'absent' }) + '] ' + $sp.Label + ': ' + $sp.Path) }; Write-Host '[INFO] Step 6/6: PowerShell history (commands may contain passwords)'; $psHistoryPath = Join-Path $env:APPDATA 'Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt'; if (Test-Path $psHistoryPath) { $histLines = Get-Content $psHistoryPath -ErrorAction SilentlyContinue | Where-Object { $_ -match 'password|pass|pwd|secret|key|token|credential|cred' -and $_ -notmatch '^#' }; Write-Host ('[WARN] PS history has ' + @($histLines).Count + ' lines containing credential keywords at: ' + $psHistoryPath); $histLines | Select-Object -First 5 | ForEach-Object { Write-Host ('    ' + $_.Substring(0,[math]::Min(80,$_.Length)) + '...') } } else { Write-Host '[INFO] PS history: not found' }; Write-Host '[SUCCESS] T1598 - Credential surface recon completed. Sentinel target: Browser Login Data + cmdkey + klist + SSH key + PS history access from non-browser process (MDE - credential harvest pre-recon behavioral detection)'",
+      "cleanup_command": "Write-Host '[INFO] T1598 cleanup: no artefacts - read-only credential location enumeration'",
+      "detection_rule": "Browser Login Data access + cmdkey + klist + SSH key file + PS history access from non-browser process",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - Recon-T1595-Active Scanning",
+      "description": "Emulation chain for T1595: TCP port scan of 20 common service ports from foothold using .NET sockets. Validates MDE active scanning behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1595",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1595-Active Scanning"]
+    },
+    {
+      "name": "Excalibur - Recon-T1590-Gather Victim Network Information",
+      "description": "Emulation chain for T1590: DNS deep enum (A/MX/NS/TXT/SOA) + AXFR attempt + subdomain brute-force + PTR lookup. Validates MDE DNS recon detection.",
+      "package": "excalibur",
+      "tcode": "T1590",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1590-Gather Victim Network Information"]
+    },
+    {
+      "name": "Excalibur - Recon-T1592-WinPEAS Host Enumeration",
+      "description": "Emulation chain for T1592: WinPEAS-style comprehensive host recon (OS/hotfixes/software/services/tasks/shares/autoruns/cred files/unquoted paths). Validates MDE host recon detection.",
+      "package": "excalibur",
+      "tcode": "T1592",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)"]
+    },
+    {
+      "name": "Excalibur - Recon-T1589-Gather Victim Identity Information",
+      "description": "Emulation chain for T1589: net.exe user/group + LDAP user enum + service accounts + Domain Admins. Validates MDE identity recon detection.",
+      "package": "excalibur",
+      "tcode": "T1589",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1589-Gather Victim Identity Information"]
+    },
+    {
+      "name": "Excalibur - Recon-T1596-Search Open Technical Databases",
+      "description": "Emulation chain for T1596: ipinfo.io egress IP + BGP ASN lookup + domain IP intel + Shodan/Censys URL construction. Validates MDE OSINT recon detection.",
+      "package": "excalibur",
+      "tcode": "T1596",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1596-Search Open Technical Databases"]
+    },
+    {
+      "name": "Excalibur - Recon-T1593-Search Open Websites",
+      "description": "Emulation chain for T1593: crt.sh certificate transparency + RDAP WHOIS + GitHub code search + Bing OSINT. Validates MDE OSINT web recon detection.",
+      "package": "excalibur",
+      "tcode": "T1593",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1593-Search Open Websites"]
+    },
+    {
+      "name": "Excalibur - Recon-T1591-Gather Victim Org Information",
+      "description": "Emulation chain for T1591: AD domain/DC/forest/trust/OU/GPO enum + Exchange Autodiscover probe. Validates MDE AD org structure recon detection.",
+      "package": "excalibur",
+      "tcode": "T1591",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1591-Gather Victim Org Information"]
+    },
+    {
+      "name": "Excalibur - Recon-T1594-Search Victim-Owned Websites",
+      "description": "Emulation chain for T1594: internal web port scan + HTTP header fingerprinting + common path enumeration (.git/admin/api). Validates MDE web recon detection.",
+      "package": "excalibur",
+      "tcode": "T1594",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1594-Search Victim-Owned Websites"]
+    },
+    {
+      "name": "Excalibur - Recon-T1597-Search Closed Sources",
+      "description": "Emulation chain for T1597: HIBP domain breach + pastes + DeHashed API + local breach file search. Validates MDE breach database recon detection.",
+      "package": "excalibur",
+      "tcode": "T1597",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1597-Search Closed Sources"]
+    },
+    {
+      "name": "Excalibur - Recon-T1598-Phishing for Information Recon",
+      "description": "Emulation chain for T1598: browser Login Data + cmdkey + klist + Outlook reg + SSH keys + PS history credential surface mapping. Validates MDE credential harvest pre-recon detection.",
+      "package": "excalibur",
+      "tcode": "T1598",
+      "tactic": "Reconnaissance",
+      "script_refs": ["Excalibur - Recon-T1598-Phishing for Information Recon"]
+    },
+    {
+      "name": "Excalibur - Reconnaissance Full Sweep",
+      "description": "Full sweep of all 10 Reconnaissance technique emulations. Internet access required for T1596/T1593/T1597 (OSINT/breach lookups). Domain join recommended for T1589/T1591 (LDAP). T1595 scan target must be a TEST-NET IP or lab host you own. T1592 (WinPEAS) is the most verbose script — its output may be long. All scripts are read-only. No data is created, no configuration is changed.",
+      "package": "excalibur",
+      "tcode": "TA0043",
+      "tactic": "Reconnaissance",
+      "script_refs": [
+        "Excalibur - Recon-T1595-Active Scanning",
+        "Excalibur - Recon-T1590-Gather Victim Network Information",
+        "Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)",
+        "Excalibur - Recon-T1589-Gather Victim Identity Information",
+        "Excalibur - Recon-T1596-Search Open Technical Databases",
+        "Excalibur - Recon-T1593-Search Open Websites",
+        "Excalibur - Recon-T1591-Gather Victim Org Information",
+        "Excalibur - Recon-T1594-Search Victim-Owned Websites",
+        "Excalibur - Recon-T1597-Search Closed Sources",
+        "Excalibur - Recon-T1598-Phishing for Information Recon"
+      ]
+    }
+  ]
+}

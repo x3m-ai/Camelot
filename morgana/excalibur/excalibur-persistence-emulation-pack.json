@@ -1,0 +1,564 @@
+{
+  "package_id": "excalibur-persistence-v1",
+  "package_name": "Excalibur - Persistence Emulation Pack",
+  "version": "1.0.0",
+  "description": "Adversary emulation scripts for the MITRE ATT&CK Persistence tactic (TA0003). Covers 10 scriptable parent techniques across registry manipulation, account creation, service installation, WMI event subscriptions, BITS abuse, and web shell simulation. Local scripts run on any Morgana Windows agent. All scripts include automatic cleanup. Designed to validate Microsoft Defender for Endpoint behavioral detections and Microsoft Sentinel built-in analytics rules (Event IDs 4698, 4720, 4726, 4732, 4733, 5861, 7045).",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "TA0003",
+  "mitre_tactic_name": "Persistence",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 test machine with Morgana agent installed",
+    "Microsoft Defender for Endpoint (MDE) onboarded and data connector active in Microsoft Sentinel",
+    "Windows Security Events via AMA connector active in Microsoft Sentinel (Event IDs: 4698, 4720, 4726, 4732, 4733, 5861, 7045)",
+    "For T1098, T1136, T1543, T1546: Morgana agent must run as local Administrator or SYSTEM",
+    "For T1197: Internet access from the test machine, or replace excalibur_pers_bits_url with an accessible internal URL",
+    "For T1505: wwwroot directory must exist. If IIS is not installed, create it manually: New-Item -ItemType Directory -Path C:\\inetpub\\wwwroot -Force",
+    "Test environment only - never run against production systems or monitored production environments"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "common_local",
+      "label": "Common - Local Environment (all local scripts)",
+      "description": "Shared temp directory used by T1197 (BITS download destination) and T1574 (DLL planting). Set once. The default path is already Defender-excluded in a standard Morgana installation.",
+      "scope": "local",
+      "used_by_tcodes": ["T1197", "T1574"],
+      "tags": [
+        {
+          "key": "excalibur_pers_temp_dir",
+          "label": "Temp Directory (Defender-excluded)",
+          "description": "Directory for temporary test artefacts. Must be excluded from Microsoft Defender to prevent interference. Default is the standard Morgana data path.",
+          "default": "C:\\ProgramData\\Morgana\\temp",
+          "example": "C:\\ProgramData\\Morgana\\temp",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1037_logonscript",
+      "label": "T1037 - Boot/Logon Initialization Scripts",
+      "description": "Settings for the logon script registry persistence script. Writes a UserInitMprLogonScript value under HKCU:\\Environment, then removes it immediately. Non-destructive - does not modify any existing registry keys.",
+      "scope": "local",
+      "used_by_tcodes": ["T1037"],
+      "tags": [
+        {
+          "key": "excalibur_pers_logon_script_name",
+          "label": "Registry Value Name",
+          "description": "Name of the registry value to create under HKCU:\\Environment. The standard persistence key used by adversaries is UserInitMprLogonScript.",
+          "default": "UserInitMprLogonScript",
+          "example": "UserInitMprLogonScript",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_logon_script_path",
+          "label": "Logon Script Path (benign executable)",
+          "description": "Value to register as the logon script. Use a benign system executable. The registry value is written and immediately removed - the executable will not run during the test.",
+          "default": "C:\\Windows\\System32\\calc.exe",
+          "example": "C:\\Windows\\System32\\calc.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1053_persist",
+      "label": "T1053 - Scheduled Task / Job (Persistence variant - AtLogon trigger)",
+      "description": "Settings for the scheduled task persistence script. Creates a task with an AtLogon trigger (fires at every user logon, unlike the one-shot variant in the Execution pack), then removes it immediately. Generates Event ID 4698.",
+      "scope": "local",
+      "used_by_tcodes": ["T1053"],
+      "tags": [
+        {
+          "key": "excalibur_pers_sched_task_name",
+          "label": "Test Scheduled Task Name",
+          "description": "Name for the temporary scheduled task. Automatically unregistered after creation. Must be unique on the target machine.",
+          "default": "MorganaTest-PersistTask",
+          "example": "MorganaTest-PersistTask",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_sched_payload",
+          "label": "Task Action Payload",
+          "description": "Argument passed to cmd.exe if the task fires at logon. The AtLogon task creation event (Event ID 4698) is the detection target, not the payload.",
+          "default": "whoami > NUL",
+          "example": "whoami > NUL",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1098_acctmanip",
+      "label": "T1098 - Account Manipulation",
+      "description": "Settings for the account manipulation script. Creates a temporary local account, adds it to the Administrators group (Event ID 4732), removes it from the group (Event ID 4733), then deletes the account. Requires local Administrator or SYSTEM privileges.",
+      "scope": "local",
+      "used_by_tcodes": ["T1098"],
+      "tags": [
+        {
+          "key": "excalibur_pers_manip_username",
+          "label": "Temporary Account Username",
+          "description": "Username for the temporary local account created during the test. Account is created, added to Administrators, removed from Administrators, then deleted automatically.",
+          "default": "MorganaTest-AcctManip",
+          "example": "MorganaTest-AcctManip",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_manip_password",
+          "label": "Temporary Account Password",
+          "description": "Password for the temporary local account. Must meet the local password policy requirements. Account is deleted immediately after the test.",
+          "default": "MorganaT3st!2026",
+          "example": "MorganaT3st!2026",
+          "sensitive": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1136_createacct",
+      "label": "T1136 - Create Account",
+      "description": "Settings for the local account creation script. Creates a temporary local user account (Event ID 4720) then immediately deletes it (Event ID 4726). Requires local Administrator or SYSTEM privileges.",
+      "scope": "local",
+      "used_by_tcodes": ["T1136"],
+      "tags": [
+        {
+          "key": "excalibur_pers_new_username",
+          "label": "New Account Username",
+          "description": "Username for the temporary local account. Must not already exist on the target machine. Account is deleted immediately after creation.",
+          "default": "MorganaTest-NewAcct",
+          "example": "MorganaTest-NewAcct",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_new_password",
+          "label": "New Account Password",
+          "description": "Password for the temporary local account. Must meet the local password policy requirements. Account is deleted immediately after creation.",
+          "default": "MorganaT3st!2026",
+          "example": "MorganaT3st!2026",
+          "sensitive": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1197_bits",
+      "label": "T1197 - BITS Jobs",
+      "description": "Settings for the BITS job persistence simulation. Creates a Background Intelligent Transfer Service job (adversaries use BITS for covert downloads and persistence because it survives reboots and blends with legitimate Windows telemetry). Job is removed after execution.",
+      "scope": "local",
+      "used_by_tcodes": ["T1197"],
+      "tags": [
+        {
+          "key": "excalibur_pers_bits_job_name",
+          "label": "BITS Job Name",
+          "description": "Name for the test BITS transfer job. Must be unique on the target machine. Job is removed automatically after the test.",
+          "default": "MorganaTest-BITSJob",
+          "example": "MorganaTest-BITSJob",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_bits_url",
+          "label": "BITS Download URL (benign)",
+          "description": "URL for the BITS download job. Use a benign, accessible URL. The BITS job creation event is the detection indicator, not the downloaded content.",
+          "default": "https://www.microsoft.com/",
+          "example": "https://www.microsoft.com/",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1543_service",
+      "label": "T1543 - Create or Modify System Process (Automatic startup)",
+      "description": "Settings for the persistent service creation script. Creates a Windows service with Automatic startup type (boot persistence, unlike the Manual variant used in the Execution pack T1569). Service is removed after creation. Requires local Administrator or SYSTEM privileges.",
+      "scope": "local",
+      "used_by_tcodes": ["T1543"],
+      "tags": [
+        {
+          "key": "excalibur_pers_persist_svc_name",
+          "label": "Persistent Service Name",
+          "description": "Name for the temporary persistent Windows service (Automatic startup). Removed immediately after creation. Must be unique on the target machine.",
+          "default": "MorganaPersistSvc",
+          "example": "MorganaPersistSvc",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_persist_svc_binary",
+          "label": "Service Binary Path (LOLBin)",
+          "description": "Full path to the binary registered as the Automatic service. Use a system LOLBin to avoid AV interference. The Automatic startup service creation (Event ID 7045) is the detection target.",
+          "default": "C:\\Windows\\System32\\cmd.exe",
+          "example": "C:\\Windows\\System32\\cmd.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1546_wmi",
+      "label": "T1546 - Event Triggered Execution (WMI Permanent Event Subscription)",
+      "description": "Settings for the WMI permanent event subscription script. Creates a WMI EventFilter + CommandLineEventConsumer + FilterToConsumerBinding in the root/subscription namespace, then immediately removes all three. WMI event subscriptions are one of the highest-fidelity APT persistence indicators in Windows telemetry (Event ID 5861). Requires local Administrator or SYSTEM privileges.",
+      "scope": "local",
+      "used_by_tcodes": ["T1546"],
+      "tags": [
+        {
+          "key": "excalibur_pers_wmi_filter_name",
+          "label": "WMI Event Filter Name",
+          "description": "Name for the temporary WMI __EventFilter object in the root/subscription namespace. Removed immediately after creation.",
+          "default": "MorganaTest-WMIFilter",
+          "example": "MorganaTest-WMIFilter",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_wmi_consumer_name",
+          "label": "WMI Event Consumer Name",
+          "description": "Name for the temporary WMI CommandLineEventConsumer object in the root/subscription namespace. Removed immediately after creation.",
+          "default": "MorganaTest-WMIConsumer",
+          "example": "MorganaTest-WMIConsumer",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1547_runkey",
+      "label": "T1547 - Boot or Logon Autostart Execution (Registry Run Key)",
+      "description": "Settings for the registry Run key persistence script. Writes a value to HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, then removes it immediately. One of the most commonly detected persistence mechanisms in Windows environments - Sentinel has a dedicated built-in analytics rule.",
+      "scope": "local",
+      "used_by_tcodes": ["T1547"],
+      "tags": [
+        {
+          "key": "excalibur_pers_runkey_name",
+          "label": "Registry Run Key Value Name",
+          "description": "Name of the value entry to write under HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run. Removed immediately after creation.",
+          "default": "MorganaTest-AutoRun",
+          "example": "MorganaTest-AutoRun",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_runkey_value",
+          "label": "Autorun Executable Path (benign)",
+          "description": "Value data for the Run key entry (path to a benign executable). The registry key creation is the detection indicator - the executable is not launched during the test.",
+          "default": "C:\\Windows\\System32\\calc.exe",
+          "example": "C:\\Windows\\System32\\calc.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1574_hijack",
+      "label": "T1574 - Hijack Execution Flow (DLL Search Order)",
+      "description": "Settings for the DLL search order hijacking simulation. Creates a file with a commonly hijacked system DLL name in the Defender-excluded temp directory, simulating an attacker planting a malicious DLL in a directory searched before the legitimate system path. File is removed after creation.",
+      "scope": "local",
+      "used_by_tcodes": ["T1574"],
+      "tags": [
+        {
+          "key": "excalibur_pers_dll_name",
+          "label": "DLL Filename to Plant",
+          "description": "Name of the DLL file to create in the temp directory. Use a commonly hijacked system DLL name to maximize detection match probability.",
+          "default": "version.dll",
+          "example": "wbemcomn.dll",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "pers_t1505_webshell",
+      "label": "T1505 - Server Software Component (Web Shell)",
+      "description": "Settings for the web shell simulation. Creates an .aspx file in the IIS wwwroot directory, then removes it. IIS does not need to be running - MDE and Sentinel detect the file creation event in monitored web directories regardless. If IIS is not installed, create the directory first: New-Item -ItemType Directory -Path C:\\inetpub\\wwwroot -Force",
+      "scope": "local",
+      "used_by_tcodes": ["T1505"],
+      "tags": [
+        {
+          "key": "excalibur_pers_webshell_filename",
+          "label": "Web Shell Filename",
+          "description": "Name of the test file to create in the web root directory. Use .aspx extension for IIS-specific detection coverage.",
+          "default": "MorganaTest-shell.aspx",
+          "example": "MorganaTest-shell.aspx",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_pers_wwwroot_path",
+          "label": "IIS Web Root Path",
+          "description": "Path to the IIS web root directory. File creation in this path is monitored by MDE for web shell detection. If not present: New-Item -ItemType Directory -Path C:\\inetpub\\wwwroot -Force",
+          "default": "C:\\inetpub\\wwwroot",
+          "example": "C:\\inetpub\\wwwroot",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - Persistence-T1037-Boot Logon Script",
+      "name": "Excalibur - Persistence-T1037-Boot Logon Script",
+      "description": "Writes a UserInitMprLogonScript value under HKCU:\\Environment, registering a logon script that would execute at every user logon. Used by adversaries to establish persistence without requiring elevated privileges. Script is removed immediately after creation. Generates MDE registry modification telemetry.",
+      "tactic": "Persistence",
+      "tcode": "T1037",
+      "technique_name": "Boot or Logon Initialization Scripts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_logon_script_name", "excalibur_pers_logon_script_path"],
+      "command": "Write-Host '[START] T1037 - Boot/Logon Initialization Scripts via HKCU Environment registry'; $regPath = 'HKCU:\\Environment'; $valueName = '#{excalibur_pers_logon_script_name}'; $scriptPath = '#{excalibur_pers_logon_script_path}'; try { $existing = Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; if ($existing) { Write-Host ('[WARN] Registry value already exists: ' + $existing.$valueName + ' - aborting to prevent overwrite'); exit 1 }; New-ItemProperty -Path $regPath -Name $valueName -Value $scriptPath -PropertyType String -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Logon script persistence registered: ' + $regPath + ' -> ' + $valueName + ' = ' + $scriptPath); Start-Sleep 2; Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1037 - Logon script registry key created and removed. Sentinel target: Registry Key Created for Boot/Logon Script Execution (MDE behavioral)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-ItemProperty -Path 'HKCU:\\Environment' -Name '#{excalibur_pers_logon_script_name}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1037 cleanup: registry value removed if still present'",
+      "detection_rule": "Registry Key Created for Boot/Logon Script Execution",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1053-Scheduled Task Persistence",
+      "name": "Excalibur - Persistence-T1053-Scheduled Task Persistence",
+      "description": "Creates a scheduled task with an AtLogon trigger (fires at every user logon, a genuine persistence mechanism unlike the one-shot variant in the Execution pack). Task is unregistered immediately after creation. Generates Event ID 4698 (Scheduled task created). Validates the Sentinel built-in rule for scheduled task-based persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1053",
+      "technique_name": "Scheduled Task/Job",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_sched_task_name", "excalibur_pers_sched_payload"],
+      "command": "Write-Host '[START] T1053 - Scheduled Task persistence (AtLogon trigger)'; $taskName = '#{excalibur_pers_sched_task_name}'; $payload = '#{excalibur_pers_sched_payload}'; try { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument ('/c ' + $payload); $trigger = New-ScheduledTaskTrigger -AtLogon; $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:01:00; Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Description 'MorganaTest persistence task - AtLogon trigger' -Force | Out-Null; Write-Host ('[INFO] Persistent task registered: ' + $taskName + ' - trigger: AtLogon (would fire at every user logon until removed)'); $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue; if ($task) { Write-Host ('[INFO] Task state: ' + $task.State + ' | Trigger: ' + $task.Triggers[0].CimClass.CimClassName) }; Start-Sleep 2; Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1053 - Persistent AtLogon task created and removed. Sentinel target: Scheduled Task Created or Modified (Event ID 4698)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Unregister-ScheduledTask -TaskName '#{excalibur_pers_sched_task_name}' -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[INFO] T1053 cleanup: task removed if still present'",
+      "detection_rule": "Scheduled Task Created or Modified",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1098-Account Manipulation",
+      "name": "Excalibur - Persistence-T1098-Account Manipulation",
+      "description": "Creates a temporary local account, adds it to the Administrators group (Event ID 4732 - member added to security-enabled local group), removes it from the group (Event ID 4733), then deletes the account. Simulates adversary manipulation of existing or new accounts to maintain elevated persistent access. Requires local Administrator or SYSTEM privileges.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_manip_username", "excalibur_pers_manip_password"],
+      "command": "Write-Host '[START] T1098 - Account Manipulation (add local account to Administrators group)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1098 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $username = '#{excalibur_pers_manip_username}'; $password = '#{excalibur_pers_manip_password}'; try { $existingUser = Get-LocalUser -Name $username -ErrorAction SilentlyContinue; if ($existingUser) { Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Start-Sleep 1 }; $secPwd = ConvertTo-SecureString $password -AsPlainText -Force; New-LocalUser -Name $username -Password $secPwd -FullName 'Morgana Test Account' -Description 'T1098 test - will be deleted' -AccountNeverExpires -PasswordNeverExpires -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Temp account created: ' + $username); Add-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction Stop; Write-Host ('[INFO] Account added to Administrators group - Event ID 4732 generated'); Start-Sleep 2; Remove-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction SilentlyContinue; Write-Host '[INFO] Account removed from Administrators group - Event ID 4733 generated'; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1098 - Account manipulation complete. Sentinel target: User Added to Local Administrators Group (Event ID 4732)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction SilentlyContinue; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-LocalGroupMember -Group 'Administrators' -Member '#{excalibur_pers_manip_username}' -ErrorAction SilentlyContinue; Remove-LocalUser -Name '#{excalibur_pers_manip_username}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1098 cleanup: account removed from group and deleted if still present'",
+      "detection_rule": "User Added to Local Administrators Group",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1136-Create Account",
+      "name": "Excalibur - Persistence-T1136-Create Account",
+      "description": "Creates a temporary local user account (Event ID 4720 - User account created), then immediately deletes it (Event ID 4726 - User account deleted). Simulates adversary creation of local backdoor accounts for persistent access. Requires local Administrator or SYSTEM privileges.",
+      "tactic": "Persistence",
+      "tcode": "T1136",
+      "technique_name": "Create Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_new_username", "excalibur_pers_new_password"],
+      "command": "Write-Host '[START] T1136 - Create Account (local user account creation and deletion)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1136 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $username = '#{excalibur_pers_new_username}'; $password = '#{excalibur_pers_new_password}'; try { $existingUser = Get-LocalUser -Name $username -ErrorAction SilentlyContinue; if ($existingUser) { Write-Host ('[WARN] Account already exists, removing first: ' + $username); Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Start-Sleep 1 }; $secPwd = ConvertTo-SecureString $password -AsPlainText -Force; New-LocalUser -Name $username -Password $secPwd -FullName 'Morgana Test Account' -Description 'T1136 test - will be deleted' -AccountNeverExpires -PasswordNeverExpires -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Local user account created: ' + $username + ' - Event ID 4720 generated'); Start-Sleep 2; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Write-Host ('[INFO] Account deleted: ' + $username + ' - Event ID 4726 generated'); Write-Host '[SUCCESS] T1136 - Local account created and deleted. Sentinel target: New Local User Account Created (Event ID 4720)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-LocalUser -Name $username -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-LocalUser -Name '#{excalibur_pers_new_username}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1136 cleanup: account deleted if still present'",
+      "detection_rule": "New Local User Account Created",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1197-BITS Jobs",
+      "name": "Excalibur - Persistence-T1197-BITS Jobs",
+      "description": "Creates a Background Intelligent Transfer Service (BITS) asynchronous download job, simulating adversary abuse of BITS for covert file transfer and persistence. BITS jobs survive reboots, blend with legitimate Windows telemetry, and are commonly used by malware families (APT28, Lazarus Group). Job is removed after execution. Generates MDE BITS telemetry.",
+      "tactic": "Persistence",
+      "tcode": "T1197",
+      "technique_name": "BITS Jobs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_temp_dir", "excalibur_pers_bits_job_name", "excalibur_pers_bits_url"],
+      "command": "Write-Host '[START] T1197 - BITS Jobs (Background Intelligent Transfer Service abuse)'; $tmpDir = '#{excalibur_pers_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $jobName = '#{excalibur_pers_bits_job_name}'; $bitsUrl = '#{excalibur_pers_bits_url}'; $destPath = Join-Path $tmpDir 'MorganaTest-BITS-download.html'; try { $existingJob = Get-BitsTransfer -Name $jobName -ErrorAction SilentlyContinue; if ($existingJob) { Remove-BitsTransfer -BitsJob $existingJob -ErrorAction SilentlyContinue }; $job = Start-BitsTransfer -Source $bitsUrl -Destination $destPath -DisplayName $jobName -Asynchronous -ErrorAction Stop; Write-Host ('[INFO] BITS job created: ' + $job.JobId + ' | Name: ' + $jobName + ' | State: ' + $job.JobState + ' | URL: ' + $bitsUrl); Start-Sleep 3; $job = Get-BitsTransfer -JobId $job.JobId -ErrorAction SilentlyContinue; if ($job) { Write-Host ('[INFO] BITS job state after 3s: ' + $job.JobState); Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue } else { Write-Host '[INFO] BITS job completed and auto-removed' }; Remove-Item $destPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1197 - BITS transfer job created and removed. Sentinel target: BITS job created for file transfer (MDE behavioral BITS abuse detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Get-BitsTransfer -Name $jobName -ErrorAction SilentlyContinue | Remove-BitsTransfer -ErrorAction SilentlyContinue; Remove-Item $destPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Get-BitsTransfer -Name '#{excalibur_pers_bits_job_name}' -ErrorAction SilentlyContinue | Remove-BitsTransfer -ErrorAction SilentlyContinue; Remove-Item (Join-Path '#{excalibur_pers_temp_dir}' 'MorganaTest-BITS-download.html') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1197 cleanup: BITS job and temp file removed if still present'",
+      "detection_rule": "BITS job created for file transfer (BITS abuse detection)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1543-Create System Process",
+      "name": "Excalibur - Persistence-T1543-Create System Process",
+      "description": "Creates a Windows service with Automatic startup type (boot persistence), distinguishing it from the Manual-startup T1569 variant in the Execution pack. Adversaries install services with Automatic startup to survive reboots. Service is removed immediately after creation. Generates Event ID 7045 (A new service was installed). Requires local Administrator or SYSTEM privileges.",
+      "tactic": "Persistence",
+      "tcode": "T1543",
+      "technique_name": "Create or Modify System Process",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_persist_svc_name", "excalibur_pers_persist_svc_binary"],
+      "command": "Write-Host '[START] T1543 - Create or Modify System Process (service with Automatic startup for persistence)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1543 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $svcName = '#{excalibur_pers_persist_svc_name}'; $binPath = '#{excalibur_pers_persist_svc_binary}'; try { $null = & sc.exe delete $svcName 2>&1; Start-Sleep 1; New-Service -Name $svcName -BinaryPathName $binPath -StartupType Automatic -Description 'MorganaTest persistent service - will be removed' -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Persistent service created: ' + $svcName + ' | StartupType: Automatic | Binary: ' + $binPath + ' - Event ID 7045 generated'); Start-Sleep 2; $null = & sc.exe delete $svcName 2>&1; Write-Host '[SUCCESS] T1543 - Persistent Automatic service created and removed. Sentinel target: New Windows Service Created with Automatic Startup (Event ID 7045)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); $null = & sc.exe delete $svcName 2>&1 }",
+      "cleanup_command": "$null = & sc.exe delete '#{excalibur_pers_persist_svc_name}' 2>&1; Write-Host '[INFO] T1543 cleanup: service removed if still present'",
+      "detection_rule": "New Windows Service Created",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546-WMI Event Subscription",
+      "name": "Excalibur - Persistence-T1546-WMI Event Subscription",
+      "description": "Creates a complete WMI permanent event subscription in the root/subscription namespace: __EventFilter + CommandLineEventConsumer + __FilterToConsumerBinding. This is one of the highest-fidelity APT persistence indicators in Windows telemetry, used by APT29, Lazarus Group, and numerous commodity malware families. All three WMI objects are removed immediately after creation. Generates Event ID 5861 in the Microsoft-Windows-WMI-Activity/Operational log. Requires local Administrator or SYSTEM privileges.",
+      "tactic": "Persistence",
+      "tcode": "T1546",
+      "technique_name": "Event Triggered Execution",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_wmi_filter_name", "excalibur_pers_wmi_consumer_name"],
+      "command": "Write-Host '[START] T1546 - Event Triggered Execution (WMI permanent event subscription)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1546 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $filterName = '#{excalibur_pers_wmi_filter_name}'; $consumerName = '#{excalibur_pers_wmi_consumer_name}'; $q = [char]39; try { Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*' + $filterName + '*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + $consumerName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + $filterName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; $wqlQuery = 'SELECT * FROM __InstanceCreationEvent WITHIN 60 WHERE TargetInstance ISA ' + $q + 'Win32_Process' + $q + ' AND TargetInstance.Name = ' + $q + 'notepad.exe' + $q; $filter = Set-WmiInstance -Namespace root/subscription -Class __EventFilter -Arguments @{ Name = $filterName; EventNamespace = 'root/cimv2'; Query = $wqlQuery; QueryLanguage = 'WQL' } -ErrorAction Stop; Write-Host ('[INFO] WMI __EventFilter created: ' + $filterName); $consumer = Set-WmiInstance -Namespace root/subscription -Class CommandLineEventConsumer -Arguments @{ Name = $consumerName; CommandLineTemplate = 'cmd.exe /c whoami > NUL' } -ErrorAction Stop; Write-Host ('[INFO] WMI CommandLineEventConsumer created: ' + $consumerName); $binding = Set-WmiInstance -Namespace root/subscription -Class __FilterToConsumerBinding -Arguments @{ Filter = $filter; Consumer = $consumer } -ErrorAction Stop; Write-Host '[INFO] WMI __FilterToConsumerBinding created - subscription is live (Event ID 5861 in Microsoft-Windows-WMI-Activity/Operational)'; Start-Sleep 2; Remove-WmiObject -InputObject $binding -ErrorAction SilentlyContinue; Remove-WmiObject -InputObject $consumer -ErrorAction SilentlyContinue; Remove-WmiObject -InputObject $filter -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1546 - WMI permanent event subscription created and removed. Sentinel target: WMI Event Subscription (Event ID 5861 / MDE WMI persistence behavioral detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*' + $filterName + '*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + $consumerName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + $filterName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue }",
+      "cleanup_command": "$q = [char]39; Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*#{excalibur_pers_wmi_filter_name}*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + '#{excalibur_pers_wmi_consumer_name}' + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + '#{excalibur_pers_wmi_filter_name}' + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Write-Host '[INFO] T1546 cleanup: WMI subscription objects removed if still present'",
+      "detection_rule": "WMI Event Subscription",
+      "sentinel_connector": "Windows Security Events via AMA",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547-Registry Run Key",
+      "name": "Excalibur - Persistence-T1547-Registry Run Key",
+      "description": "Writes a value to HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run (a standard autorun key), simulating one of the most common adversary persistence mechanisms. The executable registered as the autorun value would execute at every user logon. Value is removed immediately after creation. Triggers the Microsoft Sentinel built-in rule 'Registry persistence via Run Keys or Startup Folder'.",
+      "tactic": "Persistence",
+      "tcode": "T1547",
+      "technique_name": "Boot or Logon Autostart Execution",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_runkey_name", "excalibur_pers_runkey_value"],
+      "command": "Write-Host '[START] T1547 - Boot or Logon Autostart Execution (Registry Run Key)'; $regPath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'; $valueName = '#{excalibur_pers_runkey_name}'; $valueData = '#{excalibur_pers_runkey_value}'; try { $existing = Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; if ($existing) { Write-Host ('[WARN] Run key value already exists: ' + $existing.$valueName + ' - aborting to prevent overwrite'); exit 1 }; New-ItemProperty -Path $regPath -Name $valueName -Value $valueData -PropertyType String -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Autostart Run key set: ' + $regPath + ' -> ' + $valueName + ' = ' + $valueData); Start-Sleep 2; Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1547 - Registry Run key created and removed. Sentinel target: Registry persistence via Run Keys or Startup Folder' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name '#{excalibur_pers_runkey_name}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1547 cleanup: Run key value removed if still present'",
+      "detection_rule": "Registry persistence via Run Keys or Startup Folder",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1574-DLL Search Order Hijack",
+      "name": "Excalibur - Persistence-T1574-DLL Search Order Hijack",
+      "description": "Creates a file with a commonly hijacked system DLL name (version.dll by default) in the Defender-excluded temp directory, simulating an attacker planting a malicious DLL in a user-writable directory that appears in the DLL search order before the legitimate system path. The MZ header is written to make the file recognizable as a PE. File is removed immediately after creation. Generates MDE DLL search order hijack behavioral telemetry.",
+      "tactic": "Persistence",
+      "tcode": "T1574",
+      "technique_name": "Hijack Execution Flow",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_temp_dir", "excalibur_pers_dll_name"],
+      "command": "Write-Host '[START] T1574 - Hijack Execution Flow (DLL search order hijacking simulation)'; $tmpDir = '#{excalibur_pers_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $dllName = '#{excalibur_pers_dll_name}'; $dllPath = Join-Path $tmpDir $dllName; try { [byte[]]$mzHeader = 0x4D,0x5A,0x90,0x00,0x03,0x00,0x00,0x00; [System.IO.File]::WriteAllBytes($dllPath, $mzHeader); Write-Host ('[INFO] Fake DLL planted at: ' + $dllPath + ' (MZ/PE header written - simulates DLL placed in hijacked search path location)'); Write-Host ('[INFO] DLL name: ' + $dllName + ' | Directory: ' + $tmpDir + ' (simulated user-writable PATH entry - searched before system32)'); Start-Sleep 2; Remove-Item $dllPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1574 - DLL search order hijacking file created and removed. Sentinel target: DLL planted in non-standard path (MDE behavioral DLL hijacking detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $dllPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_pers_temp_dir}' '#{excalibur_pers_dll_name}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1574 cleanup: planted DLL file removed if still present'",
+      "detection_rule": "DLL planted in non-standard path (DLL search order hijacking)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505-Web Shell",
+      "name": "Excalibur - Persistence-T1505-Web Shell",
+      "description": "Creates an .aspx web shell test file in the IIS wwwroot directory, simulating adversary deployment of a server-side web shell for persistent remote access. IIS does not need to be running - MDE and Sentinel monitor the file creation event in web root directories regardless of service status. File is removed immediately after creation. If IIS is not installed, create the wwwroot directory manually first.",
+      "tactic": "Persistence",
+      "tcode": "T1505",
+      "technique_name": "Server Software Component",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_pers_webshell_filename", "excalibur_pers_wwwroot_path"],
+      "command": "Write-Host '[START] T1505 - Server Software Component (web shell simulation)'; $wwwroot = '#{excalibur_pers_wwwroot_path}'; $filename = '#{excalibur_pers_webshell_filename}'; try { $iisStatus = Get-Service -Name 'W3SVC' -ErrorAction SilentlyContinue; if ($iisStatus) { Write-Host ('[INFO] IIS (W3SVC) status: ' + $iisStatus.Status) } else { Write-Host '[WARN] IIS (W3SVC) service not found on this machine. File will be created in wwwroot path for detection telemetry only.' }; if (-not (Test-Path $wwwroot)) { Write-Host ('[INFO] Creating wwwroot directory: ' + $wwwroot); New-Item -ItemType Directory -Path $wwwroot -Force -ErrorAction Stop | Out-Null }; $filePath = Join-Path $wwwroot $filename; $webShellContent = '<%@ Page Language=''C#'' %><% Response.Write(''MorganaTest-T1505''); %>'; Set-Content -Path $filePath -Value $webShellContent -Encoding UTF8 -ErrorAction Stop; Write-Host ('[INFO] Web shell test file created: ' + $filePath + ' - MDE file creation event in IIS web directory generated'); Start-Sleep 2; Remove-Item $filePath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1505 - Web shell file created and removed. Sentinel target: Possible web shell detected (MDE file creation in IIS web root)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item (Join-Path $wwwroot $filename) -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_pers_wwwroot_path}' '#{excalibur_pers_webshell_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1505 cleanup: web shell file removed if still present'",
+      "detection_rule": "Possible web shell detected",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Excalibur - Persistence-T1037-Boot Logon Script",
+      "description": "Emulation chain for T1037: Boot/logon initialization script via HKCU\\Environment registry key. Validates MDE behavioral detection of logon script persistence.",
+      "package": "excalibur",
+      "tcode": "T1037",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1037-Boot Logon Script"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1053-Scheduled Task Persistence",
+      "description": "Emulation chain for T1053: Scheduled task with AtLogon trigger (persistence variant). Validates Event ID 4698 detection for recurring boot/logon persistence tasks.",
+      "package": "excalibur",
+      "tcode": "T1053",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1053-Scheduled Task Persistence"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1098-Account Manipulation",
+      "description": "Emulation chain for T1098: Account manipulation via Administrators group membership. Validates Event ID 4732 (add to group) and 4733 (remove from group) detection.",
+      "package": "excalibur",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1098-Account Manipulation"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1136-Create Account",
+      "description": "Emulation chain for T1136: Local user account creation. Validates Event ID 4720 (account created) and 4726 (account deleted) detection.",
+      "package": "excalibur",
+      "tcode": "T1136",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1136-Create Account"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1197-BITS Jobs",
+      "description": "Emulation chain for T1197: BITS job abuse for covert transfer and persistence. Validates MDE BITS behavioral detection.",
+      "package": "excalibur",
+      "tcode": "T1197",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1197-BITS Jobs"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1543-Create System Process",
+      "description": "Emulation chain for T1543: Windows service with Automatic startup (boot persistence). Validates Event ID 7045 detection for persistent service installation.",
+      "package": "excalibur",
+      "tcode": "T1543",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1543-Create System Process"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546-WMI Event Subscription",
+      "description": "Emulation chain for T1546: WMI permanent event subscription (EventFilter + CommandLineEventConsumer + FilterToConsumerBinding). Validates Event ID 5861 and MDE WMI persistence detection.",
+      "package": "excalibur",
+      "tcode": "T1546",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1546-WMI Event Subscription"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547-Registry Run Key",
+      "description": "Emulation chain for T1547: Registry autostart Run key persistence. Validates the Sentinel built-in rule 'Registry persistence via Run Keys or Startup Folder'.",
+      "package": "excalibur",
+      "tcode": "T1547",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1547-Registry Run Key"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1574-DLL Search Order Hijack",
+      "description": "Emulation chain for T1574: DLL search order hijacking simulation. Validates MDE behavioral detection of DLL hijacking patterns.",
+      "package": "excalibur",
+      "tcode": "T1574",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1574-DLL Search Order Hijack"]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505-Web Shell",
+      "description": "Emulation chain for T1505: Web shell file creation in IIS wwwroot. Validates MDE file creation monitoring in web root directories.",
+      "package": "excalibur",
+      "tcode": "T1505",
+      "tactic": "Persistence",
+      "script_refs": ["Excalibur - Persistence-T1505-Web Shell"]
+    },
+    {
+      "name": "Excalibur - Persistence Full Sweep",
+      "description": "Full sweep of all 10 Persistence technique emulations. Runs sequentially on the Morgana Windows agent. Requires MDE + Windows Security Events via AMA connectors active in Sentinel. IMPORTANT: T1098, T1136, T1543, T1546 require the Morgana agent to be running as local Administrator or SYSTEM. For T1197 the test machine needs internet access (or a reachable internal URL). For T1505 the wwwroot directory must exist.",
+      "package": "excalibur",
+      "tcode": "TA0003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1037-Boot Logon Script",
+        "Excalibur - Persistence-T1053-Scheduled Task Persistence",
+        "Excalibur - Persistence-T1098-Account Manipulation",
+        "Excalibur - Persistence-T1136-Create Account",
+        "Excalibur - Persistence-T1197-BITS Jobs",
+        "Excalibur - Persistence-T1543-Create System Process",
+        "Excalibur - Persistence-T1546-WMI Event Subscription",
+        "Excalibur - Persistence-T1547-Registry Run Key",
+        "Excalibur - Persistence-T1574-DLL Search Order Hijack",
+        "Excalibur - Persistence-T1505-Web Shell"
+      ]
+    }
+  ]
+}
