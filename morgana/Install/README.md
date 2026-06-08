@@ -1,6 +1,6 @@
 ﻿# Morgana - Installation Guide
 
-> **Current release: v0.3.7** (08 June 2026) - auto-update, SHA256 verification, rollback
+> **Current release: v0.3.8** (08 June 2026) - auto-update, SHA256 verification, rollback
 
 > **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
 > Free, Windows-native, zero dependencies. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
