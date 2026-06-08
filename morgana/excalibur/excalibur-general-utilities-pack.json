@@ -1,0 +1,170 @@
+{
+  "package_id": "excalibur-general-v1",
+  "package_name": "Excalibur - General Utilities Pack",
+  "version": "1.0.0",
+  "description": "General-purpose utility scripts for Morgana. Includes diagnostics, wait/sleep helpers, directory inspection, and PowerShell parameter-passing tests. Use these scripts to validate agent connectivity, test tag substitution, and sanity-check your Morgana setup before running adversary emulation packs.",
+  "author": "X3M.AI",
+  "created": "2026-06-08",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "N/A",
+  "mitre_tactic_name": "General Utilities",
+  "prerequisites": [
+    "Windows 10/11 or Windows Server 2019/2022 with Morgana agent installed",
+    "No additional software required"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "general_sleep",
+      "label": "Sleep / Wait",
+      "description": "Parameters for the sleep script. Controls how long the agent pauses before reporting back.",
+      "scope": "local",
+      "used_by_tcodes": ["T0000"],
+      "tags": [
+        {
+          "key": "excalibur_util_sleep_seconds",
+          "label": "Sleep duration (seconds)",
+          "description": "Number of seconds the script will wait before completing. Use this to simulate slow execution, test timeout handling, or pad a chain step.",
+          "default": "10",
+          "example": "30",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "general_dirtest",
+      "label": "Directory Test",
+      "description": "Parameters for the directory listing test script. Controls which directory is inspected and what file pattern is searched.",
+      "scope": "local",
+      "used_by_tcodes": ["T0001"],
+      "tags": [
+        {
+          "key": "excalibur_util_dir_path",
+          "label": "Directory to inspect",
+          "description": "Full path to the directory whose contents will be listed by the test script. Must exist on the target machine.",
+          "default": "C:\\Windows\\System32",
+          "example": "C:\\ProgramData\\Morgana",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_util_dir_filter",
+          "label": "File filter pattern",
+          "description": "Wildcard filter passed to Get-ChildItem -Filter. Use '*' to list everything, or a pattern like '*.exe' to narrow results.",
+          "default": "*",
+          "example": "*.exe",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_util_dir_maxitems",
+          "label": "Max items to display",
+          "description": "Limits the output to this many items. Prevents excessive output when listing large directories.",
+          "default": "20",
+          "example": "50",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "general_pstest",
+      "label": "PowerShell Parameter Test",
+      "description": "Parameters for the PowerShell parameter-passing test script. Validates that tag substitution works end-to-end and that parameters reach the agent correctly.",
+      "scope": "local",
+      "used_by_tcodes": ["T0002"],
+      "tags": [
+        {
+          "key": "excalibur_util_param_greeting",
+          "label": "Greeting message",
+          "description": "A short text string that is printed by the test script to confirm that tag substitution worked correctly.",
+          "default": "Hello from Morgana!",
+          "example": "MorganaTest-OK",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "excalibur_util_param_repeat",
+          "label": "Repeat count",
+          "description": "How many times the greeting is printed. Useful for verifying that the numeric parameter type is handled correctly.",
+          "default": "3",
+          "example": "5",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "Excalibur - General-T0000-Sleep Wait",
+      "name": "Excalibur - General-T0000-Sleep Wait",
+      "description": "Pauses execution on the agent for a configurable number of seconds then reports back. Use this to simulate slow-running steps in a chain, test agent keep-alive behavior, or insert a timed delay between chain steps. Duration is controlled by the excalibur_util_sleep_seconds tag.",
+      "tactic": "General",
+      "tcode": "T0000",
+      "technique_name": "Sleep / Wait",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_util_sleep_seconds"],
+      "command": "Write-Host '[START] Sleep/Wait utility'; $seconds = [int]'#{excalibur_util_sleep_seconds}'; if ($seconds -le 0) { $seconds = 10 }; Write-Host ('[INFO] Sleeping for ' + $seconds + ' second(s)...'); Start-Sleep -Seconds $seconds; Write-Host ('[SUCCESS] Sleep completed after ' + $seconds + ' second(s)')",
+      "cleanup_command": "Write-Host '[INFO] Sleep/Wait: no cleanup required'",
+      "detection_rule": "N/A",
+      "sentinel_connector": "N/A",
+      "package": "excalibur-general-v1"
+    },
+    {
+      "id": "Excalibur - General-T0001-Directory Listing Test",
+      "name": "Excalibur - General-T0001-Directory Listing Test",
+      "description": "Changes to a configurable directory and lists its contents using Get-ChildItem. Supports a file filter pattern and a max-items cap. Use this to confirm the agent is running with the expected working directory, verify filesystem access, and validate tag substitution with multiple parameters in a single script.",
+      "tactic": "General",
+      "tcode": "T0001",
+      "technique_name": "Directory Listing Test",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_util_dir_path", "excalibur_util_dir_filter", "excalibur_util_dir_maxitems"],
+      "command": "Write-Host '[START] Directory listing test'; $targetDir = '#{excalibur_util_dir_path}'; $filterPattern = '#{excalibur_util_dir_filter}'; $maxItems = [int]'#{excalibur_util_dir_maxitems}'; if ($maxItems -le 0) { $maxItems = 20 }; if (-not (Test-Path $targetDir)) { Write-Host ('[ERROR] Directory not found: ' + $targetDir); exit 1 }; Set-Location -Path $targetDir; $cwd = (Get-Location).Path; Write-Host ('[INFO] Changed to: ' + $cwd); Write-Host ('[INFO] Listing up to ' + $maxItems + ' item(s) matching: ' + $filterPattern); $items = Get-ChildItem -Path $targetDir -Filter $filterPattern -ErrorAction SilentlyContinue | Select-Object -First $maxItems; if ($items.Count -eq 0) { Write-Host '[INFO] No items match the filter in this directory' } else { $items | ForEach-Object { $size = if ($_.PSIsContainer) { '[DIR]' } else { ($_.Length.ToString() + ' bytes') }; Write-Host ('  ' + $_.Name + '  ' + $size) } }; Write-Host ('[SUCCESS] Listed ' + $items.Count + ' item(s) from: ' + $cwd)",
+      "cleanup_command": "Write-Host '[INFO] Directory listing test: no cleanup required'",
+      "detection_rule": "N/A",
+      "sentinel_connector": "N/A",
+      "package": "excalibur-general-v1"
+    },
+    {
+      "id": "Excalibur - General-T0002-PowerShell Parameter Test",
+      "name": "Excalibur - General-T0002-PowerShell Parameter Test",
+      "description": "Launches a PowerShell child process passing two parameters: a greeting text and a repeat count. Validates the full tag-substitution pipeline end-to-end: admin value -> script-level override -> command placeholder -> agent execution. Ideal as a first test after installing a new agent or configuring a new workspace.",
+      "tactic": "General",
+      "tcode": "T0002",
+      "technique_name": "PowerShell Parameter Test",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_util_param_greeting", "excalibur_util_param_repeat"],
+      "command": "Write-Host '[START] PowerShell parameter test'; $greeting = '#{excalibur_util_param_greeting}'; $repeat = [int]'#{excalibur_util_param_repeat}'; if ($repeat -le 0) { $repeat = 1 }; Write-Host ('[INFO] Greeting: ' + $greeting + '  Repeat: ' + $repeat); $scriptBlock = 'param($msg, $n) for ($i=1; $i -le $n; $i++) { Write-Host (\"[\" + $i + \"/\" + $n + \"] \" + $msg) }'; $encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($scriptBlock)); $proc = Start-Process powershell.exe -ArgumentList ('-NoProfile', '-EncodedCommand', $encoded, '-', $greeting, $repeat) -Wait -PassThru -ErrorAction Stop; Write-Host ('[SUCCESS] Child process exited with code: ' + $proc.ExitCode + '. Tag substitution validated.')",
+      "cleanup_command": "Write-Host '[INFO] PowerShell parameter test: no cleanup required'",
+      "detection_rule": "N/A",
+      "sentinel_connector": "N/A",
+      "package": "excalibur-general-v1"
+    }
+  ],
+  "chains": [
+    {
+      "id": "Excalibur - General-Chain-Full Connectivity Check",
+      "name": "Excalibur - General-Chain-Full Connectivity Check",
+      "description": "Runs all three utility scripts in sequence: sleep -> directory listing -> parameter test. Use this as a complete agent health check after initial installation or after changing agent configuration.",
+      "steps": [
+        { "script_id": "Excalibur - General-T0000-Sleep Wait",               "order": 1, "on_failure": "continue" },
+        { "script_id": "Excalibur - General-T0001-Directory Listing Test",    "order": 2, "on_failure": "continue" },
+        { "script_id": "Excalibur - General-T0002-PowerShell Parameter Test", "order": 3, "on_failure": "continue" }
+      ],
+      "package": "excalibur-general-v1"
+    },
+    {
+      "id": "Excalibur - General-Chain-Tag Substitution Smoke Test",
+      "name": "Excalibur - General-Chain-Tag Substitution Smoke Test",
+      "description": "Runs only the parameter test script. Minimal chain to quickly verify that tag substitution works correctly from admin or per-script override values.",
+      "steps": [
+        { "script_id": "Excalibur - General-T0002-PowerShell Parameter Test", "order": 1, "on_failure": "stop" }
+      ],
+      "package": "excalibur-general-v1"
+    }
+  ]
+}
