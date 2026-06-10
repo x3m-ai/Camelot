@@ -1,16 +1,13 @@
 ﻿# Morgana - Installation Guide
 
-> **Current release: v0.3.8** (08 June 2026) - auto-update, SHA256 verification, rollback
-
-> **Morgana** is the X3M.AI Red Team execution platform for Purple Teaming.  
-> Free, Windows-native, zero dependencies. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
+> **Morgana** is the X3M.AI controlled validation engine for Detection Assurance.  
+> Free access by request. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
 ---
 
 ## What is Morgana?
 
-Morgana is a lightweight Red Team platform built from the ground up by X3M.AI.  
-It replaces Caldera and is designed specifically for Purple Teaming workflows with Merlino.
+Morgana is a controlled validation engine built from the ground up by X3M.AI. It helps security teams validate, measure and improve detection capabilities through controlled adversary emulation, evidence collection and repeatable security testing workflows.
 
 **Key concepts:**
 
@@ -22,7 +19,17 @@ It replaces Caldera and is designed specifically for Purple Teaming workflows wi
 | **Campaign** | Named exercise grouping multiple tests |
 | **Agent** | Lightweight OS service installed on the target machine |
 
-Script library is powered by **Red Canary Atomic Red Team** (4,500+ techniques).
+---
+
+## Access
+
+Morgana is available through the **X3M.AI Join Program**, a free access programme for selected security teams, researchers, partners and organisations.
+
+Access is **free**, but it is provided by request to ensure that the platform is used for authorised security validation, lab-based testing, learning, purple team activities and legitimate Detection Assurance experimentation.
+
+**[Request Access -- X3M.AI Join Program](https://x3m.ai/contact/)**
+
+> **Responsible use:** Morgana must only be used for authorised security validation activities within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity or testing against systems without explicit permission.
 
 ---
 
@@ -33,26 +40,13 @@ Script library is powered by **Red Canary Atomic Red Team** (4,500+ techniques).
 | Server OS | Windows 10 / 11 / Server 2019 or later |
 | Agent OS | Windows 10 / 11 / Server 2019 or later (Linux support coming) |
 | RAM | 512 MB minimum, 1 GB recommended |
-| Disk | 500 MB minimum (more for Atomic scripts cache) |
+| Disk | 500 MB minimum |
 | Network | Agent machines must reach the server on **TCP 8888** |
 | Browser | Chrome 120+ or Edge 120+ (for the web UI) |
 
-> **Antivirus note:** Atomic Red Team scripts intentionally trigger AV.  
+> **Antivirus note:** Validation scripts intentionally trigger AV by design.  
 > You must add a Windows Defender exclusion for `C:\ProgramData\Morgana\` on both  
-> the server and any agent machine. This is expected and required by design.
-
----
-
-## Download
-
-Download the latest Windows installer directly:
-
-**[Download Morgana-Server-Setup.exe](https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe)**
-
-> The installer is self-contained (~25 MB). No internet connection required after download.  
-> Always use the latest version from this folder.
-
-> **Browser / SmartScreen warning:** Your browser or Windows SmartScreen may flag the download with a security warning. This is expected for new software — the executable is **digitally signed by X3M.AI Ltd** and is safe to run. Click **Keep** (browser) or **Run anyway** (SmartScreen) to proceed.
+> the server and any agent machine. This is expected and required.
 
 ---
 
