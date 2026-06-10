@@ -49,7 +49,7 @@
 | Tool | What It Does | Install |
 |---|---|---|
 | **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
-| **Morgana** | Free Red Team execution platform -- adversary emulation, agent management, 6000+ Atomic Red Team scripts mapped to MITRE ATT&CK | [Install free](morgana/Install/Morgana-Server-Setup.exe) |
+| **Morgana** | Controlled validation engine for Detection Assurance -- adversary emulation, evidence collection, repeatable security testing workflows | [Request access](https://x3m.ai/contact/) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
 
@@ -104,45 +104,57 @@ Merlino will appear in your Excel ribbon under **Add-ins**. Click it to open the
 
 ---
 
-## Morgana -- Free Red Team Platform
+## Morgana -- Detection Assurance Validation Engine
 
-Morgana is X3M.AI's Red Team execution engine, built from the ground up for Purple Teaming and tightly integrated with Merlino. Free, Windows-native, zero dependencies.
+**Morgana** is the X3M.AI controlled validation engine for Detection Assurance. It helps security teams validate, measure and improve detection capabilities through controlled adversary emulation, evidence collection and repeatable security testing workflows.
 
-- Adversary emulation and Red Team operations
-- Agent deployment as native OS services (Windows NT Service, Linux systemd)
-- 6000+ scripts from Atomic Red Team, indexed by MITRE ATT&CK technique
-- Automated operation creation from Merlino's threat profiles
-- In-app auto-update -- always stay current with one click
+Morgana is available through the **X3M.AI Join Program**, a free access programme for selected security teams, researchers, partners and organisations interested in exploring Detection Assurance in a controlled and responsible way.
 
-### Install Morgana
+Access to Morgana is **free**, but it is provided by request to ensure that the platform is used for authorised security validation, lab-based testing, learning, purple team activities and legitimate Detection Assurance experimentation.
 
-The Morgana installer is distributed directly from this repository.
+### Join the Morgana Free Access Program
 
-**[Morgana Install page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install)**
+If you want to explore Morgana, request access to the X3M.AI Join Program. Approved participants receive access to the available community release, guidance and materials needed to start using Morgana in a controlled environment.
 
-> Current release: **v0.3.5** (22 May 2026)
+**[Request Access -- X3M.AI Join Program](https://x3m.ai/contact/)**
 
-#### Installation steps
+The programme is designed for:
 
-1. Download `Morgana-Server-Setup.exe` from the link above
-2. Run the installer as **Administrator**
-3. Follow the on-screen steps -- Morgana installs as a Windows NT Service and starts automatically
-4. Open your browser at **https://localhost:8888/ui/**
-5. The master API key is displayed on first launch -- save it in your Merlino Settings
+- Security teams exploring Detection Assurance
+- SOC and detection engineering teams validating their controls
+- Purple team practitioners running authorised testing
+- Partners interested in X3M.AI Detection Assurance delivery
+- Researchers and professionals working in controlled lab environments
 
-For the full installation guide, see [morgana/Install/README.md](morgana/Install/README.md).
+> **Responsible use:** Morgana must only be used for authorised security validation activities within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity or testing against systems without explicit permission.
+
+### How Morgana Supports Detection Assurance
+
+Morgana helps organisations move from assumed detection coverage to evidence-based confidence by supporting:
+
+- **Controlled adversary emulation** -- validate detection logic against realistic attack behaviours
+- **Detection evidence** -- understand what was detected, partially detected or missed
+- **Threat-informed testing** -- align validation activities to real-world tactics, techniques and procedures
+- **Coverage improvement** -- identify gaps and prioritise remediation actions
+- **Repeatable validation workflows** -- support continuous measurement and improvement over time
 
 ### The Merlino + Morgana Pipeline
 
-The real power of the X3M.AI ecosystem is the automated pipeline between intelligence and offense:
+The real power of the X3M.AI ecosystem is the automated pipeline between intelligence and validation:
 
 1. **Analyze** -- Build your threat profile in Merlino using MITRE ATT&CK data
 2. **Prioritize** -- CrossPick analysis identifies which techniques matter most
 3. **Synchronize** -- One click in Merlino automatically creates adversary profiles and operations on Morgana
-4. **Execute** -- Launch Red Team operations directly from Morgana with pre-configured attack chains
-5. **Validate** -- Results flow back to Merlino, updating your Tests Coverage in real time
+4. **Execute** -- Launch controlled validation operations directly from Morgana with pre-configured attack chains
+5. **Validate** -- Results flow back to Merlino, updating your detection coverage evidence in real time
 
-What normally takes a Red Team operator days of manual work -- building adversary profiles, selecting abilities, configuring operations -- Merlino accomplishes in seconds.
+What normally takes a detection engineering team days of manual work -- building test plans, selecting scripts, configuring operations -- Merlino and Morgana accomplish in seconds.
+
+### Community, Enterprise and Partner Use
+
+The Morgana Join Program provides free access for controlled evaluation, learning and authorised lab use. Enterprise deployments, production use, partner delivery, professional support and commercial Detection Assurance engagements are available through X3M.AI under a separate agreement.
+
+**[Book a FREE Detection Assurance Call](https://x3m.ai/contact/)**
 
 ---
 
