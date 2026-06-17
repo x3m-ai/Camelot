@@ -1,7 +1,7 @@
 {
   "package_id": "excalibur-execution-v1",
   "package_name": "Excalibur - Execution Emulation Pack",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Adversary emulation scripts for the MITRE ATT&CK Execution tactic (TA0002). Covers 12 scriptable parent techniques. Local scripts (T1047-T1620) require the Morgana agent on a Windows test machine onboarded to Microsoft Defender for Endpoint. Cloud scripts (T1648, T1651) require an Azure subscription. All scripts target Microsoft Sentinel built-in analytics rules.",
   "author": "X3M.AI",
   "created": "2026-06-07",
@@ -297,6 +297,42 @@
           "required": false
         }
       ]
+    },
+    {
+      "category_id": "exec_t1059_005_vbs",
+      "label": "T1059.005 - Visual Basic Script",
+      "description": "Settings for the VBScript execution script. Filename for the test .vbs file dropped in the Defender-excluded temp directory.",
+      "scope": "local",
+      "used_by_tcodes": ["T1059.005"],
+      "tags": [
+        {
+          "key": "excalibur_exec_vbs_filename",
+          "label": "VBScript Filename",
+          "description": "Filename for the test VBScript dropped in temp dir",
+          "default": "MorganaTest-T1059005.vbs",
+          "example": "MorganaTest-T1059005.vbs",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "exec_t1059_007_hta",
+      "label": "T1059.007 - JavaScript via mshta.exe (HTA)",
+      "description": "Settings for the HTA/JScript execution script. Filename for the test HTA file dropped in the Defender-excluded temp directory.",
+      "scope": "local",
+      "used_by_tcodes": ["T1059.007"],
+      "tags": [
+        {
+          "key": "excalibur_exec_hta_filename",
+          "label": "HTA Filename",
+          "description": "Filename for the test HTA/JScript file dropped in temp dir",
+          "default": "MorganaTest-T1059007.hta",
+          "example": "MorganaTest-T1059007.hta",
+          "sensitive": false,
+          "required": false
+        }
+      ]
     }
   ],
   "scripts": [
@@ -491,6 +527,90 @@
       "detection_rule": "Azure VM Run Command invoked from unusual source",
       "sentinel_connector": "Azure Activity",
       "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Execution-T1059.003-Windows Command Shell",
+      "name": "Excalibur - Execution-T1059.003-Windows Command Shell",
+      "description": "Executes a .bat file and &&-chained commands via cmd.exe, simulating adversary use of the Windows Command Shell for execution and post-exploitation staging. Creates a batch script in the Defender-excluded temp directory, launches it via cmd /c, then executes a second cmd.exe instance with chained commands. Generates MDE DeviceProcessEvents entries for cmd.exe with suspicious argument patterns, targeting Sentinel analytics rules for command shell abuse.",
+      "tactic": "Execution",
+      "tcode": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir"],
+      "command": "Write-Host '[START] T1059.003 - Windows Command Shell execution'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $batPath = Join-Path $tmpDir 'MorganaTest-T1059003.bat'; try { '@echo off' | Set-Content $batPath -Encoding ASCII; 'echo MorganaTest-T1059.003-CmdShell' | Add-Content $batPath -Encoding ASCII; 'cmd /c whoami > NUL' | Add-Content $batPath -Encoding ASCII; 'exit 0' | Add-Content $batPath -Encoding ASCII; Write-Host ('[INFO] Batch script created: ' + $batPath); $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList ('/c ' + $batPath) -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] cmd.exe /c batch exited with code: ' + $proc.ExitCode); $proc2 = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c whoami > NUL && hostname > NUL && echo MorganaTest-T1059.003-chained > NUL' -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] Chained cmd.exe exited with code: ' + $proc2.ExitCode); Remove-Item $batPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1059.003 - Windows Command Shell executed. Sentinel target: Suspicious cmd.exe invocation pattern (MDE DeviceProcessEvents)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $batPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' 'MorganaTest-T1059003.bat') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1059.003 cleanup: batch file removed'",
+      "source": "excalibur",
+      "package_id": "excalibur-execution-v1"
+    },
+    {
+      "id": "Excalibur - Execution-T1059.005-Visual Basic Script",
+      "name": "Excalibur - Execution-T1059.005-Visual Basic Script",
+      "description": "Creates a VBScript (.vbs) file and executes it via wscript.exe, simulating adversary use of Windows Script Host for execution. The VBScript instantiates a WScript.Shell COM object and spawns a child cmd.exe process, a pattern commonly seen in phishing-delivered droppers and LOLBin-based execution chains. Generates MDE telemetry for wscript.exe spawning cmd.exe, a high-fidelity detection indicator for Sentinel.",
+      "tactic": "Execution",
+      "tcode": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir", "excalibur_exec_vbs_filename"],
+      "tag_params": {
+        "excalibur_exec_vbs_filename": { "label": "VBScript filename", "default": "MorganaTest-T1059005.vbs", "sensitive": false }
+      },
+      "command": "Write-Host '[START] T1059.005 - Visual Basic Script execution via wscript.exe'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $vbsPath = Join-Path $tmpDir '#{excalibur_exec_vbs_filename}'; try { $q = [char]34; $lines = @(); $lines += ('Set oShell = CreateObject(' + $q + 'WScript.Shell' + $q + ')'); $lines += ('oShell.Run ' + $q + 'cmd.exe /c echo MorganaTest-T1059.005 > NUL' + $q + ', 0, True'); $lines += ('WScript.Echo ' + $q + 'MorganaTest-T1059.005-VBScript' + $q); $lines += 'Set oShell = Nothing'; $lines | Set-Content $vbsPath -Encoding ASCII; Write-Host ('[INFO] VBScript created: ' + $vbsPath); $wscriptExe = Join-Path $env:SystemRoot 'System32\\wscript.exe'; $proc = Start-Process -FilePath $wscriptExe -ArgumentList $vbsPath -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] wscript.exe exited with code: ' + $proc.ExitCode); Remove-Item $vbsPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1059.005 - VBScript executed via wscript.exe. Sentinel target: wscript.exe or cscript.exe spawning child process (MDE behavioral)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $vbsPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' '#{excalibur_exec_vbs_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1059.005 cleanup: VBScript file removed'",
+      "source": "excalibur",
+      "package_id": "excalibur-execution-v1"
+    },
+    {
+      "id": "Excalibur - Execution-T1059.006-Python",
+      "name": "Excalibur - Execution-T1059.006-Python",
+      "description": "Locates the Python interpreter on the target machine, writes a benign .py script to the Defender-excluded temp directory, and executes it via python.exe. Simulates adversary use of Python for post-exploitation automation and C2 implant execution. Generates MDE DeviceProcessEvents entries for python.exe spawned from a non-standard path. Logs a remediation hint and exits cleanly if Python is not installed.",
+      "tactic": "Execution",
+      "tcode": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir"],
+      "command": "Write-Host '[START] T1059.006 - Python interpreter execution'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $pyFile = Join-Path $tmpDir 'MorganaTest-T1059006.py'; try { $q = [char]34; $pyCode = ('import platform, os; print(' + $q + 'MorganaTest-T1059.006 sys=' + $q + ' + platform.system() + ' + $q + ' node=' + $q + ' + platform.node())'); $pyCode | Set-Content $pyFile -Encoding UTF8; $pyExe = $null; $candidates = @('python', 'python3', (Join-Path $env:LOCALAPPDATA 'Programs\\Python\\Python312\\python.exe'), (Join-Path $env:LOCALAPPDATA 'Programs\\Python\\Python311\\python.exe'), (Join-Path $env:LOCALAPPDATA 'Programs\\Python\\Python310\\python.exe')); foreach ($c in $candidates) { try { $t = & $c '--version' 2>&1; if ($LASTEXITCODE -eq 0 -or ($t -match 'Python')) { $pyExe = $c; break } } catch {} }; if (-not $pyExe) { Write-Host '[ERROR] T1059.006 - Python interpreter not found. Install Python 3 and retry.'; Remove-Item $pyFile -ErrorAction SilentlyContinue; exit 1 }; Write-Host ('[INFO] Python found: ' + $pyExe); $proc = Start-Process -FilePath $pyExe -ArgumentList $pyFile -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] python.exe exited with code: ' + $proc.ExitCode); Remove-Item $pyFile -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1059.006 - Python execution completed. Sentinel target: Python interpreter spawned from temp directory (MDE DeviceProcessEvents)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $pyFile -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' 'MorganaTest-T1059006.py') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1059.006 cleanup: Python script removed'",
+      "source": "excalibur",
+      "package_id": "excalibur-execution-v1"
+    },
+    {
+      "id": "Excalibur - Execution-T1059.007-JavaScript via mshta.exe",
+      "name": "Excalibur - Execution-T1059.007-JavaScript via mshta.exe",
+      "description": "Creates an HTA file containing JScript and executes it via mshta.exe, simulating adversary use of the HTML Application Host for JavaScript-based code execution. The JScript instantiates a WScript.Shell ActiveX object and spawns a child cmd.exe process. mshta.exe is a built-in LOLBin widely abused for semi-fileless execution. Generates MDE telemetry for mshta.exe with child process creation.",
+      "tactic": "Execution",
+      "tcode": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": ["excalibur_exec_temp_dir", "excalibur_exec_hta_filename"],
+      "tag_params": {
+        "excalibur_exec_hta_filename": { "label": "HTA filename", "default": "MorganaTest-T1059007.hta", "sensitive": false }
+      },
+      "command": "Write-Host '[START] T1059.007 - JavaScript execution via mshta.exe (JScript HTA)'; $tmpDir = '#{excalibur_exec_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $htaPath = Join-Path $tmpDir '#{excalibur_exec_hta_filename}'; try { $q = [char]34; $lines = @(); $lines += '<html><head>'; $lines += ('<HTA:APPLICATION ID=' + $q + 'MorganaTest' + $q + ' />'); $lines += ('<script language=' + $q + 'JScript' + $q + '>'); $lines += ('function run() { var oShell = new ActiveXObject(' + $q + 'WScript.Shell' + $q + '); oShell.Run(' + $q + 'cmd.exe /c echo MorganaTest-T1059.007 > NUL' + $q + ', 0, true); close(); }'); $lines += ('</script></head><body onload=' + $q + 'run()' + $q + '></body></html>'); $lines | Set-Content $htaPath -Encoding ASCII; Write-Host ('[INFO] HTA/JScript file created: ' + $htaPath); $mshtaExe = Join-Path $env:SystemRoot 'System32\\mshta.exe'; if (-not (Test-Path $mshtaExe)) { $mshtaExe = 'mshta.exe' }; $proc = Start-Process -FilePath $mshtaExe -ArgumentList $htaPath -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Host ('[INFO] mshta.exe exited with code: ' + $proc.ExitCode); Remove-Item $htaPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1059.007 - JScript executed via mshta.exe. Sentinel target: Suspicious mshta.exe execution spawning child process' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $htaPath -ErrorAction SilentlyContinue }",
+      "cleanup_command": "Remove-Item (Join-Path '#{excalibur_exec_temp_dir}' '#{excalibur_exec_hta_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1059.007 cleanup: HTA file removed'",
+      "source": "excalibur",
+      "package_id": "excalibur-execution-v1"
+    },
+    {
+      "id": "Excalibur - Execution-T1059.009-Cloud API Az PowerShell",
+      "name": "Excalibur - Execution-T1059.009-Cloud API Az PowerShell",
+      "description": "Authenticates to Azure via a service principal using Az PowerShell and enumerates resources (VMs, Key Vaults, resource groups), simulating adversary use of cloud management APIs for reconnaissance and execution after initial cloud access. Requires Az PowerShell module. Generates Azure Activity Log events captured by the Microsoft Sentinel Azure Activity data connector.",
+      "tactic": "Execution",
+      "tcode": "T1059.009",
+      "technique_name": "Command and Scripting Interpreter: Cloud API",
+      "executor": "powershell",
+      "platform": "azure",
+      "required_tags": ["excalibur_client_id", "excalibur_client_secret", "excalibur_tenant_id", "excalibur_exec_azure_sub_id"],
+      "tag_params": {
+        "excalibur_exec_azure_sub_id": { "label": "Azure Subscription ID", "default": "", "sensitive": false }
+      },
+      "command": "Write-Host '[START] T1059.009 - Cloud API execution via Az PowerShell'; $secSecret = ConvertTo-SecureString '#{excalibur_client_secret}' -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential('#{excalibur_client_id}', $secSecret); try { Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant '#{excalibur_tenant_id}' -Subscription '#{excalibur_exec_azure_sub_id}' -ErrorAction Stop | Out-Null; Write-Host '[INFO] Connected to Azure via service principal'; $resources = Get-AzResource -ErrorAction SilentlyContinue; Write-Host ('[INFO] Resources found: ' + $resources.Count); $vms = Get-AzVM -ErrorAction SilentlyContinue; Write-Host ('[INFO] VMs found: ' + $vms.Count); $kvaults = Get-AzKeyVault -ErrorAction SilentlyContinue; Write-Host ('[INFO] Key Vaults enumerated: ' + $kvaults.Count); Disconnect-AzAccount -ErrorAction SilentlyContinue | Out-Null; Write-Host '[SUCCESS] T1059.009 - Azure Cloud API enumeration completed. Sentinel target: Unusual Azure resource enumeration by service principal' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Disconnect-AzAccount -ErrorAction SilentlyContinue | Out-Null }",
+      "cleanup_command": "Disconnect-AzAccount -ErrorAction SilentlyContinue | Out-Null; Write-Host '[INFO] T1059.009 cleanup: Azure session disconnected'",
+      "source": "excalibur",
+      "package_id": "excalibur-execution-v1"
     }
   ],
   "chains": [
