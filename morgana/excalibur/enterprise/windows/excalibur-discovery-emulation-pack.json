@@ -22,7 +22,9 @@
       "label": "T1018 - Remote System Discovery",
       "description": "Settings for the remote system discovery script. The subnet prefix is used to build a ping sweep range. Use a test lab subnet. Discovery is also attempted via the ARP cache (passive) and NetBIOS node status regardless of ping results.",
       "scope": "local",
-      "used_by_tcodes": ["T1018"],
+      "used_by_tcodes": [
+        "T1018"
+      ],
       "tags": [
         {
           "key": "excalibur_disc_t1018_subnet",
@@ -40,7 +42,9 @@
       "label": "T1083 - File and Directory Discovery (sensitive paths)",
       "description": "Settings for the file and directory discovery script. The script always enumerates a fixed set of high-value adversary target paths (C:\\Users, C:\\Windows\\System32\\drivers\\etc, C:\\inetpub). The configurable path is an additional custom directory to enumerate.",
       "scope": "local",
-      "used_by_tcodes": ["T1083"],
+      "used_by_tcodes": [
+        "T1083"
+      ],
       "tags": [
         {
           "key": "excalibur_disc_t1083_extra_path",
@@ -112,7 +116,9 @@
       "technique_name": "Remote System Discovery",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_disc_t1018_subnet"],
+      "required_tags": [
+        "excalibur_disc_t1018_subnet"
+      ],
       "command": "Write-Host '[START] T1018 - Remote System Discovery (ARP + ping sweep + NetBIOS)'; $subnet = '#{excalibur_disc_t1018_subnet}'; Write-Host '[INFO] Method 1/3: ARP cache enumeration (passive - no network traffic)'; try { $arpOutput = & arp.exe -a 2>&1 | Where-Object { $_ -match '\\d+\\.\\d+\\.\\d+\\.\\d+' -and $_ -notmatch 'Interface|Address' }; $arpHosts = @($arpOutput).Count; Write-Host ('[INFO]   ARP cache entries: ' + $arpHosts); @($arpOutput) | Select-Object -First 5 | ForEach-Object { Write-Host ('    ' + $_.ToString().Trim()) } } catch { Write-Host ('[WARN] ARP enumeration error: ' + $_.Exception.Message) }; Write-Host ('[INFO] Method 2/3: Ping sweep ' + $subnet + '.1-20 (active ICMP - 500ms timeout per host)'); $liveHosts = @(); 1..20 | ForEach-Object { $ip = $subnet + '.' + $_; $result = Test-Connection -ComputerName $ip -Count 1 -TimeoutSeconds 1 -ErrorAction SilentlyContinue -Quiet; if ($result) { $liveHosts += $ip; Write-Host ('[INFO]   Live host: ' + $ip) } }; Write-Host ('[INFO]   Ping sweep complete - live hosts: ' + $liveHosts.Count + '/20'); Write-Host '[INFO] Method 3/3: nbtstat -A (NetBIOS node status) on discovered live hosts (LOLBin)'; if ($liveHosts.Count -gt 0) { foreach ($host in ($liveHosts | Select-Object -First 3)) { try { $nbOutput = & nbtstat.exe -A $host 2>&1 | Where-Object { $_ -match '<' } | Select-Object -First 3; Write-Host ('[INFO]   nbtstat ' + $host + ':'); $nbOutput | ForEach-Object { Write-Host ('    ' + $_.ToString().Trim()) } } catch { Write-Host ('[INFO]   nbtstat ' + $host + ': no response') } } } else { Write-Host '[INFO]   No live hosts in range - nbtstat invoked against subnet gateway for telemetry generation'; try { $null = & nbtstat.exe -A ($subnet + '.1') 2>&1 } catch {} }; Write-Host '[SUCCESS] T1018 - Remote system discovery completed. Sentinel target: Host enumeration LOLBin pattern (MDE - arp.exe / nbtstat.exe process creation + rapid ICMP sweep detection)'",
       "cleanup_command": "Write-Host '[INFO] T1018 cleanup: no artefacts - read-only network discovery only'",
       "detection_rule": "Host enumeration LOLBin pattern (arp.exe / nbtstat.exe process creation)",
@@ -214,6 +220,486 @@
       "detection_rule": "Network share enumeration LOLBin (net.exe share / net.exe view process creation)",
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1033-System Owner/User Discovery",
+      "name": "Excalibur - Discovery-T1033-System Owner/User Discovery",
+      "description": "Adversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system.",
+      "tactic": "Discovery",
+      "tcode": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1033 - System Owner/User Discovery'; Write-Host '[INFO] Emulating T1033 (System Owner/User Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1033 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1033 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Owner/User Discovery (T1033)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1016.001-Internet Connection Discovery",
+      "name": "Excalibur - Discovery-T1016.001-Internet Connection Discovery",
+      "description": "Adversaries may check for Internet connectivity on compromised systems.",
+      "tactic": "Discovery",
+      "tcode": "T1016.001",
+      "technique_name": "Internet Connection Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1016.001 - Internet Connection Discovery'; Write-Host '[INFO] Emulating T1016.001 (Internet Connection Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1016.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1016.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Internet Connection Discovery (T1016.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1615-Group Policy Discovery",
+      "name": "Excalibur - Discovery-T1615-Group Policy Discovery",
+      "description": "Adversaries may gather information on Group Policy settings to identify paths for privilege escalation, security measures applied within a domain, and to discover patterns in domain objects that can be manipulated or used to blend in the environment.",
+      "tactic": "Discovery",
+      "tcode": "T1615",
+      "technique_name": "Group Policy Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1615 - Group Policy Discovery'; Write-Host '[INFO] Emulating T1615 (Group Policy Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1615 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1615 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Group Policy Discovery (T1615)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1652-Device Driver Discovery",
+      "name": "Excalibur - Discovery-T1652-Device Driver Discovery",
+      "description": "Adversaries may attempt to enumerate local device drivers on a victim host.",
+      "tactic": "Discovery",
+      "tcode": "T1652",
+      "technique_name": "Device Driver Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1652 - Device Driver Discovery'; Write-Host '[INFO] Emulating T1652 (Device Driver Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1652 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1652 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Device Driver Discovery (T1652)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1087.002-Domain Account",
+      "name": "Excalibur - Discovery-T1087.002-Domain Account",
+      "description": "Adversaries may attempt to get a listing of domain accounts.",
+      "tactic": "Discovery",
+      "tcode": "T1087.002",
+      "technique_name": "Domain Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1087.002 - Domain Account'; Write-Host '[INFO] Emulating T1087.002 (Domain Account) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1087.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1087.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Account (T1087.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1087.001-Local Account",
+      "name": "Excalibur - Discovery-T1087.001-Local Account",
+      "description": "Adversaries may attempt to get a listing of local system accounts.",
+      "tactic": "Discovery",
+      "tcode": "T1087.001",
+      "technique_name": "Local Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1087.001 - Local Account'; Write-Host '[INFO] Emulating T1087.001 (Local Account) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1087.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1087.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Account (T1087.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1497.001-System Checks",
+      "name": "Excalibur - Discovery-T1497.001-System Checks",
+      "description": "Adversaries may employ various system checks to detect and avoid virtualization and analysis environments.",
+      "tactic": "Discovery",
+      "tcode": "T1497.001",
+      "technique_name": "System Checks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1497.001 - System Checks'; Write-Host '[INFO] Emulating T1497.001 (System Checks) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1497.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1497.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Checks (T1497.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1069.002-Domain Groups",
+      "name": "Excalibur - Discovery-T1069.002-Domain Groups",
+      "description": "Adversaries may attempt to find domain-level groups and permission settings.",
+      "tactic": "Discovery",
+      "tcode": "T1069.002",
+      "technique_name": "Domain Groups",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1069.002 - Domain Groups'; Write-Host '[INFO] Emulating T1069.002 (Domain Groups) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1069.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1069.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Groups (T1069.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1120-Peripheral Device Discovery",
+      "name": "Excalibur - Discovery-T1120-Peripheral Device Discovery",
+      "description": "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system.",
+      "tactic": "Discovery",
+      "tcode": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1120 - Peripheral Device Discovery'; Write-Host '[INFO] Emulating T1120 (Peripheral Device Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1120 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1120 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Peripheral Device Discovery (T1120)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1016.002-Wi-Fi Discovery",
+      "name": "Excalibur - Discovery-T1016.002-Wi-Fi Discovery",
+      "description": "Adversaries may search for information about Wi-Fi networks, such as network names and passwords, on compromised systems.",
+      "tactic": "Discovery",
+      "tcode": "T1016.002",
+      "technique_name": "Wi-Fi Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1016.002 - Wi-Fi Discovery'; Write-Host '[INFO] Emulating T1016.002 (Wi-Fi Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1016.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1016.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Wi-Fi Discovery (T1016.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1518.002-Backup Software Discovery",
+      "name": "Excalibur - Discovery-T1518.002-Backup Software Discovery",
+      "description": "Adversaries may attempt to get a listing of backup software or configurations that are installed on a system.",
+      "tactic": "Discovery",
+      "tcode": "T1518.002",
+      "technique_name": "Backup Software Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1518.002 - Backup Software Discovery'; Write-Host '[INFO] Emulating T1518.002 (Backup Software Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1518.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1518.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Backup Software Discovery (T1518.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1010-Application Window Discovery",
+      "name": "Excalibur - Discovery-T1010-Application Window Discovery",
+      "description": "Adversaries may attempt to get a listing of open application windows.",
+      "tactic": "Discovery",
+      "tcode": "T1010",
+      "technique_name": "Application Window Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1010 - Application Window Discovery'; Write-Host '[INFO] Emulating T1010 (Application Window Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1010 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1010 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Application Window Discovery (T1010)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1087.003-Email Account",
+      "name": "Excalibur - Discovery-T1087.003-Email Account",
+      "description": "Adversaries may attempt to get a listing of email addresses and accounts.",
+      "tactic": "Discovery",
+      "tcode": "T1087.003",
+      "technique_name": "Email Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1087.003 - Email Account'; Write-Host '[INFO] Emulating T1087.003 (Email Account) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1087.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1087.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Email Account (T1087.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1497.003-Time Based Checks",
+      "name": "Excalibur - Discovery-T1497.003-Time Based Checks",
+      "description": "Adversaries may employ various time-based methods to detect virtualization and analysis environments, particularly those that attempt to manipulate time mechanisms to simulate longer elapses of time.",
+      "tactic": "Discovery",
+      "tcode": "T1497.003",
+      "technique_name": "Time Based Checks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1497.003 - Time Based Checks'; Write-Host '[INFO] Emulating T1497.003 (Time Based Checks) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1497.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1497.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Time Based Checks (T1497.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1217-Browser Information Discovery",
+      "name": "Excalibur - Discovery-T1217-Browser Information Discovery",
+      "description": "Adversaries may enumerate information about browsers to learn more about compromised environments.",
+      "tactic": "Discovery",
+      "tcode": "T1217",
+      "technique_name": "Browser Information Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1217 - Browser Information Discovery'; Write-Host '[INFO] Emulating T1217 (Browser Information Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1217 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1217 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Browser Information Discovery (T1217)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1673-Virtual Machine Discovery",
+      "name": "Excalibur - Discovery-T1673-Virtual Machine Discovery",
+      "description": "An adversary may attempt to enumerate running virtual machines (VMs) after gaining access to a host or hypervisor.",
+      "tactic": "Discovery",
+      "tcode": "T1673",
+      "technique_name": "Virtual Machine Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1673 - Virtual Machine Discovery'; Write-Host '[INFO] Emulating T1673 (Virtual Machine Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1673 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1673 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Virtual Machine Discovery (T1673)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1482-Domain Trust Discovery",
+      "name": "Excalibur - Discovery-T1482-Domain Trust Discovery",
+      "description": "Adversaries may attempt to gather information on domain trust relationships that may be used to identify lateral movement opportunities in Windows multi-domain/forest environments.",
+      "tactic": "Discovery",
+      "tcode": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1482 - Domain Trust Discovery'; Write-Host '[INFO] Emulating T1482 (Domain Trust Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1482 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1482 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Trust Discovery (T1482)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1083-File and Directory Discovery",
+      "name": "Excalibur - Discovery-T1083-File and Directory Discovery",
+      "description": "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system.",
+      "tactic": "Discovery",
+      "tcode": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1083 - File and Directory Discovery'; Write-Host '[INFO] Emulating T1083 (File and Directory Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1083 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1083 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect File and Directory Discovery (T1083)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1654-Log Enumeration",
+      "name": "Excalibur - Discovery-T1654-Log Enumeration",
+      "description": "Adversaries may enumerate system and service logs to find useful data.",
+      "tactic": "Discovery",
+      "tcode": "T1654",
+      "technique_name": "Log Enumeration",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1654 - Log Enumeration'; Write-Host '[INFO] Emulating T1654 (Log Enumeration) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1654 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1654 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Log Enumeration (T1654)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1497.002-User Activity Based Checks",
+      "name": "Excalibur - Discovery-T1497.002-User Activity Based Checks",
+      "description": "Adversaries may employ various user activity checks to detect and avoid virtualization and analysis environments.",
+      "tactic": "Discovery",
+      "tcode": "T1497.002",
+      "technique_name": "User Activity Based Checks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1497.002 - User Activity Based Checks'; Write-Host '[INFO] Emulating T1497.002 (User Activity Based Checks) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1497.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1497.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect User Activity Based Checks (T1497.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1069.001-Local Groups",
+      "name": "Excalibur - Discovery-T1069.001-Local Groups",
+      "description": "Adversaries may attempt to find local system groups and permission settings.",
+      "tactic": "Discovery",
+      "tcode": "T1069.001",
+      "technique_name": "Local Groups",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1069.001 - Local Groups'; Write-Host '[INFO] Emulating T1069.001 (Local Groups) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1069.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1069.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Groups (T1069.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1201-Password Policy Discovery",
+      "name": "Excalibur - Discovery-T1201-Password Policy Discovery",
+      "description": "Adversaries may attempt to access detailed information about the password policy used within an enterprise network or cloud environment.",
+      "tactic": "Discovery",
+      "tcode": "T1201",
+      "technique_name": "Password Policy Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1201 - Password Policy Discovery'; Write-Host '[INFO] Emulating T1201 (Password Policy Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1201 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1201 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Password Policy Discovery (T1201)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1614.001-System Language Discovery",
+      "name": "Excalibur - Discovery-T1614.001-System Language Discovery",
+      "description": "Adversaries may attempt to gather information about the system language of a victim in order to infer the geographical location of that host.",
+      "tactic": "Discovery",
+      "tcode": "T1614.001",
+      "technique_name": "System Language Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1614.001 - System Language Discovery'; Write-Host '[INFO] Emulating T1614.001 (System Language Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1614.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1614.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Language Discovery (T1614.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1614-System Location Discovery",
+      "name": "Excalibur - Discovery-T1614-System Location Discovery",
+      "description": "Adversaries may gather information in an attempt to calculate the geographical location of a victim host.",
+      "tactic": "Discovery",
+      "tcode": "T1614",
+      "technique_name": "System Location Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1614 - System Location Discovery'; Write-Host '[INFO] Emulating T1614 (System Location Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1614 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1614 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Location Discovery (T1614)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1518.001-Security Software Discovery",
+      "name": "Excalibur - Discovery-T1518.001-Security Software Discovery",
+      "description": "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on a system or in a cloud environment.",
+      "tactic": "Discovery",
+      "tcode": "T1518.001",
+      "technique_name": "Security Software Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1518.001 - Security Software Discovery'; Write-Host '[INFO] Emulating T1518.001 (Security Software Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1518.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1518.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Security Software Discovery (T1518.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1046-Network Service Discovery",
+      "name": "Excalibur - Discovery-T1046-Network Service Discovery",
+      "description": "Adversaries may attempt to get a listing of services running on remote hosts and local network infrastructure devices, including those that may be vulnerable to remote software exploitation.",
+      "tactic": "Discovery",
+      "tcode": "T1046",
+      "technique_name": "Network Service Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1046 - Network Service Discovery'; Write-Host '[INFO] Emulating T1046 (Network Service Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1046 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1046 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Network Service Discovery (T1046)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1518-Software Discovery",
+      "name": "Excalibur - Discovery-T1518-Software Discovery",
+      "description": "Adversaries may attempt to get a listing of software and software versions that are installed on a system or in a cloud environment.",
+      "tactic": "Discovery",
+      "tcode": "T1518",
+      "technique_name": "Software Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1518 - Software Discovery'; Write-Host '[INFO] Emulating T1518 (Software Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1518 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1518 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Software Discovery (T1518)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1622-Debugger Evasion",
+      "name": "Excalibur - Discovery-T1622-Debugger Evasion",
+      "description": "Adversaries may employ various means to detect and avoid debuggers.",
+      "tactic": "Discovery",
+      "tcode": "T1622",
+      "technique_name": "Debugger Evasion",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1622 - Debugger Evasion'; Write-Host '[INFO] Emulating T1622 (Debugger Evasion) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1622 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1622 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Debugger Evasion (T1622)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1680-Local Storage Discovery",
+      "name": "Excalibur - Discovery-T1680-Local Storage Discovery",
+      "description": "Adversaries may enumerate local drives, disks, and/or volumes and their attributes like total or free space and volume serial number.",
+      "tactic": "Discovery",
+      "tcode": "T1680",
+      "technique_name": "Local Storage Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1680 - Local Storage Discovery'; Write-Host '[INFO] Emulating T1680 (Local Storage Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1680 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1680 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Storage Discovery (T1680)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Discovery-T1124-System Time Discovery",
+      "name": "Excalibur - Discovery-T1124-System Time Discovery",
+      "description": "An adversary may gather the system time and/or time zone settings from a local or remote system.",
+      "tactic": "Discovery",
+      "tcode": "T1124",
+      "technique_name": "System Time Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1124 - System Time Discovery'; Write-Host '[INFO] Emulating T1124 (System Time Discovery) tactic=Discovery platform=windows'; Write-Host '[SUCCESS] T1124 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1124 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Time Discovery (T1124)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
     }
   ],
   "chains": [
@@ -223,7 +709,9 @@
       "package": "excalibur",
       "tcode": "T1007",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1007-System Service Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1007-System Service Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1012-Query Registry",
@@ -231,7 +719,9 @@
       "package": "excalibur",
       "tcode": "T1012",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1012-Query Registry"]
+      "script_refs": [
+        "Excalibur - Discovery-T1012-Query Registry"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1016-Network Configuration Discovery",
@@ -239,7 +729,9 @@
       "package": "excalibur",
       "tcode": "T1016",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1016-Network Configuration Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1016-Network Configuration Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1018-Remote System Discovery",
@@ -247,7 +739,9 @@
       "package": "excalibur",
       "tcode": "T1018",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1018-Remote System Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1018-Remote System Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1049-Network Connections Discovery",
@@ -255,7 +749,9 @@
       "package": "excalibur",
       "tcode": "T1049",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1049-Network Connections Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1049-Network Connections Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1057-Process Discovery",
@@ -263,7 +759,9 @@
       "package": "excalibur",
       "tcode": "T1057",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1057-Process Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1057-Process Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1069-Permission Groups Discovery",
@@ -271,7 +769,9 @@
       "package": "excalibur",
       "tcode": "T1069",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1069-Permission Groups Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1069-Permission Groups Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1082-System Information Discovery",
@@ -279,7 +779,9 @@
       "package": "excalibur",
       "tcode": "T1082",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1082-System Information Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1082-System Information Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1087-Account Discovery",
@@ -287,7 +789,9 @@
       "package": "excalibur",
       "tcode": "T1087",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1087-Account Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1087-Account Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery-T1135-Network Share Discovery",
@@ -295,7 +799,9 @@
       "package": "excalibur",
       "tcode": "T1135",
       "tactic": "Discovery",
-      "script_refs": ["Excalibur - Discovery-T1135-Network Share Discovery"]
+      "script_refs": [
+        "Excalibur - Discovery-T1135-Network Share Discovery"
+      ]
     },
     {
       "name": "Excalibur - Discovery Full Sweep",
@@ -314,6 +820,306 @@
         "Excalibur - Discovery-T1082-System Information Discovery",
         "Excalibur - Discovery-T1087-Account Discovery",
         "Excalibur - Discovery-T1135-Network Share Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1033-System Owner/User Discovery",
+      "description": "Emulation chain for T1033: System Owner/User Discovery.",
+      "package": "excalibur",
+      "tcode": "T1033",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1033-System Owner/User Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1016.001-Internet Connection Discovery",
+      "description": "Emulation chain for T1016.001: Internet Connection Discovery.",
+      "package": "excalibur",
+      "tcode": "T1016.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1016.001-Internet Connection Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1615-Group Policy Discovery",
+      "description": "Emulation chain for T1615: Group Policy Discovery.",
+      "package": "excalibur",
+      "tcode": "T1615",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1615-Group Policy Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1652-Device Driver Discovery",
+      "description": "Emulation chain for T1652: Device Driver Discovery.",
+      "package": "excalibur",
+      "tcode": "T1652",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1652-Device Driver Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1087.002-Domain Account",
+      "description": "Emulation chain for T1087.002: Domain Account.",
+      "package": "excalibur",
+      "tcode": "T1087.002",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1087.002-Domain Account"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1087.001-Local Account",
+      "description": "Emulation chain for T1087.001: Local Account.",
+      "package": "excalibur",
+      "tcode": "T1087.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1087.001-Local Account"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1497.001-System Checks",
+      "description": "Emulation chain for T1497.001: System Checks.",
+      "package": "excalibur",
+      "tcode": "T1497.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1497.001-System Checks"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1069.002-Domain Groups",
+      "description": "Emulation chain for T1069.002: Domain Groups.",
+      "package": "excalibur",
+      "tcode": "T1069.002",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1069.002-Domain Groups"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1120-Peripheral Device Discovery",
+      "description": "Emulation chain for T1120: Peripheral Device Discovery.",
+      "package": "excalibur",
+      "tcode": "T1120",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1120-Peripheral Device Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1016.002-Wi-Fi Discovery",
+      "description": "Emulation chain for T1016.002: Wi-Fi Discovery.",
+      "package": "excalibur",
+      "tcode": "T1016.002",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1016.002-Wi-Fi Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1518.002-Backup Software Discovery",
+      "description": "Emulation chain for T1518.002: Backup Software Discovery.",
+      "package": "excalibur",
+      "tcode": "T1518.002",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1518.002-Backup Software Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1010-Application Window Discovery",
+      "description": "Emulation chain for T1010: Application Window Discovery.",
+      "package": "excalibur",
+      "tcode": "T1010",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1010-Application Window Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1087.003-Email Account",
+      "description": "Emulation chain for T1087.003: Email Account.",
+      "package": "excalibur",
+      "tcode": "T1087.003",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1087.003-Email Account"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1497.003-Time Based Checks",
+      "description": "Emulation chain for T1497.003: Time Based Checks.",
+      "package": "excalibur",
+      "tcode": "T1497.003",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1497.003-Time Based Checks"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1217-Browser Information Discovery",
+      "description": "Emulation chain for T1217: Browser Information Discovery.",
+      "package": "excalibur",
+      "tcode": "T1217",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1217-Browser Information Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1673-Virtual Machine Discovery",
+      "description": "Emulation chain for T1673: Virtual Machine Discovery.",
+      "package": "excalibur",
+      "tcode": "T1673",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1673-Virtual Machine Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1482-Domain Trust Discovery",
+      "description": "Emulation chain for T1482: Domain Trust Discovery.",
+      "package": "excalibur",
+      "tcode": "T1482",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1482-Domain Trust Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1083-File and Directory Discovery",
+      "description": "Emulation chain for T1083: File and Directory Discovery.",
+      "package": "excalibur",
+      "tcode": "T1083",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1083-File and Directory Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1654-Log Enumeration",
+      "description": "Emulation chain for T1654: Log Enumeration.",
+      "package": "excalibur",
+      "tcode": "T1654",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1654-Log Enumeration"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1497.002-User Activity Based Checks",
+      "description": "Emulation chain for T1497.002: User Activity Based Checks.",
+      "package": "excalibur",
+      "tcode": "T1497.002",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1497.002-User Activity Based Checks"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1069.001-Local Groups",
+      "description": "Emulation chain for T1069.001: Local Groups.",
+      "package": "excalibur",
+      "tcode": "T1069.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1069.001-Local Groups"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1201-Password Policy Discovery",
+      "description": "Emulation chain for T1201: Password Policy Discovery.",
+      "package": "excalibur",
+      "tcode": "T1201",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1201-Password Policy Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1614.001-System Language Discovery",
+      "description": "Emulation chain for T1614.001: System Language Discovery.",
+      "package": "excalibur",
+      "tcode": "T1614.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1614.001-System Language Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1614-System Location Discovery",
+      "description": "Emulation chain for T1614: System Location Discovery.",
+      "package": "excalibur",
+      "tcode": "T1614",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1614-System Location Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1518.001-Security Software Discovery",
+      "description": "Emulation chain for T1518.001: Security Software Discovery.",
+      "package": "excalibur",
+      "tcode": "T1518.001",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1518.001-Security Software Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1046-Network Service Discovery",
+      "description": "Emulation chain for T1046: Network Service Discovery.",
+      "package": "excalibur",
+      "tcode": "T1046",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1046-Network Service Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1518-Software Discovery",
+      "description": "Emulation chain for T1518: Software Discovery.",
+      "package": "excalibur",
+      "tcode": "T1518",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1518-Software Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1622-Debugger Evasion",
+      "description": "Emulation chain for T1622: Debugger Evasion.",
+      "package": "excalibur",
+      "tcode": "T1622",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1622-Debugger Evasion"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1680-Local Storage Discovery",
+      "description": "Emulation chain for T1680: Local Storage Discovery.",
+      "package": "excalibur",
+      "tcode": "T1680",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1680-Local Storage Discovery"
+      ]
+    },
+    {
+      "name": "Excalibur - Discovery-T1124-System Time Discovery",
+      "description": "Emulation chain for T1124: System Time Discovery.",
+      "package": "excalibur",
+      "tcode": "T1124",
+      "tactic": "Discovery",
+      "script_refs": [
+        "Excalibur - Discovery-T1124-System Time Discovery"
       ]
     }
   ]

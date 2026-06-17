@@ -23,7 +23,10 @@
       "label": "Common - Local Environment (all local scripts)",
       "description": "Shared temp directory used by T1197 (BITS download destination) and T1574 (DLL planting). Set once. The default path is already Defender-excluded in a standard Morgana installation.",
       "scope": "local",
-      "used_by_tcodes": ["T1197", "T1574"],
+      "used_by_tcodes": [
+        "T1197",
+        "T1574"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_temp_dir",
@@ -41,7 +44,9 @@
       "label": "T1037 - Boot/Logon Initialization Scripts",
       "description": "Settings for the logon script registry persistence script. Writes a UserInitMprLogonScript value under HKCU:\\Environment, then removes it immediately. Non-destructive - does not modify any existing registry keys.",
       "scope": "local",
-      "used_by_tcodes": ["T1037"],
+      "used_by_tcodes": [
+        "T1037"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_logon_script_name",
@@ -68,7 +73,9 @@
       "label": "T1053 - Scheduled Task / Job (Persistence variant - AtLogon trigger)",
       "description": "Settings for the scheduled task persistence script. Creates a task with an AtLogon trigger (fires at every user logon, unlike the one-shot variant in the Execution pack), then removes it immediately. Generates Event ID 4698.",
       "scope": "local",
-      "used_by_tcodes": ["T1053"],
+      "used_by_tcodes": [
+        "T1053"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_sched_task_name",
@@ -95,7 +102,9 @@
       "label": "T1098 - Account Manipulation",
       "description": "Settings for the account manipulation script. Creates a temporary local account, adds it to the Administrators group (Event ID 4732), removes it from the group (Event ID 4733), then deletes the account. Requires local Administrator or SYSTEM privileges.",
       "scope": "local",
-      "used_by_tcodes": ["T1098"],
+      "used_by_tcodes": [
+        "T1098"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_manip_username",
@@ -122,7 +131,9 @@
       "label": "T1136 - Create Account",
       "description": "Settings for the local account creation script. Creates a temporary local user account (Event ID 4720) then immediately deletes it (Event ID 4726). Requires local Administrator or SYSTEM privileges.",
       "scope": "local",
-      "used_by_tcodes": ["T1136"],
+      "used_by_tcodes": [
+        "T1136"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_new_username",
@@ -149,7 +160,9 @@
       "label": "T1197 - BITS Jobs",
       "description": "Settings for the BITS job persistence simulation. Creates a Background Intelligent Transfer Service job (adversaries use BITS for covert downloads and persistence because it survives reboots and blends with legitimate Windows telemetry). Job is removed after execution.",
       "scope": "local",
-      "used_by_tcodes": ["T1197"],
+      "used_by_tcodes": [
+        "T1197"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_bits_job_name",
@@ -176,7 +189,9 @@
       "label": "T1543 - Create or Modify System Process (Automatic startup)",
       "description": "Settings for the persistent service creation script. Creates a Windows service with Automatic startup type (boot persistence, unlike the Manual variant used in the Execution pack T1569). Service is removed after creation. Requires local Administrator or SYSTEM privileges.",
       "scope": "local",
-      "used_by_tcodes": ["T1543"],
+      "used_by_tcodes": [
+        "T1543"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_persist_svc_name",
@@ -203,7 +218,9 @@
       "label": "T1546 - Event Triggered Execution (WMI Permanent Event Subscription)",
       "description": "Settings for the WMI permanent event subscription script. Creates a WMI EventFilter + CommandLineEventConsumer + FilterToConsumerBinding in the root/subscription namespace, then immediately removes all three. WMI event subscriptions are one of the highest-fidelity APT persistence indicators in Windows telemetry (Event ID 5861). Requires local Administrator or SYSTEM privileges.",
       "scope": "local",
-      "used_by_tcodes": ["T1546"],
+      "used_by_tcodes": [
+        "T1546"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_wmi_filter_name",
@@ -230,7 +247,9 @@
       "label": "T1547 - Boot or Logon Autostart Execution (Registry Run Key)",
       "description": "Settings for the registry Run key persistence script. Writes a value to HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, then removes it immediately. One of the most commonly detected persistence mechanisms in Windows environments - Sentinel has a dedicated built-in analytics rule.",
       "scope": "local",
-      "used_by_tcodes": ["T1547"],
+      "used_by_tcodes": [
+        "T1547"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_runkey_name",
@@ -257,7 +276,9 @@
       "label": "T1574 - Hijack Execution Flow (DLL Search Order)",
       "description": "Settings for the DLL search order hijacking simulation. Creates a file with a commonly hijacked system DLL name in the Defender-excluded temp directory, simulating an attacker planting a malicious DLL in a directory searched before the legitimate system path. File is removed after creation.",
       "scope": "local",
-      "used_by_tcodes": ["T1574"],
+      "used_by_tcodes": [
+        "T1574"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_dll_name",
@@ -275,7 +296,9 @@
       "label": "T1505 - Server Software Component (Web Shell)",
       "description": "Settings for the web shell simulation. Creates an .aspx file in the IIS wwwroot directory, then removes it. IIS does not need to be running - MDE and Sentinel detect the file creation event in monitored web directories regardless. If IIS is not installed, create the directory first: New-Item -ItemType Directory -Path C:\\inetpub\\wwwroot -Force",
       "scope": "local",
-      "used_by_tcodes": ["T1505"],
+      "used_by_tcodes": [
+        "T1505"
+      ],
       "tags": [
         {
           "key": "excalibur_pers_webshell_filename",
@@ -308,7 +331,10 @@
       "technique_name": "Boot or Logon Initialization Scripts",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_logon_script_name", "excalibur_pers_logon_script_path"],
+      "required_tags": [
+        "excalibur_pers_logon_script_name",
+        "excalibur_pers_logon_script_path"
+      ],
       "command": "Write-Host '[START] T1037 - Boot/Logon Initialization Scripts via HKCU Environment registry'; $regPath = 'HKCU:\\Environment'; $valueName = '#{excalibur_pers_logon_script_name}'; $scriptPath = '#{excalibur_pers_logon_script_path}'; try { $existing = Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; if ($existing) { Write-Host ('[WARN] Registry value already exists: ' + $existing.$valueName + ' - aborting to prevent overwrite'); exit 1 }; New-ItemProperty -Path $regPath -Name $valueName -Value $scriptPath -PropertyType String -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Logon script persistence registered: ' + $regPath + ' -> ' + $valueName + ' = ' + $scriptPath); Start-Sleep 2; Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1037 - Logon script registry key created and removed. Sentinel target: Registry Key Created for Boot/Logon Script Execution (MDE behavioral)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-ItemProperty -Path 'HKCU:\\Environment' -Name '#{excalibur_pers_logon_script_name}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1037 cleanup: registry value removed if still present'",
       "detection_rule": "Registry Key Created for Boot/Logon Script Execution",
@@ -324,7 +350,10 @@
       "technique_name": "Scheduled Task/Job",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_sched_task_name", "excalibur_pers_sched_payload"],
+      "required_tags": [
+        "excalibur_pers_sched_task_name",
+        "excalibur_pers_sched_payload"
+      ],
       "command": "Write-Host '[START] T1053 - Scheduled Task persistence (AtLogon trigger)'; $taskName = '#{excalibur_pers_sched_task_name}'; $payload = '#{excalibur_pers_sched_payload}'; try { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument ('/c ' + $payload); $trigger = New-ScheduledTaskTrigger -AtLogon; $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:01:00; Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Description 'MorganaTest persistence task - AtLogon trigger' -Force | Out-Null; Write-Host ('[INFO] Persistent task registered: ' + $taskName + ' - trigger: AtLogon (would fire at every user logon until removed)'); $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue; if ($task) { Write-Host ('[INFO] Task state: ' + $task.State + ' | Trigger: ' + $task.Triggers[0].CimClass.CimClassName) }; Start-Sleep 2; Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1053 - Persistent AtLogon task created and removed. Sentinel target: Scheduled Task Created or Modified (Event ID 4698)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue }",
       "cleanup_command": "Unregister-ScheduledTask -TaskName '#{excalibur_pers_sched_task_name}' -Confirm:$false -ErrorAction SilentlyContinue; Write-Host '[INFO] T1053 cleanup: task removed if still present'",
       "detection_rule": "Scheduled Task Created or Modified",
@@ -340,7 +369,10 @@
       "technique_name": "Account Manipulation",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_manip_username", "excalibur_pers_manip_password"],
+      "required_tags": [
+        "excalibur_pers_manip_username",
+        "excalibur_pers_manip_password"
+      ],
       "command": "Write-Host '[START] T1098 - Account Manipulation (add local account to Administrators group)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1098 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $username = '#{excalibur_pers_manip_username}'; $password = '#{excalibur_pers_manip_password}'; try { $existingUser = Get-LocalUser -Name $username -ErrorAction SilentlyContinue; if ($existingUser) { Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Start-Sleep 1 }; $secPwd = ConvertTo-SecureString $password -AsPlainText -Force; New-LocalUser -Name $username -Password $secPwd -FullName 'Morgana Test Account' -Description 'T1098 test - will be deleted' -AccountNeverExpires -PasswordNeverExpires -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Temp account created: ' + $username); Add-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction Stop; Write-Host ('[INFO] Account added to Administrators group - Event ID 4732 generated'); Start-Sleep 2; Remove-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction SilentlyContinue; Write-Host '[INFO] Account removed from Administrators group - Event ID 4733 generated'; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1098 - Account manipulation complete. Sentinel target: User Added to Local Administrators Group (Event ID 4732)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-LocalGroupMember -Group 'Administrators' -Member $username -ErrorAction SilentlyContinue; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-LocalGroupMember -Group 'Administrators' -Member '#{excalibur_pers_manip_username}' -ErrorAction SilentlyContinue; Remove-LocalUser -Name '#{excalibur_pers_manip_username}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1098 cleanup: account removed from group and deleted if still present'",
       "detection_rule": "User Added to Local Administrators Group",
@@ -356,7 +388,10 @@
       "technique_name": "Create Account",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_new_username", "excalibur_pers_new_password"],
+      "required_tags": [
+        "excalibur_pers_new_username",
+        "excalibur_pers_new_password"
+      ],
       "command": "Write-Host '[START] T1136 - Create Account (local user account creation and deletion)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1136 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $username = '#{excalibur_pers_new_username}'; $password = '#{excalibur_pers_new_password}'; try { $existingUser = Get-LocalUser -Name $username -ErrorAction SilentlyContinue; if ($existingUser) { Write-Host ('[WARN] Account already exists, removing first: ' + $username); Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Start-Sleep 1 }; $secPwd = ConvertTo-SecureString $password -AsPlainText -Force; New-LocalUser -Name $username -Password $secPwd -FullName 'Morgana Test Account' -Description 'T1136 test - will be deleted' -AccountNeverExpires -PasswordNeverExpires -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Local user account created: ' + $username + ' - Event ID 4720 generated'); Start-Sleep 2; Remove-LocalUser -Name $username -ErrorAction SilentlyContinue; Write-Host ('[INFO] Account deleted: ' + $username + ' - Event ID 4726 generated'); Write-Host '[SUCCESS] T1136 - Local account created and deleted. Sentinel target: New Local User Account Created (Event ID 4720)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-LocalUser -Name $username -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-LocalUser -Name '#{excalibur_pers_new_username}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1136 cleanup: account deleted if still present'",
       "detection_rule": "New Local User Account Created",
@@ -372,7 +407,11 @@
       "technique_name": "BITS Jobs",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_temp_dir", "excalibur_pers_bits_job_name", "excalibur_pers_bits_url"],
+      "required_tags": [
+        "excalibur_pers_temp_dir",
+        "excalibur_pers_bits_job_name",
+        "excalibur_pers_bits_url"
+      ],
       "command": "Write-Host '[START] T1197 - BITS Jobs (Background Intelligent Transfer Service abuse)'; $tmpDir = '#{excalibur_pers_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $jobName = '#{excalibur_pers_bits_job_name}'; $bitsUrl = '#{excalibur_pers_bits_url}'; $destPath = Join-Path $tmpDir 'MorganaTest-BITS-download.html'; try { $existingJob = Get-BitsTransfer -Name $jobName -ErrorAction SilentlyContinue; if ($existingJob) { Remove-BitsTransfer -BitsJob $existingJob -ErrorAction SilentlyContinue }; $job = Start-BitsTransfer -Source $bitsUrl -Destination $destPath -DisplayName $jobName -Asynchronous -ErrorAction Stop; Write-Host ('[INFO] BITS job created: ' + $job.JobId + ' | Name: ' + $jobName + ' | State: ' + $job.JobState + ' | URL: ' + $bitsUrl); Start-Sleep 3; $job = Get-BitsTransfer -JobId $job.JobId -ErrorAction SilentlyContinue; if ($job) { Write-Host ('[INFO] BITS job state after 3s: ' + $job.JobState); Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue } else { Write-Host '[INFO] BITS job completed and auto-removed' }; Remove-Item $destPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1197 - BITS transfer job created and removed. Sentinel target: BITS job created for file transfer (MDE behavioral BITS abuse detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Get-BitsTransfer -Name $jobName -ErrorAction SilentlyContinue | Remove-BitsTransfer -ErrorAction SilentlyContinue; Remove-Item $destPath -ErrorAction SilentlyContinue }",
       "cleanup_command": "Get-BitsTransfer -Name '#{excalibur_pers_bits_job_name}' -ErrorAction SilentlyContinue | Remove-BitsTransfer -ErrorAction SilentlyContinue; Remove-Item (Join-Path '#{excalibur_pers_temp_dir}' 'MorganaTest-BITS-download.html') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1197 cleanup: BITS job and temp file removed if still present'",
       "detection_rule": "BITS job created for file transfer (BITS abuse detection)",
@@ -388,7 +427,10 @@
       "technique_name": "Create or Modify System Process",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_persist_svc_name", "excalibur_pers_persist_svc_binary"],
+      "required_tags": [
+        "excalibur_pers_persist_svc_name",
+        "excalibur_pers_persist_svc_binary"
+      ],
       "command": "Write-Host '[START] T1543 - Create or Modify System Process (service with Automatic startup for persistence)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1543 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $svcName = '#{excalibur_pers_persist_svc_name}'; $binPath = '#{excalibur_pers_persist_svc_binary}'; try { $null = & sc.exe delete $svcName 2>&1; Start-Sleep 1; New-Service -Name $svcName -BinaryPathName $binPath -StartupType Automatic -Description 'MorganaTest persistent service - will be removed' -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Persistent service created: ' + $svcName + ' | StartupType: Automatic | Binary: ' + $binPath + ' - Event ID 7045 generated'); Start-Sleep 2; $null = & sc.exe delete $svcName 2>&1; Write-Host '[SUCCESS] T1543 - Persistent Automatic service created and removed. Sentinel target: New Windows Service Created with Automatic Startup (Event ID 7045)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); $null = & sc.exe delete $svcName 2>&1 }",
       "cleanup_command": "$null = & sc.exe delete '#{excalibur_pers_persist_svc_name}' 2>&1; Write-Host '[INFO] T1543 cleanup: service removed if still present'",
       "detection_rule": "New Windows Service Created",
@@ -404,7 +446,10 @@
       "technique_name": "Event Triggered Execution",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_wmi_filter_name", "excalibur_pers_wmi_consumer_name"],
+      "required_tags": [
+        "excalibur_pers_wmi_filter_name",
+        "excalibur_pers_wmi_consumer_name"
+      ],
       "command": "Write-Host '[START] T1546 - Event Triggered Execution (WMI permanent event subscription)'; $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $isAdmin) { Write-Host '[ERROR] T1546 requires local Administrator or SYSTEM. Ensure Morgana agent runs with elevated privileges.'; exit 1 }; $filterName = '#{excalibur_pers_wmi_filter_name}'; $consumerName = '#{excalibur_pers_wmi_consumer_name}'; $q = [char]39; try { Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*' + $filterName + '*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + $consumerName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + $filterName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; $wqlQuery = 'SELECT * FROM __InstanceCreationEvent WITHIN 60 WHERE TargetInstance ISA ' + $q + 'Win32_Process' + $q + ' AND TargetInstance.Name = ' + $q + 'notepad.exe' + $q; $filter = Set-WmiInstance -Namespace root/subscription -Class __EventFilter -Arguments @{ Name = $filterName; EventNamespace = 'root/cimv2'; Query = $wqlQuery; QueryLanguage = 'WQL' } -ErrorAction Stop; Write-Host ('[INFO] WMI __EventFilter created: ' + $filterName); $consumer = Set-WmiInstance -Namespace root/subscription -Class CommandLineEventConsumer -Arguments @{ Name = $consumerName; CommandLineTemplate = 'cmd.exe /c whoami > NUL' } -ErrorAction Stop; Write-Host ('[INFO] WMI CommandLineEventConsumer created: ' + $consumerName); $binding = Set-WmiInstance -Namespace root/subscription -Class __FilterToConsumerBinding -Arguments @{ Filter = $filter; Consumer = $consumer } -ErrorAction Stop; Write-Host '[INFO] WMI __FilterToConsumerBinding created - subscription is live (Event ID 5861 in Microsoft-Windows-WMI-Activity/Operational)'; Start-Sleep 2; Remove-WmiObject -InputObject $binding -ErrorAction SilentlyContinue; Remove-WmiObject -InputObject $consumer -ErrorAction SilentlyContinue; Remove-WmiObject -InputObject $filter -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1546 - WMI permanent event subscription created and removed. Sentinel target: WMI Event Subscription (Event ID 5861 / MDE WMI persistence behavioral detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*' + $filterName + '*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + $consumerName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + $filterName + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue }",
       "cleanup_command": "$q = [char]39; Get-WMIObject -Namespace root/subscription -Class __FilterToConsumerBinding -ErrorAction SilentlyContinue | Where-Object { $_.Filter -like ('*#{excalibur_pers_wmi_filter_name}*') } | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class CommandLineEventConsumer -Filter ('Name = ' + $q + '#{excalibur_pers_wmi_consumer_name}' + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Get-WMIObject -Namespace root/subscription -Class __EventFilter -Filter ('Name = ' + $q + '#{excalibur_pers_wmi_filter_name}' + $q) -ErrorAction SilentlyContinue | Remove-WmiObject -ErrorAction SilentlyContinue; Write-Host '[INFO] T1546 cleanup: WMI subscription objects removed if still present'",
       "detection_rule": "WMI Event Subscription",
@@ -420,7 +465,10 @@
       "technique_name": "Boot or Logon Autostart Execution",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_runkey_name", "excalibur_pers_runkey_value"],
+      "required_tags": [
+        "excalibur_pers_runkey_name",
+        "excalibur_pers_runkey_value"
+      ],
       "command": "Write-Host '[START] T1547 - Boot or Logon Autostart Execution (Registry Run Key)'; $regPath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'; $valueName = '#{excalibur_pers_runkey_name}'; $valueData = '#{excalibur_pers_runkey_value}'; try { $existing = Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; if ($existing) { Write-Host ('[WARN] Run key value already exists: ' + $existing.$valueName + ' - aborting to prevent overwrite'); exit 1 }; New-ItemProperty -Path $regPath -Name $valueName -Value $valueData -PropertyType String -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Autostart Run key set: ' + $regPath + ' -> ' + $valueName + ' = ' + $valueData); Start-Sleep 2; Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1547 - Registry Run key created and removed. Sentinel target: Registry persistence via Run Keys or Startup Folder' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name '#{excalibur_pers_runkey_name}' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1547 cleanup: Run key value removed if still present'",
       "detection_rule": "Registry persistence via Run Keys or Startup Folder",
@@ -436,7 +484,10 @@
       "technique_name": "Hijack Execution Flow",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_temp_dir", "excalibur_pers_dll_name"],
+      "required_tags": [
+        "excalibur_pers_temp_dir",
+        "excalibur_pers_dll_name"
+      ],
       "command": "Write-Host '[START] T1574 - Hijack Execution Flow (DLL search order hijacking simulation)'; $tmpDir = '#{excalibur_pers_temp_dir}'; if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null }; $dllName = '#{excalibur_pers_dll_name}'; $dllPath = Join-Path $tmpDir $dllName; try { [byte[]]$mzHeader = 0x4D,0x5A,0x90,0x00,0x03,0x00,0x00,0x00; [System.IO.File]::WriteAllBytes($dllPath, $mzHeader); Write-Host ('[INFO] Fake DLL planted at: ' + $dllPath + ' (MZ/PE header written - simulates DLL placed in hijacked search path location)'); Write-Host ('[INFO] DLL name: ' + $dllName + ' | Directory: ' + $tmpDir + ' (simulated user-writable PATH entry - searched before system32)'); Start-Sleep 2; Remove-Item $dllPath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1574 - DLL search order hijacking file created and removed. Sentinel target: DLL planted in non-standard path (MDE behavioral DLL hijacking detection)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item $dllPath -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-Item (Join-Path '#{excalibur_pers_temp_dir}' '#{excalibur_pers_dll_name}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1574 cleanup: planted DLL file removed if still present'",
       "detection_rule": "DLL planted in non-standard path (DLL search order hijacking)",
@@ -452,10 +503,1101 @@
       "technique_name": "Server Software Component",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pers_webshell_filename", "excalibur_pers_wwwroot_path"],
+      "required_tags": [
+        "excalibur_pers_webshell_filename",
+        "excalibur_pers_wwwroot_path"
+      ],
       "command": "Write-Host '[START] T1505 - Server Software Component (web shell simulation)'; $wwwroot = '#{excalibur_pers_wwwroot_path}'; $filename = '#{excalibur_pers_webshell_filename}'; try { $iisStatus = Get-Service -Name 'W3SVC' -ErrorAction SilentlyContinue; if ($iisStatus) { Write-Host ('[INFO] IIS (W3SVC) status: ' + $iisStatus.Status) } else { Write-Host '[WARN] IIS (W3SVC) service not found on this machine. File will be created in wwwroot path for detection telemetry only.' }; if (-not (Test-Path $wwwroot)) { Write-Host ('[INFO] Creating wwwroot directory: ' + $wwwroot); New-Item -ItemType Directory -Path $wwwroot -Force -ErrorAction Stop | Out-Null }; $filePath = Join-Path $wwwroot $filename; $webShellContent = '<%@ Page Language=''C#'' %><% Response.Write(''MorganaTest-T1505''); %>'; Set-Content -Path $filePath -Value $webShellContent -Encoding UTF8 -ErrorAction Stop; Write-Host ('[INFO] Web shell test file created: ' + $filePath + ' - MDE file creation event in IIS web directory generated'); Start-Sleep 2; Remove-Item $filePath -ErrorAction SilentlyContinue; Write-Host '[SUCCESS] T1505 - Web shell file created and removed. Sentinel target: Possible web shell detected (MDE file creation in IIS web root)' } catch { Write-Host ('[ERROR] ' + $_.Exception.Message); Remove-Item (Join-Path $wwwroot $filename) -ErrorAction SilentlyContinue }",
       "cleanup_command": "Remove-Item (Join-Path '#{excalibur_pers_wwwroot_path}' '#{excalibur_pers_webshell_filename}') -ErrorAction SilentlyContinue; Write-Host '[INFO] T1505 cleanup: web shell file removed if still present'",
       "detection_rule": "Possible web shell detected",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1053.005-Scheduled Task",
+      "name": "Excalibur - Persistence-T1053.005-Scheduled Task",
+      "description": "Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code.",
+      "tactic": "Persistence",
+      "tcode": "T1053.005",
+      "technique_name": "Scheduled Task",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1053.005 - Scheduled Task'; Write-Host '[INFO] Emulating T1053.005 (Scheduled Task) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1053.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1053.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Scheduled Task (T1053.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1205.002-Socket Filters",
+      "name": "Excalibur - Persistence-T1205.002-Socket Filters",
+      "description": "Adversaries may attach filters to a network socket to monitor then activate backdoors used for persistence or command and control.",
+      "tactic": "Persistence",
+      "tcode": "T1205.002",
+      "technique_name": "Socket Filters",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205.002 - Socket Filters'; Write-Host '[INFO] Emulating T1205.002 (Socket Filters) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1205.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Socket Filters (T1205.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.013-PowerShell Profile",
+      "name": "Excalibur - Persistence-T1546.013-PowerShell Profile",
+      "description": "Adversaries may gain persistence and elevate privileges by executing malicious content triggered by PowerShell profiles.",
+      "tactic": "Persistence",
+      "tcode": "T1546.013",
+      "technique_name": "PowerShell Profile",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.013 - PowerShell Profile'; Write-Host '[INFO] Emulating T1546.013 (PowerShell Profile) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.013 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.013 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect PowerShell Profile (T1546.013)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1133-External Remote Services",
+      "name": "Excalibur - Persistence-T1133-External Remote Services",
+      "description": "Adversaries may leverage external-facing remote services to initially access and/or persist within a network.",
+      "tactic": "Persistence",
+      "tcode": "T1133",
+      "technique_name": "External Remote Services",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1133 - External Remote Services'; Write-Host '[INFO] Emulating T1133 (External Remote Services) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1133 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1133 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect External Remote Services (T1133)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1542.001-System Firmware",
+      "name": "Excalibur - Persistence-T1542.001-System Firmware",
+      "description": "Adversaries may modify system firmware to persist on systems.The BIOS (Basic Input/Output System) and The Unified Extensible Firmware Interface (UEFI) or Extensible Firmware Interface (EFI) are examples of system firmware that operate as the software interface between the oper...",
+      "tactic": "Persistence",
+      "tcode": "T1542.001",
+      "technique_name": "System Firmware",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1542.001 - System Firmware'; Write-Host '[INFO] Emulating T1542.001 (System Firmware) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1542.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1542.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect System Firmware (T1542.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1542.003-Bootkit",
+      "name": "Excalibur - Persistence-T1542.003-Bootkit",
+      "description": "Adversaries may use bootkits to persist on systems.",
+      "tactic": "Persistence",
+      "tcode": "T1542.003",
+      "technique_name": "Bootkit",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1542.003 - Bootkit'; Write-Host '[INFO] Emulating T1542.003 (Bootkit) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1542.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1542.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Bootkit (T1542.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.014-Active Setup",
+      "name": "Excalibur - Persistence-T1547.014-Active Setup",
+      "description": "Adversaries may achieve persistence by adding a Registry key to the Active Setup of the local machine.",
+      "tactic": "Persistence",
+      "tcode": "T1547.014",
+      "technique_name": "Active Setup",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.014 - Active Setup'; Write-Host '[INFO] Emulating T1547.014 (Active Setup) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.014 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.014 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Active Setup (T1547.014)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1176.001-Browser Extensions",
+      "name": "Excalibur - Persistence-T1176.001-Browser Extensions",
+      "description": "Adversaries may abuse internet browser extensions to establish persistent access to victim systems.",
+      "tactic": "Persistence",
+      "tcode": "T1176.001",
+      "technique_name": "Browser Extensions",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1176.001 - Browser Extensions'; Write-Host '[INFO] Emulating T1176.001 (Browser Extensions) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1176.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1176.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Browser Extensions (T1176.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1543.003-Windows Service",
+      "name": "Excalibur - Persistence-T1543.003-Windows Service",
+      "description": "Adversaries may create or modify Windows services to repeatedly execute malicious payloads as part of persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1543.003",
+      "technique_name": "Windows Service",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1543.003 - Windows Service'; Write-Host '[INFO] Emulating T1543.003 (Windows Service) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1543.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1543.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Windows Service (T1543.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137-Office Application Startup",
+      "name": "Excalibur - Persistence-T1137-Office Application Startup",
+      "description": "Adversaries may leverage Microsoft Office-based applications for persistence between startups.",
+      "tactic": "Persistence",
+      "tcode": "T1137",
+      "technique_name": "Office Application Startup",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137 - Office Application Startup'; Write-Host '[INFO] Emulating T1137 (Office Application Startup) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Office Application Startup (T1137)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.012-Print Processors",
+      "name": "Excalibur - Persistence-T1547.012-Print Processors",
+      "description": "Adversaries may abuse print processors to run malicious DLLs during system boot for persistence and/or privilege escalation.",
+      "tactic": "Persistence",
+      "tcode": "T1547.012",
+      "technique_name": "Print Processors",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.012 - Print Processors'; Write-Host '[INFO] Emulating T1547.012 (Print Processors) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.012 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.012 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Print Processors (T1547.012)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.006-Add-ins",
+      "name": "Excalibur - Persistence-T1137.006-Add-ins",
+      "description": "Adversaries may abuse Microsoft Office add-ins to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.006",
+      "technique_name": "Add-ins",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.006 - Add-ins'; Write-Host '[INFO] Emulating T1137.006 (Add-ins) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.006 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.006 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Add-ins (T1137.006)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505.002-Transport Agent",
+      "name": "Excalibur - Persistence-T1505.002-Transport Agent",
+      "description": "Adversaries may abuse Microsoft transport agents to establish persistent access to systems.",
+      "tactic": "Persistence",
+      "tcode": "T1505.002",
+      "technique_name": "Transport Agent",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1505.002 - Transport Agent'; Write-Host '[INFO] Emulating T1505.002 (Transport Agent) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1505.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1505.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Transport Agent (T1505.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.002-Password Filter DLL",
+      "name": "Excalibur - Persistence-T1556.002-Password Filter DLL",
+      "description": "Adversaries may register malicious password filter dynamic link libraries (DLLs) into the authentication process to acquire user credentials as they are validated.",
+      "tactic": "Persistence",
+      "tcode": "T1556.002",
+      "technique_name": "Password Filter DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.002 - Password Filter DLL'; Write-Host '[INFO] Emulating T1556.002 (Password Filter DLL) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Password Filter DLL (T1556.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505.005-Terminal Services DLL",
+      "name": "Excalibur - Persistence-T1505.005-Terminal Services DLL",
+      "description": "Adversaries may abuse components of Terminal Services to enable persistent access to systems.",
+      "tactic": "Persistence",
+      "tcode": "T1505.005",
+      "technique_name": "Terminal Services DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1505.005 - Terminal Services DLL'; Write-Host '[INFO] Emulating T1505.005 (Terminal Services DLL) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1505.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1505.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Terminal Services DLL (T1505.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1176-Software Extensions",
+      "name": "Excalibur - Persistence-T1176-Software Extensions",
+      "description": "Adversaries may abuse software extensions to establish persistent access to victim systems.",
+      "tactic": "Persistence",
+      "tcode": "T1176",
+      "technique_name": "Software Extensions",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1176 - Software Extensions'; Write-Host '[INFO] Emulating T1176 (Software Extensions) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1176 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1176 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Software Extensions (T1176)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.005-Outlook Rules",
+      "name": "Excalibur - Persistence-T1137.005-Outlook Rules",
+      "description": "Adversaries may abuse Microsoft Outlook rules to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.005",
+      "technique_name": "Outlook Rules",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.005 - Outlook Rules'; Write-Host '[INFO] Emulating T1137.005 (Outlook Rules) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Outlook Rules (T1137.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1098.007-Additional Local or Domain Groups",
+      "name": "Excalibur - Persistence-T1098.007-Additional Local or Domain Groups",
+      "description": "An adversary may add additional local or domain groups to an adversary-controlled account to maintain persistent access to a system or domain.",
+      "tactic": "Persistence",
+      "tcode": "T1098.007",
+      "technique_name": "Additional Local or Domain Groups",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.007 - Additional Local or Domain Groups'; Write-Host '[INFO] Emulating T1098.007 (Additional Local or Domain Groups) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1098.007 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.007 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Additional Local or Domain Groups (T1098.007)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.011-Application Shimming",
+      "name": "Excalibur - Persistence-T1546.011-Application Shimming",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by application shims.",
+      "tactic": "Persistence",
+      "tcode": "T1546.011",
+      "technique_name": "Application Shimming",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.011 - Application Shimming'; Write-Host '[INFO] Emulating T1546.011 (Application Shimming) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.011 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.011 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Application Shimming (T1546.011)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.010-Port Monitors",
+      "name": "Excalibur - Persistence-T1547.010-Port Monitors",
+      "description": "Adversaries may use port monitors to run an adversary supplied DLL during system boot for persistence or privilege escalation.",
+      "tactic": "Persistence",
+      "tcode": "T1547.010",
+      "technique_name": "Port Monitors",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.010 - Port Monitors'; Write-Host '[INFO] Emulating T1547.010 (Port Monitors) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.010 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.010 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Port Monitors (T1547.010)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1205-Traffic Signaling",
+      "name": "Excalibur - Persistence-T1205-Traffic Signaling",
+      "description": "Adversaries may use traffic signaling to hide open ports or other malicious functionality used for persistence or command and control.",
+      "tactic": "Persistence",
+      "tcode": "T1205",
+      "technique_name": "Traffic Signaling",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205 - Traffic Signaling'; Write-Host '[INFO] Emulating T1205 (Traffic Signaling) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1205 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Traffic Signaling (T1205)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.009-Shortcut Modification",
+      "name": "Excalibur - Persistence-T1547.009-Shortcut Modification",
+      "description": "Adversaries may create or modify shortcuts that can execute a program during system boot or user login.",
+      "tactic": "Persistence",
+      "tcode": "T1547.009",
+      "technique_name": "Shortcut Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.009 - Shortcut Modification'; Write-Host '[INFO] Emulating T1547.009 (Shortcut Modification) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.009 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.009 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Shortcut Modification (T1547.009)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.005-Security Support Provider",
+      "name": "Excalibur - Persistence-T1547.005-Security Support Provider",
+      "description": "Adversaries may abuse security support providers (SSPs) to execute DLLs when the system boots.",
+      "tactic": "Persistence",
+      "tcode": "T1547.005",
+      "technique_name": "Security Support Provider",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.005 - Security Support Provider'; Write-Host '[INFO] Emulating T1547.005 (Security Support Provider) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Security Support Provider (T1547.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.007-Hybrid Identity",
+      "name": "Excalibur - Persistence-T1556.007-Hybrid Identity",
+      "description": "Adversaries may patch, modify, or otherwise backdoor cloud authentication processes that are tied to on-premises user identities in order to bypass typical authentication mechanisms, access credentials, and enable persistent access to accounts.",
+      "tactic": "Persistence",
+      "tcode": "T1556.007",
+      "technique_name": "Hybrid Identity",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.007 - Hybrid Identity'; Write-Host '[INFO] Emulating T1556.007 (Hybrid Identity) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.007 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.007 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Hybrid Identity (T1556.007)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505.003-Web Shell",
+      "name": "Excalibur - Persistence-T1505.003-Web Shell",
+      "description": "Adversaries may backdoor web servers with web shells to establish persistent access to systems.",
+      "tactic": "Persistence",
+      "tcode": "T1505.003",
+      "technique_name": "Web Shell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1505.003 - Web Shell'; Write-Host '[INFO] Emulating T1505.003 (Web Shell) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1505.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1505.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Web Shell (T1505.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1078.001-Default Accounts",
+      "name": "Excalibur - Persistence-T1078.001-Default Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a default account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Persistence",
+      "tcode": "T1078.001",
+      "technique_name": "Default Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.001 - Default Accounts'; Write-Host '[INFO] Emulating T1078.001 (Default Accounts) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1078.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Default Accounts (T1078.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.003-Time Providers",
+      "name": "Excalibur - Persistence-T1547.003-Time Providers",
+      "description": "Adversaries may abuse time providers to execute DLLs when the system boots.",
+      "tactic": "Persistence",
+      "tcode": "T1547.003",
+      "technique_name": "Time Providers",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.003 - Time Providers'; Write-Host '[INFO] Emulating T1547.003 (Time Providers) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Time Providers (T1547.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1136.001-Local Account",
+      "name": "Excalibur - Persistence-T1136.001-Local Account",
+      "description": "Adversaries may create a local account to maintain access to victim systems.",
+      "tactic": "Persistence",
+      "tcode": "T1136.001",
+      "technique_name": "Local Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1136.001 - Local Account'; Write-Host '[INFO] Emulating T1136.001 (Local Account) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1136.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1136.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Account (T1136.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1176.002-IDE Extensions",
+      "name": "Excalibur - Persistence-T1176.002-IDE Extensions",
+      "description": "Adversaries may abuse an integrated development environment (IDE) extension to establish persistent access to victim systems.",
+      "tactic": "Persistence",
+      "tcode": "T1176.002",
+      "technique_name": "IDE Extensions",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1176.002 - IDE Extensions'; Write-Host '[INFO] Emulating T1176.002 (IDE Extensions) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1176.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1176.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect IDE Extensions (T1176.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.004-Winlogon Helper DLL",
+      "name": "Excalibur - Persistence-T1547.004-Winlogon Helper DLL",
+      "description": "Adversaries may abuse features of Winlogon to execute DLLs and/or executables when a user logs in.",
+      "tactic": "Persistence",
+      "tcode": "T1547.004",
+      "technique_name": "Winlogon Helper DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.004 - Winlogon Helper DLL'; Write-Host '[INFO] Emulating T1547.004 (Winlogon Helper DLL) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Winlogon Helper DLL (T1547.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.012-Image File Execution Options Injection",
+      "name": "Excalibur - Persistence-T1546.012-Image File Execution Options Injection",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by Image File Execution Options (IFEO) debuggers.",
+      "tactic": "Persistence",
+      "tcode": "T1546.012",
+      "technique_name": "Image File Execution Options Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.012 - Image File Execution Options Injection'; Write-Host '[INFO] Emulating T1546.012 (Image File Execution Options Injection) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.012 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.012 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Image File Execution Options Injection (T1546.012)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.008-Accessibility Features",
+      "name": "Excalibur - Persistence-T1546.008-Accessibility Features",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by accessibility features.",
+      "tactic": "Persistence",
+      "tcode": "T1546.008",
+      "technique_name": "Accessibility Features",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.008 - Accessibility Features'; Write-Host '[INFO] Emulating T1546.008 (Accessibility Features) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Accessibility Features (T1546.008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1136.002-Domain Account",
+      "name": "Excalibur - Persistence-T1136.002-Domain Account",
+      "description": "Adversaries may create a domain account to maintain access to victim systems.",
+      "tactic": "Persistence",
+      "tcode": "T1136.002",
+      "technique_name": "Domain Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1136.002 - Domain Account'; Write-Host '[INFO] Emulating T1136.002 (Domain Account) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1136.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1136.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Account (T1136.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1542.002-Component Firmware",
+      "name": "Excalibur - Persistence-T1542.002-Component Firmware",
+      "description": "Adversaries may modify component firmware to persist on systems.",
+      "tactic": "Persistence",
+      "tcode": "T1542.002",
+      "technique_name": "Component Firmware",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1542.002 - Component Firmware'; Write-Host '[INFO] Emulating T1542.002 (Component Firmware) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1542.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1542.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Component Firmware (T1542.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.001-Office Template Macros",
+      "name": "Excalibur - Persistence-T1137.001-Office Template Macros",
+      "description": "Adversaries may abuse Microsoft Office templates to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.001",
+      "technique_name": "Office Template Macros",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.001 - Office Template Macros'; Write-Host '[INFO] Emulating T1137.001 (Office Template Macros) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Office Template Macros (T1137.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.009-AppCert DLLs",
+      "name": "Excalibur - Persistence-T1546.009-AppCert DLLs",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by AppCert DLLs loaded into processes.",
+      "tactic": "Persistence",
+      "tcode": "T1546.009",
+      "technique_name": "AppCert DLLs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.009 - AppCert DLLs'; Write-Host '[INFO] Emulating T1546.009 (AppCert DLLs) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.009 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.009 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect AppCert DLLs (T1546.009)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1098.005-Device Registration",
+      "name": "Excalibur - Persistence-T1098.005-Device Registration",
+      "description": "Adversaries may register a device to an adversary-controlled account.",
+      "tactic": "Persistence",
+      "tcode": "T1098.005",
+      "technique_name": "Device Registration",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.005 - Device Registration'; Write-Host '[INFO] Emulating T1098.005 (Device Registration) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1098.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Device Registration (T1098.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1542-Pre-OS Boot",
+      "name": "Excalibur - Persistence-T1542-Pre-OS Boot",
+      "description": "Adversaries may abuse Pre-OS Boot mechanisms as a way to establish persistence on a system.",
+      "tactic": "Persistence",
+      "tcode": "T1542",
+      "technique_name": "Pre-OS Boot",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1542 - Pre-OS Boot'; Write-Host '[INFO] Emulating T1542 (Pre-OS Boot) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1542 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1542 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Pre-OS Boot (T1542)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1205.001-Port Knocking",
+      "name": "Excalibur - Persistence-T1205.001-Port Knocking",
+      "description": "Adversaries may use port knocking to hide open ports used for persistence or command and control.",
+      "tactic": "Persistence",
+      "tcode": "T1205.001",
+      "technique_name": "Port Knocking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205.001 - Port Knocking'; Write-Host '[INFO] Emulating T1205.001 (Port Knocking) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1205.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Port Knocking (T1205.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.008-Network Provider DLL",
+      "name": "Excalibur - Persistence-T1556.008-Network Provider DLL",
+      "description": "Adversaries may register malicious network provider dynamic link libraries (DLLs) to capture cleartext user credentials during the authentication process.",
+      "tactic": "Persistence",
+      "tcode": "T1556.008",
+      "technique_name": "Network Provider DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.008 - Network Provider DLL'; Write-Host '[INFO] Emulating T1556.008 (Network Provider DLL) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Network Provider DLL (T1556.008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.003-Windows Management Instrumentation Event Subscription",
+      "name": "Excalibur - Persistence-T1546.003-Windows Management Instrumentation Event Subscription",
+      "description": "Adversaries may establish persistence and elevate privileges by executing malicious content triggered by a Windows Management Instrumentation (WMI) event subscription.",
+      "tactic": "Persistence",
+      "tcode": "T1546.003",
+      "technique_name": "Windows Management Instrumentation Event Subscription",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.003 - Windows Management Instrumentation Event Subscription'; Write-Host '[INFO] Emulating T1546.003 (Windows Management Instrumentation Event Subscription) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Windows Management Instrumentation Event Subscription (T1546.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1554-Compromise Host Software Binary",
+      "name": "Excalibur - Persistence-T1554-Compromise Host Software Binary",
+      "description": "Adversaries may modify host software binaries to establish persistent access to systems.",
+      "tactic": "Persistence",
+      "tcode": "T1554",
+      "technique_name": "Compromise Host Software Binary",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1554 - Compromise Host Software Binary'; Write-Host '[INFO] Emulating T1554 (Compromise Host Software Binary) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1554 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1554 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Compromise Host Software Binary (T1554)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.001-Change Default File Association",
+      "name": "Excalibur - Persistence-T1546.001-Change Default File Association",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by a file type association.",
+      "tactic": "Persistence",
+      "tcode": "T1546.001",
+      "technique_name": "Change Default File Association",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.001 - Change Default File Association'; Write-Host '[INFO] Emulating T1546.001 (Change Default File Association) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Change Default File Association (T1546.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.001-Registry Run Keys / Startup Folder",
+      "name": "Excalibur - Persistence-T1547.001-Registry Run Keys / Startup Folder",
+      "description": "Adversaries may achieve persistence by adding a program to a startup folder or referencing it with a Registry run key.",
+      "tactic": "Persistence",
+      "tcode": "T1547.001",
+      "technique_name": "Registry Run Keys / Startup Folder",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.001 - Registry Run Keys / Startup Folder'; Write-Host '[INFO] Emulating T1547.001 (Registry Run Keys / Startup Folder) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Registry Run Keys / Startup Folder (T1547.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.003-Outlook Forms",
+      "name": "Excalibur - Persistence-T1137.003-Outlook Forms",
+      "description": "Adversaries may abuse Microsoft Outlook forms to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.003",
+      "technique_name": "Outlook Forms",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.003 - Outlook Forms'; Write-Host '[INFO] Emulating T1137.003 (Outlook Forms) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Outlook Forms (T1137.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.006-Multi-Factor Authentication",
+      "name": "Excalibur - Persistence-T1556.006-Multi-Factor Authentication",
+      "description": "Adversaries may disable or modify multi-factor authentication (MFA) mechanisms to enable persistent access to compromised accounts.",
+      "tactic": "Persistence",
+      "tcode": "T1556.006",
+      "technique_name": "Multi-Factor Authentication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.006 - Multi-Factor Authentication'; Write-Host '[INFO] Emulating T1556.006 (Multi-Factor Authentication) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.006 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.006 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Multi-Factor Authentication (T1556.006)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505.004-IIS Components",
+      "name": "Excalibur - Persistence-T1505.004-IIS Components",
+      "description": "Adversaries may install malicious components that run on Internet Information Services (IIS) web servers to establish persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1505.004",
+      "technique_name": "IIS Components",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1505.004 - IIS Components'; Write-Host '[INFO] Emulating T1505.004 (IIS Components) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1505.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1505.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect IIS Components (T1505.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.002-Authentication Package",
+      "name": "Excalibur - Persistence-T1547.002-Authentication Package",
+      "description": "Adversaries may abuse authentication packages to execute DLLs when the system boots.",
+      "tactic": "Persistence",
+      "tcode": "T1547.002",
+      "technique_name": "Authentication Package",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.002 - Authentication Package'; Write-Host '[INFO] Emulating T1547.002 (Authentication Package) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Authentication Package (T1547.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.015-Component Object Model Hijacking",
+      "name": "Excalibur - Persistence-T1546.015-Component Object Model Hijacking",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by hijacked references to Component Object Model (COM) objects.",
+      "tactic": "Persistence",
+      "tcode": "T1546.015",
+      "technique_name": "Component Object Model Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.015 - Component Object Model Hijacking'; Write-Host '[INFO] Emulating T1546.015 (Component Object Model Hijacking) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.015 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.015 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Component Object Model Hijacking (T1546.015)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.004-Outlook Home Page",
+      "name": "Excalibur - Persistence-T1137.004-Outlook Home Page",
+      "description": "Adversaries may abuse Microsoft Outlook's Home Page feature to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.004",
+      "technique_name": "Outlook Home Page",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.004 - Outlook Home Page'; Write-Host '[INFO] Emulating T1137.004 (Outlook Home Page) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Outlook Home Page (T1137.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1078.002-Domain Accounts",
+      "name": "Excalibur - Persistence-T1078.002-Domain Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a domain account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Persistence",
+      "tcode": "T1078.002",
+      "technique_name": "Domain Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.002 - Domain Accounts'; Write-Host '[INFO] Emulating T1078.002 (Domain Accounts) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1078.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Accounts (T1078.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.018-Python Startup Hooks",
+      "name": "Excalibur - Persistence-T1546.018-Python Startup Hooks",
+      "description": "Adversaries may achieve persistence by leveraging Python’s startup mechanisms, including path configuration (`.pth`) files and the `sitecustomize.py` or `usercustomize.py` modules.",
+      "tactic": "Persistence",
+      "tcode": "T1546.018",
+      "technique_name": "Python Startup Hooks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.018 - Python Startup Hooks'; Write-Host '[INFO] Emulating T1546.018 (Python Startup Hooks) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.018 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.018 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Python Startup Hooks (T1546.018)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1037.003-Network Logon Script",
+      "name": "Excalibur - Persistence-T1037.003-Network Logon Script",
+      "description": "Adversaries may use network logon scripts automatically executed at logon initialization to establish persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1037.003",
+      "technique_name": "Network Logon Script",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1037.003 - Network Logon Script'; Write-Host '[INFO] Emulating T1037.003 (Network Logon Script) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1037.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1037.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Network Logon Script (T1037.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.010-AppInit DLLs",
+      "name": "Excalibur - Persistence-T1546.010-AppInit DLLs",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by AppInit DLLs loaded into processes.",
+      "tactic": "Persistence",
+      "tcode": "T1546.010",
+      "technique_name": "AppInit DLLs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.010 - AppInit DLLs'; Write-Host '[INFO] Emulating T1546.010 (AppInit DLLs) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.010 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.010 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect AppInit DLLs (T1546.010)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.002-Screensaver",
+      "name": "Excalibur - Persistence-T1546.002-Screensaver",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by user inactivity.",
+      "tactic": "Persistence",
+      "tcode": "T1546.002",
+      "technique_name": "Screensaver",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.002 - Screensaver'; Write-Host '[INFO] Emulating T1546.002 (Screensaver) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Screensaver (T1546.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.001-Domain Controller Authentication",
+      "name": "Excalibur - Persistence-T1556.001-Domain Controller Authentication",
+      "description": "Adversaries may patch the authentication process on a domain controller to bypass the typical authentication mechanisms and enable access to accounts.",
+      "tactic": "Persistence",
+      "tcode": "T1556.001",
+      "technique_name": "Domain Controller Authentication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.001 - Domain Controller Authentication'; Write-Host '[INFO] Emulating T1556.001 (Domain Controller Authentication) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Controller Authentication (T1556.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1556.005-Reversible Encryption",
+      "name": "Excalibur - Persistence-T1556.005-Reversible Encryption",
+      "description": "An adversary may abuse Active Directory authentication encryption properties to gain access to credentials on Windows systems.",
+      "tactic": "Persistence",
+      "tcode": "T1556.005",
+      "technique_name": "Reversible Encryption",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1556.005 - Reversible Encryption'; Write-Host '[INFO] Emulating T1556.005 (Reversible Encryption) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1556.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1556.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Reversible Encryption (T1556.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.016-Installer Packages",
+      "name": "Excalibur - Persistence-T1546.016-Installer Packages",
+      "description": "Adversaries may establish persistence and elevate privileges by using an installer to trigger the execution of malicious content.",
+      "tactic": "Persistence",
+      "tcode": "T1546.016",
+      "technique_name": "Installer Packages",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.016 - Installer Packages'; Write-Host '[INFO] Emulating T1546.016 (Installer Packages) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.016 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.016 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Installer Packages (T1546.016)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1668-Exclusive Control",
+      "name": "Excalibur - Persistence-T1668-Exclusive Control",
+      "description": "Adversaries who successfully compromise a system may attempt to maintain persistence by “closing the door” behind them – in other words, by preventing other threat actors from initially accessing or maintaining a foothold on the same system.",
+      "tactic": "Persistence",
+      "tcode": "T1668",
+      "technique_name": "Exclusive Control",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1668 - Exclusive Control'; Write-Host '[INFO] Emulating T1668 (Exclusive Control) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1668 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1668 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Exclusive Control (T1668)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1098.002-Additional Email Delegate Permissions",
+      "name": "Excalibur - Persistence-T1098.002-Additional Email Delegate Permissions",
+      "description": "Adversaries may grant additional permission levels to maintain persistent access to an adversary-controlled email account.",
+      "tactic": "Persistence",
+      "tcode": "T1098.002",
+      "technique_name": "Additional Email Delegate Permissions",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.002 - Additional Email Delegate Permissions'; Write-Host '[INFO] Emulating T1098.002 (Additional Email Delegate Permissions) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1098.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Additional Email Delegate Permissions (T1098.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1653-Power Settings",
+      "name": "Excalibur - Persistence-T1653-Power Settings",
+      "description": "Adversaries may impair a system's ability to hibernate, reboot, or shut down in order to extend access to infected machines.",
+      "tactic": "Persistence",
+      "tcode": "T1653",
+      "technique_name": "Power Settings",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1653 - Power Settings'; Write-Host '[INFO] Emulating T1653 (Power Settings) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1653 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1653 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Power Settings (T1653)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1037.001-Logon Script (Windows)",
+      "name": "Excalibur - Persistence-T1037.001-Logon Script (Windows)",
+      "description": "Adversaries may use Windows logon scripts automatically executed at logon initialization to establish persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1037.001",
+      "technique_name": "Logon Script (Windows)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1037.001 - Logon Script (Windows)'; Write-Host '[INFO] Emulating T1037.001 (Logon Script (Windows)) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1037.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1037.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Logon Script (Windows) (T1037.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1137.002-Office Test",
+      "name": "Excalibur - Persistence-T1137.002-Office Test",
+      "description": "Adversaries may abuse the Microsoft Office \"Office Test\" Registry key to obtain persistence on a compromised system.",
+      "tactic": "Persistence",
+      "tcode": "T1137.002",
+      "technique_name": "Office Test",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1137.002 - Office Test'; Write-Host '[INFO] Emulating T1137.002 (Office Test) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1137.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1137.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Office Test (T1137.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1547.008-LSASS Driver",
+      "name": "Excalibur - Persistence-T1547.008-LSASS Driver",
+      "description": "Adversaries may modify or add LSASS drivers to obtain persistence on compromised systems.",
+      "tactic": "Persistence",
+      "tcode": "T1547.008",
+      "technique_name": "LSASS Driver",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.008 - LSASS Driver'; Write-Host '[INFO] Emulating T1547.008 (LSASS Driver) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1547.008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect LSASS Driver (T1547.008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1053.002-At",
+      "name": "Excalibur - Persistence-T1053.002-At",
+      "description": "Adversaries may abuse the at utility to perform task scheduling for initial or recurring execution of malicious code.",
+      "tactic": "Persistence",
+      "tcode": "T1053.002",
+      "technique_name": "At",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1053.002 - At'; Write-Host '[INFO] Emulating T1053.002 (At) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1053.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1053.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect At (T1053.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1546.007-Netsh Helper DLL",
+      "name": "Excalibur - Persistence-T1546.007-Netsh Helper DLL",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by Netsh Helper DLLs.",
+      "tactic": "Persistence",
+      "tcode": "T1546.007",
+      "technique_name": "Netsh Helper DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.007 - Netsh Helper DLL'; Write-Host '[INFO] Emulating T1546.007 (Netsh Helper DLL) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1546.007 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.007 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Netsh Helper DLL (T1546.007)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1505.001-SQL Stored Procedures",
+      "name": "Excalibur - Persistence-T1505.001-SQL Stored Procedures",
+      "description": "Adversaries may abuse SQL stored procedures to establish persistent access to systems.",
+      "tactic": "Persistence",
+      "tcode": "T1505.001",
+      "technique_name": "SQL Stored Procedures",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1505.001 - SQL Stored Procedures'; Write-Host '[INFO] Emulating T1505.001 (SQL Stored Procedures) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1505.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1505.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect SQL Stored Procedures (T1505.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Persistence-T1078.003-Local Accounts",
+      "name": "Excalibur - Persistence-T1078.003-Local Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a local account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Persistence",
+      "tcode": "T1078.003",
+      "technique_name": "Local Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.003 - Local Accounts'; Write-Host '[INFO] Emulating T1078.003 (Local Accounts) tactic=Persistence platform=windows'; Write-Host '[SUCCESS] T1078.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Accounts (T1078.003)",
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "package": "excalibur"
     }
@@ -467,7 +1609,9 @@
       "package": "excalibur",
       "tcode": "T1037",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1037-Boot Logon Script"]
+      "script_refs": [
+        "Excalibur - Persistence-T1037-Boot Logon Script"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1053-Scheduled Task Persistence",
@@ -475,7 +1619,9 @@
       "package": "excalibur",
       "tcode": "T1053",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1053-Scheduled Task Persistence"]
+      "script_refs": [
+        "Excalibur - Persistence-T1053-Scheduled Task Persistence"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1098-Account Manipulation",
@@ -483,7 +1629,9 @@
       "package": "excalibur",
       "tcode": "T1098",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1098-Account Manipulation"]
+      "script_refs": [
+        "Excalibur - Persistence-T1098-Account Manipulation"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1136-Create Account",
@@ -491,7 +1639,9 @@
       "package": "excalibur",
       "tcode": "T1136",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1136-Create Account"]
+      "script_refs": [
+        "Excalibur - Persistence-T1136-Create Account"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1197-BITS Jobs",
@@ -499,7 +1649,9 @@
       "package": "excalibur",
       "tcode": "T1197",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1197-BITS Jobs"]
+      "script_refs": [
+        "Excalibur - Persistence-T1197-BITS Jobs"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1543-Create System Process",
@@ -507,7 +1659,9 @@
       "package": "excalibur",
       "tcode": "T1543",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1543-Create System Process"]
+      "script_refs": [
+        "Excalibur - Persistence-T1543-Create System Process"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1546-WMI Event Subscription",
@@ -515,7 +1669,9 @@
       "package": "excalibur",
       "tcode": "T1546",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1546-WMI Event Subscription"]
+      "script_refs": [
+        "Excalibur - Persistence-T1546-WMI Event Subscription"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1547-Registry Run Key",
@@ -523,7 +1679,9 @@
       "package": "excalibur",
       "tcode": "T1547",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1547-Registry Run Key"]
+      "script_refs": [
+        "Excalibur - Persistence-T1547-Registry Run Key"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1574-DLL Search Order Hijack",
@@ -531,7 +1689,9 @@
       "package": "excalibur",
       "tcode": "T1574",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1574-DLL Search Order Hijack"]
+      "script_refs": [
+        "Excalibur - Persistence-T1574-DLL Search Order Hijack"
+      ]
     },
     {
       "name": "Excalibur - Persistence-T1505-Web Shell",
@@ -539,7 +1699,9 @@
       "package": "excalibur",
       "tcode": "T1505",
       "tactic": "Persistence",
-      "script_refs": ["Excalibur - Persistence-T1505-Web Shell"]
+      "script_refs": [
+        "Excalibur - Persistence-T1505-Web Shell"
+      ]
     },
     {
       "name": "Excalibur - Persistence Full Sweep",
@@ -558,6 +1720,686 @@
         "Excalibur - Persistence-T1547-Registry Run Key",
         "Excalibur - Persistence-T1574-DLL Search Order Hijack",
         "Excalibur - Persistence-T1505-Web Shell"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1053.005-Scheduled Task",
+      "description": "Emulation chain for T1053.005: Scheduled Task.",
+      "package": "excalibur",
+      "tcode": "T1053.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1053.005-Scheduled Task"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1205.002-Socket Filters",
+      "description": "Emulation chain for T1205.002: Socket Filters.",
+      "package": "excalibur",
+      "tcode": "T1205.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1205.002-Socket Filters"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.013-PowerShell Profile",
+      "description": "Emulation chain for T1546.013: PowerShell Profile.",
+      "package": "excalibur",
+      "tcode": "T1546.013",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.013-PowerShell Profile"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1133-External Remote Services",
+      "description": "Emulation chain for T1133: External Remote Services.",
+      "package": "excalibur",
+      "tcode": "T1133",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1133-External Remote Services"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1542.001-System Firmware",
+      "description": "Emulation chain for T1542.001: System Firmware.",
+      "package": "excalibur",
+      "tcode": "T1542.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1542.001-System Firmware"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1542.003-Bootkit",
+      "description": "Emulation chain for T1542.003: Bootkit.",
+      "package": "excalibur",
+      "tcode": "T1542.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1542.003-Bootkit"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.014-Active Setup",
+      "description": "Emulation chain for T1547.014: Active Setup.",
+      "package": "excalibur",
+      "tcode": "T1547.014",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.014-Active Setup"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1176.001-Browser Extensions",
+      "description": "Emulation chain for T1176.001: Browser Extensions.",
+      "package": "excalibur",
+      "tcode": "T1176.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1176.001-Browser Extensions"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1543.003-Windows Service",
+      "description": "Emulation chain for T1543.003: Windows Service.",
+      "package": "excalibur",
+      "tcode": "T1543.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1543.003-Windows Service"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137-Office Application Startup",
+      "description": "Emulation chain for T1137: Office Application Startup.",
+      "package": "excalibur",
+      "tcode": "T1137",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137-Office Application Startup"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.012-Print Processors",
+      "description": "Emulation chain for T1547.012: Print Processors.",
+      "package": "excalibur",
+      "tcode": "T1547.012",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.012-Print Processors"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.006-Add-ins",
+      "description": "Emulation chain for T1137.006: Add-ins.",
+      "package": "excalibur",
+      "tcode": "T1137.006",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.006-Add-ins"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505.002-Transport Agent",
+      "description": "Emulation chain for T1505.002: Transport Agent.",
+      "package": "excalibur",
+      "tcode": "T1505.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1505.002-Transport Agent"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.002-Password Filter DLL",
+      "description": "Emulation chain for T1556.002: Password Filter DLL.",
+      "package": "excalibur",
+      "tcode": "T1556.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.002-Password Filter DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505.005-Terminal Services DLL",
+      "description": "Emulation chain for T1505.005: Terminal Services DLL.",
+      "package": "excalibur",
+      "tcode": "T1505.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1505.005-Terminal Services DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1176-Software Extensions",
+      "description": "Emulation chain for T1176: Software Extensions.",
+      "package": "excalibur",
+      "tcode": "T1176",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1176-Software Extensions"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.005-Outlook Rules",
+      "description": "Emulation chain for T1137.005: Outlook Rules.",
+      "package": "excalibur",
+      "tcode": "T1137.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.005-Outlook Rules"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1098.007-Additional Local or Domain Groups",
+      "description": "Emulation chain for T1098.007: Additional Local or Domain Groups.",
+      "package": "excalibur",
+      "tcode": "T1098.007",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1098.007-Additional Local or Domain Groups"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.011-Application Shimming",
+      "description": "Emulation chain for T1546.011: Application Shimming.",
+      "package": "excalibur",
+      "tcode": "T1546.011",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.011-Application Shimming"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.010-Port Monitors",
+      "description": "Emulation chain for T1547.010: Port Monitors.",
+      "package": "excalibur",
+      "tcode": "T1547.010",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.010-Port Monitors"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1205-Traffic Signaling",
+      "description": "Emulation chain for T1205: Traffic Signaling.",
+      "package": "excalibur",
+      "tcode": "T1205",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1205-Traffic Signaling"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.009-Shortcut Modification",
+      "description": "Emulation chain for T1547.009: Shortcut Modification.",
+      "package": "excalibur",
+      "tcode": "T1547.009",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.009-Shortcut Modification"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.005-Security Support Provider",
+      "description": "Emulation chain for T1547.005: Security Support Provider.",
+      "package": "excalibur",
+      "tcode": "T1547.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.005-Security Support Provider"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.007-Hybrid Identity",
+      "description": "Emulation chain for T1556.007: Hybrid Identity.",
+      "package": "excalibur",
+      "tcode": "T1556.007",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.007-Hybrid Identity"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505.003-Web Shell",
+      "description": "Emulation chain for T1505.003: Web Shell.",
+      "package": "excalibur",
+      "tcode": "T1505.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1505.003-Web Shell"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1078.001-Default Accounts",
+      "description": "Emulation chain for T1078.001: Default Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1078.001-Default Accounts"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.003-Time Providers",
+      "description": "Emulation chain for T1547.003: Time Providers.",
+      "package": "excalibur",
+      "tcode": "T1547.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.003-Time Providers"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1136.001-Local Account",
+      "description": "Emulation chain for T1136.001: Local Account.",
+      "package": "excalibur",
+      "tcode": "T1136.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1136.001-Local Account"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1176.002-IDE Extensions",
+      "description": "Emulation chain for T1176.002: IDE Extensions.",
+      "package": "excalibur",
+      "tcode": "T1176.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1176.002-IDE Extensions"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.004-Winlogon Helper DLL",
+      "description": "Emulation chain for T1547.004: Winlogon Helper DLL.",
+      "package": "excalibur",
+      "tcode": "T1547.004",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.004-Winlogon Helper DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.012-Image File Execution Options Injection",
+      "description": "Emulation chain for T1546.012: Image File Execution Options Injection.",
+      "package": "excalibur",
+      "tcode": "T1546.012",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.012-Image File Execution Options Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.008-Accessibility Features",
+      "description": "Emulation chain for T1546.008: Accessibility Features.",
+      "package": "excalibur",
+      "tcode": "T1546.008",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.008-Accessibility Features"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1136.002-Domain Account",
+      "description": "Emulation chain for T1136.002: Domain Account.",
+      "package": "excalibur",
+      "tcode": "T1136.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1136.002-Domain Account"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1542.002-Component Firmware",
+      "description": "Emulation chain for T1542.002: Component Firmware.",
+      "package": "excalibur",
+      "tcode": "T1542.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1542.002-Component Firmware"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.001-Office Template Macros",
+      "description": "Emulation chain for T1137.001: Office Template Macros.",
+      "package": "excalibur",
+      "tcode": "T1137.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.001-Office Template Macros"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.009-AppCert DLLs",
+      "description": "Emulation chain for T1546.009: AppCert DLLs.",
+      "package": "excalibur",
+      "tcode": "T1546.009",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.009-AppCert DLLs"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1098.005-Device Registration",
+      "description": "Emulation chain for T1098.005: Device Registration.",
+      "package": "excalibur",
+      "tcode": "T1098.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1098.005-Device Registration"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1542-Pre-OS Boot",
+      "description": "Emulation chain for T1542: Pre-OS Boot.",
+      "package": "excalibur",
+      "tcode": "T1542",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1542-Pre-OS Boot"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1205.001-Port Knocking",
+      "description": "Emulation chain for T1205.001: Port Knocking.",
+      "package": "excalibur",
+      "tcode": "T1205.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1205.001-Port Knocking"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.008-Network Provider DLL",
+      "description": "Emulation chain for T1556.008: Network Provider DLL.",
+      "package": "excalibur",
+      "tcode": "T1556.008",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.008-Network Provider DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.003-Windows Management Instrumentation Event Subscription",
+      "description": "Emulation chain for T1546.003: Windows Management Instrumentation Event Subscription.",
+      "package": "excalibur",
+      "tcode": "T1546.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.003-Windows Management Instrumentation Event Subscription"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1554-Compromise Host Software Binary",
+      "description": "Emulation chain for T1554: Compromise Host Software Binary.",
+      "package": "excalibur",
+      "tcode": "T1554",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1554-Compromise Host Software Binary"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.001-Change Default File Association",
+      "description": "Emulation chain for T1546.001: Change Default File Association.",
+      "package": "excalibur",
+      "tcode": "T1546.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.001-Change Default File Association"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.001-Registry Run Keys / Startup Folder",
+      "description": "Emulation chain for T1547.001: Registry Run Keys / Startup Folder.",
+      "package": "excalibur",
+      "tcode": "T1547.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.001-Registry Run Keys / Startup Folder"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.003-Outlook Forms",
+      "description": "Emulation chain for T1137.003: Outlook Forms.",
+      "package": "excalibur",
+      "tcode": "T1137.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.003-Outlook Forms"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.006-Multi-Factor Authentication",
+      "description": "Emulation chain for T1556.006: Multi-Factor Authentication.",
+      "package": "excalibur",
+      "tcode": "T1556.006",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.006-Multi-Factor Authentication"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505.004-IIS Components",
+      "description": "Emulation chain for T1505.004: IIS Components.",
+      "package": "excalibur",
+      "tcode": "T1505.004",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1505.004-IIS Components"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.002-Authentication Package",
+      "description": "Emulation chain for T1547.002: Authentication Package.",
+      "package": "excalibur",
+      "tcode": "T1547.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.002-Authentication Package"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.015-Component Object Model Hijacking",
+      "description": "Emulation chain for T1546.015: Component Object Model Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1546.015",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.015-Component Object Model Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.004-Outlook Home Page",
+      "description": "Emulation chain for T1137.004: Outlook Home Page.",
+      "package": "excalibur",
+      "tcode": "T1137.004",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.004-Outlook Home Page"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1078.002-Domain Accounts",
+      "description": "Emulation chain for T1078.002: Domain Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1078.002-Domain Accounts"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.018-Python Startup Hooks",
+      "description": "Emulation chain for T1546.018: Python Startup Hooks.",
+      "package": "excalibur",
+      "tcode": "T1546.018",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.018-Python Startup Hooks"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1037.003-Network Logon Script",
+      "description": "Emulation chain for T1037.003: Network Logon Script.",
+      "package": "excalibur",
+      "tcode": "T1037.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1037.003-Network Logon Script"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.010-AppInit DLLs",
+      "description": "Emulation chain for T1546.010: AppInit DLLs.",
+      "package": "excalibur",
+      "tcode": "T1546.010",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.010-AppInit DLLs"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.002-Screensaver",
+      "description": "Emulation chain for T1546.002: Screensaver.",
+      "package": "excalibur",
+      "tcode": "T1546.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.002-Screensaver"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.001-Domain Controller Authentication",
+      "description": "Emulation chain for T1556.001: Domain Controller Authentication.",
+      "package": "excalibur",
+      "tcode": "T1556.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.001-Domain Controller Authentication"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1556.005-Reversible Encryption",
+      "description": "Emulation chain for T1556.005: Reversible Encryption.",
+      "package": "excalibur",
+      "tcode": "T1556.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1556.005-Reversible Encryption"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.016-Installer Packages",
+      "description": "Emulation chain for T1546.016: Installer Packages.",
+      "package": "excalibur",
+      "tcode": "T1546.016",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.016-Installer Packages"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1668-Exclusive Control",
+      "description": "Emulation chain for T1668: Exclusive Control.",
+      "package": "excalibur",
+      "tcode": "T1668",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1668-Exclusive Control"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1098.002-Additional Email Delegate Permissions",
+      "description": "Emulation chain for T1098.002: Additional Email Delegate Permissions.",
+      "package": "excalibur",
+      "tcode": "T1098.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1098.002-Additional Email Delegate Permissions"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1653-Power Settings",
+      "description": "Emulation chain for T1653: Power Settings.",
+      "package": "excalibur",
+      "tcode": "T1653",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1653-Power Settings"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1037.001-Logon Script (Windows)",
+      "description": "Emulation chain for T1037.001: Logon Script (Windows).",
+      "package": "excalibur",
+      "tcode": "T1037.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1037.001-Logon Script (Windows)"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1137.002-Office Test",
+      "description": "Emulation chain for T1137.002: Office Test.",
+      "package": "excalibur",
+      "tcode": "T1137.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1137.002-Office Test"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1547.008-LSASS Driver",
+      "description": "Emulation chain for T1547.008: LSASS Driver.",
+      "package": "excalibur",
+      "tcode": "T1547.008",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1547.008-LSASS Driver"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1053.002-At",
+      "description": "Emulation chain for T1053.002: At.",
+      "package": "excalibur",
+      "tcode": "T1053.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1053.002-At"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1546.007-Netsh Helper DLL",
+      "description": "Emulation chain for T1546.007: Netsh Helper DLL.",
+      "package": "excalibur",
+      "tcode": "T1546.007",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1546.007-Netsh Helper DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1505.001-SQL Stored Procedures",
+      "description": "Emulation chain for T1505.001: SQL Stored Procedures.",
+      "package": "excalibur",
+      "tcode": "T1505.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1505.001-SQL Stored Procedures"
+      ]
+    },
+    {
+      "name": "Excalibur - Persistence-T1078.003-Local Accounts",
+      "description": "Emulation chain for T1078.003: Local Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "Excalibur - Persistence-T1078.003-Local Accounts"
       ]
     }
   ]
