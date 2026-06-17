@@ -23,9 +23,7 @@
       "label": "T1595 - Active Scanning Target",
       "description": "Settings for the TCP port scan simulation. Use a TEST-NET IP (RFC 5737: 198.51.100.x) or an internal lab host you own as the scan target.",
       "scope": "local",
-      "used_by_tcodes": [
-        "T1595"
-      ],
+      "used_by_tcodes": ["T1595"],
       "tags": [
         {
           "key": "excalibur_recon_scan_target",
@@ -43,12 +41,7 @@
       "label": "T1590 / T1593 - DNS and Domain Recon Target",
       "description": "Domain name used for DNS deep enumeration, WHOIS-style recon, certificate transparency lookup, and subdomain brute-force simulation. Use a domain you own or a public test domain.",
       "scope": "local",
-      "used_by_tcodes": [
-        "T1590",
-        "T1591",
-        "T1593",
-        "T1594"
-      ],
+      "used_by_tcodes": ["T1590", "T1591", "T1593", "T1594"],
       "tags": [
         {
           "key": "excalibur_recon_target_domain",
@@ -66,9 +59,7 @@
       "label": "T1597 - Breach Database Recon",
       "description": "Corporate email domain used for breach database lookup simulation (HaveIBeenPwned API pattern). The domain is used to check for known data breach exposure of corporate email accounts.",
       "scope": "local",
-      "used_by_tcodes": [
-        "T1597"
-      ],
+      "used_by_tcodes": ["T1597"],
       "tags": [
         {
           "key": "excalibur_recon_email_domain",
@@ -92,9 +83,7 @@
       "technique_name": "Active Scanning",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_scan_target"
-      ],
+      "required_tags": ["excalibur_recon_scan_target"],
       "command": "Write-Host '[START] T1595 - Active Scanning (TCP port scan from foothold - nmap-style)'; $target = '#{excalibur_recon_scan_target}'; $scanPorts = @( @{Port=21;Service='FTP'}, @{Port=22;Service='SSH'}, @{Port=23;Service='Telnet'}, @{Port=25;Service='SMTP'}, @{Port=80;Service='HTTP'}, @{Port=135;Service='MS-RPC'}, @{Port=139;Service='NetBIOS'}, @{Port=389;Service='LDAP'}, @{Port=443;Service='HTTPS'}, @{Port=445;Service='SMB'}, @{Port=636;Service='LDAPS'}, @{Port=1433;Service='MSSQL'}, @{Port=3306;Service='MySQL'}, @{Port=3389;Service='RDP'}, @{Port=5432;Service='PostgreSQL'}, @{Port=5985;Service='WinRM-HTTP'}, @{Port=5986;Service='WinRM-HTTPS'}, @{Port=6379;Service='Redis'}, @{Port=8080;Service='HTTP-Alt'}, @{Port=9200;Service='Elasticsearch'} ); Write-Host ('[INFO] Scanning target: ' + $target + ' | Ports: ' + $scanPorts.Count + ' | Timeout: 1000ms per port'); $open = @(); $closed = @(); $startTime = Get-Date; foreach ($entry in $scanPorts) { try { $tcp = New-Object System.Net.Sockets.TcpClient; $conn = $tcp.BeginConnect($target, $entry.Port, $null, $null); $ok = $conn.AsyncWaitHandle.WaitOne(1000); if ($ok -and $tcp.Connected) { $open += $entry; Write-Host ('[INFO]   ' + $entry.Port + '/tcp OPEN [' + $entry.Service + ']') } else { $closed += $entry }; $tcp.Close() } catch { $closed += $entry } }; $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds, 1); Write-Host ('[INFO] Scan complete in ' + $elapsed + 's | Open: ' + $open.Count + ' | Closed/Filtered: ' + $closed.Count); Write-Host ('[INFO] Open ports summary: ' + $(if ($open.Count -gt 0) { ($open | ForEach-Object { [string]$_.Port + '/' + $_.Service }) -join ', ' } else { 'none (all filtered or unreachable)' })); Write-Host '[INFO] ICMP reachability check (ping sweep pattern)'; try { $ping = [System.Net.NetworkInformation.Ping]::new(); $reply = $ping.Send($target, 1000); Write-Host ('[INFO] ICMP to ' + $target + ': ' + $reply.Status + $(if ($reply.Status -eq 'Success') { ' RTT=' + $reply.RoundtripTime + 'ms' } else { '' })); $ping.Dispose() } catch { Write-Host ('[INFO] ICMP: ' + $_.Exception.Message) }; Write-Host '[INFO] UDP DNS probe (service version detection on port 53)'; try { $udp = New-Object System.Net.Sockets.UdpClient; $udp.Client.ReceiveTimeout = 1000; $dnsQuery = [byte[]](0x00,0x01,0x01,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x07,0x76,0x65,0x72,0x73,0x69,0x6F,0x6E,0x04,0x62,0x69,0x6E,0x64,0x00,0x00,0x10,0x00,0x03); $udp.Send($dnsQuery, $dnsQuery.Length, $target, 53) | Out-Null; $ep = New-Object System.Net.IPEndPoint([System.Net.IPAddress]::Any, 0); try { $resp = $udp.Receive([ref]$ep); Write-Host ('[INFO] UDP/53 DNS response from ' + $target + ': ' + $resp.Length + ' bytes (DNS service detected)') } catch { Write-Host ('[INFO] UDP/53: no response (timeout)') }; $udp.Close() } catch { Write-Host ('[INFO] UDP DNS: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1595 - Active scanning simulation completed. Sentinel target: Rapid sequential TCP connections to multiple service ports from non-network-tool process (MDE - active scanning from foothold behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1595 cleanup: no artefacts - network connection attempts only'",
       "detection_rule": "Rapid sequential TCP connections to multiple service ports from non-network-tool process (nmap-style scan from foothold)",
@@ -111,9 +100,7 @@
       "technique_name": "Gather Victim Network Information",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
+      "required_tags": ["excalibur_recon_target_domain"],
       "command": "Write-Host '[START] T1590 - Gather Victim Network Information (DNS deep enumeration from foothold)'; $domain = '#{excalibur_recon_target_domain}'; Write-Host ('[INFO] Target domain: ' + $domain); $recordTypes = @('A','AAAA','MX','NS','TXT','SOA','CNAME'); foreach ($rtype in $recordTypes) { try { $recs = Resolve-DnsName -Name $domain -Type $rtype -ErrorAction SilentlyContinue -DnsOnly; if ($recs) { Write-Host ('[INFO] ' + $rtype + ' records (' + @($recs).Count + '):'); $recs | Select-Object -First 5 | ForEach-Object { $val = if ($_.IPAddress) { $_.IPAddress } elseif ($_.NameHost) { $_.NameHost } elseif ($_.NameExchange) { $_.NameExchange } elseif ($_.PrimaryServer) { $_.PrimaryServer } elseif ($_.Strings) { $_.Strings -join ' ' } else { $_.ToString() }; Write-Host ('    ' + $rtype + ': ' + [string]$val) } } else { Write-Host ('[INFO] ' + $rtype + ': no records found') } } catch { Write-Host ('[INFO] ' + $rtype + ': ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[INFO] DNS zone transfer attempt (AXFR) - adversaries always try this'; try { $axfrResult = & nslookup.exe -type=axfr $domain 2>&1; $axfrSuccess = $axfrResult | Where-Object { $_ -match 'internet address|mail exchanger' }; Write-Host ('[INFO] AXFR result: ' + $(if (@($axfrSuccess).Count -gt 0) { 'ZONE TRANSFER SUCCEEDED (' + @($axfrSuccess).Count + ' records)' } else { 'REFUSED/FAILED (expected - zone transfer disabled)' })) } catch { Write-Host ('[INFO] AXFR: ' + $_.Exception.Message) }; Write-Host '[INFO] Subdomain brute-force (20 common subdomains)'; $subdomains = @('www','mail','ftp','vpn','remote','portal','intranet','dev','staging','api','admin','owa','autodiscover','smtp','mx','ns1','ns2','webmail','shop','app'); foreach ($sub in $subdomains) { $fqdn = $sub + '.' + $domain; try { $r = Resolve-DnsName -Name $fqdn -Type A -ErrorAction SilentlyContinue -DnsOnly; if ($r) { Write-Host ('[INFO]   FOUND: ' + $fqdn + ' -> ' + ($r | Where-Object { $_.IPAddress } | Select-Object -First 1 -ExpandProperty IPAddress)) } } catch {} }; Write-Host '[INFO] Reverse DNS lookup (PTR records on A record IPs)'; try { $aRecs = Resolve-DnsName -Name $domain -Type A -ErrorAction SilentlyContinue -DnsOnly | Where-Object { $_.IPAddress }; foreach ($aRec in @($aRecs)[0..2]) { try { $ptr = Resolve-DnsName -Name $aRec.IPAddress -Type PTR -ErrorAction SilentlyContinue; Write-Host ('[INFO]   PTR ' + $aRec.IPAddress + ' -> ' + $(if ($ptr) { $ptr[0].NameHost } else { 'no PTR' })) } catch {} } } catch {}; Write-Host '[SUCCESS] T1590 - DNS network info gathering completed. Sentinel target: High-volume multi-type DNS queries including AXFR attempt from non-DNS-tool process (MDE DNS telemetry - network recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1590 cleanup: no artefacts - DNS queries only'",
       "detection_rule": "High-volume multi-type DNS queries + AXFR zone transfer attempt from non-DNS-tool process",
@@ -164,9 +151,7 @@
       "technique_name": "Search Open Technical Databases",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
+      "required_tags": ["excalibur_recon_target_domain"],
       "command": "Write-Host '[START] T1596 - Search Open Technical Databases (IP intel + Shodan-style external recon)'; $targetDomain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1596-OSTINTRecon/1.0'; Write-Host '[INFO] Step 1/4: External IP discovery (egress IP - what the target looks like from the internet)'; try { $ipResp = Invoke-WebRequest -Uri 'https://ipinfo.io/json' -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $ipData = $ipResp.Content | ConvertFrom-Json; Write-Host ('[INFO] Egress IP: ' + $ipData.ip + ' | City: ' + $ipData.city + ' | Region: ' + $ipData.region + ' | Country: ' + $ipData.country); Write-Host ('[INFO] Org/ASN: ' + $ipData.org + ' | Hostname: ' + $ipData.hostname); $egressIp = $ipData.ip } catch { Write-Host ('[INFO] ipinfo.io: ' + $_.Exception.Message.Split([char]10)[0]); $egressIp = $null }; Write-Host '[INFO] Step 2/4: ASN/BGP information (network ownership + BGP prefix)'; try { $bgpResp = Invoke-WebRequest -Uri ('https://api.bgpview.io/ip/' + $(if ($egressIp) { $egressIp } else { '8.8.8.8' })) -Headers @{'User-Agent'=$ua;'Accept'='application/json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $bgpData = $bgpResp.Content | ConvertFrom-Json; $prefixes = $bgpData.data.prefixes; Write-Host ('[INFO] BGP prefixes: ' + @($prefixes).Count); $prefixes | Select-Object -First 3 | ForEach-Object { Write-Host ('    ' + $_.prefix + ' | ASN: AS' + $_.asn.asn + ' | ' + $_.asn.name + ' | Country: ' + $_.asn.country_code) } } catch { Write-Host ('[INFO] BGP lookup: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 3/4: DNS A records for target domain (external IP of target org)'; try { $domainIPs = Resolve-DnsName -Name $targetDomain -Type A -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress }; Write-Host ('[INFO] ' + $targetDomain + ' resolves to: ' + ($domainIPs | Select-Object -ExpandProperty IPAddress) -join ', '); foreach ($ip in @($domainIPs)[0..1]) { try { $ipDetails = Invoke-WebRequest -Uri ('https://ipinfo.io/' + $ip.IPAddress + '/json') -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $det = $ipDetails.Content | ConvertFrom-Json; Write-Host ('    ' + $ip.IPAddress + ' -> Org: ' + $det.org + ' | Hosted: ' + $det.city + ', ' + $det.country) } catch {} } } catch { Write-Host ('[INFO] Domain IP intel: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 4/4: Shodan/Censys search URL construction (adversary would use these to find exposed services)'; Write-Host ('[INFO] Shodan search URL: https://www.shodan.io/search?query=hostname%3A' + $targetDomain); Write-Host ('[INFO] Censys search URL: https://search.censys.io/search?resource=hosts&q=' + $targetDomain); Write-Host ('[INFO] Shodan API query would return: open ports, TLS cert details, web server versions, exposed services'); Write-Host '[SUCCESS] T1596 - Open technical database search completed. Sentinel target: Outbound queries to IP intelligence APIs (ipinfo.io/bgpview.io) from non-browser process (MDE - OSINT recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1596 cleanup: no artefacts - HTTP queries only'",
       "detection_rule": "Outbound queries to IP intelligence APIs (ipinfo.io/bgpview.io) from non-browser process (OSINT recon)",
@@ -183,9 +168,7 @@
       "technique_name": "Search Open Websites/Domains",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
+      "required_tags": ["excalibur_recon_target_domain"],
       "command": "Write-Host '[START] T1593 - Search Open Websites/Domains (crt.sh + RDAP + GitHub OSINT from foothold)'; $domain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1593-OSINTRecon/1.0'; Write-Host '[INFO] Method 1/4: Certificate Transparency (crt.sh) - enumerate TLS certs for all subdomains'; try { $crtUrl = 'https://crt.sh/?q=%25.' + $domain + '&output=json'; $crtResp = Invoke-WebRequest -Uri $crtUrl -Headers @{'User-Agent'=$ua;'Accept'='application/json'} -TimeoutSec 10 -UseBasicParsing -ErrorAction Stop; $crtData = $crtResp.Content | ConvertFrom-Json -ErrorAction SilentlyContinue; if ($crtData) { $uniqueNames = $crtData | Select-Object -ExpandProperty name_value | Where-Object { $_ -notmatch '\\*' } | Sort-Object -Unique; Write-Host ('[INFO] crt.sh: ' + @($crtData).Count + ' certificates found | ' + @($uniqueNames).Count + ' unique hostnames'); $uniqueNames | Select-Object -First 15 | ForEach-Object { Write-Host ('    ' + $_) }; if (@($uniqueNames).Count -gt 15) { Write-Host ('    ... and ' + (@($uniqueNames).Count - 15) + ' more') } } else { Write-Host '[INFO] crt.sh: no certificates found or domain too new' } } catch { Write-Host ('[INFO] crt.sh: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound logged by MDE)') }; Write-Host '[INFO] Method 2/4: RDAP WHOIS (domain registration and ownership info)'; try { $rdapUrl = 'https://rdap.org/domain/' + $domain; $rdapResp = Invoke-WebRequest -Uri $rdapUrl -Headers @{'User-Agent'=$ua;'Accept'='application/rdap+json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $rdapData = $rdapResp.Content | ConvertFrom-Json; Write-Host ('[INFO] RDAP: Domain=' + $rdapData.ldhName + ' | Status: ' + ($rdapData.status -join ',') + ' | Registrar: ' + $(($rdapData.entities | Where-Object { $_.roles -contains 'registrar' } | Select-Object -First 1).vcardArray[-1][-1] -join '' 2>$null)) } catch { Write-Host ('[INFO] RDAP: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Method 3/4: GitHub code search (leaked credentials/config files containing target domain)'; $ghSearchUrls = @( 'https://api.github.com/search/code?q=' + [System.Uri]::EscapeDataString('\"' + $domain + '\" password') + '&per_page=5', 'https://api.github.com/search/repositories?q=' + [System.Uri]::EscapeDataString($domain) + '&per_page=5' ); foreach ($ghUrl in $ghSearchUrls) { try { $ghResp = Invoke-WebRequest -Uri $ghUrl -Headers @{'User-Agent'=$ua;'Accept'='application/vnd.github.v3+json'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $ghData = $ghResp.Content | ConvertFrom-Json; $count = if ($ghData.total_count) { $ghData.total_count } else { @($ghData.items).Count }; $label = if ($ghUrl -match 'search/code') { 'Code results (leaked creds/config)' } else { 'Public repositories' }; Write-Host ('[INFO] GitHub ' + $label + ': ' + $count + ' results'); if ($ghData.items) { $ghData.items | Select-Object -First 3 | ForEach-Object { Write-Host ('    ' + $_.full_name + ' | ' + $_.html_url) } } } catch { Write-Host ('[INFO] GitHub search: ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[INFO] Method 4/4: Bing OSINT search (employee names, email format, org structure)'; try { $searchQueries = @( 'site:linkedin.com \"' + $domain + '\"', '\"@' + $domain + '\" filetype:xlsx OR filetype:csv' ); foreach ($q in $searchQueries) { $bingUrl = 'https://www.bing.com/search?q=' + [System.Uri]::EscapeDataString($q); $bingResp = Invoke-WebRequest -Uri $bingUrl -Headers @{'User-Agent'=$ua} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] Bing query [' + $q.Substring(0,[math]::Min(50,$q.Length)) + ']: HTTP ' + $bingResp.StatusCode + ' | ' + $bingResp.RawContentLength + ' bytes') } } catch { Write-Host ('[INFO] Bing OSINT: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1593 - Open website OSINT completed. Sentinel target: crt.sh + RDAP + GitHub API + Bing queries from non-browser process (MDE - OSINT recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1593 cleanup: no artefacts - HTTP queries only'",
       "detection_rule": "crt.sh + RDAP + GitHub API + Bing OSINT queries from non-browser process (certificate transparency recon)",
@@ -202,9 +185,7 @@
       "technique_name": "Gather Victim Org Information",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
+      "required_tags": ["excalibur_recon_target_domain"],
       "command": "Write-Host '[START] T1591 - Gather Victim Org Information (AD/domain/Exchange org recon)'; $targetDomain = '#{excalibur_recon_target_domain}'; Write-Host '[INFO] Step 1/5: Local domain membership + DNS domain info'; Write-Host ('[INFO] Machine domain: ' + $env:USERDNSDOMAIN + ' | Computer domain: ' + (Get-WmiObject Win32_ComputerSystem).Domain); Write-Host '[INFO] Step 2/5: Active Directory domain information (if domain-joined)'; try { $adDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain(); Write-Host ('[INFO] AD Domain: ' + $adDomain.Name + ' | Forest: ' + $adDomain.Forest.Name); Write-Host ('[INFO] Domain functional level: ' + $adDomain.DomainMode); Write-Host ('[INFO] Domain controllers (' + @($adDomain.DomainControllers).Count + '):'); $adDomain.DomainControllers | Select-Object -First 5 | ForEach-Object { Write-Host ('    DC: ' + $_.Name + ' | OS: ' + $_.OSVersion + ' | Site: ' + $_.SiteName) }; Write-Host '[INFO] Forest trusts:'; try { $trusts = $adDomain.Forest.GetAllTrustRelationships(); if (@($trusts).Count -gt 0) { $trusts | ForEach-Object { Write-Host ('    Trust: ' + $_.SourceName + ' <-> ' + $_.TargetName + ' [' + $_.TrustDirection + '] [' + $_.TrustType + ']') } } else { Write-Host '    No forest trusts found' } } catch { Write-Host ('    Trust enum: ' + $_.Exception.Message.Split([char]10)[0]) } } catch { Write-Host ('[INFO] AD domain: ' + $_.Exception.Message.Split([char]10)[0] + ' (workgroup or access denied - using DNS domain fallback)') }; Write-Host '[INFO] Step 3/5: Organizational Unit structure (LDAP OU enumeration)'; try { $ouSearcher = New-Object System.DirectoryServices.DirectorySearcher; $ouSearcher.Filter = '(objectCategory=organizationalUnit)'; $ouSearcher.PropertiesToLoad.AddRange(@('distinguishedName','name')) | Out-Null; $ouSearcher.SizeLimit = 30; $ous = $ouSearcher.FindAll(); Write-Host ('[INFO] Organizational Units found: ' + $ous.Count); $ous | Select-Object -First 10 | ForEach-Object { Write-Host ('    OU: ' + $_.Properties['name'] + ' | DN: ' + [string]($_.Properties['distinguishedname'])) } } catch { Write-Host ('[INFO] OU enum: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 4/5: Group Policy Objects enumeration'; try { $gpoSearcher = New-Object System.DirectoryServices.DirectorySearcher; $gpoSearcher.Filter = '(objectClass=groupPolicyContainer)'; $gpoSearcher.PropertiesToLoad.AddRange(@('displayName','cn','gPCFileSysPath')) | Out-Null; $gpoSearcher.SizeLimit = 20; $gpos = $gpoSearcher.FindAll(); Write-Host ('[INFO] Group Policy Objects: ' + $gpos.Count); $gpos | Select-Object -First 10 | ForEach-Object { Write-Host ('    GPO: ' + $_.Properties['displayname'] + ' | Path: ' + [string]($_.Properties['gpcfilesyspath'])) } } catch { Write-Host ('[INFO] GPO enum: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Step 5/5: Exchange/O365 Autodiscover probe (mail infrastructure fingerprint)'; $autodiscoverUrls = @( 'https://autodiscover.' + $targetDomain + '/autodiscover/autodiscover.xml', 'https://' + $targetDomain + '/autodiscover/autodiscover.xml' ); foreach ($adUrl in $autodiscoverUrls) { try { $adResp = Invoke-WebRequest -Uri $adUrl -Method GET -Headers @{'User-Agent'='Microsoft Office/16.0'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] Autodiscover ' + ([System.Uri]$adUrl).Host + ': HTTP ' + $adResp.StatusCode + ' (Exchange/O365 confirmed)') } catch { Write-Host ('[INFO] Autodiscover ' + ([System.Uri]$adUrl).Host + ': ' + $_.Exception.Message.Split([char]10)[0] + ' (expected if not Exchange)') } }; Write-Host '[SUCCESS] T1591 - Org information gathering completed. Sentinel target: LDAP OU/GPO/trust enumeration + Autodiscover probe (MDE - AD org structure recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1591 cleanup: no artefacts - read-only LDAP and HTTP queries'",
       "detection_rule": "LDAP OU/GPO/trust enumeration + Autodiscover HTTP probe (AD organizational recon)",
@@ -221,9 +202,7 @@
       "technique_name": "Search Victim-Owned Websites",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
+      "required_tags": ["excalibur_recon_target_domain"],
       "command": "Write-Host '[START] T1594 - Search Victim-Owned Websites (HTTP fingerprinting + path enumeration)'; $targetDomain = '#{excalibur_recon_target_domain}'; $ua = 'MorganaTest-T1594-WebRecon/1.0'; Write-Host '[INFO] Phase 1/3: Internal web service discovery (localhost + gateway scan)'; $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object RouteMetric | Select-Object -First 1).NextHop; $scanTargets = @('127.0.0.1'); if ($gw) { $scanTargets += $gw }; $webPorts = @(80,443,8080,8443,8888,9090,5000,3000,8000,7001); foreach ($scanTarget in $scanTargets) { Write-Host ('[INFO] Scanning ' + $scanTarget + ' for web services...'); foreach ($port in $webPorts) { try { $proto = if ($port -in @(443,8443)) { 'https' } else { 'http' }; $url = $proto + '://' + $scanTarget + ':' + $port + '/'; $webReq = [System.Net.WebRequest]::Create($url); $webReq.Timeout = 2000; $webReq.Method = 'HEAD'; if ($proto -eq 'https') { $webReq.ServerCertificateValidationCallback = {$true} }; try { $webResp = $webReq.GetResponse(); $server = $webResp.Headers['Server']; $xpow = $webResp.Headers['X-Powered-By']; $xasp = $webResp.Headers['X-AspNet-Version']; Write-Host ('[INFO]   OPEN ' + $url + ' | Server: ' + $server + ' | X-Powered-By: ' + $xpow + ' | X-AspNet: ' + $xasp); $webResp.Close() } catch [System.Net.WebException] { if ($_.Exception.Response) { $sc = [int]$_.Exception.Response.StatusCode; if ($sc -gt 0) { $svr = $_.Exception.Response.Headers['Server']; Write-Host ('[INFO]   HTTP ' + $sc + ' at ' + $url + ' (Server: ' + $svr + ')') } } } } catch {} } }; Write-Host '[INFO] Phase 2/3: Target domain technology fingerprinting'; $targetUrl = 'https://' + $targetDomain + '/'; try { $fpReq = [System.Net.WebRequest]::Create($targetUrl); $fpReq.Timeout = 5000; $fpReq.Method = 'GET'; $fpReq.Headers.Add('User-Agent', $ua); $fpReq.ServerCertificateValidationCallback = {$true}; $fpResp = $fpReq.GetResponse(); $headers = @('Server','X-Powered-By','X-AspNet-Version','X-Frame-Options','Strict-Transport-Security','Content-Security-Policy','X-Generator','X-Drupal-Cache','X-WordPress-Cache'); Write-Host ('[INFO] HTTP headers for ' + $targetUrl + ':'); foreach ($h in $headers) { $val = $fpResp.Headers[$h]; if ($val) { Write-Host ('    ' + $h + ': ' + $val) } }; $fpResp.Close() } catch { Write-Host ('[INFO] Target fingerprint: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Phase 3/3: Common path enumeration (robots.txt, admin, API, .git)'; $probePaths = @('/robots.txt','/sitemap.xml','/.git/HEAD','/admin','/administrator','/wp-login.php','/api/v1','/api/v2','/swagger/index.html','/.env','/phpinfo.php','/server-status'); foreach ($path in $probePaths) { try { $probeUrl = 'https://' + $targetDomain + $path; $probeReq = [System.Net.WebRequest]::Create($probeUrl); $probeReq.Timeout = 3000; $probeReq.Method = 'HEAD'; $probeReq.ServerCertificateValidationCallback = {$true}; $probeReq.Headers.Add('User-Agent', $ua); try { $probeResp = $probeReq.GetResponse(); $sc = [int]$probeResp.StatusCode; $probeResp.Close(); if ($sc -lt 400) { Write-Host ('[INFO]   FOUND ' + $path + ' -> HTTP ' + $sc + ' (potential sensitive path)') } } catch [System.Net.WebException] { $sc = if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 }; if ($sc -in @(200,301,302,401,403)) { Write-Host ('[INFO]   ' + $path + ' -> HTTP ' + $sc) } } } catch {} }; Write-Host '[SUCCESS] T1594 - Web service fingerprinting completed. Sentinel target: HTTP header extraction + common path enumeration from non-browser process (MDE - web recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1594 cleanup: no artefacts - HTTP requests only'",
       "detection_rule": "HTTP header fingerprinting + common path enumeration (robots.txt/.git/admin) from non-browser process",
@@ -240,9 +219,7 @@
       "technique_name": "Search Closed Sources",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_email_domain"
-      ],
+      "required_tags": ["excalibur_recon_email_domain"],
       "command": "Write-Host '[START] T1597 - Search Closed Sources (breach database + threat intel platform recon)'; $emailDomain = '#{excalibur_recon_email_domain}'; $ua = 'MorganaTest-T1597-BreachRecon/1.0'; Write-Host '[INFO] Method 1/4: HaveIBeenPwned domain breach search (corporate email exposure)'; try { $hibpHeaders = @{ 'User-Agent'=$ua; 'hibp-api-key'='MorganaSimKey-NotReal'; 'Accept'='application/json' }; $hibpResp = Invoke-WebRequest -Uri ('https://haveibeenpwned.com/api/v3/breacheddomain/' + $emailDomain) -Headers $hibpHeaders -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $breaches = $hibpResp.Content | ConvertFrom-Json; Write-Host ('[INFO] HIBP domain breaches: ' + @($breaches).Count + ' breaches found for @' + $emailDomain); $breaches | Select-Object -First 5 | ForEach-Object { Write-Host ('    ' + $_) } } catch { Write-Host ('[INFO] HIBP domain search: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound to HIBP logged by MDE - breach recon pattern)') }; Write-Host '[INFO] Method 2/4: HaveIBeenPwned pastes search (corporate email in public pastes)'; try { $pasteResp = Invoke-WebRequest -Uri ('https://haveibeenpwned.com/api/v3/pasteaccount/admin@' + $emailDomain) -Headers @{'User-Agent'=$ua;'hibp-api-key'='MorganaSimKey-NotReal'} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] HIBP pastes: ' + $pasteResp.StatusCode) } catch { Write-Host ('[INFO] HIBP pastes: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] Method 3/4: DeHashed-style API (breach data aggregator pattern)'; try { $dhHeaders = @{ 'User-Agent'=$ua; 'Accept'='application/json'; 'Authorization'='Basic ' + [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('admin@' + $emailDomain + ':MorganaSimKey')) }; $dhResp = Invoke-WebRequest -Uri ('https://api.dehashed.com/search?query=' + [System.Uri]::EscapeDataString('domain:' + $emailDomain)) -Headers $dhHeaders -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] DeHashed API: HTTP ' + $dhResp.StatusCode + ' (' + $dhResp.RawContentLength + ' bytes)') } catch { Write-Host ('[INFO] DeHashed API: ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound to breach aggregator logged by MDE)') }; Write-Host '[INFO] Method 4/4: Local breach data file search (prior incident dump files on victim machine)'; $breachPatterns = @( @{Path=$env:USERPROFILE;Filter='*breach*';Label='Breach data files'}, @{Path=$env:USERPROFILE;Filter='*combo*';Label='Credential combo list'}, @{Path=$env:USERPROFILE;Filter='*dump*';Label='Credential dump files'}, @{Path=$env:USERPROFILE;Filter='*leak*';Label='Data leak files'}, @{Path='C:\\Users\\Public';Filter='*.txt';Label='Public text files (credential lists)'} ); foreach ($bp in $breachPatterns) { try { if (Test-Path $bp.Path) { $found = Get-ChildItem -Path $bp.Path -Filter $bp.Filter -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { $_.Length -gt 1024 }; if (@($found).Count -gt 0) { Write-Host ('[WARN]   FOUND: ' + @($found).Count + ' [' + $bp.Label + '] files in ' + $bp.Path) } } } catch {} }; Write-Host '[SUCCESS] T1597 - Closed source breach search completed. Sentinel target: Outbound to HIBP/DeHashed + local breach file search (MDE - threat intel platform recon behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1597 cleanup: no artefacts - HTTP queries and read-only file search only'",
       "detection_rule": "Outbound queries to HIBP/DeHashed breach APIs + local breach file enumeration from non-browser process",
@@ -266,652 +243,6 @@
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "source": "excalibur",
       "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1595.001-Scanning-IP-Blocks",
-      "name": "Excalibur - Recon-T1595.001-Scanning-IP-Blocks",
-      "description": "Reconnaissance technique T1595.001: Scanning IP Blocks. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1595.001",
-      "technique_name": "Scanning IP Blocks",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1595.001 - Scanning IP Blocks'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1595.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1595.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1595.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1595.002-Vulnerability-Scanning",
-      "name": "Excalibur - Recon-T1595.002-Vulnerability-Scanning",
-      "description": "Reconnaissance technique T1595.002: Vulnerability Scanning. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1595.002",
-      "technique_name": "Vulnerability Scanning",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1595.002 - Vulnerability Scanning'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1595.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1595.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1595.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1595.003-Wordlist-Scanning",
-      "name": "Excalibur - Recon-T1595.003-Wordlist-Scanning",
-      "description": "Reconnaissance technique T1595.003: Wordlist Scanning. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1595.003",
-      "technique_name": "Wordlist Scanning",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1595.003 - Wordlist Scanning'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1595.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1595.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1595.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1596.001-Passive-DNS",
-      "name": "Excalibur - Recon-T1596.001-Passive-DNS",
-      "description": "Reconnaissance technique T1596.001: Passive DNS. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1596.001",
-      "technique_name": "Passive DNS",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1596.001 - Passive DNS'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1596.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1596.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1596.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1596.002-WHOIS",
-      "name": "Excalibur - Recon-T1596.002-WHOIS",
-      "description": "Reconnaissance technique T1596.002: WHOIS. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1596.002",
-      "technique_name": "WHOIS",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1596.002 - WHOIS'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1596.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1596.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1596.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1596.003-Digital-Certificates",
-      "name": "Excalibur - Recon-T1596.003-Digital-Certificates",
-      "description": "Reconnaissance technique T1596.003: Digital Certificates. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1596.003",
-      "technique_name": "Digital Certificates",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1596.003 - Digital Certificates'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1596.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1596.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1596.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1596.004-CDNs",
-      "name": "Excalibur - Recon-T1596.004-CDNs",
-      "description": "Reconnaissance technique T1596.004: CDNs. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1596.004",
-      "technique_name": "CDNs",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1596.004 - CDNs'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1596.004 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1596.004 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1596.004 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1596.005-Scan-Databases",
-      "name": "Excalibur - Recon-T1596.005-Scan-Databases",
-      "description": "Reconnaissance technique T1596.005: Scan Databases. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1596.005",
-      "technique_name": "Scan Databases",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1596.005 - Scan Databases'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1596.005 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1596.005 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1596.005 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1593.001-Social-Media",
-      "name": "Excalibur - Recon-T1593.001-Social-Media",
-      "description": "Reconnaissance technique T1593.001: Social Media. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1593.001",
-      "technique_name": "Social Media",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1593.001 - Social Media'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1593.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1593.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1593.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1593.002-Search-Engines",
-      "name": "Excalibur - Recon-T1593.002-Search-Engines",
-      "description": "Reconnaissance technique T1593.002: Search Engines. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1593.002",
-      "technique_name": "Search Engines",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1593.002 - Search Engines'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1593.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1593.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1593.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1593.003-Code-Repositories",
-      "name": "Excalibur - Recon-T1593.003-Code-Repositories",
-      "description": "Reconnaissance technique T1593.003: Code Repositories. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1593.003",
-      "technique_name": "Code Repositories",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1593.003 - Code Repositories'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1593.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1593.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1593.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1597.001-Threat-Intelligence",
-      "name": "Excalibur - Recon-T1597.001-Threat-Intelligence",
-      "description": "Reconnaissance technique T1597.001: Threat Intelligence. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1597.001",
-      "technique_name": "Threat Intelligence",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1597.001 - Threat Intelligence'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1597.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1597.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1597.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1597.002-Purchase-Technical-Data",
-      "name": "Excalibur - Recon-T1597.002-Purchase-Technical-Data",
-      "description": "Reconnaissance technique T1597.002: Purchase Technical Data. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1597.002",
-      "technique_name": "Purchase Technical Data",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1597.002 - Purchase Technical Data'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1597.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1597.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1597.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1598.001-Spearphishing-Service",
-      "name": "Excalibur - Recon-T1598.001-Spearphishing-Service",
-      "description": "Reconnaissance technique T1598.001: Spearphishing Service. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1598.001",
-      "technique_name": "Spearphishing Service",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1598.001 - Spearphishing Service'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1598.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1598.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1598.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1598.002-Spearphishing-Attachment",
-      "name": "Excalibur - Recon-T1598.002-Spearphishing-Attachment",
-      "description": "Reconnaissance technique T1598.002: Spearphishing Attachment. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1598.002",
-      "technique_name": "Spearphishing Attachment",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1598.002 - Spearphishing Attachment'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1598.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1598.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1598.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1598.003-Spearphishing-Link",
-      "name": "Excalibur - Recon-T1598.003-Spearphishing-Link",
-      "description": "Reconnaissance technique T1598.003: Spearphishing Link. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1598.003",
-      "technique_name": "Spearphishing Link",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1598.003 - Spearphishing Link'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1598.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1598.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1598.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1598.004-Spearphishing-Voice",
-      "name": "Excalibur - Recon-T1598.004-Spearphishing-Voice",
-      "description": "Reconnaissance technique T1598.004: Spearphishing Voice. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1598.004",
-      "technique_name": "Spearphishing Voice",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1598.004 - Spearphishing Voice'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1598.004 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1598.004 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1598.004 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1591.001-Identify-Locations",
-      "name": "Excalibur - Recon-T1591.001-Identify-Locations",
-      "description": "Reconnaissance technique T1591.001: Identify Locations. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1591.001",
-      "technique_name": "Identify Locations",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1591.001 - Identify Locations'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1591.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1591.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1591.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1591.002-Identify-Business-Relationships",
-      "name": "Excalibur - Recon-T1591.002-Identify-Business-Relationships",
-      "description": "Reconnaissance technique T1591.002: Identify Business Relationships. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1591.002",
-      "technique_name": "Identify Business Relationships",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1591.002 - Identify Business Relationships'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1591.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1591.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1591.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1591.003-Identify-Business-Tempo",
-      "name": "Excalibur - Recon-T1591.003-Identify-Business-Tempo",
-      "description": "Reconnaissance technique T1591.003: Identify Business Tempo. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1591.003",
-      "technique_name": "Identify Business Tempo",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1591.003 - Identify Business Tempo'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1591.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1591.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1591.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1591.004-Identify-Roles",
-      "name": "Excalibur - Recon-T1591.004-Identify-Roles",
-      "description": "Reconnaissance technique T1591.004: Identify Roles. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1591.004",
-      "technique_name": "Identify Roles",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1591.004 - Identify Roles'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1591.004 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1591.004 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1591.004 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.001-Domain-Properties",
-      "name": "Excalibur - Recon-T1590.001-Domain-Properties",
-      "description": "Reconnaissance technique T1590.001: Domain Properties. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.001",
-      "technique_name": "Domain Properties",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.001 - Domain Properties'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.002-DNS",
-      "name": "Excalibur - Recon-T1590.002-DNS",
-      "description": "Reconnaissance technique T1590.002: DNS. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.002",
-      "technique_name": "DNS",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.002 - DNS'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.003-Network-Trust-Dependencies",
-      "name": "Excalibur - Recon-T1590.003-Network-Trust-Dependencies",
-      "description": "Reconnaissance technique T1590.003: Network Trust Dependencies. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.003",
-      "technique_name": "Network Trust Dependencies",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.003 - Network Trust Dependencies'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.004-Network-Topology",
-      "name": "Excalibur - Recon-T1590.004-Network-Topology",
-      "description": "Reconnaissance technique T1590.004: Network Topology. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.004",
-      "technique_name": "Network Topology",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.004 - Network Topology'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.004 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.004 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.004 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.005-IP-Addresses",
-      "name": "Excalibur - Recon-T1590.005-IP-Addresses",
-      "description": "Reconnaissance technique T1590.005: IP Addresses. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.005",
-      "technique_name": "IP Addresses",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.005 - IP Addresses'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.005 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.005 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.005 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1590.006-Network-Security-Appliances",
-      "name": "Excalibur - Recon-T1590.006-Network-Security-Appliances",
-      "description": "Reconnaissance technique T1590.006: Network Security Appliances. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1590.006",
-      "technique_name": "Network Security Appliances",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1590.006 - Network Security Appliances'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1590.006 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1590.006 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1590.006 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1589.001-Credentials",
-      "name": "Excalibur - Recon-T1589.001-Credentials",
-      "description": "Reconnaissance technique T1589.001: Credentials. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1589.001",
-      "technique_name": "Credentials",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1589.001 - Credentials'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1589.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1589.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1589.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1589.002-Email-Addresses",
-      "name": "Excalibur - Recon-T1589.002-Email-Addresses",
-      "description": "Reconnaissance technique T1589.002: Email Addresses. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1589.002",
-      "technique_name": "Email Addresses",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1589.002 - Email Addresses'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1589.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1589.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1589.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1589.003-Employee-Names",
-      "name": "Excalibur - Recon-T1589.003-Employee-Names",
-      "description": "Reconnaissance technique T1589.003: Employee Names. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1589.003",
-      "technique_name": "Employee Names",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1589.003 - Employee Names'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1589.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1589.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1589.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1592.001-Hardware",
-      "name": "Excalibur - Recon-T1592.001-Hardware",
-      "description": "Reconnaissance technique T1592.001: Hardware. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1592.001",
-      "technique_name": "Hardware",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1592.001 - Hardware'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1592.001 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1592.001 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1592.001 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1592.002-Software",
-      "name": "Excalibur - Recon-T1592.002-Software",
-      "description": "Reconnaissance technique T1592.002: Software. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1592.002",
-      "technique_name": "Software",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1592.002 - Software'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1592.002 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1592.002 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1592.002 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1592.003-Firmware",
-      "name": "Excalibur - Recon-T1592.003-Firmware",
-      "description": "Reconnaissance technique T1592.003: Firmware. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1592.003",
-      "technique_name": "Firmware",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1592.003 - Firmware'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1592.003 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1592.003 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1592.003 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
-    },
-    {
-      "id": "Excalibur - Recon-T1592.004-Client-Configurations",
-      "name": "Excalibur - Recon-T1592.004-Client-Configurations",
-      "description": "Reconnaissance technique T1592.004: Client Configurations. Post-foothold reconnaissance emulation for Purple Team validation.",
-      "tactic": "Reconnaissance",
-      "tcode": "T1592.004",
-      "technique_name": "Client Configurations",
-      "executor": "powershell",
-      "platform": "windows",
-      "required_tags": [
-        "excalibur_recon_target_domain"
-      ],
-      "command": "Write-Host '[START] T1592.004 - Client Configurations'; Write-Host '[INFO] Executing reconnaissance operation'; Write-Host '[SUCCESS] T1592.004 completed successfully'",
-      "cleanup_command": "Write-Host '[INFO] T1592.004 cleanup: read-only reconnaissance operation, no cleanup required'",
-      "detection_rule": "Microsoft Defender for Endpoint behavioral detection for T1592.004 reconnaissance activity",
-      "sentinel_connector": "Microsoft Defender for Endpoint",
-      "source": "excalibur",
-      "package_id": "excalibur-reconnaissance-v1"
     }
   ],
   "chains": [
@@ -921,9 +252,7 @@
       "package": "excalibur",
       "tcode": "T1595",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1595-Active Scanning"
-      ]
+      "script_refs": ["Excalibur - Recon-T1595-Active Scanning"]
     },
     {
       "name": "Excalibur - Recon-T1590-Gather Victim Network Information",
@@ -931,9 +260,7 @@
       "package": "excalibur",
       "tcode": "T1590",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590-Gather Victim Network Information"
-      ]
+      "script_refs": ["Excalibur - Recon-T1590-Gather Victim Network Information"]
     },
     {
       "name": "Excalibur - Recon-T1592-WinPEAS Host Enumeration",
@@ -941,9 +268,7 @@
       "package": "excalibur",
       "tcode": "T1592",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)"
-      ]
+      "script_refs": ["Excalibur - Recon-T1592-Gather Victim Host Information (WinPEAS)"]
     },
     {
       "name": "Excalibur - Recon-T1589-Gather Victim Identity Information",
@@ -951,9 +276,7 @@
       "package": "excalibur",
       "tcode": "T1589",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1589-Gather Victim Identity Information"
-      ]
+      "script_refs": ["Excalibur - Recon-T1589-Gather Victim Identity Information"]
     },
     {
       "name": "Excalibur - Recon-T1596-Search Open Technical Databases",
@@ -961,9 +284,7 @@
       "package": "excalibur",
       "tcode": "T1596",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596-Search Open Technical Databases"
-      ]
+      "script_refs": ["Excalibur - Recon-T1596-Search Open Technical Databases"]
     },
     {
       "name": "Excalibur - Recon-T1593-Search Open Websites",
@@ -971,9 +292,7 @@
       "package": "excalibur",
       "tcode": "T1593",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1593-Search Open Websites"
-      ]
+      "script_refs": ["Excalibur - Recon-T1593-Search Open Websites"]
     },
     {
       "name": "Excalibur - Recon-T1591-Gather Victim Org Information",
@@ -981,9 +300,7 @@
       "package": "excalibur",
       "tcode": "T1591",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1591-Gather Victim Org Information"
-      ]
+      "script_refs": ["Excalibur - Recon-T1591-Gather Victim Org Information"]
     },
     {
       "name": "Excalibur - Recon-T1594-Search Victim-Owned Websites",
@@ -991,9 +308,7 @@
       "package": "excalibur",
       "tcode": "T1594",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1594-Search Victim-Owned Websites"
-      ]
+      "script_refs": ["Excalibur - Recon-T1594-Search Victim-Owned Websites"]
     },
     {
       "name": "Excalibur - Recon-T1597-Search Closed Sources",
@@ -1001,9 +316,7 @@
       "package": "excalibur",
       "tcode": "T1597",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1597-Search Closed Sources"
-      ]
+      "script_refs": ["Excalibur - Recon-T1597-Search Closed Sources"]
     },
     {
       "name": "Excalibur - Recon-T1598-Phishing for Information Recon",
@@ -1011,9 +324,7 @@
       "package": "excalibur",
       "tcode": "T1598",
       "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1598-Phishing for Information Recon"
-      ]
+      "script_refs": ["Excalibur - Recon-T1598-Phishing for Information Recon"]
     },
     {
       "name": "Excalibur - Reconnaissance Full Sweep",
@@ -1032,346 +343,6 @@
         "Excalibur - Recon-T1594-Search Victim-Owned Websites",
         "Excalibur - Recon-T1597-Search Closed Sources",
         "Excalibur - Recon-T1598-Phishing for Information Recon"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1595.001-Scanning-IP-Blocks",
-      "description": "Single-step emulation chain for T1595.001: Scanning IP Blocks",
-      "package": "excalibur",
-      "tcode": "T1595.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1595.001-Scanning-IP-Blocks"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1595.002-Vulnerability-Scanning",
-      "description": "Single-step emulation chain for T1595.002: Vulnerability Scanning",
-      "package": "excalibur",
-      "tcode": "T1595.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1595.002-Vulnerability-Scanning"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1595.003-Wordlist-Scanning",
-      "description": "Single-step emulation chain for T1595.003: Wordlist Scanning",
-      "package": "excalibur",
-      "tcode": "T1595.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1595.003-Wordlist-Scanning"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1596.001-Passive-DNS",
-      "description": "Single-step emulation chain for T1596.001: Passive DNS",
-      "package": "excalibur",
-      "tcode": "T1596.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596.001-Passive-DNS"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1596.002-WHOIS",
-      "description": "Single-step emulation chain for T1596.002: WHOIS",
-      "package": "excalibur",
-      "tcode": "T1596.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596.002-WHOIS"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1596.003-Digital-Certificates",
-      "description": "Single-step emulation chain for T1596.003: Digital Certificates",
-      "package": "excalibur",
-      "tcode": "T1596.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596.003-Digital-Certificates"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1596.004-CDNs",
-      "description": "Single-step emulation chain for T1596.004: CDNs",
-      "package": "excalibur",
-      "tcode": "T1596.004",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596.004-CDNs"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1596.005-Scan-Databases",
-      "description": "Single-step emulation chain for T1596.005: Scan Databases",
-      "package": "excalibur",
-      "tcode": "T1596.005",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1596.005-Scan-Databases"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1593.001-Social-Media",
-      "description": "Single-step emulation chain for T1593.001: Social Media",
-      "package": "excalibur",
-      "tcode": "T1593.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1593.001-Social-Media"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1593.002-Search-Engines",
-      "description": "Single-step emulation chain for T1593.002: Search Engines",
-      "package": "excalibur",
-      "tcode": "T1593.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1593.002-Search-Engines"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1593.003-Code-Repositories",
-      "description": "Single-step emulation chain for T1593.003: Code Repositories",
-      "package": "excalibur",
-      "tcode": "T1593.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1593.003-Code-Repositories"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1597.001-Threat-Intelligence",
-      "description": "Single-step emulation chain for T1597.001: Threat Intelligence",
-      "package": "excalibur",
-      "tcode": "T1597.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1597.001-Threat-Intelligence"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1597.002-Purchase-Technical-Data",
-      "description": "Single-step emulation chain for T1597.002: Purchase Technical Data",
-      "package": "excalibur",
-      "tcode": "T1597.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1597.002-Purchase-Technical-Data"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1598.001-Spearphishing-Service",
-      "description": "Single-step emulation chain for T1598.001: Spearphishing Service",
-      "package": "excalibur",
-      "tcode": "T1598.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1598.001-Spearphishing-Service"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1598.002-Spearphishing-Attachment",
-      "description": "Single-step emulation chain for T1598.002: Spearphishing Attachment",
-      "package": "excalibur",
-      "tcode": "T1598.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1598.002-Spearphishing-Attachment"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1598.003-Spearphishing-Link",
-      "description": "Single-step emulation chain for T1598.003: Spearphishing Link",
-      "package": "excalibur",
-      "tcode": "T1598.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1598.003-Spearphishing-Link"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1598.004-Spearphishing-Voice",
-      "description": "Single-step emulation chain for T1598.004: Spearphishing Voice",
-      "package": "excalibur",
-      "tcode": "T1598.004",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1598.004-Spearphishing-Voice"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1591.001-Identify-Locations",
-      "description": "Single-step emulation chain for T1591.001: Identify Locations",
-      "package": "excalibur",
-      "tcode": "T1591.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1591.001-Identify-Locations"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1591.002-Identify-Business-Relationships",
-      "description": "Single-step emulation chain for T1591.002: Identify Business Relationships",
-      "package": "excalibur",
-      "tcode": "T1591.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1591.002-Identify-Business-Relationships"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1591.003-Identify-Business-Tempo",
-      "description": "Single-step emulation chain for T1591.003: Identify Business Tempo",
-      "package": "excalibur",
-      "tcode": "T1591.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1591.003-Identify-Business-Tempo"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1591.004-Identify-Roles",
-      "description": "Single-step emulation chain for T1591.004: Identify Roles",
-      "package": "excalibur",
-      "tcode": "T1591.004",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1591.004-Identify-Roles"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.001-Domain-Properties",
-      "description": "Single-step emulation chain for T1590.001: Domain Properties",
-      "package": "excalibur",
-      "tcode": "T1590.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.001-Domain-Properties"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.002-DNS",
-      "description": "Single-step emulation chain for T1590.002: DNS",
-      "package": "excalibur",
-      "tcode": "T1590.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.002-DNS"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.003-Network-Trust-Dependencies",
-      "description": "Single-step emulation chain for T1590.003: Network Trust Dependencies",
-      "package": "excalibur",
-      "tcode": "T1590.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.003-Network-Trust-Dependencies"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.004-Network-Topology",
-      "description": "Single-step emulation chain for T1590.004: Network Topology",
-      "package": "excalibur",
-      "tcode": "T1590.004",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.004-Network-Topology"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.005-IP-Addresses",
-      "description": "Single-step emulation chain for T1590.005: IP Addresses",
-      "package": "excalibur",
-      "tcode": "T1590.005",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.005-IP-Addresses"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1590.006-Network-Security-Appliances",
-      "description": "Single-step emulation chain for T1590.006: Network Security Appliances",
-      "package": "excalibur",
-      "tcode": "T1590.006",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1590.006-Network-Security-Appliances"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1589.001-Credentials",
-      "description": "Single-step emulation chain for T1589.001: Credentials",
-      "package": "excalibur",
-      "tcode": "T1589.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1589.001-Credentials"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1589.002-Email-Addresses",
-      "description": "Single-step emulation chain for T1589.002: Email Addresses",
-      "package": "excalibur",
-      "tcode": "T1589.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1589.002-Email-Addresses"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1589.003-Employee-Names",
-      "description": "Single-step emulation chain for T1589.003: Employee Names",
-      "package": "excalibur",
-      "tcode": "T1589.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1589.003-Employee-Names"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1592.001-Hardware",
-      "description": "Single-step emulation chain for T1592.001: Hardware",
-      "package": "excalibur",
-      "tcode": "T1592.001",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1592.001-Hardware"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1592.002-Software",
-      "description": "Single-step emulation chain for T1592.002: Software",
-      "package": "excalibur",
-      "tcode": "T1592.002",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1592.002-Software"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1592.003-Firmware",
-      "description": "Single-step emulation chain for T1592.003: Firmware",
-      "package": "excalibur",
-      "tcode": "T1592.003",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1592.003-Firmware"
-      ]
-    },
-    {
-      "name": "Excalibur - Recon-T1592.004-Client-Configurations",
-      "description": "Single-step emulation chain for T1592.004: Client Configurations",
-      "package": "excalibur",
-      "tcode": "T1592.004",
-      "tactic": "Reconnaissance",
-      "script_refs": [
-        "Excalibur - Recon-T1592.004-Client-Configurations"
       ]
     }
   ]
