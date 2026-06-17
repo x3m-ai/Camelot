@@ -22,7 +22,12 @@
       "label": "Common Impact Settings",
       "description": "Shared settings for impact scripts: staging directory for destructive action simulations and synthetic file count.",
       "scope": "local",
-      "used_by_tcodes": ["T1485", "T1486", "T1491", "T1561"],
+      "used_by_tcodes": [
+        "T1485",
+        "T1486",
+        "T1491",
+        "T1561"
+      ],
       "tags": [
         {
           "key": "excalibur_impact_staging_dir",
@@ -49,7 +54,9 @@
       "label": "T1498 - Network DoS Recon Target",
       "description": "Settings for the network DoS simulation. Target MUST be a TEST-NET IP (RFC 5737 range: 198.51.100.x or 203.0.113.x). Never set this to a real host.",
       "scope": "local",
-      "used_by_tcodes": ["T1498"],
+      "used_by_tcodes": [
+        "T1498"
+      ],
       "tags": [
         {
           "key": "excalibur_impact_dos_target",
@@ -73,7 +80,10 @@
       "technique_name": "Data Destruction",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_impact_staging_dir", "excalibur_impact_file_count"],
+      "required_tags": [
+        "excalibur_impact_staging_dir",
+        "excalibur_impact_file_count"
+      ],
       "command": "Write-Host '[START] T1485 - Data Destruction (secure overwrite + rename + delete simulation)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); $fileCount = [int]'#{excalibur_impact_file_count}'; if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $sensitiveNames = @('Q4-Financial-Report.xlsx','HR-Employee-Records.csv','Database-Backup-Full.bak','Active-Directory-Export.csv','Source-Code-Archive.zip','Customer-PII-Export.xlsx','Network-Diagrams.vsdx','KeePass-Vault.kdbx','SSL-Certificates.pfx','IT-Admin-Credentials.txt'); Write-Host ('[INFO] Staging ' + $fileCount + ' synthetic files for destruction simulation...'); $staged = @(); for ($i = 0; $i -lt $fileCount; $i++) { $fname = $sensitiveNames[$i % $sensitiveNames.Count]; if ($i -ge $sensitiveNames.Count) { $fname = 'target-file-' + $i + '.dat' }; $fpath = Join-Path $stagingDir $fname; $fdata = New-Object byte[] 4096; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($fdata); [System.IO.File]::WriteAllBytes($fpath, $fdata); $staged += $fpath }; Write-Host ('[INFO] Staged: ' + $staged.Count + ' files'); Write-Host '[INFO] Phase 1/3: Overwrite file contents with random bytes (data wipe - prevents recovery)'; foreach ($f in $staged) { try { $wipeBytes = New-Object byte[] (Get-Item $f).Length; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($wipeBytes); [System.IO.File]::WriteAllBytes($f, $wipeBytes); Write-Host ('[INFO]   WIPED: ' + [System.IO.Path]::GetFileName($f) + ' (' + $wipeBytes.Length + ' bytes overwritten with random data)') } catch { Write-Host ('[WARN]   Wipe failed: ' + $f + ' - ' + $_.Exception.Message) } }; Write-Host '[INFO] Phase 2/3: Rename wiped files (remove extension, randomize filename - obscures identity)'; $renamed = @(); foreach ($f in $staged) { try { $newName = ([System.BitConverter]::ToString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(4)) -replace '-','').ToLower(); $newPath = Join-Path ([System.IO.Path]::GetDirectoryName($f)) $newName; Rename-Item -Path $f -NewName $newName -Force -ErrorAction Stop; $renamed += $newPath; Write-Host ('[INFO]   RENAMED: ' + [System.IO.Path]::GetFileName($f) + ' -> ' + $newName) } catch { Write-Host ('[WARN]   Rename failed: ' + $_.Exception.Message) } }; Write-Host '[INFO] Phase 3/3: Delete renamed files'; $deleted = 0; foreach ($r in $renamed) { try { Remove-Item -Path $r -Force -ErrorAction Stop; $deleted++ } catch {} }; foreach ($f in $staged) { if (Test-Path $f) { Remove-Item -Path $f -Force -ErrorAction SilentlyContinue } }; Write-Host ('[INFO] Deleted: ' + $deleted + '/' + $staged.Count + ' files'); Write-Host '[SUCCESS] T1485 - Data destruction simulation completed. Sentinel target: Bulk file overwrite with random bytes + rename + delete (MDE - data destruction behavioral detection - NotPetya/Shamoon wipe pattern)'",
       "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1485 cleanup: staging dir removed'",
       "detection_rule": "Bulk file overwrite with random bytes + rename + delete (data wipe pattern - NotPetya/Shamoon behavioral signal)",
@@ -89,7 +99,10 @@
       "technique_name": "Data Encrypted for Impact",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_impact_staging_dir", "excalibur_impact_file_count"],
+      "required_tags": [
+        "excalibur_impact_staging_dir",
+        "excalibur_impact_file_count"
+      ],
       "command": "Write-Host '[START] T1486 - Data Encrypted for Impact (ransomware file encryption simulation)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); $fileCount = [int]'#{excalibur_impact_file_count}'; if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $fileNames = @('contract-2026-final.docx','salary-data-all-employees.xlsx','server-backup-20260608.bak','vpn-config.ovpn','network-scan-results.nmap','customer-database-export.csv','source-code-release-3.2.tar','admin-passwords-vault.txt','security-audit-2026.pdf','domain-controller-backup.vhd'); Write-Host ('[INFO] Staging ' + $fileCount + ' files for ransomware simulation...'); $staged = @(); for ($i = 0; $i -lt $fileCount; $i++) { $fname = $fileNames[$i % $fileNames.Count]; if ($i -ge $fileNames.Count) { $fname = 'document-' + $i + '.dat' }; $fpath = Join-Path $stagingDir $fname; $fdata = [System.Text.Encoding]::UTF8.GetBytes('MorganaRansomSimContent-' + $fname + '-' + (Get-Date -Format 'o')); [System.IO.File]::WriteAllBytes($fpath, $fdata); $staged += $fpath }; Write-Host ('[INFO] Staged ' + $staged.Count + ' files'); Write-Host '[INFO] Phase 1/3: AES encrypt + .encrypted extension rename (ransomware pattern)'; $aesKey = New-Object byte[] 32; $aesIv = New-Object byte[] 16; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($aesKey); [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($aesIv); $encrypted = 0; foreach ($f in $staged) { try { $plainBytes = [System.IO.File]::ReadAllBytes($f); $aes = [System.Security.Cryptography.Aes]::Create(); $aes.Key = $aesKey; $aes.IV = $aesIv; $ms = New-Object System.IO.MemoryStream; $cs = New-Object System.Security.Cryptography.CryptoStream($ms, $aes.CreateEncryptor(), [System.Security.Cryptography.CryptoStreamMode]::Write); $cs.Write($plainBytes, 0, $plainBytes.Length); $cs.FlushFinalBlock(); $encBytes = $ms.ToArray(); $cs.Dispose(); $ms.Dispose(); $aes.Dispose(); $encPath = $f + '.encrypted'; [System.IO.File]::WriteAllBytes($encPath, $encBytes); Remove-Item $f -Force; $encrypted++; Write-Host ('[INFO]   ENCRYPTED: ' + [System.IO.Path]::GetFileName($f) + ' -> ' + [System.IO.Path]::GetFileName($encPath) + ' (' + $encBytes.Length + ' bytes)') } catch { Write-Host ('[WARN]   Encrypt failed: ' + $_.Exception.Message) } }; Write-Host ('[INFO] Encrypted: ' + $encrypted + '/' + $staged.Count + ' files'); Write-Host '[INFO] Phase 2/3: Drop ransom note (README-HOW-TO-DECRYPT.txt)'; $ransomNote = Join-Path $stagingDir 'README-HOW-TO-DECRYPT.txt'; $noteContent = \"YOUR FILES HAVE BEEN ENCRYPTED`nThis is a SIMULATION by Morgana Excalibur T1486`n`nIn a real attack, all files on this machine would be encrypted.`nPayment instructions would appear here.`n`nDo NOT modify encrypted files - they cannot be recovered without the key.`nContact: morgana-sim@example.com | ID: \" + $env:COMPUTERNAME + \"-\" + (Get-Date -Format 'yyyyMMdd'); [System.IO.File]::WriteAllText($ransomNote, $noteContent); Write-Host ('[INFO] Ransom note dropped: ' + $ransomNote); Write-Host '[INFO] Phase 3/3: RunOnce registry key (ransomware persistence - display ransom note on reboot)'; try { $runOncePath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce'; Set-ItemProperty -Path $runOncePath -Name 'MorganaRansomSimT1486' -Value ('notepad.exe \"' + $ransomNote + '\"') -ErrorAction Stop; Write-Host '[INFO] RunOnce key written: HKCU\\...\\RunOnce\\MorganaRansomSimT1486 (MDE persistence + ransomware ransom-note autorun signal)' } catch { Write-Host ('[WARN] RunOnce: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1486 - Ransomware encryption simulation completed. Sentinel target: Bulk .encrypted rename + ransom note drop + RunOnce registry persistence (MDE - ransomware behavioral detection)'",
       "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce' -Name 'MorganaRansomSimT1486' -ErrorAction SilentlyContinue; Write-Host '[INFO] T1486 cleanup: staging dir and RunOnce key removed'",
       "detection_rule": "Bulk .encrypted file rename + ransom note drop + RunOnce registry write (ransomware behavioral pattern)",
@@ -137,7 +150,9 @@
       "technique_name": "Defacement",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_impact_staging_dir"],
+      "required_tags": [
+        "excalibur_impact_staging_dir"
+      ],
       "command": "Write-Host '[START] T1491 - Defacement (local HTML defacement + wallpaper registry modification)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; Write-Host '[INFO] Step 1/3: Create and deface local HTML file (internal intranet page simulation)'; $htmlTarget = Join-Path $stagingDir 'index.html'; $originalHtml = '<html><head><title>Internal Portal</title></head><body><h1>Welcome to the Internal Portal</h1><p>This is a simulated internal intranet page for Morgana T1491 testing.</p></body></html>'; [System.IO.File]::WriteAllText($htmlTarget, $originalHtml); Write-Host ('[INFO] Original HTML: ' + $htmlTarget); $defacementHtml = '<!DOCTYPE html><html><head><title>HACKED</title><style>body{background:#000;color:#ff0000;font-family:monospace;text-align:center;padding:50px;}h1{font-size:72px;text-shadow:0 0 20px #ff0000;}p{font-size:24px;}</style></head><body><h1>!! DEFACED !!</h1><p>This system has been compromised.</p><p>Morgana Excalibur T1491 Impact Simulation</p><p>Timestamp: ' + (Get-Date -Format 'o') + '</p><p>Host: ' + $env:COMPUTERNAME + '</p></body></html>'; [System.IO.File]::WriteAllText($htmlTarget, $defacementHtml); Write-Host '[INFO] HTML file defaced: index.html (original content replaced with adversary defacement message)'; Write-Host '[INFO] Step 2/3: Wallpaper registry modification (nation-state/ransomware defacement - change desktop background)'; $wallpaperRegPath = 'HKCU:\\Control Panel\\Desktop'; try { $originalWallpaper = (Get-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -ErrorAction SilentlyContinue).Wallpaper; $fakeBmpPath = Join-Path $stagingDir 'defacement-wallpaper.bmp'; $bmpHeader = [byte[]](0x42,0x4D,0x7A,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x7A,0x00,0x00,0x00,0x6C,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x01,0x00,0x18,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00); [System.IO.File]::WriteAllBytes($fakeBmpPath, $bmpHeader); Set-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -Value $fakeBmpPath -ErrorAction Stop; Write-Host ('[INFO] Wallpaper registry set to: ' + $fakeBmpPath + ' (HKCU\\Control Panel\\Desktop\\Wallpaper modified - defacement registry signal)'); Start-Sleep 2; if ($originalWallpaper) { Set-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -Value $originalWallpaper -ErrorAction SilentlyContinue } else { Remove-ItemProperty -Path $wallpaperRegPath -Name Wallpaper -ErrorAction SilentlyContinue }; Write-Host '[INFO] Wallpaper registry restored to original' } catch { Write-Host ('[INFO] Wallpaper registry: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/3: Check for IIS wwwroot presence (external defacement reachability)'; $iisRoot = 'C:\\inetpub\\wwwroot'; if (Test-Path $iisRoot) { $iisFiles = Get-ChildItem $iisRoot -ErrorAction SilentlyContinue | Select-Object -First 5; Write-Host ('[INFO] IIS wwwroot found: ' + $iisRoot + ' (' + @($iisFiles).Count + ' files) - in a real attack, web files here would be defaced'); Write-Host '[INFO] (Simulation only: actual IIS files NOT modified)' } else { Write-Host '[INFO] IIS wwwroot: not found (no web server - defacement would target local HTML only)' }; Write-Host '[SUCCESS] T1491 - Defacement simulation completed. Sentinel target: HTML file content replacement + wallpaper registry modification (MDE - defacement behavioral detection)'",
       "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1491 cleanup: staging dir removed (wallpaper already restored in script)'",
       "detection_rule": "HTML file content overwrite with defacement markup + wallpaper registry modification",
@@ -169,7 +184,9 @@
       "technique_name": "Network Denial of Service",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_impact_dos_target"],
+      "required_tags": [
+        "excalibur_impact_dos_target"
+      ],
       "command": "Write-Host '[START] T1498 - Network Denial of Service (TCP SYN + UDP flood simulation to TEST-NET only)'; $target = '#{excalibur_impact_dos_target}'; if ($target -notmatch '^(198\\.51\\.100\\.|203\\.0\\.113\\.|192\\.0\\.2\\.)') { Write-Host ('[ERROR] SAFETY CHECK FAILED: target ' + $target + ' is not a TEST-NET IP (RFC 5737). Aborting. Only 198.51.100.x, 203.0.113.x, or 192.0.2.x are permitted.'); exit 1 }; $burstCount = 50; $ports = @(80,443,8080,22,21,3389,1433,8443,53,25); Write-Host ('[INFO] DoS simulation target: ' + $target + ' (TEST-NET RFC 5737 - non-routable) | Burst: ' + $burstCount + ' attempts | Ports: ' + ($ports -join ',')); Write-Host '[INFO] Phase 1/2: TCP SYN flood pattern (parallel connection attempts)'; $startTime = Get-Date; $jobs = @(); $perPort = [math]::Ceiling($burstCount / $ports.Count); foreach ($port in $ports) { for ($i = 0; $i -lt $perPort; $i++) { $j = [System.Threading.Tasks.Task]::Run([System.Func[object]]{ try { $tcp = New-Object System.Net.Sockets.TcpClient; $r = $tcp.BeginConnect($using:target, $port, $null, $null); $r.AsyncWaitHandle.WaitOne(300) | Out-Null; $tcp.Close() } catch {} ; return $null }); $jobs += $j } }; [System.Threading.Tasks.Task]::WaitAll($jobs, 5000) | Out-Null; $elapsed = ((Get-Date) - $startTime).TotalSeconds; Write-Host ('[INFO] TCP SYN burst complete: ' + $jobs.Count + ' attempts to ' + $target + ' in ' + [math]::Round($elapsed,2) + 's (' + [math]::Round($jobs.Count/$elapsed,0) + ' attempts/sec) - high-rate outbound TCP logged by MDE'); Write-Host '[INFO] Phase 2/2: UDP flood pattern (10 UDP sends to random high ports)'; try { $udpClient = New-Object System.Net.Sockets.UdpClient; $udpPayload = [System.Text.Encoding]::ASCII.GetBytes('MorganaDoSSimT1498' + ('x' * 100)); for ($i = 0; $i -lt 10; $i++) { $udpPort = Get-Random -Minimum 10000 -Maximum 65535; try { $udpClient.Send($udpPayload, $udpPayload.Length, $target, $udpPort) | Out-Null } catch {} }; $udpClient.Close(); Write-Host '[INFO] UDP flood pattern: 10 UDP datagrams sent to random high ports on ' + $target } catch { Write-Host ('[INFO] UDP flood: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1498 - Network DoS simulation completed. Sentinel target: High-rate outbound TCP SYN burst to single IP across multiple ports (MDE - network DoS behavioral detection)'",
       "cleanup_command": "Write-Host '[INFO] T1498 cleanup: no artefacts - network connection attempts only'",
       "detection_rule": "High-rate outbound TCP SYN burst to single IP across multiple ports (network DoS flood pattern)",
@@ -217,10 +234,316 @@
       "technique_name": "Disk Wipe",
       "executor": "powershell",
       "platform": "windows",
-      "required_tags": ["excalibur_impact_staging_dir"],
+      "required_tags": [
+        "excalibur_impact_staging_dir"
+      ],
       "command": "Write-Host '[START] T1561 - Disk Wipe simulation (physical disk enumeration + diskpart invocation - NO actual writes)'; Write-Host '[INFO] Step 1/4: Physical disk enumeration (WMI Win32_DiskDrive - attacker target identification)'; try { $disks = Get-WmiObject -Class Win32_DiskDrive -ErrorAction SilentlyContinue; Write-Host ('[INFO] Physical disks found: ' + @($disks).Count); foreach ($disk in $disks) { $sizeGB = [math]::Round($disk.Size/1GB, 1); Write-Host ('    ' + $disk.DeviceID + ' | ' + $sizeGB + ' GB | ' + $disk.Model + ' | Partitions: ' + $disk.Partitions + ' | Interface: ' + $disk.InterfaceType + ' | Media: ' + $disk.MediaType) } } catch { Write-Host ('[INFO] Win32_DiskDrive: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 2/4: Partition layout enumeration (Win32_DiskPartition - sector geometry for wipe targeting)'; try { $partitions = Get-WmiObject -Class Win32_DiskPartition -ErrorAction SilentlyContinue; Write-Host ('[INFO] Partitions found: ' + @($partitions).Count); foreach ($p in $partitions) { Write-Host ('    ' + $p.Name + ' | ' + [math]::Round($p.Size/1GB,1) + ' GB | StartSector: ' + $p.StartingOffset + ' | Bootable: ' + $p.Bootable + ' | Type: ' + $p.Type) } } catch { Write-Host ('[INFO] Win32_DiskPartition: ' + $_.Exception.Message) }; Write-Host '[INFO] Step 3/4: diskpart list volumes (LOLBin invocation - disk wipe preparation signal)'; $stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null }; $diskpartScript = Join-Path $stagingDir 'diskpart-list.txt'; [System.IO.File]::WriteAllText($diskpartScript, \"list disk`r`nlist volume`r`nlist partition`r`nexit`r`n\"); try { $dpResult = & diskpart.exe /s $diskpartScript 2>&1; $dpLines = $dpResult | Where-Object { $_ -match '\\S' } | Select-Object -First 20; Write-Host ('[INFO] diskpart /s output (' + @($dpLines).Count + ' lines):'); $dpLines | ForEach-Object { Write-Host ('    ' + $_.Trim()) } } catch { Write-Host ('[INFO] diskpart.exe: ' + $_.Exception.Message) } finally { Remove-Item $diskpartScript -ErrorAction SilentlyContinue }; Write-Host '[INFO] Step 4/4: format.com /? invocation (disk format tool recon - invocation signal only)'; try { $formatHelp = & format.com /? 2>&1 | Select-Object -First 3; Write-Host ('[INFO] format.com /? invoked (format tool presence and invocation logged by MDE)'); Write-Host '[INFO] Simulated destructive commands (NOT executed): format C: /fs:NTFS /q | dd if=/dev/zero of=\\\\.\\PhysicalDrive0' } catch { Write-Host ('[INFO] format.com: ' + $_.Exception.Message) }; Write-Host '[SUCCESS] T1561 - Disk wipe simulation completed. Sentinel target: WMI disk enumeration + diskpart.exe /s invocation + format.com invocation (MDE - disk wipe preparation behavioral detection - NO data was erased)'",
       "cleanup_command": "$stagingDir = [System.Environment]::ExpandEnvironmentVariables('#{excalibur_impact_staging_dir}'); if (Test-Path $stagingDir) { Remove-Item -Path $stagingDir -Recurse -Force -ErrorAction SilentlyContinue }; Write-Host '[INFO] T1561 cleanup: staging dir removed'",
       "detection_rule": "WMI disk partition enumeration + diskpart.exe /s invocation + format.com invocation (disk wipe preparation)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1561.002-Disk Structure Wipe",
+      "name": "Excalibur - Impact-T1561.002-Disk Structure Wipe",
+      "description": "Adversaries may corrupt or wipe the disk data structures on a hard drive necessary to boot a system; targeting specific critical systems or in large numbers in a network to interrupt availability to system and network resources.",
+      "tactic": "Impact",
+      "tcode": "T1561.002",
+      "technique_name": "Disk Structure Wipe",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1561.002 - Disk Structure Wipe'; Write-Host '[INFO] Emulating T1561.002 (Disk Structure Wipe) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1561.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1561.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Disk Structure Wipe (T1561.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1498.001-Direct Network Flood",
+      "name": "Excalibur - Impact-T1498.001-Direct Network Flood",
+      "description": "Adversaries may attempt to cause a denial of service (DoS) by directly sending a high-volume of network traffic to a target.",
+      "tactic": "Impact",
+      "tcode": "T1498.001",
+      "technique_name": "Direct Network Flood",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1498.001 - Direct Network Flood'; Write-Host '[INFO] Emulating T1498.001 (Direct Network Flood) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1498.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1498.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Direct Network Flood (T1498.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1491.002-External Defacement",
+      "name": "Excalibur - Impact-T1491.002-External Defacement",
+      "description": "An adversary may deface systems external to an organization in an attempt to deliver messaging, intimidate, or otherwise mislead an organization or users.",
+      "tactic": "Impact",
+      "tcode": "T1491.002",
+      "technique_name": "External Defacement",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1491.002 - External Defacement'; Write-Host '[INFO] Emulating T1491.002 (External Defacement) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1491.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1491.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect External Defacement (T1491.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1499.001-OS Exhaustion Flood",
+      "name": "Excalibur - Impact-T1499.001-OS Exhaustion Flood",
+      "description": "Adversaries may launch a denial of service (DoS) attack targeting an endpoint's operating system (OS).",
+      "tactic": "Impact",
+      "tcode": "T1499.001",
+      "technique_name": "OS Exhaustion Flood",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1499.001 - OS Exhaustion Flood'; Write-Host '[INFO] Emulating T1499.001 (OS Exhaustion Flood) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1499.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1499.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect OS Exhaustion Flood (T1499.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1499.003-Application Exhaustion Flood",
+      "name": "Excalibur - Impact-T1499.003-Application Exhaustion Flood",
+      "description": "Adversaries may target resource intensive features of applications to cause a denial of service (DoS), denying availability to those applications.",
+      "tactic": "Impact",
+      "tcode": "T1499.003",
+      "technique_name": "Application Exhaustion Flood",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1499.003 - Application Exhaustion Flood'; Write-Host '[INFO] Emulating T1499.003 (Application Exhaustion Flood) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1499.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1499.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Application Exhaustion Flood (T1499.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1565.001-Stored Data Manipulation",
+      "name": "Excalibur - Impact-T1565.001-Stored Data Manipulation",
+      "description": "Adversaries may insert, delete, or manipulate data at rest in order to influence external outcomes or hide activity, thus threatening the integrity of the data.",
+      "tactic": "Impact",
+      "tcode": "T1565.001",
+      "technique_name": "Stored Data Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1565.001 - Stored Data Manipulation'; Write-Host '[INFO] Emulating T1565.001 (Stored Data Manipulation) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1565.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1565.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Stored Data Manipulation (T1565.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1499.004-Application or System Exploitation",
+      "name": "Excalibur - Impact-T1499.004-Application or System Exploitation",
+      "description": "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users.",
+      "tactic": "Impact",
+      "tcode": "T1499.004",
+      "technique_name": "Application or System Exploitation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1499.004 - Application or System Exploitation'; Write-Host '[INFO] Emulating T1499.004 (Application or System Exploitation) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1499.004 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1499.004 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Application or System Exploitation (T1499.004)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1565.003-Runtime Data Manipulation",
+      "name": "Excalibur - Impact-T1565.003-Runtime Data Manipulation",
+      "description": "Adversaries may modify systems in order to manipulate the data as it is accessed and displayed to an end user, thus threatening the integrity of the data.",
+      "tactic": "Impact",
+      "tcode": "T1565.003",
+      "technique_name": "Runtime Data Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1565.003 - Runtime Data Manipulation'; Write-Host '[INFO] Emulating T1565.003 (Runtime Data Manipulation) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1565.003 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1565.003 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Runtime Data Manipulation (T1565.003)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1498.002-Reflection Amplification",
+      "name": "Excalibur - Impact-T1498.002-Reflection Amplification",
+      "description": "Adversaries may attempt to cause a denial of service (DoS) by reflecting a high-volume of network traffic to a target.",
+      "tactic": "Impact",
+      "tcode": "T1498.002",
+      "technique_name": "Reflection Amplification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1498.002 - Reflection Amplification'; Write-Host '[INFO] Emulating T1498.002 (Reflection Amplification) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1498.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1498.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Reflection Amplification (T1498.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1499.002-Service Exhaustion Flood",
+      "name": "Excalibur - Impact-T1499.002-Service Exhaustion Flood",
+      "description": "Adversaries may target the different network services provided by systems to conduct a denial of service (DoS).",
+      "tactic": "Impact",
+      "tcode": "T1499.002",
+      "technique_name": "Service Exhaustion Flood",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1499.002 - Service Exhaustion Flood'; Write-Host '[INFO] Emulating T1499.002 (Service Exhaustion Flood) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1499.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1499.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Service Exhaustion Flood (T1499.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1496.002-Bandwidth Hijacking",
+      "name": "Excalibur - Impact-T1496.002-Bandwidth Hijacking",
+      "description": "Adversaries may leverage the network bandwidth resources of co-opted systems to complete resource-intensive tasks, which may impact system and/or hosted service availability.",
+      "tactic": "Impact",
+      "tcode": "T1496.002",
+      "technique_name": "Bandwidth Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1496.002 - Bandwidth Hijacking'; Write-Host '[INFO] Emulating T1496.002 (Bandwidth Hijacking) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1496.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1496.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Bandwidth Hijacking (T1496.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1657-Financial Theft",
+      "name": "Excalibur - Impact-T1657-Financial Theft",
+      "description": "Adversaries may steal monetary resources from targets through extortion, social engineering, technical theft, or other methods aimed at their own financial gain at the expense of the availability of these resources for victims.",
+      "tactic": "Impact",
+      "tcode": "T1657",
+      "technique_name": "Financial Theft",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1657 - Financial Theft'; Write-Host '[INFO] Emulating T1657 (Financial Theft) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1657 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1657 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Financial Theft (T1657)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1491.001-Internal Defacement",
+      "name": "Excalibur - Impact-T1491.001-Internal Defacement",
+      "description": "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users, thus discrediting the integrity of the systems.",
+      "tactic": "Impact",
+      "tcode": "T1491.001",
+      "technique_name": "Internal Defacement",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1491.001 - Internal Defacement'; Write-Host '[INFO] Emulating T1491.001 (Internal Defacement) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1491.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1491.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Internal Defacement (T1491.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1496.001-Compute Hijacking",
+      "name": "Excalibur - Impact-T1496.001-Compute Hijacking",
+      "description": "Adversaries may leverage the compute resources of co-opted systems to complete resource-intensive tasks, which may impact system and/or hosted service availability.",
+      "tactic": "Impact",
+      "tcode": "T1496.001",
+      "technique_name": "Compute Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1496.001 - Compute Hijacking'; Write-Host '[INFO] Emulating T1496.001 (Compute Hijacking) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1496.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1496.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Compute Hijacking (T1496.001)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1565-Data Manipulation",
+      "name": "Excalibur - Impact-T1565-Data Manipulation",
+      "description": "Adversaries may insert, delete, or manipulate data in order to influence external outcomes or hide activity, thus threatening the integrity of the data.",
+      "tactic": "Impact",
+      "tcode": "T1565",
+      "technique_name": "Data Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1565 - Data Manipulation'; Write-Host '[INFO] Emulating T1565 (Data Manipulation) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1565 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1565 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Data Manipulation (T1565)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1667-Email Bombing",
+      "name": "Excalibur - Impact-T1667-Email Bombing",
+      "description": "Adversaries may flood targeted email addresses with an overwhelming volume of messages.",
+      "tactic": "Impact",
+      "tcode": "T1667",
+      "technique_name": "Email Bombing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1667 - Email Bombing'; Write-Host '[INFO] Emulating T1667 (Email Bombing) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1667 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1667 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Email Bombing (T1667)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1496-Resource Hijacking",
+      "name": "Excalibur - Impact-T1496-Resource Hijacking",
+      "description": "Adversaries may leverage the resources of co-opted systems to complete resource-intensive tasks, which may impact system and/or hosted service availability.",
+      "tactic": "Impact",
+      "tcode": "T1496",
+      "technique_name": "Resource Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1496 - Resource Hijacking'; Write-Host '[INFO] Emulating T1496 (Resource Hijacking) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1496 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1496 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Resource Hijacking (T1496)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1565.002-Transmitted Data Manipulation",
+      "name": "Excalibur - Impact-T1565.002-Transmitted Data Manipulation",
+      "description": "Adversaries may alter data en route to storage or other systems in order to manipulate external outcomes or hide activity, thus threatening the integrity of the data.",
+      "tactic": "Impact",
+      "tcode": "T1565.002",
+      "technique_name": "Transmitted Data Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1565.002 - Transmitted Data Manipulation'; Write-Host '[INFO] Emulating T1565.002 (Transmitted Data Manipulation) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1565.002 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1565.002 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Transmitted Data Manipulation (T1565.002)",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "package": "excalibur"
+    },
+    {
+      "id": "Excalibur - Impact-T1561.001-Disk Content Wipe",
+      "name": "Excalibur - Impact-T1561.001-Disk Content Wipe",
+      "description": "Adversaries may erase the contents of storage devices on specific systems or in large numbers in a network to interrupt availability to system and network resources.",
+      "tactic": "Impact",
+      "tcode": "T1561.001",
+      "technique_name": "Disk Content Wipe",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Write-Host '[START] T1561.001 - Disk Content Wipe'; Write-Host '[INFO] Emulating T1561.001 (Disk Content Wipe) tactic=Impact platform=windows'; Write-Host '[SUCCESS] T1561.001 emulation event logged'",
+      "cleanup_command": "Write-Host '[INFO] T1561.001 cleanup: no persistent artefacts'",
+      "detection_rule": "Detect Disk Content Wipe (T1561.001)",
       "sentinel_connector": "Microsoft Defender for Endpoint",
       "package": "excalibur"
     }
@@ -232,7 +555,9 @@
       "package": "excalibur",
       "tcode": "T1485",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1485-Data Destruction"]
+      "script_refs": [
+        "Excalibur - Impact-T1485-Data Destruction"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1486-Data Encrypted for Impact",
@@ -240,7 +565,9 @@
       "package": "excalibur",
       "tcode": "T1486",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1486-Data Encrypted for Impact"]
+      "script_refs": [
+        "Excalibur - Impact-T1486-Data Encrypted for Impact"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1489-Service Stop",
@@ -248,7 +575,9 @@
       "package": "excalibur",
       "tcode": "T1489",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1489-Service Stop"]
+      "script_refs": [
+        "Excalibur - Impact-T1489-Service Stop"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1490-Inhibit System Recovery",
@@ -256,7 +585,9 @@
       "package": "excalibur",
       "tcode": "T1490",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1490-Inhibit System Recovery"]
+      "script_refs": [
+        "Excalibur - Impact-T1490-Inhibit System Recovery"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1491-Defacement",
@@ -264,7 +595,9 @@
       "package": "excalibur",
       "tcode": "T1491",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1491-Defacement"]
+      "script_refs": [
+        "Excalibur - Impact-T1491-Defacement"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1495-Firmware Corruption Recon",
@@ -272,7 +605,9 @@
       "package": "excalibur",
       "tcode": "T1495",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1495-Firmware Corruption Recon"]
+      "script_refs": [
+        "Excalibur - Impact-T1495-Firmware Corruption Recon"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1498-Network Denial of Service",
@@ -280,7 +615,9 @@
       "package": "excalibur",
       "tcode": "T1498",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1498-Network Denial of Service"]
+      "script_refs": [
+        "Excalibur - Impact-T1498-Network Denial of Service"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1499-Endpoint Denial of Service",
@@ -288,7 +625,9 @@
       "package": "excalibur",
       "tcode": "T1499",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1499-Endpoint Denial of Service"]
+      "script_refs": [
+        "Excalibur - Impact-T1499-Endpoint Denial of Service"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1529-System Shutdown-Reboot",
@@ -296,7 +635,9 @@
       "package": "excalibur",
       "tcode": "T1529",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1529-System Shutdown-Reboot"]
+      "script_refs": [
+        "Excalibur - Impact-T1529-System Shutdown-Reboot"
+      ]
     },
     {
       "name": "Excalibur - Impact-T1561-Disk Wipe",
@@ -304,7 +645,9 @@
       "package": "excalibur",
       "tcode": "T1561",
       "tactic": "Impact",
-      "script_refs": ["Excalibur - Impact-T1561-Disk Wipe"]
+      "script_refs": [
+        "Excalibur - Impact-T1561-Disk Wipe"
+      ]
     },
     {
       "name": "Excalibur - Impact Full Sweep",
@@ -323,6 +666,196 @@
         "Excalibur - Impact-T1499-Endpoint Denial of Service",
         "Excalibur - Impact-T1529-System Shutdown-Reboot",
         "Excalibur - Impact-T1561-Disk Wipe"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1561.002-Disk Structure Wipe",
+      "description": "Emulation chain for T1561.002: Disk Structure Wipe.",
+      "package": "excalibur",
+      "tcode": "T1561.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1561.002-Disk Structure Wipe"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1498.001-Direct Network Flood",
+      "description": "Emulation chain for T1498.001: Direct Network Flood.",
+      "package": "excalibur",
+      "tcode": "T1498.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1498.001-Direct Network Flood"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1491.002-External Defacement",
+      "description": "Emulation chain for T1491.002: External Defacement.",
+      "package": "excalibur",
+      "tcode": "T1491.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1491.002-External Defacement"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1499.001-OS Exhaustion Flood",
+      "description": "Emulation chain for T1499.001: OS Exhaustion Flood.",
+      "package": "excalibur",
+      "tcode": "T1499.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1499.001-OS Exhaustion Flood"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1499.003-Application Exhaustion Flood",
+      "description": "Emulation chain for T1499.003: Application Exhaustion Flood.",
+      "package": "excalibur",
+      "tcode": "T1499.003",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1499.003-Application Exhaustion Flood"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1565.001-Stored Data Manipulation",
+      "description": "Emulation chain for T1565.001: Stored Data Manipulation.",
+      "package": "excalibur",
+      "tcode": "T1565.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1565.001-Stored Data Manipulation"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1499.004-Application or System Exploitation",
+      "description": "Emulation chain for T1499.004: Application or System Exploitation.",
+      "package": "excalibur",
+      "tcode": "T1499.004",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1499.004-Application or System Exploitation"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1565.003-Runtime Data Manipulation",
+      "description": "Emulation chain for T1565.003: Runtime Data Manipulation.",
+      "package": "excalibur",
+      "tcode": "T1565.003",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1565.003-Runtime Data Manipulation"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1498.002-Reflection Amplification",
+      "description": "Emulation chain for T1498.002: Reflection Amplification.",
+      "package": "excalibur",
+      "tcode": "T1498.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1498.002-Reflection Amplification"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1499.002-Service Exhaustion Flood",
+      "description": "Emulation chain for T1499.002: Service Exhaustion Flood.",
+      "package": "excalibur",
+      "tcode": "T1499.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1499.002-Service Exhaustion Flood"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1496.002-Bandwidth Hijacking",
+      "description": "Emulation chain for T1496.002: Bandwidth Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1496.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1496.002-Bandwidth Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1657-Financial Theft",
+      "description": "Emulation chain for T1657: Financial Theft.",
+      "package": "excalibur",
+      "tcode": "T1657",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1657-Financial Theft"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1491.001-Internal Defacement",
+      "description": "Emulation chain for T1491.001: Internal Defacement.",
+      "package": "excalibur",
+      "tcode": "T1491.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1491.001-Internal Defacement"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1496.001-Compute Hijacking",
+      "description": "Emulation chain for T1496.001: Compute Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1496.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1496.001-Compute Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1565-Data Manipulation",
+      "description": "Emulation chain for T1565: Data Manipulation.",
+      "package": "excalibur",
+      "tcode": "T1565",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1565-Data Manipulation"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1667-Email Bombing",
+      "description": "Emulation chain for T1667: Email Bombing.",
+      "package": "excalibur",
+      "tcode": "T1667",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1667-Email Bombing"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1496-Resource Hijacking",
+      "description": "Emulation chain for T1496: Resource Hijacking.",
+      "package": "excalibur",
+      "tcode": "T1496",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1496-Resource Hijacking"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1565.002-Transmitted Data Manipulation",
+      "description": "Emulation chain for T1565.002: Transmitted Data Manipulation.",
+      "package": "excalibur",
+      "tcode": "T1565.002",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1565.002-Transmitted Data Manipulation"
+      ]
+    },
+    {
+      "name": "Excalibur - Impact-T1561.001-Disk Content Wipe",
+      "description": "Emulation chain for T1561.001: Disk Content Wipe.",
+      "package": "excalibur",
+      "tcode": "T1561.001",
+      "tactic": "Impact",
+      "script_refs": [
+        "Excalibur - Impact-T1561.001-Disk Content Wipe"
       ]
     }
   ]
