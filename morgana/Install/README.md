@@ -1,13 +1,17 @@
 ﻿# Morgana - Installation Guide
 
-> **Morgana** is the X3M.AI controlled validation engine for Detection Assurance.  
-> Free access by request. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
+> **Morgana** is the X3M.AI advanced Red Team platform for adversary emulation, penetration testing, and Purple Team operations.  
+> Access by request. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
+
+> **Access notice:** Morgana is a controlled-distribution platform due to its advanced offensive capabilities. To use Morgana for Purple Team or Red Team operations, contact X3M.AI at [x3m.ai/contact](https://x3m.ai/contact/) before proceeding.
 
 ---
 
 ## What is Morgana?
 
-Morgana is a controlled validation engine built from the ground up by X3M.AI. It helps security teams validate, measure and improve detection capabilities through controlled adversary emulation, evidence collection and repeatable security testing workflows.
+Morgana is a professional-grade Red Team platform built from the ground up by X3M.AI. It delivers advanced adversary emulation, penetration testing workflows, and Purple Team automation — with integrated AI capabilities for automated test review and operation analysis.
+
+Morgana is a **controlled-distribution** platform. Due to its advanced offensive capabilities — persistent agent deployment, automated kill chain execution, and AI-assisted analysis — access is managed directly by X3M.AI. [Contact X3M.AI](https://x3m.ai/contact/) if you are interested in using Morgana for authorised Red Team or Purple Team operations.
 
 **Key concepts:**
 
@@ -23,13 +27,13 @@ Morgana is a controlled validation engine built from the ground up by X3M.AI. It
 
 ## Access
 
-Morgana is available through the **X3M.AI Join Program**, a free access programme for selected security teams, researchers, partners and organisations.
+Morgana is a **controlled-distribution** platform. Due to its advanced offensive capabilities — including persistent agent deployment, automated kill chain execution, PowerShell/cmd/bash/Python script execution on target machines, and AI-assisted test analysis — access is managed directly by X3M.AI.
 
-Access is **free**, but it is provided by request to ensure that the platform is used for authorised security validation, lab-based testing, learning, purple team activities and legitimate Detection Assurance experimentation.
+To use Morgana for Purple Team exercises or Red Team operations, contact X3M.AI. Our team will review your use case and provide access to authorised participants.
 
-**[Request Access -- X3M.AI Join Program](https://x3m.ai/contact/)**
+**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
 
-> **Responsible use:** Morgana must only be used for authorised security validation activities within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity or testing against systems without explicit permission.
+> **Responsible use:** Morgana must only be used for authorised Red Team and Purple Team operations within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity, or testing against systems without explicit written permission.
 
 ---
 
