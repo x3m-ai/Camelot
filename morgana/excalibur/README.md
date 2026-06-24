@@ -1,8 +1,10 @@
 # Excalibur Packages
 
-Excalibur packages are adversary emulation script collections for Purple Team exercises.
-Each package targets a specific platform or detection domain and is designed to validate
-SIEM analytics rules (Microsoft Sentinel, Defender, etc.).
+Excalibur is the certified adversary emulation script library for the **Morgana Advanced Red Team Platform**.
+
+Excalibur packages are professionally crafted attack script collections covering real-world MITRE ATT&CK tactics and techniques. Each package targets a specific platform, identity domain, or detection surface and is designed for authorised Purple Team and Red Team exercises — including adversary emulation, kill chain execution, and detection validation against enterprise security controls (Microsoft Sentinel, Defender for Endpoint, and others).
+
+> **Access notice:** Excalibur packages run inside Morgana, which is a controlled-distribution platform. To use Excalibur packs for Red Team or Purple Team operations, you must have authorised access to Morgana. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
 
 ---
 

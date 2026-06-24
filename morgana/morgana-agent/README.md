@@ -4,11 +4,11 @@
 > **Platform:** Windows (NT Service) / Linux (systemd)  
 > **Language:** Go 1.22  
 
-The Morgana Agent is a lightweight OS service installed on **target machines**.  
-It beacons to the Morgana Server, receives jobs, executes scripts, and reports results — forming the execution layer of the Purple Team platform.
+The Morgana Agent is the execution-layer component of the **Morgana Advanced Red Team Platform**. It is a lightweight OS service deployed on **target machines** that beacons to the Morgana Server, receives attack jobs, executes scripts (PowerShell, cmd, bash, Python), and reports results — forming the offensive execution layer of controlled Purple Team and Red Team operations.
 
-This folder contains the **full source code** of the agent, published here for transparency.  
-You are free to inspect it, build it yourself, and install your own binary.
+This folder contains the **full source code** of the agent, published here for transparency. You are free to inspect it and build it from source.
+
+> **Access notice:** The Morgana Agent is part of a controlled-distribution platform. To deploy and use Morgana for Red Team or Purple Team operations, you must have authorised access granted by X3M.AI. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
 
 ---
 

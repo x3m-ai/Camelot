@@ -49,7 +49,7 @@
 | Tool | What It Does | Install |
 |---|---|---|
 | **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
-| **Morgana** | Controlled validation engine for Detection Assurance -- adversary emulation, evidence collection, repeatable security testing workflows | [Request access](https://x3m.ai/contact/) |
+| **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur certified attack packs, Purple Team automation. Controlled distribution: contact X3M.AI for access | [Contact X3M.AI](https://x3m.ai/contact/) |
 
 Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
 
@@ -104,57 +104,69 @@ Merlino will appear in your Excel ribbon under **Add-ins**. Click it to open the
 
 ---
 
-## Morgana -- Detection Assurance Validation Engine
+## Morgana — Advanced Red Team Platform
 
-**Morgana** is the X3M.AI controlled validation engine for Detection Assurance. It helps security teams validate, measure and improve detection capabilities through controlled adversary emulation, evidence collection and repeatable security testing workflows.
+**Morgana** is X3M.AI's advanced Red Team platform for adversary emulation, penetration testing, and Purple Team operations. It is a professional-grade, first-class product — not a plugin, not a wrapper — built from the ground up to deliver state-of-the-art offensive security capabilities in a controlled, repeatable, and intelligence-driven manner.
 
-Morgana is available through the **X3M.AI Join Program**, a free access programme for selected security teams, researchers, partners and organisations interested in exploring Detection Assurance in a controlled and responsible way.
+Morgana operates as a three-tier execution platform:
 
-Access to Morgana is **free**, but it is provided by request to ensure that the platform is used for authorised security validation, lab-based testing, learning, purple team activities and legitimate Detection Assurance experimentation.
+| Tier | Role |
+|---|---|
+| **Server** | Python-based C2 server managing campaigns, agents, chains, and test execution |
+| **Agent** | Lightweight OS service (Windows NT Service / Linux systemd) deployed on target machines |
+| **Excalibur Packs** | Certified adversary emulation script libraries mapped to MITRE ATT&CK tactics |
 
-### Join the Morgana Free Access Program
+### Advanced AI Capabilities in Red Teaming
 
-If you want to explore Morgana, request access to the X3M.AI Join Program. Approved participants receive access to the available community release, guidance and materials needed to start using Morgana in a controlled environment.
+Morgana integrates cutting-edge AI directly into the Red Team workflow:
 
-**[Request Access -- X3M.AI Join Program](https://x3m.ai/contact/)**
+- **AI Test Review** — After each test execution, an AI engine automatically analyses the output, evaluates detection evasion, assesses execution quality, and generates structured intelligence reports
+- **Multi-provider AI** — Supports GitHub Models, OpenAI, Anthropic, Azure OpenAI, Ollama, and AWS Bedrock as AI backends
+- **AI-driven scenario planning** — Combined with Merlino's AI Assistant, teams can generate full Red Team operation plans based on threat intelligence and MITRE ATT&CK coverage gaps
+- **Automated campaign analysis** — AI correlates test outcomes across campaigns to identify systemic detection weaknesses
 
-The programme is designed for:
+### Why Distribution is Controlled
 
-- Security teams exploring Detection Assurance
-- SOC and detection engineering teams validating their controls
-- Purple team practitioners running authorised testing
-- Partners interested in X3M.AI Detection Assurance delivery
-- Researchers and professionals working in controlled lab environments
+Morgana is a **genuinely offensive tool**. Its capabilities — persistent agent deployment, PowerShell/cmd/bash/Python execution on target machines, automated kill chain orchestration, AI-enhanced evasion analysis — are powerful enough to cause serious harm if misused.
 
-> **Responsible use:** Morgana must only be used for authorised security validation activities within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity or testing against systems without explicit permission.
+For this reason, **X3M.AI controls the distribution of Morgana**. Access is granted only to security teams, organisations, and professionals who:
 
-### How Morgana Supports Detection Assurance
+- Are conducting **authorised** Purple Team or Red Team operations
+- Have **explicit written approval** to test the environments they are targeting
+- Accept and operate under the X3M.AI responsible use terms
 
-Morgana helps organisations move from assumed detection coverage to evidence-based confidence by supporting:
+> **Morgana must never be used for unauthorised access, offensive operations against systems without explicit written permission, or any activity that violates applicable laws.**
 
-- **Controlled adversary emulation** -- validate detection logic against realistic attack behaviours
-- **Detection evidence** -- understand what was detected, partially detected or missed
-- **Threat-informed testing** -- align validation activities to real-world tactics, techniques and procedures
-- **Coverage improvement** -- identify gaps and prioritise remediation actions
-- **Repeatable validation workflows** -- support continuous measurement and improvement over time
+### Access Morgana for Purple Teaming and Red Operations
+
+If you are interested in using Morgana for Purple Team exercises or Red Team operations — especially in conjunction with **Merlino** (which is free and open to all) — contact X3M.AI directly. Our team will review your use case and guide you through the access process.
+
+**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
+
+> **Merlino** is free for everyone, with no registration required.  
+> **Morgana** requires contacting X3M.AI for authorised access.
+
+### What Morgana Delivers
+
+- **Adversary emulation** — Execute certified attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
+- **Penetration testing workflows** — Repeatable, evidence-based test execution with full audit trails and AI-generated analysis
+- **Purple Team automation** — Merlino threat intelligence drives Morgana execution: one click synchronises your threat profile into a complete adversary emulation campaign
+- **Excalibur Packs** — Certified script libraries covering real-world attack scenarios: Entra ID, Execution, Lateral Movement, Persistence, and more
+- **Campaign management** — Group multiple tests into named campaigns, track results, and generate evidence reports
+- **Kill chain automation** — Script chains model multi-stage attack sequences from reconnaissance to impact
 
 ### The Merlino + Morgana Pipeline
 
-The real power of the X3M.AI ecosystem is the automated pipeline between intelligence and validation:
+The real power of the X3M.AI ecosystem is the automated pipeline between intelligence and execution:
 
-1. **Analyze** -- Build your threat profile in Merlino using MITRE ATT&CK data
-2. **Prioritize** -- CrossPick analysis identifies which techniques matter most
-3. **Synchronize** -- One click in Merlino automatically creates adversary profiles and operations on Morgana
-4. **Execute** -- Launch controlled validation operations directly from Morgana with pre-configured attack chains
-5. **Validate** -- Results flow back to Merlino, updating your detection coverage evidence in real time
+1. **Analyse** — Build your threat profile in Merlino using MITRE ATT&CK data
+2. **Prioritise** — CrossPick analysis identifies which techniques matter most for your organisation
+3. **Synchronise** — One click in Merlino automatically creates adversary profiles and operation chains on Morgana
+4. **Execute** — Launch controlled Red Team operations from Morgana with pre-configured attack chains
+5. **Review** — AI engine automatically analyses each test result and generates structured intelligence
+6. **Validate** — Results flow back to Merlino, updating your detection coverage evidence in real time
 
-What normally takes a detection engineering team days of manual work -- building test plans, selecting scripts, configuring operations -- Merlino and Morgana accomplish in seconds.
-
-### Community, Enterprise and Partner Use
-
-The Morgana Join Program provides free access for controlled evaluation, learning and authorised lab use. Enterprise deployments, production use, partner delivery, professional support and commercial Detection Assurance engagements are available through X3M.AI under a separate agreement.
-
-**[Book a FREE Detection Assurance Call](https://x3m.ai/contact/)**
+**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
 
 ---
 
