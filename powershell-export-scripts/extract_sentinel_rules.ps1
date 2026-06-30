@@ -7,7 +7,9 @@
     Merlino's Universal Catalogue format for import into the Merlino Excel Add-in.
     
     The script:
-    - Authenticates using Azure Service Principal (bypasses Conditional Access)
+    - Authenticates using one of two methods:
+        a) Service Principal (client credentials) - recommended for automation/CI
+        b) Interactive browser login via Connect-AzAccount (-InteractiveLogin switch) - recommended for manual use
     - Retrieves all Sentinel alert rules from the specified workspace
     - Maps rules to MITRE ATT&CK techniques (if available)
     - Generates two output files:
@@ -51,6 +53,11 @@
     Source identifier for Catalogue records (e.g., "Microsoft Sentinel Production")
     If not provided, will prompt interactively
 
+.PARAMETER InteractiveLogin
+    Switch. When specified, authenticates interactively via browser (Connect-AzAccount).
+    Requires the Az.Accounts PowerShell module. ClientId and ClientSecret are not needed.
+    Example: .\extract_sentinel_rules.ps1 -InteractiveLogin -TenantId "YOUR-TENANT-ID" -SubscriptionId "YOUR-SUB-ID" ...
+
 .EXAMPLE
     .\extract_sentinel_rules.ps1
     Runs with default parameters and prompts for Source name
@@ -59,15 +66,29 @@
     .\extract_sentinel_rules.ps1 -TenantId "YOUR-TENANT-ID" -ClientId "YOUR-CLIENT-ID" -ClientSecret "YOUR-SECRET" -Source "Production"
     Runs with specified credentials and Source name
 
+.EXAMPLE
+    .\extract_sentinel_rules.ps1 -InteractiveLogin -TenantId "YOUR-TENANT-ID" -SubscriptionId "YOUR-SUB-ID" -ResourceGroupName "rg-sentinel" -WorkspaceName "my-workspace" -Source "Production"
+    Runs with interactive browser login (no service principal required)
+
 .NOTES
     File Name      : extract_sentinel_rules.ps1
     Author         : X3M.AI - Merlino Team
     Prerequisite   : PowerShell 5.1 or higher
 
     
-    Required Azure AD App Registration Permissions:
-    - Microsoft.SecurityInsights/alertRules/read
-    - Microsoft.OperationalInsights/workspaces/read
+    Authentication options:
+
+    SERVICE PRINCIPAL (default):
+    - Requires an Azure AD App Registration with client credentials
+    - Required RBAC: Microsoft Sentinel Reader (or Contributor) on the workspace
+    - Parameters: -TenantId, -ClientId, -ClientSecret, -SubscriptionId
+
+    INTERACTIVE LOGIN (-InteractiveLogin switch):
+    - Requires the Az.Accounts PowerShell module (auto-installed if missing)
+    - Opens a browser window for sign-in (supports MFA, Conditional Access)
+    - Required RBAC: Microsoft Sentinel Reader (or higher) on the subscription
+    - Parameters: -TenantId, -SubscriptionId (no ClientId/ClientSecret needed)
+    - Compatible with Az.Accounts 2.x, 3.x, 4.x, 5.x (SecureString handled automatically)
     
     API Version: 2023-02-01
     
@@ -91,7 +112,8 @@ param(
     [string]$ResourceGroupName = "YOUR-RESOURCE-GROUP-NAME",
     [string]$WorkspaceName = "YOUR-SENTINEL-WORKSPACE-NAME",
     [string]$OutputFolder = $PSScriptRoot,
-    [string]$Source  # Will be prompted if not provided
+    [string]$Source,  # Will be prompted if not provided
+    [switch]$InteractiveLogin  # Use browser-based interactive login instead of service principal
 )
 
 # ---- Interactive Source Prompt ----
@@ -105,9 +127,9 @@ if ([string]::IsNullOrWhiteSpace($Source)) {
     Write-Host "  - 'Sentinel - Customer XYZ'        (customer-specific)" -ForegroundColor Gray
     Write-Host ""
     Write-Host "This allows you to:" -ForegroundColor White
-    Write-Host "  ✓ Compare rules between Development and Production" -ForegroundColor Green
-    Write-Host "  ✓ Filter Catalogue by environment" -ForegroundColor Green
-    Write-Host "  ✓ Track rule changes across environments" -ForegroundColor Green
+    Write-Host "  [OK] Compare rules between Development and Production" -ForegroundColor Green
+    Write-Host "  [OK] Filter Catalogue by environment" -ForegroundColor Green
+    Write-Host "  [OK] Track rule changes across environments" -ForegroundColor Green
     Write-Host ""
     
     $userInput = Read-Host "Enter Source name (press ENTER for default 'Microsoft Sentinel')"
@@ -146,6 +168,37 @@ function Get-ServicePrincipalToken {
     }
 }
 
+function Get-InteractiveToken {
+    param($TenantId, $SubscriptionId)
+
+    Write-Host "Authenticating interactively via browser..." -ForegroundColor Cyan
+    Write-Host "A browser window will open for sign-in." -ForegroundColor Yellow
+
+    if (-not (Get-Module -ListAvailable -Name Az.Accounts)) {
+        Write-Host "Az.Accounts module not found. Installing (CurrentUser scope)..." -ForegroundColor Yellow
+        Install-Module -Name Az.Accounts -Scope CurrentUser -Force -AllowClobber
+    }
+
+    Import-Module Az.Accounts -ErrorAction Stop
+
+    $connectParams = @{ TenantId = $TenantId }
+    if (-not [string]::IsNullOrWhiteSpace($SubscriptionId) -and $SubscriptionId -ne "YOUR-SUBSCRIPTION-ID-HERE") {
+        $connectParams.SubscriptionId = $SubscriptionId
+    }
+
+    Connect-AzAccount @connectParams | Out-Null
+
+    $tokenObj = Get-AzAccessToken -ResourceUrl "https://management.azure.com/"
+    $rawToken = $tokenObj.Token
+    if ($rawToken -is [System.Security.SecureString]) {
+        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($rawToken)
+        $rawToken = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+        [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    }
+    Write-Host "Authentication successful!" -ForegroundColor Green
+    return $rawToken
+}
+
 function Get-SentinelAlertRules {
     param($AccessToken, $SubscriptionId, $ResourceGroupName, $WorkspaceName)
     
@@ -168,7 +221,11 @@ function Get-SentinelAlertRules {
 Write-Host "=== Merlino Sentinel Extractor ===" -ForegroundColor Green
 
 try {
-    $token = Get-ServicePrincipalToken -TenantId $TenantId -ClientId $ClientId -ClientSecret $ClientSecret
+    if ($InteractiveLogin) {
+        $token = Get-InteractiveToken -TenantId $TenantId -SubscriptionId $SubscriptionId
+    } else {
+        $token = Get-ServicePrincipalToken -TenantId $TenantId -ClientId $ClientId -ClientSecret $ClientSecret
+    }
     $rules = Get-SentinelAlertRules -AccessToken $token -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
     
     if ($rules.Count -eq 0) {
