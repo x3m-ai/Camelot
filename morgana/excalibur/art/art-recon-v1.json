@@ -1,0 +1,146 @@
+{
+  "package_id": "art-recon-v1",
+  "package_name": "ART - Reconnaissance Pack (Red Canary)",
+  "version": "1.0.0",
+  "description": "Red Canary Atomic Red Team scripts for MITRE ATT&CK Reconnaissance (TA0043). 2 atomics covering 2 techniques: T1592.001, T1595.003. Converted from Red Canary atomic-red-team YAML. Tag keys prefixed with 'art_'.",
+  "author": "Red Canary (converted by X3M.AI)",
+  "created": "2026-08-11",
+  "source": "atomic-red-team",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Reconnaissance (TA0043)",
+  "mitre_tactic_name": "Reconnaissance",
+  "mitre_tcodes": [
+    "T1592.001",
+    "T1595.003"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on target machine",
+    "PyYAML not required at runtime — scripts are pre-converted"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "art_recon_1595_003",
+      "label": "1595.003 Parameters",
+      "description": "Input parameters for 1595.003 atomic tests.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "1595.003"
+      ],
+      "tags": [
+        {
+          "key": "art_recon_1595_003_target",
+          "label": "Target",
+          "description": "The target system to scan",
+          "default": "http://localhost",
+          "example": "http://localhost",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_recon_1595_003_wordlist",
+          "label": "Wordlist",
+          "description": "The wordlist to use for scanning",
+          "default": "PathToAtomicsFolder/T1595.003/src/wordlist.txt",
+          "example": "PathToAtomicsFolder/T1595.003/src/wordlist.txt",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_recon_1595_003_request_timeout",
+          "label": "Request Timeout",
+          "description": "The timeout for each request (in seconds)",
+          "default": "5",
+          "example": "5",
+          "sensitive": false,
+          "required": false
+        },
+        {
+          "key": "art_recon_1595_003_output_file",
+          "label": "Output File",
+          "description": "File to output results to",
+          "default": "$env:TMPDIR/wordlist_scan.txt",
+          "example": "$env:TMPDIR/wordlist_scan.txt",
+          "sensitive": false,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "ART - T1592.001 - Enumerate PlugNPlay Camera",
+      "name": "ART - T1592.001 - Enumerate PlugNPlay Camera",
+      "description": "Enumerate PlugNPlay Camera using powershell commandlet. this technique was seen in dcrat malware backdoor capabilities where it enumerate the camera info mounted on the compromised host. reference: https://www.mandiant.com/resources/analyzing-dark-crystal-rat-backdoor\n",
+      "tactic": "Reconnaissance",
+      "tcode": "T1592.001",
+      "technique_name": "Enumerate PlugNPlay Camera",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Get-CimInstance -Query \"SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')\"",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "d430bf85-b656-40e7-b238-42db01df0183"
+    },
+    {
+      "id": "ART - T1595.003 - Web Server Wordlist Scan",
+      "name": "ART - T1595.003 - Web Server Wordlist Scan",
+      "description": "This test will scan a target system with a wordlist of common directories and file paths.\n",
+      "tactic": "Reconnaissance",
+      "tcode": "T1595.003",
+      "technique_name": "Web Server Wordlist Scan",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "art_recon_1595_003_target",
+        "art_recon_1595_003_wordlist",
+        "art_recon_1595_003_request_timeout",
+        "art_recon_1595_003_output_file"
+      ],
+      "command": "Import-Module \"PathToAtomicsFolder/T1595.003/src/WebServerScan.ps1\"\nInvoke-WordlistScan -Target \"#{art_recon_1595_003_target}\" -Wordlist \"#{art_recon_1595_003_wordlist}\" -Timeout \"#{art_recon_1595_003_request_timeout}\" -OutputFile \"#{art_recon_1595_003_output_file}\"\nWrite-Host \"Scan complete. Results saved to: #{art_recon_1595_003_output_file}\"",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK page for detection guidance",
+      "sentinel_connector": "Microsoft Defender for Endpoint",
+      "source": "atomic-red-team",
+      "atomic_guid": "89a83c3e-0b39-4c80-99f5-c2aa084098bd"
+    }
+  ],
+  "chains": [
+    {
+      "name": "ART - T1592.001 - Enumerate PlugNPlay Camera",
+      "description": "Single-step chain for T1592.001 — Enumerate PlugNPlay Camera",
+      "package": "art-recon-v1",
+      "tcode": "T1592.001",
+      "tactic": "Reconnaissance",
+      "script_refs": [
+        "ART - T1592.001 - Enumerate PlugNPlay Camera"
+      ]
+    },
+    {
+      "name": "ART - T1595.003 - Web Server Wordlist Scan",
+      "description": "Single-step chain for T1595.003 — Web Server Wordlist Scan",
+      "package": "art-recon-v1",
+      "tcode": "T1595.003",
+      "tactic": "Reconnaissance",
+      "script_refs": [
+        "ART - T1595.003 - Web Server Wordlist Scan"
+      ]
+    },
+    {
+      "name": "ART - Reconnaissance - Full Tactic Chain",
+      "description": "Runs all 2 ART scripts for Reconnaissance (TA0043) in sequence.",
+      "package": "art-recon-v1",
+      "tcode": "T1592.001",
+      "tactic": "Reconnaissance",
+      "script_refs": [
+        "ART - T1592.001 - Enumerate PlugNPlay Camera",
+        "ART - T1595.003 - Web Server Wordlist Scan"
+      ]
+    }
+  ]
+}
