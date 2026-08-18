@@ -46,6 +46,15 @@ morgana/
   Install/
     Morgana-Server-Setup.exe   Current release installer (updated on every Morgana release)
     README.md                  Installation guide (version header updated on every release)
+  excalibur/
+    catalog.json               Master pack index fetched by Morgana UI on Refresh catalog
+    art/                       ART packs — Red Canary Atomic Red Team (1603 scripts, 13 tactics)
+      art-exec-v1.json         One pack per MITRE tactic, naming: art-{tactic_slug}-v1.json
+      README.md                Documentazione completa dell'integrazione ART
+    tools/
+      convert_atomics.py       Converter YAML -> Excalibur Pack JSON (richiede pyyaml)
+      test_art_import.py       Test import pack contro server Morgana locale
+      update-art-packs.ps1     Pipeline completa: pull Red Canary -> convert -> commit+push
 
 merlino/                       Merlino community templates and resources
 
