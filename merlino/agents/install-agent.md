@@ -1,0 +1,1 @@
+curl.exe -k -o morgana-agent.exe https://192.168.0.160:8888/download/morgana-agent.exe; .\morgana-agent.exe install --server https://192.168.0.160:8888
