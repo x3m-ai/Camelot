@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Completely removes Morgana from the target machine.
 .PARAMETER WipeData
@@ -31,7 +31,7 @@ function Write-Warn { param([string]$msg) Write-Host "[WARN] $msg"       -Foregr
 
 Write-Host ""
 Write-Host "=============================================="
-Write-Host "  MORGANA — Complete Uninstall"
+Write-Host "  MORGANA - Complete Uninstall"
 if ($WipeData) { Write-Host "  DATA WIPE enabled" -ForegroundColor Red }
 Write-Host "=============================================="
 Write-Host ""
@@ -75,7 +75,7 @@ if ($uninstaller) {
     Start-Process $uninstaller -ArgumentList "/VERYSILENT /NORESTART" -Wait
     Write-OK "Program files removed by Inno Setup uninstaller."
 } else {
-    Write-Warn "Inno Setup uninstaller not found — removing program folder manually..."
+    Write-Warn "Inno Setup uninstaller not found - removing program folder manually..."
     foreach ($folder in @("C:\Program Files\Morgana Server", "C:\Program Files (x86)\Morgana Server")) {
         if (Test-Path $folder) { Remove-Item $folder -Recurse -Force; Write-OK "Removed: $folder" }
     }
