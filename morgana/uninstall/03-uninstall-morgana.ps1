@@ -45,7 +45,7 @@ if ($svc) {
         Start-Sleep 3
         Write-OK "Service stopped."
     } else { Write-Warn "Service was already stopped." }
-} else { Write-Warn "Service not found — may already be removed." }
+} else { Write-Warn "Service not found - may already be removed." }
 
 # 2. Kill lingering processes
 Write-Step "Killing any running Morgana processes..."
@@ -87,7 +87,7 @@ if ($WipeData) {
     if (Test-Path "C:\ProgramData\Morgana") {
         Remove-Item "C:\ProgramData\Morgana" -Recurse -Force
         Write-OK "Data directory wiped. Next install will start fresh."
-    } else { Write-Warn "Data directory not found — nothing to wipe." }
+    } else { Write-Warn "Data directory not found - nothing to wipe." }
 } else {
     Write-Host ""
     Write-Warn "Data at C:\ProgramData\Morgana\ preserved. Use -WipeData for a clean reinstall."
