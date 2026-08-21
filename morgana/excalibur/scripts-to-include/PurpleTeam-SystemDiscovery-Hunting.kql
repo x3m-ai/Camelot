@@ -1,0 +1,162 @@
+// ============================================================================
+// Purple Team System Discovery - Microsoft Defender XDR Hunting Queries
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// 1. Primary process-chain hunting query
+// ---------------------------------------------------------------------------
+
+DeviceProcessEvents
+| where Timestamp > ago(2h)
+| where
+    ProcessCommandLine has "PurpleTeamSimulation"
+    or InitiatingProcessCommandLine has "PurpleTeamSimulation"
+    or FileName in~ (
+        "powershell.exe",
+        "whoami.exe",
+        "hostname.exe",
+        "systeminfo.exe",
+        "ipconfig.exe",
+        "route.exe",
+        "arp.exe",
+        "netstat.exe",
+        "tasklist.exe",
+        "icacls.exe",
+        "schtasks.exe"
+    )
+| project
+    Timestamp,
+    DeviceName,
+    AccountName,
+    FileName,
+    ProcessCommandLine,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine,
+    ProcessId,
+    InitiatingProcessId
+| order by Timestamp asc;
+
+
+// ---------------------------------------------------------------------------
+// 2. More focused discovery-command burst
+// ---------------------------------------------------------------------------
+
+DeviceProcessEvents
+| where Timestamp > ago(2h)
+| where FileName in~ (
+    "whoami.exe",
+    "hostname.exe",
+    "systeminfo.exe",
+    "ipconfig.exe",
+    "route.exe",
+    "arp.exe",
+    "netstat.exe",
+    "tasklist.exe",
+    "icacls.exe"
+)
+| summarize
+    Commands = make_set(strcat(FileName, " ", ProcessCommandLine), 50),
+    CommandCount = count(),
+    FirstSeen = min(Timestamp),
+    LastSeen = max(Timestamp)
+    by DeviceId, DeviceName, InitiatingProcessId, InitiatingProcessFileName
+| where CommandCount >= 4
+| order by FirstSeen desc;
+
+
+// ---------------------------------------------------------------------------
+// 3. Local staging / file creation
+// ---------------------------------------------------------------------------
+
+DeviceFileEvents
+| where Timestamp > ago(2h)
+| where FolderPath startswith @"C:\ProgramData\PurpleTeamSimulation"
+| project
+    Timestamp,
+    DeviceName,
+    ActionType,
+    FileName,
+    FolderPath,
+    InitiatingProcessAccountName,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine
+| order by Timestamp asc;
+
+
+// ---------------------------------------------------------------------------
+// 4. Scheduled-task related process activity
+// ---------------------------------------------------------------------------
+
+DeviceProcessEvents
+| where Timestamp > ago(2h)
+| where
+    ProcessCommandLine has "PurpleTeam-SystemDiscovery"
+    or ProcessCommandLine has "SystemDiscoveryCollector.ps1"
+    or InitiatingProcessCommandLine has "PurpleTeam-SystemDiscovery"
+    or InitiatingProcessCommandLine has "SystemDiscoveryCollector.ps1"
+| project
+    Timestamp,
+    DeviceName,
+    AccountName,
+    FileName,
+    ProcessCommandLine,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine
+| order by Timestamp asc;
+
+
+// ---------------------------------------------------------------------------
+// 5. ACL manipulation
+// ---------------------------------------------------------------------------
+
+DeviceProcessEvents
+| where Timestamp > ago(2h)
+| where FileName =~ "icacls.exe"
+| where ProcessCommandLine has @"C:\ProgramData\PurpleTeamSimulation"
+| project
+    Timestamp,
+    DeviceName,
+    AccountName,
+    FileName,
+    ProcessCommandLine,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine
+| order by Timestamp asc;
+
+
+// ---------------------------------------------------------------------------
+// 6. Full timeline around the simulation directory
+// ---------------------------------------------------------------------------
+
+let SimulationProcesses =
+    DeviceProcessEvents
+    | where Timestamp > ago(2h)
+    | where
+        ProcessCommandLine has "PurpleTeamSimulation"
+        or InitiatingProcessCommandLine has "PurpleTeamSimulation"
+        or ProcessCommandLine has "PurpleTeam-SystemDiscovery"
+        or InitiatingProcessCommandLine has "PurpleTeam-SystemDiscovery"
+    | project
+        Timestamp,
+        DeviceId,
+        DeviceName,
+        EventType = "Process",
+        ActionType,
+        Detail = strcat(FileName, " | ", ProcessCommandLine),
+        Initiator = strcat(InitiatingProcessFileName, " | ", InitiatingProcessCommandLine);
+
+let SimulationFiles =
+    DeviceFileEvents
+    | where Timestamp > ago(2h)
+    | where FolderPath startswith @"C:\ProgramData\PurpleTeamSimulation"
+    | project
+        Timestamp,
+        DeviceId,
+        DeviceName,
+        EventType = "File",
+        ActionType,
+        Detail = strcat(FolderPath, @"\", FileName),
+        Initiator = strcat(InitiatingProcessFileName, " | ", InitiatingProcessCommandLine);
+
+union SimulationProcesses, SimulationFiles
+| order by Timestamp asc;
