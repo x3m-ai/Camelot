@@ -1,0 +1,157 @@
+{
+  "package_id": "stockpile-exec-v1",
+  "package_name": "STOCKPILE - Execution Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Execution (TA0002). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Execution (TA0002)",
+  "mitre_tactic_name": "Execution",
+  "mitre_tactic_source": "execution",
+  "mitre_tcodes": [
+    "T1047",
+    "T1059.001"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [
+    {
+      "category_id": "stockpile_exec_1059_001",
+      "label": "T1059.001 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1059.001 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1059.001"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_exec_1059_001_host_user_name",
+          "label": "Host User Name",
+          "description": "MITRE Stockpile fact: host.user.name",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "stockpile_exec_1059_001_host_user_password",
+          "label": "Host User Password",
+          "description": "MITRE Stockpile fact: host.user.password",
+          "default": "",
+          "example": "",
+          "sensitive": true,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1047 - WMIC Process Enumeration [Windows/PowerShell]",
+      "name": "STOCKPILE - T1047 - WMIC Process Enumeration [Windows/PowerShell]",
+      "description": "Capture process id, executable path, pid and parent pid before writing to disk",
+      "tactic": "Execution",
+      "tcode": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "wmic process get executablepath,name,processid,parentprocessid >> $env:APPDATA\\vmtools.log;\ncat $env:APPDATA\\vmtools.log",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "94f21386-9547-43c4-99df-938ab05d45ce",
+      "source_path": "data/abilities/execution/94f21386-9547-43c4-99df-938ab05d45ce.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1059.001 - Impersonate user [Windows/PowerShell]",
+      "name": "STOCKPILE - T1059.001 - Impersonate user [Windows/PowerShell]",
+      "description": "Run an application as a different user",
+      "tactic": "Execution",
+      "tcode": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_exec_1059_001_host_user_name",
+        "stockpile_exec_1059_001_host_user_password"
+      ],
+      "command": "$job = Start-Job -ScriptBlock {\n  $username = '#{stockpile_exec_1059_001_host_user_name}';\n  $password = '#{stockpile_exec_1059_001_host_user_password}';\n  $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;\n  $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword;\n  Start-Process Notepad.exe -NoNewWindow -PassThru -Credential $credential;\n};\nReceive-Job -Job $job -Wait;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "3796a00b-b11d-4731-b4ca-275a07d83299",
+      "source_path": "data/abilities/execution/3796a00b-b11d-4731-b4ca-275a07d83299.yml",
+      "source_executor": "psh",
+      "source_platform": "windows",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.paw_provenance": [
+            {
+              "source": "host.user.name"
+            }
+          ]
+        },
+        {
+          "plugins.stockpile.app.requirements.basic": [
+            {
+              "source": "host.user.name",
+              "edge": "has_password",
+              "target": "host.user.password"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1047 - WMIC Process Enumeration [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1047 - Windows Management Instrumentation.",
+      "package": "stockpile-exec-v1",
+      "tcode": "T1047",
+      "tactic": "Execution",
+      "script_refs": [
+        "STOCKPILE - T1047 - WMIC Process Enumeration [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1059.001 - Impersonate user [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1059.001 - Command and Scripting Interpreter: PowerShell.",
+      "package": "stockpile-exec-v1",
+      "tcode": "T1059.001",
+      "tactic": "Execution",
+      "script_refs": [
+        "STOCKPILE - T1059.001 - Impersonate user [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - Execution - Full Tactic Convenience Chain",
+      "description": "Convenience collection of all 2 converted Execution scripts. This is not an authentic MITRE CALDERA adversary profile or validated operation sequence.",
+      "package": "stockpile-exec-v1",
+      "tcode": "T1047",
+      "tactic": "Execution",
+      "script_refs": [
+        "STOCKPILE - T1047 - WMIC Process Enumeration [Windows/PowerShell]",
+        "STOCKPILE - T1059.001 - Impersonate user [Windows/PowerShell]"
+      ]
+    }
+  ]
+}

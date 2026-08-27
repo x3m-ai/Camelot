@@ -1,0 +1,259 @@
+{
+  "package_id": "stockpile-lateral-v1",
+  "package_name": "STOCKPILE - Lateral Movement Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Lateral Movement (TA0008). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Lateral Movement (TA0008)",
+  "mitre_tactic_name": "Lateral Movement",
+  "mitre_tactic_source": "lateral-movement",
+  "mitre_tcodes": [
+    "T1021.002",
+    "T1091"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [
+    {
+      "category_id": "stockpile_lateral_1021_002",
+      "label": "T1021.002 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1021.002 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1021.002"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_lateral_1021_002_domain_user_name",
+          "label": "Domain User Name",
+          "description": "MITRE Stockpile fact: domain.user.name",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "stockpile_lateral_1021_002_domain_user_password",
+          "label": "Domain User Password",
+          "description": "MITRE Stockpile fact: domain.user.password",
+          "default": "",
+          "example": "",
+          "sensitive": true,
+          "required": true
+        },
+        {
+          "key": "stockpile_lateral_1021_002_remote_host_fqdn",
+          "label": "Remote Host Fqdn",
+          "description": "MITRE Stockpile fact: remote.host.fqdn",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "stockpile_lateral_1021_002_remote_host_ip",
+          "label": "Remote Host Ip",
+          "description": "MITRE Stockpile fact: remote.host.ip",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "stockpile_lateral_1091",
+      "label": "T1091 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1091 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1091"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_lateral_1091_location",
+          "label": "Location",
+          "description": "MITRE Stockpile fact: location",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1021.002 - Mount Share [Windows/PowerShell]",
+      "name": "STOCKPILE - T1021.002 - Mount Share [Windows/PowerShell]",
+      "description": "Mount a windows share",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_lateral_1021_002_domain_user_name",
+        "stockpile_lateral_1021_002_domain_user_password",
+        "stockpile_lateral_1021_002_remote_host_fqdn"
+      ],
+      "command": "net use \\\\#{stockpile_lateral_1021_002_remote_host_fqdn}\\C$ /user:#{stockpile_lateral_1021_002_domain_user_name} #{stockpile_lateral_1021_002_domain_user_password}",
+      "cleanup_command": "net use \\\\#{stockpile_lateral_1021_002_remote_host_fqdn}\\C$ /delete",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "aa6ec4dd-db09-4925-b9b9-43adeb154686",
+      "source_path": "data/abilities/lateral-movement/aa6ec4dd-db09-4925-b9b9-43adeb154686.yml",
+      "source_executor": "psh",
+      "source_platform": "windows",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.not_exists": [
+            {
+              "source": "remote.host.fqdn",
+              "edge": "has_share"
+            }
+          ]
+        },
+        {
+          "plugins.stockpile.app.requirements.basic": [
+            {
+              "source": "domain.user.name",
+              "edge": "has_password",
+              "target": "domain.user.password"
+            }
+          ]
+        },
+        {
+          "plugins.stockpile.app.requirements.req_like": [
+            {
+              "source": "remote.host.fqdn",
+              "edge": "has_admin",
+              "target": "domain.user.name"
+            }
+          ]
+        },
+        {
+          "plugins.stockpile.app.requirements.reachable": [
+            {
+              "source": "remote.host.fqdn",
+              "edge": "isAccessibleFrom"
+            }
+          ]
+        },
+        {
+          "plugins.stockpile.app.requirements.no_backwards_movement": [
+            {
+              "source": "remote.host.fqdn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STOCKPILE - T1021.002 - Net use [Windows/PowerShell]",
+      "name": "STOCKPILE - T1021.002 - Net use [Windows/PowerShell]",
+      "description": "Mounts a network file share on a target computer",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_lateral_1021_002_domain_user_name",
+        "stockpile_lateral_1021_002_domain_user_password",
+        "stockpile_lateral_1021_002_remote_host_ip"
+      ],
+      "command": "net use \\\\#{stockpile_lateral_1021_002_remote_host_ip}\\c$ /user:#{stockpile_lateral_1021_002_domain_user_name} #{stockpile_lateral_1021_002_domain_user_password};",
+      "cleanup_command": "net use \\\\#{stockpile_lateral_1021_002_remote_host_ip}\\c$ /delete;",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "40161ad0-75bd-11e9-b475-0800200c9a66",
+      "source_path": "data/abilities/lateral-movement/40161ad0-75bd-11e9-b475-0800200c9a66.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1091 - USB Malware Spread Simulation (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1091 - USB Malware Spread Simulation (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Replication Through Removable Media (ATT&CK T1091).\nSimulates an adversary copying malware to all connected removable drives. \nGenerated from Atomic Red Team procedures (d44b7297-622c-4be8-ad88-ec40d7563c75); review and test safely before use.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1091",
+      "technique_name": "Replication Through Removable Media",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_lateral_1091_location"
+      ],
+      "command": "$RemovableDrives=@();\n$RemovableDrives = Get-WmiObject -Class Win32_LogicalDisk -filter \"drivetype=2\" | select-object -expandproperty DeviceID;\nForEach ($Drive in $RemovableDrives) {\n  write-host \"Removable Drive Found:\" $Drive;\n  cp \"#{stockpile_lateral_1091_location}\" \"$Drive\\t1091.exe\" -Force;\n}",
+      "cleanup_command": "$RemovableDrives = Get-WmiObject -Class Win32_LogicalDisk -filter \"drivetype=2\" | select-object -expandproperty DeviceID;\nForEach ($Drive in $RemovableDrives) {\n  Remove-Item -Path \"$Drive\\t1091.exe\" -Force -ErrorAction Ignore\n}",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "df187d74-6d10-4b9e-8c95-047de47f3ab8",
+      "source_path": "data/abilities/lateral-movement/df187d74-6d10-4b9e-8c95-047de47f3ab8.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1021.002 - Mount Share [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1021.002 - Remote Services: SMB/Windows Admin Shares.",
+      "package": "stockpile-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "STOCKPILE - T1021.002 - Mount Share [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1021.002 - Net use [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1021.002 - Remote Services: SMB/Windows Admin Shares.",
+      "package": "stockpile-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "STOCKPILE - T1021.002 - Net use [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1091 - USB Malware Spread Simulation (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1091 - Replication Through Removable Media.",
+      "package": "stockpile-lateral-v1",
+      "tcode": "T1091",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "STOCKPILE - T1091 - USB Malware Spread Simulation (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - Lateral Movement - Full Tactic Convenience Chain",
+      "description": "Convenience collection of all 3 converted Lateral Movement scripts. This is not an authentic MITRE CALDERA adversary profile or validated operation sequence.",
+      "package": "stockpile-lateral-v1",
+      "tcode": "T1021.002",
+      "tactic": "Lateral Movement",
+      "script_refs": [
+        "STOCKPILE - T1021.002 - Mount Share [Windows/PowerShell]",
+        "STOCKPILE - T1021.002 - Net use [Windows/PowerShell]",
+        "STOCKPILE - T1091 - USB Malware Spread Simulation (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    }
+  ]
+}

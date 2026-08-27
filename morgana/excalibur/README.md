@@ -10,24 +10,26 @@ Excalibur packages are professionally crafted attack script collections covering
 
 ## Available Packages
 
-| File | Package | Version | Target |
-|------|---------|---------|--------|
-| `excalibur-entraid-emulation-pack.json` | Excalibur - Entra ID Emulation Pack | 2.0.0 | Microsoft Entra ID / Sentinel |
+| Category | Source | Purpose |
+|---|---|---|
+| Excalibur | X3M.AI | Curated Morgana-native adversary emulation packs |
+| [Atomic Red Team](art/) | Red Canary | Atomic tests converted to Morgana pack JSON |
+| [MITRE CALDERA Stockpile](stockpile/) | MITRE | Command-based Stockpile abilities converted to Morgana pack JSON |
+
+Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 
 ---
 
 ## How to Import into Morgana
 
-1. Download the `.json` file from this folder (or from the direct link below)
-2. Open Morgana web UI: `https://<your-morgana-host>:8888/ui/`
-3. Go to **Scripts** > click **Import Package**
-4. Select the downloaded `.json` file and confirm
-5. Morgana imports all scripts and chains automatically
+1. Open Morgana web UI: `https://<your-morgana-host>:8888/ui/`.
+2. Open **Scripts > Excalibur Packs**.
+3. Select **Refresh catalog**.
+4. Review source, tactic, platform, prerequisites, Script count, and Chain count.
+5. Select **Install**, **Import Selected**, or **Install All**.
+6. Verify the importer result before executing any content.
 
-**Direct download (Camelot):**
-```
-https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/excalibur-entraid-emulation-pack.json
-```
+Community-source packs are normalized into the same generic package schema. CALDERA and Atomic Red Team are not runtime dependencies.
 
 ---
 
