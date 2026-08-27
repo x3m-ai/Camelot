@@ -51,20 +51,23 @@
 | **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
 | **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur certified attack packs, Purple Team automation. Controlled distribution: contact X3M.AI for access | [Contact X3M.AI](https://x3m.ai/contact/) |
 
-Together, they form a complete **threat intelligence and adversary emulation pipeline**: analyze threats in Merlino, then automatically generate and execute Red Team operations on Morgana.
+Together, they form a **threat intelligence and adversary emulation workflow**: analyze threats in Merlino, synchronize definitions and evidence with Morgana, and execute authorized Red Team operations from Morgana.
 
 ---
 
 ## Merlino -- CTI in Excel
 
-Merlino transforms Microsoft Excel into a full-featured Cyber Threat Intelligence workbench. No servers, no databases, no complex deployments -- just install the add-in and start analyzing.
+> ### [Merlino User and Administrator Manual](merlino/README.md)
+> Complete installation, workbook safety, CTI workflows, integrations, AI, reporting, administration, privacy, and troubleshooting guidance for the current add-in.
+
+Merlino transforms Microsoft Excel into a Cyber Threat Intelligence workbench. Core analysis runs in the workbook; optional Morgana, MISP, public-data, and AI workflows connect to external services.
 
 ### Key Capabilities
 
-- **MITRE ATT&CK Integration** -- Import and analyze the complete ATT&CK framework (Enterprise, Mobile, ICS, Azure). Techniques, Groups, Software, Campaigns, Data Components, Mitigations, Detection Strategies
+- **MITRE ATT&CK Integration** -- Import and analyze Enterprise, Mobile, and ICS ATT&CK data: Techniques, Groups, Software, Campaigns, Data Components, Mitigations, and Detection Strategies
 - **Threat Profiling** -- Select threat groups relevant to your organization, build a Catalogue, and generate a prioritized coverage heatmap showing exactly which techniques matter most
-- **CrossPick Analysis** -- Merlino's proprietary algorithm calculates which techniques are shared across your threat profile, producing a risk-ranked priority matrix
-- **AI-Powered Analysis** -- Connect OpenAI, Mistral, or other AI providers to generate automated threat assessments, detection gap analysis, and Red Team scenario planning
+- **CrossPick Analysis** -- Calculate TCode frequency, entity overlap, coverage gaps, or normalized defense priority according to the selected Smart View mode
+- **AI-Powered Analysis** -- Connect OpenAI, Anthropic, Azure OpenAI, Microsoft Foundry, GitHub Copilot, GitHub Models, Ollama, or a compatible custom endpoint
 - **CVE Enrichment** -- Import recent vulnerabilities from NIST NVD and correlate them with your threat profile to prioritize patching
 - **Exploit Database** -- 46,000+ exploits mapped to MITRE ATT&CK techniques
 - **MISP Integration** -- Bidirectional pipeline: push your analysis to MISP, pull enriched intelligence back
@@ -74,24 +77,14 @@ Merlino transforms Microsoft Excel into a full-featured Cyber Threat Intelligenc
 
 ### Install Merlino
 
-Merlino is a free Microsoft Excel Add-in available in the Microsoft AppSource marketplace.
+Merlino is currently installed as a custom Office Add-in; this repository does not claim AppSource availability. Use the official manifest URL or the Windows trusted-catalog installer described in the [Merlino User and Administrator Manual](merlino/README.md#5-install-merlino).
 
 **[Merlino Portal](https://x3m.ai/merlino/)**
 
 Requirements:
-- Microsoft Excel Desktop (Windows or macOS) or Excel Online
-- No installation on the server side -- everything runs in Excel
-
-#### Installation steps
-
-1. Open **Microsoft Excel**
-2. Go to **Insert** tab → **Add-ins** → **Get Add-ins**
-3. Search for **Merlino** in the Office Add-ins store
-4. Click **Add**
-
-![Search for Merlino in the Office Add-ins store](merlino/merlino-installation-step01.fw.png)
-
-Merlino will appear in your Excel ribbon under **Add-ins**. Click it to open the taskpane and get started.
+- Excel 2016 or later, Microsoft 365 Excel Desktop, or Excel on the web where tenant policy permits custom add-ins
+- HTTPS access to the official Merlino deployment
+- Additional approved connectivity only for the optional imports, Morgana, MISP, or AI features in use
 
 ### Documentation
 
@@ -108,6 +101,9 @@ Merlino will appear in your Excel ribbon under **Add-ins**. Click it to open the
 
 **Morgana** is X3M.AI's advanced Red Team platform for adversary emulation, penetration testing, and Purple Team operations. It is a professional-grade, first-class product — not a plugin, not a wrapper — built from the ground up to deliver state-of-the-art offensive security capabilities in a controlled, repeatable, and intelligence-driven manner.
 
+> ### [Morgana User and Administrator Manual](morgana/README.md)
+> Complete installation, operation, Detection Fabric, AI, security, backup, upgrade, API, and troubleshooting guidance for the current product.
+
 Morgana operates as a three-tier execution platform:
 
 | Tier | Role |
@@ -120,10 +116,10 @@ Morgana operates as a three-tier execution platform:
 
 Morgana integrates cutting-edge AI directly into the Red Team workflow:
 
-- **AI Test Review** — After each test execution, an AI engine automatically analyses the output, evaluates detection evasion, assesses execution quality, and generates structured intelligence reports
-- **Multi-provider AI** — Supports GitHub Models, OpenAI, Anthropic, Azure OpenAI, Ollama, and AWS Bedrock as AI backends
+- **AI Test Review** — When AI is enabled and a provider is configured, Morgana can analyse completed Test output and classify execution results
+- **Multi-provider AI** — Supports GitHub Models, GitHub Copilot, Azure OpenAI, Microsoft Foundry, OpenAI, Anthropic, Ollama, LM Studio, and custom OpenAI-compatible endpoints
 - **AI-driven scenario planning** — Combined with Merlino's AI Assistant, teams can generate full Red Team operation plans based on threat intelligence and MITRE ATT&CK coverage gaps
-- **Automated campaign analysis** — AI correlates test outcomes across campaigns to identify systemic detection weaknesses
+- **Intelligent Reports** — An optional Report Agent analyses a selected Test scope and produces evidence-referenced findings, limitations, and retest criteria
 
 ### Why Distribution is Controlled
 
@@ -150,7 +146,7 @@ If you are interested in using Morgana for Purple Team exercises or Red Team ope
 
 - **Adversary emulation** — Execute certified attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
 - **Penetration testing workflows** — Repeatable, evidence-based test execution with full audit trails and AI-generated analysis
-- **Purple Team automation** — Merlino threat intelligence drives Morgana execution: one click synchronises your threat profile into a complete adversary emulation campaign
+- **Purple Team integration** — Merlino can synchronize Test rows and TCodes with Morgana, where matching Scripts and generated Chain definitions support authorized execution
 - **Excalibur Packs** — Certified script libraries covering real-world attack scenarios: Entra ID, Execution, Lateral Movement, Persistence, and more
 - **Campaign management** — Group multiple tests into named campaigns, track results, and generate evidence reports
 - **Kill chain automation** — Script chains model multi-stage attack sequences from reconnaissance to impact
@@ -161,10 +157,10 @@ The real power of the X3M.AI ecosystem is the automated pipeline between intelli
 
 1. **Analyse** — Build your threat profile in Merlino using MITRE ATT&CK data
 2. **Prioritise** — CrossPick analysis identifies which techniques matter most for your organisation
-3. **Synchronise** — One click in Merlino automatically creates adversary profiles and operation chains on Morgana
-4. **Execute** — Launch controlled Red Team operations from Morgana with pre-configured attack chains
-5. **Review** — AI engine automatically analyses each test result and generates structured intelligence
-6. **Validate** — Results flow back to Merlino, updating your detection coverage evidence in real time
+3. **Synchronise** — Merlino creates or updates Morgana Test records and can create Chain definitions from installed Scripts that match each TCode
+4. **Execute** — Launch controlled Red Team Tests from Morgana against an authorized Agent
+5. **Review** — Inspect raw output and, when configured, optional AI review and Detection Fabric evidence
+6. **Synchronise results** — Refresh Merlino to retrieve current Morgana execution and detection fields
 
 **[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
 
@@ -255,7 +251,7 @@ For partnership inquiries or enterprise collaboration, contact us at **support@x
 This repository (documentation and community content) is licensed under the [MIT License](LICENSE).
 
 - **Merlino Add-in** is free, no registration, distributed under its own EULA
-- **Morgana** is free, distributed as a binary installer from this repository
+- **Morgana** is controlled-distribution software; request authorized access through X3M.AI
 
 ---
 
