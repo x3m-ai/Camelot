@@ -722,7 +722,7 @@ Use database/full-data backup for authoritative recovery, not Script export alon
 
 Excalibur is Morgana's native Script library and package format. Morgana does not clone or index a native Atomic Red Team repository.
 
-The public catalog also contains community packs converted from Red Canary Atomic Red Team source material. These are displayed in a separate **Atomic Red Team (Red Canary)** category, but Morgana installs and runs them as Excalibur-format package records. Treat community content as unverified until reviewed in your lab.
+The public catalog also contains community packs converted from Red Canary Atomic Red Team and MITRE CALDERA Stockpile source material. They appear in separate **Atomic Red Team (Red Canary)** and **MITRE CALDERA Stockpile** categories, but Morgana installs and runs both through the same source-agnostic Excalibur package importer. CALDERA and Atomic Red Team are not runtime dependencies. Treat community content as unverified until reviewed in your lab.
 
 ### 10.1 Refresh the catalog
 
@@ -730,13 +730,13 @@ The public catalog also contains community packs converted from Red Canary Atomi
 2. Expand **Excalibur Script Packs** if hidden.
 3. Select **Refresh catalog**.
 
-Expected result: the panel lists catalog version/date, package name, package version, tactic, platform metadata, Script and Chain counts, and installed state.
+Expected result: the panel lists catalog version/date, package name, package version, tactic, Script and Chain counts, and installed state. Platform and prerequisite metadata remain available in the catalog/package files and should be reviewed before installation.
 
 If it fails, allow the server and browser to reach `raw.githubusercontent.com` over HTTPS and inspect **Logs**.
 
 ### 10.2 Install one pack
 
-1. Review package description, tactic, platform, prerequisites, status, and counts.
+1. Review the visible package description, tactic, status, and counts. Open its catalog/package reference to verify platform and prerequisites.
 2. Select **Install**.
 3. Read the replacement warning and confirm.
 4. Wait for the progress bar to report imported Scripts and Chains.
@@ -765,11 +765,25 @@ For a package with a stable `package_id`, reinstallation:
 
 Replacement is destructive to history linked to the unmodified Script rows: their Jobs, Tests, and Detection Fabric relationships are deleted before replacement. Export evidence and create a database backup before updating a pack.
 
-Script replacement and Chain creation are committed in separate phases. An import can therefore leave updated Scripts and only some Chains when errors occur; it is not an all-or-nothing transaction. In addition, the current Chain-reference resolver indexes only `Excalibur - ` Script names, so Chain definitions in `ART - ` community packs can report unresolved references even when their Scripts imported. Review every import report.
+Script replacement and Chain creation are committed in separate phases. An import can therefore leave updated Scripts and only some Chains when errors occur; it is not an all-or-nothing transaction. Chain references are resolved within the imported `package_id`, so Excalibur, ART, Stockpile, and future source adapters use the same package-scoped behavior. Review every import report.
 
 Deleting a pack is not a distinct UI operation. Delete its Scripts/Chains only after a backup and impact review.
 
-### 10.5 Configure required pack Tags
+### 10.5 MITRE CALDERA Stockpile packs
+
+Stockpile is used only as an upstream content source. Camelot converts safe, direct command variants into native Morgana pack JSON before publication.
+
+- One pack is generated per MITRE ATT&CK tactic.
+- One Stockpile ability can generate multiple platform/executor Script variants.
+- CALDERA facts become required Morgana Tags.
+- Cleanup commands are preserved separately.
+- Parser and CALDERA requirement metadata are diagnostic-only in Phase 1.
+- Payload-dependent, build-only, and unsupported executor variants are skipped and reported.
+- Stockpile ability UUIDs and the exact upstream commit are retained in package metadata.
+
+Generated full-tactic Chains are convenience collections, not authentic CALDERA adversary profiles. Review the [Stockpile conversion and update guide](excalibur/stockpile/README.md) before installation.
+
+### 10.6 Configure required pack Tags
 
 Pack Scripts can declare `required_tags` and metadata such as label, description, default, example, required, and sensitive intent.
 
@@ -782,7 +796,7 @@ Pack Scripts can declare `required_tags` and metadata such as label, description
 
 AI suggestions are examples only. Never accept a suggested host, account, address, or path without checking the exercise scope.
 
-### 10.6 Authoring a pack
+### 10.7 Authoring a pack
 
 New pack work should follow this structure:
 
