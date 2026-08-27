@@ -10,7 +10,7 @@ This folder contains the **full source code** of the agent, published here for t
 
 > **Access notice:** The Morgana Agent is part of a controlled-distribution platform. To deploy and use Morgana for Red Team or Purple Team operations, you must have authorised access granted by X3M.AI. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
 
----
+----
 
 ## Agent Installation — Three Options
 
