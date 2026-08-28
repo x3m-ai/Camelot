@@ -10,6 +10,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest import mock
 
@@ -182,8 +183,8 @@ class CalderaOtConverterTests(unittest.TestCase):
             packs,
             "2026-08-20",
         )
-        self.assertEqual(updated["catalog_version"], "1.4.0")
-        self.assertEqual(updated["updated"], "2026-08-27")
+        self.assertEqual(updated["catalog_version"], "1.5.0")
+        self.assertEqual(updated["updated"], str(date.today()))
         self.assertEqual(updated["packs"][:26], existing)
         self.assertIn("ot/modbus", {category["id"] for category in updated["categories"]})
         self.assertIn("mitre-caldera-ot", {provider["id"] for provider in updated["providers"]})

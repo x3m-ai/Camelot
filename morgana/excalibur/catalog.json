@@ -1,6 +1,6 @@
 {
-  "catalog_version": "1.4.0",
-  "updated": "2026-08-27",
+  "catalog_version": "1.5.0",
+  "updated": "2026-08-28",
   "source": "https://github.com/x3m-ai/Camelot",
   "description": "Excalibur Pack Catalog — certified adversary emulation packs for Morgana. Each pack targets a specific MITRE ATT&CK tactic or domain, with tested scripts and detection goals validated against Microsoft Sentinel built-in analytics rules.",
   "packs": [
@@ -8,7 +8,22 @@
       "package_id": "excalibur-entraid-v1",
       "package_name": "Excalibur - Entra ID Emulation Pack",
       "version": "2.0.0",
-      "description": "Adversary emulation scripts for Microsoft Entra ID detection validation. 23 scripts covering identity attacks: group manipulation, privileged role assignment, PIM abuse, consent phishing, MFA bypass, sign-in anomalies. Validated against Microsoft Sentinel Entra ID analytics rules.",
+      "description": "Adversary emulation scripts for Microsoft Entra ID detection validation. Designed for Purple Team exercises to validate Microsoft Sentinel analytics rules against Entra ID activity. All scripts require Microsoft Graph PowerShell module and appropriate permissions in a test environment.",
+      "capabilities": [
+        "Exercises Entra ID identity changes including group membership, user lifecycle, privileged role assignment, PIM, consent, authentication policy, and token-related activity.",
+        "Generates Microsoft Graph and Entra audit telemetry for validating Microsoft Sentinel identity analytics.",
+        "Provides focused Scripts and Chains mapped to identity-relevant MITRE ATT&CK techniques."
+      ],
+      "use_cases": [
+        "Validate that Entra ID and Microsoft Sentinel detect authorized identity-control abuse scenarios.",
+        "Test privileged access monitoring, role and group change alerts, consent governance, and authentication policy controls.",
+        "Measure identity-focused ATT&CK coverage during a controlled Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Several Scripts modify tenant identity state; use a dedicated test tenant or explicitly approved production exercise.",
+        "Use least-privileged test credentials, record all created objects, and verify cleanup after execution.",
+        "Never store Microsoft Graph client secrets in package files, source control, or shared logs."
+      ],
       "mitre_tactic": "Multiple (Identity)",
       "mitre_tcodes": [
         "T1531",
@@ -27,15 +42,18 @@
         "azure"
       ],
       "prerequisites": [
-        "Microsoft Graph PowerShell module v2.37+",
-        "Azure App Registration with Graph permissions",
-        "Entra ID P2 license (for PIM scripts)"
+        "Microsoft.Graph PowerShell module installed: Install-Module Microsoft.Graph -Scope CurrentUser",
+        "Connected to Microsoft Graph with appropriate permissions: Connect-MgGraph -Scopes 'Group.ReadWrite.All','User.ReadWrite.All','RoleManagement.ReadWrite.Directory','Policy.ReadWrite.AuthenticationMethod','AuditLog.Read.All' (App Registration requires Directory.ReadWrite.All + Group.ReadWrite.All Application permissions with admin consent)",
+        "Test environment only - never run against production identity infrastructure",
+        "Global Administrator or equivalent test role required"
       ],
       "sentinel_connectors": [
         "Microsoft Entra ID",
         "Microsoft Entra ID Protection"
       ],
       "status": "stable",
+      "provider": "x3m-ai",
+      "author": "X3M.AI",
       "category": "technology",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/technology/excalibur-entraid-emulation-pack.json"
     },
@@ -43,7 +61,21 @@
       "package_id": "excalibur-general-v1",
       "package_name": "Excalibur - General Utilities Pack",
       "version": "1.0.0",
-      "description": "General-purpose utility scripts for Morgana. Sleep/wait helper, directory listing test, and PowerShell parameter-passing test. Use these to validate agent connectivity and tag substitution before running adversary emulation packs.",
+      "description": "General-purpose utility scripts for Morgana. Includes diagnostics, wait/sleep helpers, directory inspection, and PowerShell parameter-passing tests. Use these scripts to validate agent connectivity, test tag substitution, and sanity-check your Morgana setup before running adversary emulation packs.",
+      "capabilities": [
+        "Validates basic Morgana Agent command execution, response timing, and output collection.",
+        "Exercises Tag substitution and PowerShell parameter passing with low-complexity diagnostic Scripts.",
+        "Provides directory inspection and wait helpers for troubleshooting and Chain construction."
+      ],
+      "use_cases": [
+        "Confirm a newly installed Agent can receive Jobs and return output before adversary emulation.",
+        "Validate Tags, parameters, timeout behavior, and Chain sequencing in a controlled baseline test.",
+        "Troubleshoot Morgana connectivity or executor configuration without importing a large ATT&CK pack."
+      ],
+      "safety_notes": [
+        "This is a readiness and diagnostics pack, not adversary emulation coverage.",
+        "Review directory paths and wait durations before execution; use only on authorized systems."
+      ],
       "mitre_tactic": "N/A",
       "mitre_tcodes": [
         "T0000",
@@ -56,10 +88,13 @@
         "windows"
       ],
       "prerequisites": [
-        "Windows 10/11 or Server 2019/2022 with Morgana agent installed"
+        "Windows 10/11 or Windows Server 2019/2022 with Morgana agent installed",
+        "No additional software required"
       ],
       "sentinel_connectors": [],
       "status": "stable",
+      "provider": "x3m-ai",
+      "author": "X3M.AI",
       "category": "general",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/general/excalibur-general-utilities-pack.json"
     },
@@ -89,8 +124,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 19 focused Red Canary Atomic Red Team tests covering 8 MITRE ATT&CK techniques for Lateral Movement.",
+        "Exercises remote access and movement controls between authorized systems using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Lateral Movement.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-lateral-v1.json"
@@ -122,8 +174,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 26 focused Red Canary Atomic Red Team tests covering 9 MITRE ATT&CK techniques for Initial Access.",
+        "Exercises initial foothold controls and telemetry produced by common entry techniques using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Initial Access.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-initial_access-v1.json"
@@ -174,8 +243,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 139 focused Red Canary Atomic Red Team tests covering 28 MITRE ATT&CK techniques for Execution.",
+        "Exercises command and code execution controls across supported operating systems using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Execution.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-exec-v1.json"
@@ -256,8 +342,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 197 focused Red Canary Atomic Red Team tests covering 58 MITRE ATT&CK techniques for Persistence.",
+        "Exercises mechanisms that retain access across logons, restarts, or configuration changes using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Persistence.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-persist-v1.json"
@@ -297,8 +400,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 91 focused Red Canary Atomic Red Team tests covering 17 MITRE ATT&CK techniques for Privilege Escalation.",
+        "Exercises controls that detect or prevent attempts to obtain higher privileges using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Privilege Escalation.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-privesc-v1.json"
@@ -393,8 +513,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 400 focused Red Canary Atomic Red Team tests covering 72 MITRE ATT&CK techniques for Defense Evasion.",
+        "Exercises controls and telemetry for attempts to avoid, impair, or bypass defenses using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Defense Evasion.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-evasion-v1.json"
@@ -457,8 +594,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 206 focused Red Canary Atomic Red Team tests covering 40 MITRE ATT&CK techniques for Credential Access.",
+        "Exercises credential theft, extraction, interception, and abuse detections using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Credential Access.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-credaccess-v1.json"
@@ -512,8 +666,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 286 focused Red Canary Atomic Red Team tests covering 31 MITRE ATT&CK techniques for Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Discovery.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-discovery-v1.json"
@@ -552,8 +723,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 54 focused Red Canary Atomic Red Team tests covering 16 MITRE ATT&CK techniques for Collection.",
+        "Exercises data staging and collection behaviors before exfiltration using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Collection.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-collection-v1.json"
@@ -585,8 +773,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 27 focused Red Canary Atomic Red Team tests covering 9 MITRE ATT&CK techniques for Exfiltration.",
+        "Exercises controls that identify or prevent data transfer from the environment using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Exfiltration.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-exfil-v1.json"
@@ -624,8 +829,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 90 focused Red Canary Atomic Red Team tests covering 15 MITRE ATT&CK techniques for Command and Control.",
+        "Exercises network and application-layer command-and-control detections using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Command and Control.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-c2-v1.json"
@@ -656,8 +878,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 66 focused Red Canary Atomic Red Team tests covering 8 MITRE ATT&CK techniques for Impact.",
+        "Exercises high-consequence behaviors that can disrupt availability or integrity using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Impact.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-impact-v1.json"
@@ -681,8 +920,25 @@
         "Morgana agent installed on target machine",
         "PyYAML not required at runtime — scripts are pre-converted"
       ],
+      "capabilities": [
+        "Provides 2 focused Red Canary Atomic Red Team tests covering 2 MITRE ATT&CK techniques for Reconnaissance.",
+        "Exercises external information-gathering and active scanning detections using small, independently selectable atomic tests.",
+        "Includes one-step Chains for individual atomics and a full-tactic convenience Chain when multiple tests are available."
+      ],
+      "use_cases": [
+        "Validate endpoint, identity, network, and SIEM detections mapped to ATT&CK Reconnaissance.",
+        "Verify that preventive controls block expected behavior and that telemetry reaches defensive tooling.",
+        "Select individual atomics to close specific ATT&CK coverage gaps during an authorized Purple Team exercise."
+      ],
+      "safety_notes": [
+        "Operational impact varies by atomic test; inspect each command, input, prerequisite, and cleanup action before execution.",
+        "Full-tactic convenience Chains run many independent tests sequentially and are not a validated adversary campaign.",
+        "Run only on explicitly authorized targets and verify cleanup results after each test."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "atomic-red-team",
+      "author": "Red Canary (converted by X3M.AI)",
       "source": "atomic-red-team",
       "category": "art",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/art/art-recon-v1.json"
@@ -691,7 +947,7 @@
       "package_id": "stockpile-c2-v1",
       "package_name": "STOCKPILE - Command and Control Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Command and Control (TA0011). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating network and application-layer command-and-control detections. Provides 3 Morgana-native Scripts covering 1 ATT&CK techniques for Command and Control (TA0011); CALDERA is not required at runtime.",
       "mitre_tactic": "Command and Control (TA0011)",
       "mitre_tcodes": [
         "T1571"
@@ -708,8 +964,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 3 MITRE CALDERA Stockpile command-based abilities covering 1 ATT&CK techniques for Command and Control.",
+        "Exercises network and application-layer command-and-control detections through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Command and Control test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -719,7 +992,7 @@
       "package_id": "stockpile-collection-v1",
       "package_name": "STOCKPILE - Collection Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Collection (TA0009). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating data staging and collection behaviors before exfiltration. Provides 32 Morgana-native Scripts covering 11 ATT&CK techniques for Collection (TA0009); CALDERA is not required at runtime.",
       "mitre_tactic": "Collection (TA0009)",
       "mitre_tcodes": [
         "T1005",
@@ -746,8 +1019,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 32 MITRE CALDERA Stockpile command-based abilities covering 11 ATT&CK techniques for Collection.",
+        "Exercises data staging and collection behaviors before exfiltration through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Collection test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -757,7 +1047,7 @@
       "package_id": "stockpile-credaccess-v1",
       "package_name": "STOCKPILE - Credential Access Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Credential Access (TA0006). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating credential theft, extraction, interception, and abuse detections. Provides 12 Morgana-native Scripts covering 6 ATT&CK techniques for Credential Access (TA0006); CALDERA is not required at runtime.",
       "mitre_tactic": "Credential Access (TA0006)",
       "mitre_tcodes": [
         "T1040",
@@ -779,8 +1069,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 12 MITRE CALDERA Stockpile command-based abilities covering 6 ATT&CK techniques for Credential Access.",
+        "Exercises credential theft, extraction, interception, and abuse detections through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Credential Access test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -790,7 +1097,7 @@
       "package_id": "stockpile-discovery-v1",
       "package_name": "STOCKPILE - Discovery Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Discovery (TA0007). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating host, account, process, service, network, and environment discovery telemetry. Provides 107 Morgana-native Scripts covering 27 ATT&CK techniques for Discovery (TA0007); CALDERA is not required at runtime.",
       "mitre_tactic": "Discovery (TA0007)",
       "mitre_tcodes": [
         "T1007",
@@ -833,8 +1140,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 107 MITRE CALDERA Stockpile command-based abilities covering 27 ATT&CK techniques for Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Discovery test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -844,7 +1168,7 @@
       "package_id": "stockpile-evasion-v1",
       "package_name": "STOCKPILE - Defense Evasion Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Defense Evasion (TA0005). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating controls and telemetry for attempts to avoid, impair, or bypass defenses. Provides 31 Morgana-native Scripts covering 18 ATT&CK techniques for Defense Evasion (TA0005); CALDERA is not required at runtime.",
       "mitre_tactic": "Defense Evasion (TA0005)",
       "mitre_tcodes": [
         "T1006",
@@ -878,8 +1202,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 31 MITRE CALDERA Stockpile command-based abilities covering 18 ATT&CK techniques for Defense Evasion.",
+        "Exercises controls and telemetry for attempts to avoid, impair, or bypass defenses through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Defense Evasion test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -889,7 +1230,7 @@
       "package_id": "stockpile-exec-v1",
       "package_name": "STOCKPILE - Execution Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Execution (TA0002). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating command and code execution controls across supported operating systems. Provides 2 Morgana-native Scripts covering 2 ATT&CK techniques for Execution (TA0002); CALDERA is not required at runtime.",
       "mitre_tactic": "Execution (TA0002)",
       "mitre_tcodes": [
         "T1047",
@@ -905,8 +1246,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 2 MITRE CALDERA Stockpile command-based abilities covering 2 ATT&CK techniques for Execution.",
+        "Exercises command and code execution controls across supported operating systems through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Execution test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -916,7 +1274,7 @@
       "package_id": "stockpile-exfil-v1",
       "package_name": "STOCKPILE - Exfiltration Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Exfiltration (TA0010). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating controls that identify or prevent data transfer from the environment. Provides 11 Morgana-native Scripts covering 5 ATT&CK techniques for Exfiltration (TA0010); CALDERA is not required at runtime.",
       "mitre_tactic": "Exfiltration (TA0010)",
       "mitre_tcodes": [
         "T1030",
@@ -936,8 +1294,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 11 MITRE CALDERA Stockpile command-based abilities covering 5 ATT&CK techniques for Exfiltration.",
+        "Exercises controls that identify or prevent data transfer from the environment through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Exfiltration test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -947,7 +1322,7 @@
       "package_id": "stockpile-impact-v1",
       "package_name": "STOCKPILE - Impact Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Impact (TA0040). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating high-consequence behaviors that can disrupt availability or integrity. Provides 11 Morgana-native Scripts covering 5 ATT&CK techniques for Impact (TA0040); CALDERA is not required at runtime.",
       "mitre_tactic": "Impact (TA0040)",
       "mitre_tcodes": [
         "T1489",
@@ -968,8 +1343,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 11 MITRE CALDERA Stockpile command-based abilities covering 5 ATT&CK techniques for Impact.",
+        "Exercises high-consequence behaviors that can disrupt availability or integrity through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Impact test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -979,7 +1371,7 @@
       "package_id": "stockpile-lateral-v1",
       "package_name": "STOCKPILE - Lateral Movement Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Lateral Movement (TA0008). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating remote access and movement controls between authorized systems. Provides 3 Morgana-native Scripts covering 2 ATT&CK techniques for Lateral Movement (TA0008); CALDERA is not required at runtime.",
       "mitre_tactic": "Lateral Movement (TA0008)",
       "mitre_tcodes": [
         "T1021.002",
@@ -995,8 +1387,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 3 MITRE CALDERA Stockpile command-based abilities covering 2 ATT&CK techniques for Lateral Movement.",
+        "Exercises remote access and movement controls between authorized systems through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Lateral Movement test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -1006,7 +1415,7 @@
       "package_id": "stockpile-persist-v1",
       "package_name": "STOCKPILE - Persistence Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Persistence (TA0003). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating mechanisms that retain access across logons, restarts, or configuration changes. Provides 8 Morgana-native Scripts covering 6 ATT&CK techniques for Persistence (TA0003); CALDERA is not required at runtime.",
       "mitre_tactic": "Persistence (TA0003)",
       "mitre_tcodes": [
         "T1037.004",
@@ -1028,8 +1437,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 8 MITRE CALDERA Stockpile command-based abilities covering 6 ATT&CK techniques for Persistence.",
+        "Exercises mechanisms that retain access across logons, restarts, or configuration changes through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Persistence test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -1039,7 +1465,7 @@
       "package_id": "stockpile-privesc-v1",
       "package_name": "STOCKPILE - Privilege Escalation Pack (MITRE)",
       "version": "1.0.0",
-      "description": "MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts for Privilege Escalation (TA0004). CALDERA is not required at runtime.",
+      "description": "MITRE CALDERA Stockpile command-based abilities for validating controls that detect or prevent attempts to obtain higher privileges. Provides 1 Morgana-native Scripts covering 1 ATT&CK techniques for Privilege Escalation (TA0004); CALDERA is not required at runtime.",
       "mitre_tactic": "Privilege Escalation (TA0004)",
       "mitre_tcodes": [
         "T1548.002"
@@ -1054,8 +1480,25 @@
         "Required Stockpile facts supplied as Morgana tag values",
         "CALDERA and Stockpile are not required at runtime"
       ],
+      "capabilities": [
+        "Provides 1 MITRE CALDERA Stockpile command-based abilities covering 1 ATT&CK techniques for Privilege Escalation.",
+        "Exercises controls that detect or prevent attempts to obtain higher privileges through Morgana-native Scripts without requiring a CALDERA server.",
+        "Includes individual one-step Chains and a full-tactic convenience Chain for orchestration and coverage exploration."
+      ],
+      "use_cases": [
+        "Build authorized Privilege Escalation test sequences from MITRE-maintained command behaviors.",
+        "Validate ATT&CK-aligned telemetry, prevention, and detection coverage across Windows, Linux, or macOS where supported.",
+        "Compare focused Stockpile behaviors with Atomic Red Team or custom Morgana content for the same technique."
+      ],
+      "safety_notes": [
+        "Review every Script and supply required CALDERA facts as Morgana Tag values before execution.",
+        "Payload-dependent, build-only, unsupported, and unsafe runtime-dependent variants are excluded from these packs.",
+        "Full-tactic convenience Chains are collections of abilities, not authentic MITRE CALDERA adversary profiles or validated operation sequences."
+      ],
       "sentinel_connectors": [],
       "status": "community",
+      "provider": "mitre-stockpile",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-stockpile",
       "source_commit": "996ec41cd1c5d1c7cc09e620fc55dabe5aefd9cc",
       "category": "stockpile",
@@ -1065,7 +1508,7 @@
       "package_id": "ot-bacnet-collection-v1",
       "package_name": "OT - BACnet - Collection Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT BACnet abilities converted for ATT&CK for ICS Collection. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT BACnet abilities for validating data staging and collection behaviors before exfiltration. Provides 24 Morgana Scripts for ATT&CK for ICS Collection with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Collection (TA0100)",
       "mitre_tcodes": [
         "T0801",
@@ -1085,9 +1528,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT BACnet behaviors for ATT&CK for ICS Collection.",
+        "Exercises data staging and collection behaviors before exfiltration against an operator-supplied BACnet simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (12 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate BACnet monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Collection exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "43bd2f2db615fc008cce520cce0d335ec229b16e",
       "protocol": "bacnet",
@@ -1101,7 +1560,7 @@
       "package_id": "ot-bacnet-discovery-v1",
       "package_name": "OT - BACnet - Discovery Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT BACnet abilities converted for ATT&CK for ICS Discovery. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT BACnet abilities for validating host, account, process, service, network, and environment discovery telemetry. Provides 6 Morgana Scripts for ATT&CK for ICS Discovery with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Discovery (TA0102)",
       "mitre_tcodes": [
         "T0846",
@@ -1120,9 +1579,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT BACnet behaviors for ATT&CK for ICS Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry against an operator-supplied BACnet simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (4 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate BACnet monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Discovery exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "43bd2f2db615fc008cce520cce0d335ec229b16e",
       "protocol": "bacnet",
@@ -1136,7 +1611,7 @@
       "package_id": "ot-bacnet-impact-v1",
       "package_name": "OT - BACnet - Impact Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT BACnet abilities converted for ATT&CK for ICS Impact. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT BACnet abilities for validating high-consequence behaviors that can disrupt availability or integrity. Provides 6 Morgana Scripts for ATT&CK for ICS Impact with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Impact (TA0105)",
       "mitre_tcodes": [
         "T0831"
@@ -1154,9 +1629,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT BACnet behaviors for ATT&CK for ICS Impact.",
+        "Exercises high-consequence behaviors that can disrupt availability or integrity against an operator-supplied BACnet simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (4 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate BACnet monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Impact exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "43bd2f2db615fc008cce520cce0d335ec229b16e",
       "protocol": "bacnet",
@@ -1170,7 +1661,7 @@
       "package_id": "ot-bacnet-inhibit-response-function-v1",
       "package_name": "OT - BACnet - Inhibit Response Function Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT BACnet abilities converted for ATT&CK for ICS Inhibit Response Function. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT BACnet abilities for validating behaviors intended to prevent operators or safeguards from responding. Provides 6 Morgana Scripts for ATT&CK for ICS Inhibit Response Function with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Inhibit Response Function (TA0107)",
       "mitre_tcodes": [
         "T0816"
@@ -1188,9 +1679,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT BACnet behaviors for ATT&CK for ICS Inhibit Response Function.",
+        "Exercises behaviors intended to prevent operators or safeguards from responding against an operator-supplied BACnet simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (2 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate BACnet monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Inhibit Response Function exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: DISRUPT. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "43bd2f2db615fc008cce520cce0d335ec229b16e",
       "protocol": "bacnet",
@@ -1204,7 +1711,7 @@
       "package_id": "ot-dnp3-collection-v1",
       "package_name": "OT - DNP3 - Collection Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT DNP3 abilities converted for ATT&CK for ICS Collection. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT DNP3 abilities for validating data staging and collection behaviors before exfiltration. Provides 32 Morgana Scripts for ATT&CK for ICS Collection with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Collection (TA0100)",
       "mitre_tcodes": [
         "T0802",
@@ -1224,9 +1731,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT DNP3 behaviors for ATT&CK for ICS Collection.",
+        "Exercises data staging and collection behaviors before exfiltration against an operator-supplied DNP3 simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate DNP3 monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Collection exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "6140a8fa33665a33b97a81375af5446de7834768",
       "protocol": "dnp3",
@@ -1241,7 +1764,7 @@
       "package_id": "ot-dnp3-impair-process-control-v1",
       "package_name": "OT - DNP3 - Impair Process Control Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT DNP3 abilities converted for ATT&CK for ICS Impair Process Control. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT DNP3 abilities for validating behaviors that alter, degrade, or interfere with industrial process control. Provides 32 Morgana Scripts for ATT&CK for ICS Impair Process Control with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Impair Process Control (TA0103)",
       "mitre_tcodes": [
         "T0836",
@@ -1261,9 +1784,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT DNP3 behaviors for ATT&CK for ICS Impair Process Control.",
+        "Exercises behaviors that alter, degrade, or interfere with industrial process control against an operator-supplied DNP3 simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate DNP3 monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Impair Process Control exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "6140a8fa33665a33b97a81375af5446de7834768",
       "protocol": "dnp3",
@@ -1277,7 +1816,7 @@
       "package_id": "ot-dnp3-inhibit-response-function-v1",
       "package_name": "OT - DNP3 - Inhibit Response Function Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT DNP3 abilities converted for ATT&CK for ICS Inhibit Response Function. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT DNP3 abilities for validating behaviors intended to prevent operators or safeguards from responding. Provides 24 Morgana Scripts for ATT&CK for ICS Inhibit Response Function with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Inhibit Response Function (TA0107)",
       "mitre_tcodes": [
         "T0804",
@@ -1297,9 +1836,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT DNP3 behaviors for ATT&CK for ICS Inhibit Response Function.",
+        "Exercises behaviors intended to prevent operators or safeguards from responding against an operator-supplied DNP3 simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate DNP3 monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Inhibit Response Function exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: DISRUPT. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "6140a8fa33665a33b97a81375af5446de7834768",
       "protocol": "dnp3",
@@ -1313,7 +1868,7 @@
       "package_id": "ot-gems-collection-v1",
       "package_name": "OT - GEMS - Collection Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT GEMS abilities converted for ATT&CK for ICS Collection. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT GEMS abilities for validating data staging and collection behaviors before exfiltration. Provides 12 Morgana Scripts for ATT&CK for ICS Collection with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Collection (TA0100)",
       "mitre_tcodes": [
         "T0861"
@@ -1332,9 +1887,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT GEMS behaviors for ATT&CK for ICS Collection.",
+        "Exercises data staging and collection behaviors before exfiltration against an operator-supplied GEMS simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate GEMS monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Collection exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "e5ce65edb8058991d301a7bb12cf3a1d2a9b5e22",
       "protocol": "gems",
@@ -1348,7 +1919,7 @@
       "package_id": "ot-gems-discovery-v1",
       "package_name": "OT - GEMS - Discovery Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT GEMS abilities converted for ATT&CK for ICS Discovery. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT GEMS abilities for validating host, account, process, service, network, and environment discovery telemetry. Provides 4 Morgana Scripts for ATT&CK for ICS Discovery with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Discovery (TA0102)",
       "mitre_tcodes": [
         "T0846"
@@ -1367,9 +1938,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT GEMS behaviors for ATT&CK for ICS Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry against an operator-supplied GEMS simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate GEMS monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Discovery exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "e5ce65edb8058991d301a7bb12cf3a1d2a9b5e22",
       "protocol": "gems",
@@ -1383,7 +1970,7 @@
       "package_id": "ot-gems-impair-process-control-v1",
       "package_name": "OT - GEMS - Impair Process Control Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT GEMS abilities converted for ATT&CK for ICS Impair Process Control. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT GEMS abilities for validating behaviors that alter, degrade, or interfere with industrial process control. Provides 20 Morgana Scripts for ATT&CK for ICS Impair Process Control with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Impair Process Control (TA0103)",
       "mitre_tcodes": [
         "T0836",
@@ -1403,9 +1990,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT GEMS behaviors for ATT&CK for ICS Impair Process Control.",
+        "Exercises behaviors that alter, degrade, or interfere with industrial process control against an operator-supplied GEMS simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate GEMS monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Impair Process Control exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "e5ce65edb8058991d301a7bb12cf3a1d2a9b5e22",
       "protocol": "gems",
@@ -1419,7 +2022,7 @@
       "package_id": "ot-modbus-collection-v1",
       "package_name": "OT - Modbus - Collection Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT Modbus abilities converted for ATT&CK for ICS Collection. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT Modbus abilities for validating data staging and collection behaviors before exfiltration. Provides 15 Morgana Scripts for ATT&CK for ICS Collection with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Collection (TA0100)",
       "mitre_tcodes": [
         "T0802",
@@ -1439,9 +2042,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT Modbus behaviors for ATT&CK for ICS Collection.",
+        "Exercises data staging and collection behaviors before exfiltration against an operator-supplied Modbus simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate Modbus monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Collection exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "73562caad8662828d93b7aae03592b1d69bf36c3",
       "protocol": "modbus",
@@ -1455,7 +2074,7 @@
       "package_id": "ot-modbus-discovery-v1",
       "package_name": "OT - Modbus - Discovery Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT Modbus abilities converted for ATT&CK for ICS Discovery. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT Modbus abilities for validating host, account, process, service, network, and environment discovery telemetry. Provides 3 Morgana Scripts for ATT&CK for ICS Discovery with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Discovery (TA0102)",
       "mitre_tcodes": [
         "T0888"
@@ -1474,9 +2093,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT Modbus behaviors for ATT&CK for ICS Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry against an operator-supplied Modbus simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate Modbus monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Discovery exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "73562caad8662828d93b7aae03592b1d69bf36c3",
       "protocol": "modbus",
@@ -1490,7 +2125,7 @@
       "package_id": "ot-modbus-impair-process-control-v1",
       "package_name": "OT - Modbus - Impair Process Control Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT Modbus abilities converted for ATT&CK for ICS Impair Process Control. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT Modbus abilities for validating behaviors that alter, degrade, or interfere with industrial process control. Provides 18 Morgana Scripts for ATT&CK for ICS Impair Process Control with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Impair Process Control (TA0103)",
       "mitre_tcodes": [
         "T0806",
@@ -1510,9 +2145,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT Modbus behaviors for ATT&CK for ICS Impair Process Control.",
+        "Exercises behaviors that alter, degrade, or interfere with industrial process control against an operator-supplied Modbus simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (3 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate Modbus monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Impair Process Control exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "73562caad8662828d93b7aae03592b1d69bf36c3",
       "protocol": "modbus",
@@ -1526,7 +2177,7 @@
       "package_id": "ot-profinet-discovery-v1",
       "package_name": "OT - Profinet DCP - Discovery Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT Profinet DCP abilities converted for ATT&CK for ICS Discovery. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT Profinet DCP abilities for validating host, account, process, service, network, and environment discovery telemetry. Provides 12 Morgana Scripts for ATT&CK for ICS Discovery with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Discovery (TA0102)",
       "mitre_tcodes": [
         "T0846",
@@ -1545,9 +2196,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT Profinet DCP behaviors for ATT&CK for ICS Discovery.",
+        "Exercises host, account, process, service, network, and environment discovery telemetry against an operator-supplied Profinet DCP simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (2 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate Profinet DCP monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Discovery exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: OBSERVE. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "19a2b1368880f7bd83d32b7703893714e65a6476",
       "protocol": "profinet",
@@ -1561,7 +2228,7 @@
       "package_id": "ot-profinet-impair-process-control-v1",
       "package_name": "OT - Profinet DCP - Impair Process Control Pack (MITRE)",
       "version": "1.0.0",
-      "description": "Official MITRE CALDERA for OT Profinet DCP abilities converted for ATT&CK for ICS Impair Process Control. CALDERA is not required at runtime.",
+      "description": "Official MITRE CALDERA for OT Profinet DCP abilities for validating behaviors that alter, degrade, or interfere with industrial process control. Provides 9 Morgana Scripts for ATT&CK for ICS Impair Process Control with verified protocol assets where required; CALDERA is not required at runtime.",
       "mitre_tactic": "Impair Process Control (TA0103)",
       "mitre_tcodes": [
         "T0855"
@@ -1579,9 +2246,25 @@
         "Required OT facts supplied as Morgana tag values; no target defaults are provided",
         "Required assets downloaded from Camelot and verified by SHA256"
       ],
+      "capabilities": [
+        "Provides official MITRE CALDERA for OT Profinet DCP behaviors for ATT&CK for ICS Impair Process Control.",
+        "Exercises behaviors that alter, degrade, or interfere with industrial process control against an operator-supplied Profinet DCP simulator, lab, or approved target.",
+        "Uses verified package assets and protocol-specific parameters where required (2 unique assets in this pack)."
+      ],
+      "use_cases": [
+        "Validate Profinet DCP monitoring, industrial telemetry, and ATT&CK for ICS detection coverage.",
+        "Run focused Impair Process Control exercises in an isolated OT lab or cyber range.",
+        "Assess whether defensive controls distinguish read-only protocol activity from process-changing behavior."
+      ],
+      "safety_notes": [
+        "Highest operational risk in this pack: MODIFY. Review the risk badge on every Script before execution.",
+        "No target values are supplied; configure only an explicitly authorized lab, simulation, or approved production exercise.",
+        "Verified assets are downloaded only when a Script is explicitly executed; importing the pack never contacts an OT target."
+      ],
       "sentinel_connectors": [],
       "status": "community",
       "provider": "mitre-caldera-ot",
+      "author": "MITRE (converted by X3M.AI for Morgana)",
       "source": "mitre-caldera-ot",
       "source_commit": "19a2b1368880f7bd83d32b7703893714e65a6476",
       "protocol": "profinet",

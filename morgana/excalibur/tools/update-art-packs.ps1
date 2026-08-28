@@ -74,11 +74,19 @@ if ($DryRun) {
     exit 0
 }
 
+Write-Step "Validate package decision metadata"
+Push-Location $TOOLS_DIR
+python test_catalog_metadata.py
+$metadataExit = $LASTEXITCODE
+Pop-Location
+if ($metadataExit -ne 0) { Write-Fail "Catalog metadata validation failed (exit $metadataExit)" }
+Write-OK "All catalog packages include operator guidance"
+
 # Step 4 - Commit e push Camelot
 Write-Step "Commit e push Camelot"
 Push-Location $CAMELOT_DIR
 
-& git add "morgana/excalibur/art/" "morgana/excalibur/catalog.json" "morgana/excalibur/tools/convert_atomics.py" "morgana/excalibur/tools/test_art_import.py" "morgana/excalibur/tools/update-art-packs.ps1" "morgana/excalibur/art/README.md"
+& git add "morgana/excalibur/art/" "morgana/excalibur/catalog.json" "morgana/excalibur/tools/catalog_guidance.py" "morgana/excalibur/tools/convert_atomics.py" "morgana/excalibur/tools/test_art_import.py" "morgana/excalibur/tools/test_catalog_metadata.py" "morgana/excalibur/tools/update-art-packs.ps1" "morgana/excalibur/art/README.md"
 
 $camelotStatus = & git status --porcelain
 if (-not $camelotStatus) {

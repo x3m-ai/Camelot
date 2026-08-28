@@ -12,7 +12,7 @@ $ExcaliburDir = Split-Path $ToolsDir -Parent
 $OutputDir = Join-Path $ExcaliburDir "ot"
 $CamelotDir = Split-Path (Split-Path $ExcaliburDir -Parent) -Parent
 $Repository = "https://github.com/mitre/caldera-ot.git"
-$AllowedPattern = '^(morgana/excalibur/catalog\.json|morgana/excalibur/ot/|morgana/excalibur/tools/(convert_caldera_ot\.py|test_convert_caldera_ot\.py|test_caldera_ot_import\.py|update-caldera-ot-packs\.ps1|caldera_ot_risk_overrides\.json))'
+$AllowedPattern = '^(morgana/excalibur/catalog\.json|morgana/excalibur/ot/|morgana/excalibur/tools/(catalog_guidance\.py|convert_caldera_ot\.py|test_catalog_metadata\.py|test_convert_caldera_ot\.py|test_caldera_ot_import\.py|update-caldera-ot-packs\.ps1|caldera_ot_risk_overrides\.json))'
 
 function Write-Step([string]$Message) { Write-Host ""; Write-Host "[STEP] $Message" -ForegroundColor Cyan }
 function Write-OK([string]$Message) { Write-Host "[OK] $Message" -ForegroundColor Green }
@@ -109,6 +109,11 @@ Write-Step "Run static validation over every generated pack"
 if ($LASTEXITCODE -ne 0) { Stop-Pipeline "Generated pack validation failed." }
 Write-OK "All generated packs passed static validation"
 
+Write-Step "Validate package decision metadata"
+& python (Join-Path $ToolsDir "test_catalog_metadata.py")
+if ($LASTEXITCODE -ne 0) { Stop-Pipeline "Catalog metadata validation failed." }
+Write-OK "All catalog packages include operator guidance"
+
 if ($SmokeImport) {
     Write-Step "Import the smallest all-observe pack into loopback Morgana"
     & python (Join-Path $ToolsDir "test_caldera_ot_import.py")
@@ -123,7 +128,9 @@ if ($Publish) {
     Push-Location $CamelotDir
     try {
         & git add -- morgana/excalibur/catalog.json morgana/excalibur/ot `
+            morgana/excalibur/tools/catalog_guidance.py `
             morgana/excalibur/tools/convert_caldera_ot.py `
+            morgana/excalibur/tools/test_catalog_metadata.py `
             morgana/excalibur/tools/test_convert_caldera_ot.py `
             morgana/excalibur/tools/test_caldera_ot_import.py `
             morgana/excalibur/tools/update-caldera-ot-packs.ps1 `
