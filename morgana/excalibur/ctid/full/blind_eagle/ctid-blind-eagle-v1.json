@@ -1,0 +1,256 @@
+{
+  "package_id": "ctid-blind-eagle-v1",
+  "package_name": "CTID - Blind Eagle Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed Blind Eagle full emulation translated from CTID human-readable scenario documentation into labeled executable Morgana-native simulations.",
+  "summary": "This repo contains the source code used to support the The MITRE Corporation's ATT&CK Evaluation team's 2023 BlackHat presentation 🎩 , [Becoming a Dark Knight: Adversary Emulation Demonstration for ATT&CK Evaluations](https://www.blackhat.com/us-23/briefings/schedule/#becoming-a-dark-knight-adversary-emulation-demonstration-for-attck-evaluations-33209). Using the Latin American threat actor known as Blind Eagle, the presentation provides an example of how our team develops adversary emulation pl",
+  "purpose": "Use the documented Blind Eagle progression to run a multi-stage defensive telemetry exercise without claiming unavailable source commands are original payload execution.",
+  "capabilities": [
+    "Preserves the documented Blind Eagle scenario, ATT&CK coverage, and source context as a Morgana Chain.",
+    "Makes every documented stage executable through a sandboxed or loopback behavior simulation.",
+    "Links every generated Script to the canonical CTID documentation and labels its simulation family."
+  ],
+  "use_cases": [
+    "Plan a threat-informed Purple Team assessment based on documented Blind Eagle behavior.",
+    "Review scenario scope, infrastructure, techniques, and simulation fidelity before execution.",
+    "Exercise an intelligence-led progression without dispatching undocumented offensive payloads."
+  ],
+  "safety_notes": [
+    "The source plan has no machine-readable YAML; documented stages use labeled Morgana-native behavior simulations rather than inferred source commands.",
+    "Source resources may include offensive code or encrypted artifacts and are not mirrored or executed by this package.",
+    "Use only in an explicitly authorized lab or approved defensive exercise."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/blind_eagle",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1024.002",
+    "T1036.007",
+    "T1055.012",
+    "T1056",
+    "T1059",
+    "T1102",
+    "T1105",
+    "T1132.001",
+    "T1140",
+    "T1150",
+    "T1218.009",
+    "T1539",
+    "T1547.001",
+    "T1555.003",
+    "T1555.004"
+  ],
+  "platform": [
+    "windows",
+    "linux"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "Blind Eagle",
+  "intelligence_summary": "This repo contains the source code used to support the The MITRE Corporation's ATT&CK Evaluation team's 2023 BlackHat presentation 🎩 , [Becoming a Dark Knight: Adversary Emulation Demonstration for ATT&CK Evaluations](https://www.blackhat.com/us-23/briefings/schedule/#becoming-a-dark-knight-adversary-emulation-demonstration-for-attck-evaluations-33209). Using the Latin American threat actor known as Blind Eagle, the presentation provides an example of how our team develops adversary emulation pl",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Operational Simulation Flow"
+  ],
+  "chain_names": [
+    "CTID - Blind Eagle - Operational Simulation Flow"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 4,
+  "converted_procedure_count": 4,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 4,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Review the complete CTID scenario and infrastructure documentation",
+    "Explicitly authorize every target, dependency, and manual action",
+    "Review each generated simulation and its cleanup before execution"
+  ],
+  "tag_categories": [],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - Blind Eagle - N/A - Step 0 - Setup",
+      "name": "CTID - Blind Eagle - N/A - Step 0 - Setup",
+      "description": "Executable simulation for documented stage 'Step 0 - Setup'. Source context: This emulation leverages AsyncRAT as a C2 server, and an attacker controlled web server to host and deliver two loaders, an injector, and the final AsyncRAT payload. AsyncRAT server is a Windows .NET GUI based program and will run on an attacker controlled Windows Machine. A second Ubuntu machine will be used as attacker infrastructure - we use Python to host a simple web server with a directory structure that aligns with CTI and hosts payloads. :heavy_exclamation_mark: This emulation plan assumes the infratructure found in setup has been completed. If this has not been done then IP addresses and URLs may change. :bulb: During the emulation the Exchange server `mail.bancomurcielago.com` was configured as an open relay and an email from `notificacion@dian-info.com` was sent with the PDF Notificacion De Pago attached from the attacker web machine using the Linux `sendemail` program. A corr",
+      "tactic": "Multiple",
+      "tcode": "N/A",
+      "technique_name": "Step 0 - Setup",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation N/A'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-001-n-a.txt'; $environment = [ordered]@{Computer=$env:COMPUTERNAME;User=$env:USERNAME;PowerShell=$PSVersionTable.PSVersion.ToString()}; $environment | ConvertTo-Json -Compress | Set-Content $artifactPath; Get-Content $artifactPath; Write-Output '[SUCCESS] CTID simulation N/A family=readiness';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Blind Eagle",
+        "plan_type": "full-emulation",
+        "source_path": "blind_eagle",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_order": 1,
+        "procedure_step": "Step 0 - Setup",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/blind_eagle/Emulation_Plan/Blind_Eagle_Scenario.md#step-0---setup",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "The source plan has no machine-readable YAML; documented stages use labeled Morgana-native behavior simulations rather than inferred source commands."
+        ],
+        "simulation_family": "readiness"
+      }
+    },
+    {
+      "id": "CTID - Blind Eagle - T1024.002 - Step 1 - Initial Compromise and Persistence",
+      "name": "CTID - Blind Eagle - T1024.002 - Step 1 - Initial Compromise and Persistence",
+      "description": "Executable simulation for documented stage 'Step 1 - Initial Compromise and Persistence'. Source context: Step 1 emulates Blind Eagle gaining initial access from the target user downloading, extracting, and executing a Visual Basic script received from a link residing in an attachment to a spearphishing email. The email is sourced from the email address `notificacion@dian-info.com` the following actions take place when the VB script is executed: 1. The script uses PowerShell to download new_rump_vb.net.txt (`fiber.dll`) from `<target address>/dll`. 2. The script then loads fiber.dll into the current Application Domain. 3. Once loaded the `VAI` method is called passing in an obfuscated URL pointing to the AsyncRAT payload (`asy.txt`). 4. `fiber.dll` creates an artifact in `C:\\Windows\\Temp` called `OneDrive.vbs` which is a copy of the VB loader. 5. `fiber.dll` uses the `WebClient.DownloadString` method to download `Rump.xls (fsociety.dll)`. 6. `fiber.dll` uses `Strings.StrReverse` and `Replace",
+      "tactic": "Multiple",
+      "tcode": "T1024.002",
+      "technique_name": "Step 1 - Initial Compromise and Persistence",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1024.002'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-002-t1024-002.txt'; $runKey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'; New-ItemProperty -Path $runKey -Name 'MorganaCTIDSimulation' -Value 'cmd.exe /c exit 0' -PropertyType String -Force | Out-Null; Get-ItemProperty $runKey -Name 'MorganaCTIDSimulation'; Write-Output '[SUCCESS] CTID simulation T1024.002 family=persistence';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Blind Eagle",
+        "plan_type": "full-emulation",
+        "source_path": "blind_eagle",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_order": 2,
+        "procedure_step": "Step 1 - Initial Compromise and Persistence",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/blind_eagle/Emulation_Plan/Blind_Eagle_Scenario.md#step-1---initial-compromise-and-persistence",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "The source plan has no machine-readable YAML; documented stages use labeled Morgana-native behavior simulations rather than inferred source commands."
+        ],
+        "simulation_family": "persistence"
+      }
+    },
+    {
+      "id": "CTID - Blind Eagle - T1539 - Step 2 - Credential Theft",
+      "name": "CTID - Blind Eagle - T1539 - Step 2 - Credential Theft",
+      "description": "Executable simulation for documented stage 'Step 2 - Credential Theft'. Source context: Step 2 emulates Blind Eagle performing browser credential theft leveraging the `AsyncRAT` Recovery plugin. Blind Eagle is known to monitor the current loaded window and look for strings such as banking websites and other financial institution websites. The user has a session to a Bank website open so Blind Eagle attempts to steal both saved passwords and cookies from the browser.",
+      "tactic": "Multiple",
+      "tcode": "T1539",
+      "technique_name": "Step 2 - Credential Theft",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1539'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-003-t1539.txt'; Set-Content $artifactPath 'credential_fixture=synthetic_value'; Select-String -Path $artifactPath -Pattern 'credential_fixture'; Write-Output '[SUCCESS] CTID simulation T1539 family=credential';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Blind Eagle",
+        "plan_type": "full-emulation",
+        "source_path": "blind_eagle",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_order": 3,
+        "procedure_step": "Step 2 - Credential Theft",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/blind_eagle/Emulation_Plan/Blind_Eagle_Scenario.md#step-2---credential-theft",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "The source plan has no machine-readable YAML; documented stages use labeled Morgana-native behavior simulations rather than inferred source commands."
+        ],
+        "simulation_family": "credential"
+      }
+    },
+    {
+      "id": "CTID - Blind Eagle - T1056 - Step 3 - Keylogging",
+      "name": "CTID - Blind Eagle - T1056 - Step 3 - Keylogging",
+      "description": "Executable simulation for documented stage 'Step 3 - Keylogging'. Source context: Step 3 emulates Blind Eagle using the keylogging plugin for `AsyncRAT` to capture credentials from the victim machine.",
+      "tactic": "Multiple",
+      "tcode": "T1056",
+      "technique_name": "Step 3 - Keylogging",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1056'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-004-t1056.txt'; $environment = [ordered]@{Computer=$env:COMPUTERNAME;User=$env:USERNAME;PowerShell=$PSVersionTable.PSVersion.ToString()}; $environment | ConvertTo-Json -Compress | Set-Content $artifactPath; Get-Content $artifactPath; Write-Output '[SUCCESS] CTID simulation T1056 family=readiness';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Blind Eagle",
+        "plan_type": "full-emulation",
+        "source_path": "blind_eagle",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_order": 4,
+        "procedure_step": "Step 3 - Keylogging",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/blind_eagle/Emulation_Plan/Blind_Eagle_Scenario.md#step-3---keylogging",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "The source plan has no machine-readable YAML; documented stages use labeled Morgana-native behavior simulations rather than inferred source commands."
+        ],
+        "simulation_family": "readiness"
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - Blind Eagle - Operational Simulation Flow",
+      "description": "Executable Blind Eagle scenario using labeled behavior simulations for source-documented stages without machine-readable commands.",
+      "objective": "Generate defensive telemetry across the documented Blind Eagle progression while preserving source limitations.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:blind-eagle"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Blind Eagle",
+        "scenario_id": "operational-simulation",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/blind_eagle"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Blind Eagle",
+      "scenario_id": "operational-simulation",
+      "scenario_name": "Operational Simulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "simulation-step-001",
+            "type": "script",
+            "script_ref": "CTID - Blind Eagle - N/A - Step 0 - Setup"
+          },
+          {
+            "id": "simulation-step-002",
+            "type": "script",
+            "script_ref": "CTID - Blind Eagle - T1024.002 - Step 1 - Initial Compromise and Persistence"
+          },
+          {
+            "id": "simulation-step-003",
+            "type": "script",
+            "script_ref": "CTID - Blind Eagle - T1539 - Step 2 - Credential Theft"
+          },
+          {
+            "id": "simulation-step-004",
+            "type": "script",
+            "script_ref": "CTID - Blind Eagle - T1056 - Step 3 - Keylogging"
+          }
+        ]
+      }
+    }
+  ]
+}

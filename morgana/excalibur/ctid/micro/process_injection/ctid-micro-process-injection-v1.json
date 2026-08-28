@@ -1,0 +1,142 @@
+{
+  "package_id": "ctid-micro-process-injection-v1",
+  "package_name": "CTID Micro - Process Injection",
+  "version": "1.0.0",
+  "description": "Focused CTID micro emulation for Process Injection. It runs a labeled Morgana-native behavior simulation while retaining provenance for upstream source and asset candidates.",
+  "summary": "This micro emulation plan targets compound behaviors related to [T1055 Process Injection](https://attack.mitre.org/techniques/T1055). [Process injection](https://www.elastic.co/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process) is commonly abused by malware to run code in another process, often to evade defenses (i.e. execution from an otherwise benign process) as well as potentially to elevate privileges (i.e. inheriting unique privileges from the target process",
+  "purpose": "Validate defensive telemetry and controls for the compound Process Injection behavior rather than testing one command in isolation.",
+  "capabilities": [
+    "Preserves the CTID Process Injection defensive objective and source documentation as a focused Morgana Chain.",
+    "Preserves ATT&CK coverage and defensive intent as a focused Morgana Chain.",
+    "Runs an operational sandboxed simulation until a reviewed release asset is pinned with SHA256 and license provenance."
+  ],
+  "use_cases": [
+    "Plan a repeatable detection-validation exercise for Process Injection.",
+    "Review required telemetry and environmental prerequisites before approving the upstream tool.",
+    "Compare detections for compound discovery behavior with isolated Atomic or Stockpile procedures."
+  ],
+  "safety_notes": [
+    "This package dispatches a labeled Morgana-native simulation, never an unreviewed upstream executable.",
+    "Use an explicitly authorized lab suitable for Process Injection; source behavior may alter system or security state.",
+    "Pin a specific release asset, license, size, platform, architecture, and SHA256 before enabling automation."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID MICRO - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/micro_emulation_plans/src/process_injection",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003",
+    "T1003.001",
+    "T1055"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "plan_type": "micro-emulation",
+  "behavior": "Process Injection",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Process Injection"
+  ],
+  "chain_names": [
+    "CTID Micro - Process Injection"
+  ],
+  "complexity": "focused",
+  "source_procedure_count": 1,
+  "converted_procedure_count": 1,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 1,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Explicitly authorized lab suitable for Process Injection",
+    "Execution host and privileges required by the upstream plan documentation",
+    "Reviewed and pinned CTID release asset before automated execution"
+  ],
+  "tag_categories": [],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID MICRO - Process Injection - T1003 - Operational Simulation",
+      "name": "CTID MICRO - Process Injection - T1003 - Operational Simulation",
+      "description": "Executable Morgana-native simulation of Process Injection. Upstream executable or build output has not yet been pinned, licensed, hashed, and approved for Camelot redistribution.",
+      "tactic": "Multiple",
+      "tcode": "T1003",
+      "technique_name": "Process Injection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1003'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-001-t1003.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1003 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Process Injection",
+        "plan_type": "micro-emulation",
+        "source_path": "micro_emulation_plans/src/process_injection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "Upstream executable or build output has not yet been pinned, licensed, hashed, and approved for Camelot redistribution."
+        ],
+        "simulation_family": "discovery",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/micro_emulation_plans/src/process_injection/README.md",
+        "source_files": [
+          "ProcessInjection.cs"
+        ],
+        "unapproved_asset_candidates": [
+          ".gitignore",
+          "Makefile",
+          "process_injection.zip"
+        ],
+        "build_documentation": true
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID Micro - Process Injection",
+      "description": "Focused compound Process Injection scenario implemented as an executable Morgana-native telemetry simulation.",
+      "objective": "Validate detection coverage for compound Process Injection behavior.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "micro-emulation",
+        "behavior:process-injection"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "micro-emulation",
+        "behavior": "Process Injection",
+        "scenario_id": "primary",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/micro_emulation_plans/src/process_injection"
+      },
+      "plan_type": "micro-emulation",
+      "scenario_id": "primary",
+      "scenario_name": "Process Injection",
+      "flow": {
+        "nodes": [
+          {
+            "id": "simulation-process-injection",
+            "type": "script",
+            "script_ref": "CTID MICRO - Process Injection - T1003 - Operational Simulation"
+          }
+        ]
+      }
+    }
+  ]
+}
