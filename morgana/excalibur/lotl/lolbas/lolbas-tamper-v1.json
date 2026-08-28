@@ -1,0 +1,423 @@
+{
+  "package_id": "lolbas-tamper-v1",
+  "package_name": "LOLBAS - Tamper",
+  "version": "1.0.0",
+  "summary": "6 source-derived LOLBAS Project Living-Off-The-Land procedures for Tamper.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 6 distinct source procedures grouped by Tamper.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Tamper",
+  "mitre_tcodes": [
+    "T1485",
+    "T1490",
+    "T1562",
+    "T1562.001"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "disrupt"
+  ],
+  "readiness_counts": {
+    "ready": 3,
+    "ready_with_parameters": 3
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH_ABSOLUTE.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OSBinaries/Cipher.yml:0:0",
+      "name": "LOLBAS - T1485 - Cipher.exe - Tamper - Can be used to forensically erase a file. [421d7ad]",
+      "description": "File Encryption Utility. Zero out a file Use case: Can be used to forensically erase a file.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1485",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "cipher /w:#{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Cipher.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Cipher.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Cipher.exe",
+        "command_index": 0,
+        "category": "Tamper",
+        "usecase": "Can be used to forensically erase a file.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1485",
+        "full_paths": [
+          "c:\\windows\\system32\\cipher.exe",
+          "c:\\windows\\syswow64\\cipher.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.volexity.com/blog/2024/11/22/the-nearest-neighbor-attack-how-a-russian-apt-weaponized-nearby-wi-fi-networks-for-covert-access/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_cipher_overwrite_deleted_data.yml"
+          },
+          {
+            "IOC": "cipher.exe process with /w on the command line"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Cipher.yml:0:0",
+        "source_tcodes": [
+          "T1485"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Cipher.yml:0:1",
+      "name": "LOLBAS - T1562 - Cipher.exe - Tamper - Can be used to impair defences by e.g. encrypting a critical EDR solution file. [17a3f8e]",
+      "description": "File Encryption Utility. Encrypt a file Use case: Can be used to impair defences by e.g. encrypting a critical EDR solution file.. Privilege: Admin.",
+      "tactic": "Multiple",
+      "tcode": "T1562",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "cipher.exe /e #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Cipher.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Cipher.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Cipher.exe",
+        "command_index": 1,
+        "category": "Tamper",
+        "usecase": "Can be used to impair defences by e.g. encrypting a critical EDR solution file.",
+        "privileges": "Admin",
+        "operating_system": "Windows 10",
+        "source_mitre_id": "T1562",
+        "full_paths": [
+          "c:\\windows\\system32\\cipher.exe",
+          "c:\\windows\\syswow64\\cipher.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.volexity.com/blog/2024/11/22/the-nearest-neighbor-attack-how-a-russian-apt-weaponized-nearby-wi-fi-networks-for-covert-access/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_cipher_overwrite_deleted_data.yml"
+          },
+          {
+            "IOC": "cipher.exe process with /w on the command line"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Cipher.yml:0:1",
+        "source_tcodes": [
+          "T1562"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Admin."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/FltMC.yml:0:0",
+      "name": "LOLBAS - T1562.001 - fltMC.exe - Tamper - Defense evasion [4d07dec]",
+      "description": "Filter Manager Control Program used by Windows. Unloads a driver used by security agents Use case: Defense evasion. Privilege: Admin.",
+      "tactic": "Multiple",
+      "tcode": "T1562.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fltMC.exe unload SysmonDrv",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/FltMC.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/FltMC.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "fltMC.exe",
+        "command_index": 0,
+        "category": "Tamper",
+        "usecase": "Defense evasion",
+        "privileges": "Admin",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1562.001",
+        "full_paths": [
+          "C:\\Windows\\System32\\fltMC.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.darkoperator.com/blog/2018/10/5/operating-offensively-against-sysmon"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_fltmc_unload_driver_sysmon.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_via_filter_manager.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/18f63553a9dc1a34122fa123deae2b2f9b9ea391/detections/endpoint/unload_sysmon_filter_driver.yml"
+          },
+          {
+            "IOC": "4688 events with fltMC.exe"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/FltMC.yml:0:0",
+        "source_tcodes": [
+          "T1562.001"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Admin."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Fsutil.yml:0:0",
+      "name": "LOLBAS - T1485 - Fsutil.exe - Tamper - Can be used to forensically erase a file [40a05fd]",
+      "description": "File System Utility. Zero out a file Use case: Can be used to forensically erase a file. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1485",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsutil.exe file setZeroData offset=0 length=9999999999 #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Fsutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Fsutil.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Fsutil.exe",
+        "command_index": 0,
+        "category": "Tamper",
+        "usecase": "Can be used to forensically erase a file",
+        "privileges": "User",
+        "operating_system": "Windows XP, Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1485",
+        "full_paths": [
+          "C:\\Windows\\System32\\fsutil.exe",
+          "C:\\Windows\\SysWOW64\\fsutil.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/0gtweet/status/1720724516324704404"
+        ],
+        "detection": [
+          {
+            "IOC": "fsutil.exe should not be run on a normal workstation"
+          },
+          {
+            "IOC": "file setZeroData (not case-sensitive) in the process arguments"
+          },
+          {
+            "IOC": "Sysmon Event ID 1"
+          },
+          {
+            "IOC": "Execution of process fsutil.exe with trace decode could be suspicious"
+          },
+          {
+            "IOC": "Non-Windows netsh.exe execution"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/ff5102832031425f6eed011dd3a2e62653008c94/rules/windows/process_creation/proc_creation_win_susp_fsutil_usage.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Fsutil.yml:0:0",
+        "source_tcodes": [
+          "T1485"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Fsutil.yml:0:1",
+      "name": "LOLBAS - T1485 - Fsutil.exe - Tamper - Can be used to hide file creation activity [a5a7e9f]",
+      "description": "File System Utility. Delete the USN journal volume to hide file creation activity Use case: Can be used to hide file creation activity. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1485",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsutil.exe usn deletejournal /d c:",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Fsutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Fsutil.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Fsutil.exe",
+        "command_index": 1,
+        "category": "Tamper",
+        "usecase": "Can be used to hide file creation activity",
+        "privileges": "User",
+        "operating_system": "Windows XP, Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1485",
+        "full_paths": [
+          "C:\\Windows\\System32\\fsutil.exe",
+          "C:\\Windows\\SysWOW64\\fsutil.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/0gtweet/status/1720724516324704404"
+        ],
+        "detection": [
+          {
+            "IOC": "fsutil.exe should not be run on a normal workstation"
+          },
+          {
+            "IOC": "file setZeroData (not case-sensitive) in the process arguments"
+          },
+          {
+            "IOC": "Sysmon Event ID 1"
+          },
+          {
+            "IOC": "Execution of process fsutil.exe with trace decode could be suspicious"
+          },
+          {
+            "IOC": "Non-Windows netsh.exe execution"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/ff5102832031425f6eed011dd3a2e62653008c94/rules/windows/process_creation/proc_creation_win_susp_fsutil_usage.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Fsutil.yml:0:1",
+        "source_tcodes": [
+          "T1485"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Vssadmin.yml:0:0",
+      "name": "LOLBAS - T1490 - Vssadmin.exe - Tamper - Destroy shadow copies to prevent file and system recovery, a technique commonly used by... [87f50d3]",
+      "description": "Volume Shadow Copy Service administrative command-line tool. Delete all volume shadow copies on the host without prompting Use case: Destroy shadow copies to prevent file and system recovery, a technique commonly used by ransomware. Privilege: Administrator.",
+      "tactic": "Multiple",
+      "tcode": "T1490",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "vssadmin delete shadows /all /quiet",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Vssadmin.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Vssadmin.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Vssadmin.exe",
+        "command_index": 0,
+        "category": "Tamper",
+        "usecase": "Destroy shadow copies to prevent file and system recovery, a technique commonly used by ransomware",
+        "privileges": "Administrator",
+        "operating_system": "Windows 11, Windows 10, Windows Server",
+        "source_mitre_id": "T1490",
+        "full_paths": [
+          "C:\\Windows\\System32\\vssadmin.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://attack.mitre.org/techniques/T1490/",
+          "https://github.com/Neo23x0/Raccine"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_shadow_copies_deletion.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Vssadmin.yml:0:0",
+        "source_tcodes": [
+          "T1490"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

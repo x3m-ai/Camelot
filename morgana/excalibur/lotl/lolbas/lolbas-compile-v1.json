@@ -1,0 +1,564 @@
+{
+  "package_id": "lolbas-compile-v1",
+  "package_name": "LOLBAS - Compile",
+  "version": "1.0.0",
+  "summary": "8 source-derived LOLBAS Project Living-Off-The-Land procedures for Compile.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 8 distinct source procedures grouped by Compile.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Compile",
+  "mitre_tcodes": [
+    "T1127"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "readiness_counts": {
+    "ready_with_parameters": 8
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:.vb.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_lolbas_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: PATH:.exe.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        },
+        {
+          "key": "lotl_lolbas_payload_path_ee2b58d",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: PATH:.cs.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OSBinaries/Csc.yml:0:1",
+      "name": "LOLBAS - T1127 - Csc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [678421d]",
+      "description": "Binary file used by .NET Framework to compile C# code. Use csc.exe to compile C# code, targeting the .NET Framework, stored in the specified .cs file and output the compiled version to a DLL file with the same name. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "csc -target:library #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Csc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Csc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Csc.exe",
+        "command_index": 1,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v3.5\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\csc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_csc_susp_parent.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_csc_susp_folder.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_dotnet_compiler_parent_process.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_execution_msbuild_started_unusal_process.toml"
+          },
+          {
+            "IOC": "Csc.exe should normally not run as System account unless it is used for development."
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Csc.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Csc.yml:0:0",
+      "name": "LOLBAS - T1127 - Csc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [7011df3]",
+      "description": "Binary file used by .NET Framework to compile C# code. Use csc.exe to compile C# code, targeting the .NET Framework, stored in the specified .cs file and output the compiled version to the specified .exe path. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "csc.exe -out:#{lotl_lolbas_payload_path} #{lotl_lolbas_payload_path_ee2b58d}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path",
+        "lotl_lolbas_payload_path_ee2b58d"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Csc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Csc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Csc.exe",
+        "command_index": 0,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v3.5\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\csc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\csc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_csc_susp_parent.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_csc_susp_folder.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_dotnet_compiler_parent_process.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_execution_msbuild_started_unusal_process.toml"
+          },
+          {
+            "IOC": "Csc.exe should normally not run as System account unless it is used for development."
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Csc.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Ilasm.yml:0:1",
+      "name": "LOLBAS - T1127 - Ilasm.exe - Compile - A description of the usecase [995c883]",
+      "description": "used for compile c# code into dll or exe.. Binary file used by .NET to compile C#/intermediate (IL) code to dll Use case: A description of the usecase. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "ilasm.exe #{lotl_lolbas_local_path} /dll",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Ilasm.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Ilasm.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Ilasm.exe",
+        "command_index": 1,
+        "category": "Compile",
+        "usecase": "A description of the usecase",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\ilasm.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\ilasm.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/LuxNoBulIshit/BeforeCompileBy-ilasm/blob/master/hello_world.txt"
+        ],
+        "detection": [
+          {
+            "IOC": "Ilasm may not be used often in production environments (such as on endpoints)"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/bea6f18d350d9c9fdc067f93dde0e9b11cc22dc2/rules/windows/process_creation/proc_creation_win_lolbin_ilasm.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Ilasm.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Ilasm.yml:0:0",
+      "name": "LOLBAS - T1127 - Ilasm.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [d4e34ec]",
+      "description": "used for compile c# code into dll or exe.. Binary file used by .NET to compile C#/intermediate (IL) code to .exe Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "ilasm.exe #{lotl_lolbas_local_path} /exe",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Ilasm.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Ilasm.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Ilasm.exe",
+        "command_index": 0,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\ilasm.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\ilasm.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/LuxNoBulIshit/BeforeCompileBy-ilasm/blob/master/hello_world.txt"
+        ],
+        "detection": [
+          {
+            "IOC": "Ilasm may not be used often in production environments (such as on endpoints)"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/bea6f18d350d9c9fdc067f93dde0e9b11cc22dc2/rules/windows/process_creation/proc_creation_win_lolbin_ilasm.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Ilasm.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Jsc.yml:0:0",
+      "name": "LOLBAS - T1127 - Jsc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [7fb677e]",
+      "description": "Binary file used by .NET to compile JavaScript code to .exe or .dll format. Use jsc.exe to compile JavaScript code stored in the provided .JS file and generate a .EXE file with the same name. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "jsc.exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Jsc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Jsc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Jsc.exe",
+        "command_index": 0,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Jsc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/DissectMalware/status/998797808907046913",
+          "https://www.phpied.com/make-your-javascript-a-windows-exe/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/35a7244c62820fbc5a832e50b1e224ac3a1935da/rules/windows/process_creation/proc_creation_win_lolbin_jsc.yml"
+          },
+          {
+            "IOC": "Jsc.exe should normally not run a system unless it is used for development."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "JScript"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Jsc.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Jsc.yml:0:1",
+      "name": "LOLBAS - T1127 - Jsc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [a3349f6]",
+      "description": "Binary file used by .NET to compile JavaScript code to .exe or .dll format. Use jsc.exe to compile JavaScript code stored in the .JS file and generate a DLL file with the same name. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "jsc.exe /t:library #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Jsc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Jsc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Jsc.exe",
+        "command_index": 1,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Jsc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Jsc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/DissectMalware/status/998797808907046913",
+          "https://www.phpied.com/make-your-javascript-a-windows-exe/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/35a7244c62820fbc5a832e50b1e224ac3a1935da/rules/windows/process_creation/proc_creation_win_lolbin_jsc.yml"
+          },
+          {
+            "IOC": "Jsc.exe should normally not run a system unless it is used for development."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "JScript"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Jsc.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Vbc.yml:0:1",
+      "name": "LOLBAS - T1127 - vbc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [931a00e]",
+      "description": "Binary file used for compile vbs code. Binary file used by .NET to compile Visual Basic code to an executable. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "vbc -reference:Microsoft.VisualBasic.dll #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Vbc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Vbc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "vbc.exe",
+        "command_index": 1,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v3.5\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\vbc.exe"
+        ],
+        "aliases": [],
+        "resources": [],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_visual_basic_compiler.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_dotnet_compiler_parent_process.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Vbc.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Vbc.yml:0:0",
+      "name": "LOLBAS - T1127 - vbc.exe - Compile - Compile attacker code on system. Bypass defensive counter measures. [7535ef9]",
+      "description": "Binary file used for compile vbs code. Binary file used by .NET to compile Visual Basic code to an executable. Use case: Compile attacker code on system. Bypass defensive counter measures.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "vbc.exe /target:exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Vbc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Vbc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "vbc.exe",
+        "command_index": 0,
+        "category": "Compile",
+        "usecase": "Compile attacker code on system. Bypass defensive counter measures.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v3.5\\vbc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\vbc.exe"
+        ],
+        "aliases": [],
+        "resources": [],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_visual_basic_compiler.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_dotnet_compiler_parent_process.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Vbc.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    }
+  ],
+  "chains": []
+}

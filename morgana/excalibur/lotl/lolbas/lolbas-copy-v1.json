@@ -1,0 +1,915 @@
+{
+  "package_id": "lolbas-copy-v1",
+  "package_name": "LOLBAS - Copy",
+  "version": "1.0.0",
+  "summary": "13 source-derived LOLBAS Project Living-Off-The-Land procedures for Copy.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 13 distinct source procedures grouped by Copy.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Copy",
+  "mitre_tcodes": [
+    "T1003.003",
+    "T1036.005",
+    "T1105"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "readiness_counts": {
+    "ready": 2,
+    "ready_with_parameters": 11
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_input_file",
+          "label": "Input File",
+          "description": "Operator-supplied input file for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:.cab.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "input_file"
+        },
+        {
+          "key": "lotl_lolbas_output_file",
+          "label": "Output File",
+          "description": "Operator-supplied output file for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:folder.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "output_file"
+        },
+        {
+          "key": "lotl_lolbas_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: PATH_SMB:.tar.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OSBinaries/Bitsadmin.yml:0:2",
+      "name": "LOLBAS - T1105 - Bitsadmin.exe - Copy - Copy file [2f52177]",
+      "description": "Used for managing background intelligent transfer. Command for copying cmd.exe to another folder Use case: Copy file. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "bitsadmin /create 1 & bitsadmin /addfile 1 c:\\windows\\system32\\cmd.exe c:\\data\\playfolder\\cmd.exe & bitsadmin /RESUME 1 & bitsadmin /Complete 1 & bitsadmin /reset",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Bitsadmin.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Bitsadmin.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Bitsadmin.exe",
+        "command_index": 2,
+        "category": "Copy",
+        "usecase": "Copy file",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\bitsadmin.exe",
+          "C:\\Windows\\SysWOW64\\bitsadmin.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.slideshare.net/chrisgates/windows-attacks-at-is-the-new-black-26672679",
+          "https://www.youtube.com/watch?v=_8xJaaQlpBo",
+          "https://gist.github.com/api0cradle/cdd2d0d0ec9abb686f0e89306e277b8f",
+          "https://www.soc-labs.top/en/detections/100"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_bitsadmin_download.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/web/proxy_generic/proxy_ua_bitsadmin_susp_tld.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_bitsadmin_potential_persistence.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/3f77e24974239fcb7a339080a1a483e6bad84a82/detections/endpoint/bitsadmin_download_file.yml"
+          },
+          {
+            "IOC": "Child process from bitsadmin.exe"
+          },
+          {
+            "IOC": "bitsadmin creates new files"
+          },
+          {
+            "IOC": "bitsadmin adds data to alternate data stream"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Bitsadmin.yml:0:2",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Colorcpl.yml:0:0",
+      "name": "LOLBAS - T1036.005 - Colorcpl.exe - Copy - Copies file(s) to a subfolder of a generally trusted folder (c:\\Windows\\System32), whic... [00f26a0]",
+      "description": "Binary that handles color management. Copies the referenced file to C:\\Windows\\System32\\spool\\drivers\\color\\. Use case: Copies file(s) to a subfolder of a generally trusted folder (c:\\Windows\\System32), which can be used to hide files or make them blend into the environment.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1036.005",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "colorcpl #{lotl_lolbas_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Colorcpl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Colorcpl.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Colorcpl.exe",
+        "command_index": 0,
+        "category": "Copy",
+        "usecase": "Copies file(s) to a subfolder of a generally trusted folder (c:\\Windows\\System32), which can be used to hide files or make them blend into the environment.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1036.005",
+        "full_paths": [
+          "C:\\Windows\\System32\\colorcpl.exe",
+          "C:\\Windows\\SysWOW64\\colorcpl.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/eral4m/status/1480468728324231172"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_susp_colorcpl.yml"
+          },
+          {
+            "IOC": "colorcpl.exe writing files"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Colorcpl.yml:0:0",
+        "source_tcodes": [
+          "T1036.005"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dtutil.yml:0:0",
+      "name": "LOLBAS - T1105 - dtutil.exe - Copy - Use to copies the source file to the destination file [840e8d2]",
+      "description": "Microsoft command line utility used to manage SQL Server Integration Services packages.. Copy file from source to destination Use case: Use to copies the source file to the destination file. Privilege: Administrator.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dtutil.exe /FILE #{lotl_lolbas_input_file} /COPY FILE;#{lotl_lolbas_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dtutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dtutil.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "dtutil.exe",
+        "command_index": 0,
+        "category": "Copy",
+        "usecase": "Use to copies the source file to the destination file",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft SQL Server\\<version>\\DTS\\Binn\\dtutil.exe",
+          "C:\\Program Files (x86)\\Microsoft SQL Server\\<version>\\DTS\\Binn\\dtutil.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/sql/integration-services/dtutil-utility?view=sql-server-ver16"
+        ],
+        "detection": [],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dtutil.yml:0:0",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Esentutl.yml:0:0",
+      "name": "LOLBAS - T1105 - Esentutl.exe - Copy - Copies files from A to B [22106ef]",
+      "description": "Binary for working with Microsoft Joint Engine Technology (JET) database. Copies the source VBS file to the destination VBS file. Use case: Copies files from A to B. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "esentutl.exe /y #{lotl_lolbas_input_file} /d #{lotl_lolbas_output_file} /o",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Esentutl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Esentutl.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Esentutl.exe",
+        "command_index": 0,
+        "category": "Copy",
+        "usecase": "Copies files from A to B",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\esentutl.exe",
+          "C:\\Windows\\SysWOW64\\esentutl.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/egre55/status/985994639202283520",
+          "https://dfironthemountain.wordpress.com/2018/12/06/locked-file-access-using-esentutl-exe/",
+          "https://twitter.com/bohops/status/1094810861095534592"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_params.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_webcache.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/registry/registry_event/registry_event_esentutl_volume_shadow_copy_service_keys.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_sensitive_file_copy.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/esentutl_sam_copy.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/f6421d8c534f295518a2c945f530e8afc4c8ad1b/rules/windows/credential_access_copy_ntds_sam_volshadowcp_cmdline.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Esentutl.yml:0:0",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Esentutl.yml:0:5",
+      "name": "LOLBAS - T1003.003 - Esentutl.exe - Copy - Copy/extract a locked file such as the AD Database [9088748]",
+      "description": "Binary for working with Microsoft Joint Engine Technology (JET) database. Copies a (locked) file using Volume Shadow Copy Use case: Copy/extract a locked file such as the AD Database. Privilege: Admin.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "esentutl.exe /y /vss c:\\windows\\ntds\\ntds.dit /d #{lotl_lolbas_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Esentutl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Esentutl.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Esentutl.exe",
+        "command_index": 5,
+        "category": "Copy",
+        "usecase": "Copy/extract a locked file such as the AD Database",
+        "privileges": "Admin",
+        "operating_system": "Windows 10, Windows 11, Windows 2016 Server, Windows 2019 Server",
+        "source_mitre_id": "T1003.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\esentutl.exe",
+          "C:\\Windows\\SysWOW64\\esentutl.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/egre55/status/985994639202283520",
+          "https://dfironthemountain.wordpress.com/2018/12/06/locked-file-access-using-esentutl-exe/",
+          "https://twitter.com/bohops/status/1094810861095534592"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_params.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_webcache.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/registry/registry_event/registry_event_esentutl_volume_shadow_copy_service_keys.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_esentutl_sensitive_file_copy.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/esentutl_sam_copy.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/f6421d8c534f295518a2c945f530e8afc4c8ad1b/rules/windows/credential_access_copy_ntds_sam_volshadowcp_cmdline.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Esentutl.yml:0:5",
+        "source_tcodes": [
+          "T1003.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Admin."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Expand.yml:0:1",
+      "name": "LOLBAS - T1105 - Expand.exe - Copy - Copies files from A to B [b2cd459]",
+      "description": "Binary that expands one or more compressed files. Copies source file to destination. Use case: Copies files from A to B. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "expand #{lotl_lolbas_input_file} #{lotl_lolbas_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Expand.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Expand.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Expand.exe",
+        "command_index": 1,
+        "category": "Copy",
+        "usecase": "Copies files from A to B",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\Expand.exe",
+          "C:\\Windows\\SysWOW64\\Expand.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/infosecn1nja/status/986628482858807297",
+          "https://twitter.com/Oddvarmoe/status/986709068759949319"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_expand_cabinet_files.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/defense_evasion_misc_lolbin_connecting_to_the_internet.toml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Expand.yml:0:1",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Extrac32.yml:0:3",
+      "name": "LOLBAS - T1105 - Extrac32.exe - Copy - Copy file [581c12b]",
+      "description": "Extract to ADS, copy or overwrite a file with Extrac32.exe. Command for copying file from one folder to another Use case: Copy file. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "extrac32.exe /C #{lotl_lolbas_input_file} #{lotl_lolbas_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Extrac32.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Extrac32.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Extrac32.exe",
+        "command_index": 3,
+        "category": "Copy",
+        "usecase": "Copy file",
+        "privileges": "User",
+        "operating_system": "Windows XP, Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\extrac32.exe",
+          "C:\\Windows\\SysWOW64\\extrac32.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://oddvar.moe/2018/04/11/putting-data-in-alternate-data-streams-and-how-to-execute-it-part-2/",
+          "https://gist.github.com/api0cradle/cdd2d0d0ec9abb686f0e89306e277b8f",
+          "https://twitter.com/egre55/status/985994639202283520"
+        ],
+        "detection": [
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/defense_evasion_misc_lolbin_connecting_to_the_internet.toml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_extrac32.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_extrac32_ads.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Extrac32.yml:0:3",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Msdeploy.yml:0:2",
+      "name": "LOLBAS - T1105 - Msdeploy.exe - Copy - Copy file. [fa7758c]",
+      "description": "Microsoft tool used to deploy Web Applications.. Copy file from source to destination. Use case: Copy file.. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msdeploy.exe -verb:sync -source:filePath=#{lotl_lolbas_input_file} -dest:filePath=#{lotl_lolbas_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Msdeploy.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Msdeploy.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Msdeploy.exe",
+        "command_index": 2,
+        "category": "Copy",
+        "usecase": "Copy file.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11, Windows Server",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V2\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V2\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V4\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V4\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V5\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V5\\msdeploy.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/pabraeken/status/995837734379032576",
+          "https://twitter.com/pabraeken/status/999090532839313408"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_msdeploy.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Msdeploy.yml:0:2",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Print.yml:0:1",
+      "name": "LOLBAS - T1105 - Print.exe - Copy - Copy files [e81add0]",
+      "description": "Used by Windows to send files to the printer. Copy file from source to destination Use case: Copy files. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "print /D:#{lotl_lolbas_input_file} #{lotl_lolbas_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Print.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Print.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Print.exe",
+        "command_index": 1,
+        "category": "Copy",
+        "usecase": "Copy files",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\print.exe",
+          "C:\\Windows\\SysWOW64\\print.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/Oddvarmoe/status/985518877076541440",
+          "https://www.youtube.com/watch?v=nPBcSP8M7KE&lc=z22fg1cbdkabdf3x404t1aokgwd2zxasf2j3rbozrswnrk0h00410"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_print_remote_file_copy.yml"
+          },
+          {
+            "IOC": "Print.exe retrieving files from internet"
+          },
+          {
+            "IOC": "Print.exe creating executable files on disk"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Print.yml:0:1",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Print.yml:0:2",
+      "name": "LOLBAS - T1105 - Print.exe - Copy - Copy/Download file from remote server [93213db]",
+      "description": "Used by Windows to send files to the printer. Copy File.exe from a network share to the target c:\\OutFolder\\outfile.exe. Use case: Copy/Download file from remote server. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "print /D:#{lotl_lolbas_input_file} #{lotl_lolbas_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Print.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Print.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Print.exe",
+        "command_index": 2,
+        "category": "Copy",
+        "usecase": "Copy/Download file from remote server",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\print.exe",
+          "C:\\Windows\\SysWOW64\\print.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/Oddvarmoe/status/985518877076541440",
+          "https://www.youtube.com/watch?v=nPBcSP8M7KE&lc=z22fg1cbdkabdf3x404t1aokgwd2zxasf2j3rbozrswnrk0h00410"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_print_remote_file_copy.yml"
+          },
+          {
+            "IOC": "Print.exe retrieving files from internet"
+          },
+          {
+            "IOC": "Print.exe creating executable files on disk"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Print.yml:0:2",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Replace.yml:0:0",
+      "name": "LOLBAS - T1105 - Replace.exe - Copy - Copy files [f086387]",
+      "description": "Used to replace file with another file. Copy .cab file to destination Use case: Copy files. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "replace.exe #{lotl_lolbas_input_file} #{lotl_lolbas_output_file} /A",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_input_file",
+        "lotl_lolbas_output_file"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Replace.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Replace.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Replace.exe",
+        "command_index": 0,
+        "category": "Copy",
+        "usecase": "Copy files",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\replace.exe",
+          "C:\\Windows\\SysWOW64\\replace.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/elceef/status/986334113941655553",
+          "https://twitter.com/elceef/status/986842299861782529"
+        ],
+        "detection": [
+          {
+            "IOC": "Replace.exe retrieving files from remote server"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_replace.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Replace.yml:0:0",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Tar.yml:0:2",
+      "name": "LOLBAS - T1105 - Tar.exe - Copy - Copy files [0f8394f]",
+      "description": "Used by Windows to extract and create archives.. Extracts archive.tar from the remote (internal) host to the current host. Use case: Copy files. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "tar -xf #{lotl_lolbas_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Tar.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Tar.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Tar.exe",
+        "command_index": 2,
+        "category": "Copy",
+        "usecase": "Copy files",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\tar.exe",
+          "C:\\Windows\\SysWOW64\\tar.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/Cyber_Sorcery/status/1619819249886969856"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/e1a713d264ac072bb76b5c4e5f41315a015d3f41/rules/windows/process_creation/proc_creation_win_tar_compression.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/e1a713d264ac072bb76b5c4e5f41315a015d3f41/rules/windows/process_creation/proc_creation_win_tar_extraction.yml"
+          },
+          {
+            "IOC": "tar.exe extracting files from a remote host within the environment"
+          },
+          {
+            "IOC": "Abnormal processes spawning tar.exe"
+          },
+          {
+            "IOC": "tar.exe interacting with alternate data streams (ADS)"
+          }
+        ],
+        "tags": [
+          {
+            "Type": "Compression"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Tar.yml:0:2",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Wmic.yml:0:5",
+      "name": "LOLBAS - T1105 - Wmic.exe - Copy - Copy file. [74c5b25]",
+      "description": "The WMI command-line (WMIC) utility provides a command-line interface for WMI. Copy file from source to destination. Use case: Copy file.. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "wmic.exe datafile where \"Name='C:\\\\windows\\\\system32\\\\calc.exe'\" call Copy \"C:\\\\users\\\\public\\\\calc.exe\"",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Wmic.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Wmic.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Wmic.exe",
+        "command_index": 5,
+        "category": "Copy",
+        "usecase": "Copy file.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Windows\\System32\\wbem\\wmic.exe",
+          "C:\\Windows\\SysWOW64\\wbem\\wmic.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://stackoverflow.com/questions/24658745/wmic-how-to-use-process-call-create-with-a-specific-working-directory",
+          "https://subt0x11.blogspot.no/2018/04/wmicexe-whitelisting-bypass-hacking.html",
+          "https://twitter.com/subTee/status/986234811944648707",
+          "https://research.kudelskisecurity.com/2025/04/30/unmasking-blackbasta-inside-the-ransomware-syndicates-leaked-operations/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/image_load/image_load_wmic_remote_xsl_scripting_dlls.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_wmic_xsl_script_processing.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_wmic_squiblytwo_bypass.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_wmic_eventconsumer_creation.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_suspicious_wmi_script.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/persistence_via_windows_management_instrumentation_event_subscription.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_suspicious_managedcode_host_process.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/961a81d4a5cb5c5febec4894d6d812497171a85c/detections/endpoint/xsl_script_execution_with_wmic.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/3f77e24974239fcb7a339080a1a483e6bad84a82/detections/endpoint/remote_wmi_command_attempt.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/3f77e24974239fcb7a339080a1a483e6bad84a82/detections/endpoint/remote_process_instantiation_via_wmi.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/08ed88bd88259c03c771c30170d2934ed0a8f878/detections/endpoint/process_execution_via_wmi.yml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "Wmic retrieving scripts from remote system/Internet location"
+          },
+          {
+            "IOC": "DotNet CLR libraries loaded into wmic.exe"
+          },
+          {
+            "IOC": "DotNet CLR Usage Log - wmic.exe.log"
+          },
+          {
+            "IOC": "wmiprvse.exe writing files"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Wmic.yml:0:5",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    }
+  ],
+  "chains": []
+}

