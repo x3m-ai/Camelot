@@ -1,0 +1,288 @@
+{
+  "package_id": "lolbas-reconnaissance-v1",
+  "package_name": "LOLBAS - Reconnaissance",
+  "version": "1.0.0",
+  "summary": "4 source-derived LOLBAS Project Living-Off-The-Land procedures for Reconnaissance.",
+  "description": "Faithful, deterministic conversion of explicit LOLBAS Project procedures. Commands retain upstream behavior while environment values use Morgana Tags.",
+  "purpose": "Run authorized Living-Off-The-Land detection validation using legitimate native or commonly available utilities in adversary-like ways.",
+  "capabilities": [
+    "Provides 4 distinct source procedures grouped by Reconnaissance.",
+    "Preserves source identity, ATT&CK mappings, execution context, prerequisites, and provider metadata.",
+    "Supports deterministic content-only updates from pinned upstream commits."
+  ],
+  "use_cases": [
+    "Validate endpoint and network detections for authorized Living-Off-The-Land behavior.",
+    "Search and import only the utility, function, context, platform, or ATT&CK coverage needed for an exercise."
+  ],
+  "safety_notes": [
+    "Review every command, Tag, privilege requirement, and readiness classification before execution.",
+    "Interactive, elevated, SUID, capability, and counterpart-dependent procedures require an explicitly prepared lab.",
+    "No upstream command is executed during conversion or import."
+  ],
+  "prerequisites": [
+    "The referenced Windows binary must exist on the target.",
+    "Operator-supplied Tags and any declared privilege or network counterpart must be configured.",
+    "Explicit authorization for the target and procedure behavior."
+  ],
+  "author": "LOLBAS Project / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLBAS - ",
+  "provider": "lolbas",
+  "source": "lolbas",
+  "source_repository": "https://github.com/LOLBAS-Project/LOLBAS",
+  "source_commit": "67781fd49a5c8605bba0171dc3d3feec148b432e",
+  "source_license": "GPL-3.0",
+  "documentation_url": "https://github.com/LOLBAS-Project/LOLBAS",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Reconnaissance",
+  "mitre_tcodes": [
+    "T1040",
+    "T1113"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact"
+  ],
+  "readiness_counts": {
+    "ready": 2,
+    "ready_with_parameters": 2
+  },
+  "category": "lotl/lolbas",
+  "tag_categories": [
+    {
+      "category_id": "lotl_lolbas_parameters",
+      "label": "LOLBAS Project Runtime Parameters",
+      "description": "Operator-supplied values shared by Living-Off-The-Land procedures.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "lotl_lolbas_local_path",
+          "label": "Local Path",
+          "description": "Operator-supplied local path for this authorized LOTL procedure. Source token: PATH_ABSOLUTE:.zip.",
+          "sensitive": false,
+          "required": true,
+          "default": "",
+          "example": "",
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "lolbas:yml/OtherMSBinaries/Nmcap.yml:0:0",
+      "name": "LOLBAS - T1040 - Nmcap.exe - Reconnaissance - Capture network traffic on windows to collect sensitive data. [60fbb08]",
+      "description": "Command-line packet capture utility from Microsoft Network Monitor 3.x.. Start capture on all network adapters and save to specified .cap (circular) file. Optionally, one can add: - `/TerminateWhen /TimeAfter 30 seconds` to auto-terminate after a relative times (e.g. 30 seconds); - `/TerminateWhen /Time 04:52:00 AM 9/17/2025` to auto-terminate after a specific date/time; - `/TerminateWhen /KeyPress x` to terminate when a specific key is pressed. Use case: Capture network traffic on windows to collect sensitive data.. Privilege: Administrator.",
+      "tactic": "Multiple",
+      "tcode": "T1040",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "nmcap.exe /network * /capture /file #{lotl_lolbas_local_path}",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "source_file": "yml/OtherMSBinaries/Nmcap.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OtherMSBinaries/Nmcap.yml",
+        "source_directory": "OtherMSBinaries",
+        "source_name": "Nmcap.exe",
+        "command_index": 0,
+        "category": "Reconnaissance",
+        "usecase": "Capture network traffic on windows to collect sensitive data.",
+        "privileges": "Administrator",
+        "operating_system": "Windows",
+        "source_mitre_id": "T1040",
+        "full_paths": [
+          "C:\\Program Files\\Microsoft Network Monitor 3\\nmcap.exe",
+          "C:\\Program Files (x86)\\Microsoft Network Monitor 3\\nmcap.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/network-monitor-3"
+        ],
+        "detection": [],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OtherMSBinaries/Nmcap.yml:0:0",
+        "source_tcodes": [
+          "T1040"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Pktmon.yml:0:1",
+      "name": "LOLBAS - T1040 - Pktmon.exe - Reconnaissance - Look for interesting traffic such as telent or FTP [292120a]",
+      "description": "Capture Network Packets on the windows 10 with October 2018 Update or later.. Select Desired ports for packet capture Use case: Look for interesting traffic such as telent or FTP. Privilege: Administrator.",
+      "tactic": "Multiple",
+      "tcode": "T1040",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "pktmon.exe filter add -p 445",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Pktmon.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Pktmon.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Pktmon.exe",
+        "command_index": 1,
+        "category": "Reconnaissance",
+        "usecase": "Look for interesting traffic such as telent or FTP",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10 1809 and later, Windows 11",
+        "source_mitre_id": "T1040",
+        "full_paths": [
+          "c:\\windows\\system32\\pktmon.exe",
+          "c:\\windows\\syswow64\\pktmon.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://binar-x79.com/windows-10-secret-sniffer/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_pktmon.yml"
+          },
+          {
+            "IOC": ".etl files found on system"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Pktmon.yml:0:1",
+        "source_tcodes": [
+          "T1040"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Pktmon.yml:0:0",
+      "name": "LOLBAS - T1040 - Pktmon.exe - Reconnaissance - use this a built in network sniffer on windows 10 to capture senstive traffic [39ef717]",
+      "description": "Capture Network Packets on the windows 10 with October 2018 Update or later.. Will start a packet capture and store log file as PktMon.etl. Use pktmon.exe stop Use case: use this a built in network sniffer on windows 10 to capture senstive traffic. Privilege: Administrator.",
+      "tactic": "Multiple",
+      "tcode": "T1040",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "pktmon.exe start --etw",
+      "cleanup_command": null,
+      "required_tags": [],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Pktmon.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Pktmon.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Pktmon.exe",
+        "command_index": 0,
+        "category": "Reconnaissance",
+        "usecase": "use this a built in network sniffer on windows 10 to capture senstive traffic",
+        "privileges": "Administrator",
+        "operating_system": "Windows 10 1809 and later, Windows 11",
+        "source_mitre_id": "T1040",
+        "full_paths": [
+          "c:\\windows\\system32\\pktmon.exe",
+          "c:\\windows\\syswow64\\pktmon.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://binar-x79.com/windows-10-secret-sniffer/"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_lolbin_pktmon.yml"
+          },
+          {
+            "IOC": ".etl files found on system"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Pktmon.yml:0:0",
+        "source_tcodes": [
+          "T1040"
+        ],
+        "context": "all",
+        "readiness": "ready",
+        "prerequisites": [
+          "Required source privilege: Administrator."
+        ]
+      }
+    },
+    {
+      "id": "lolbas:yml/OSBinaries/Psr.yml:0:0",
+      "name": "LOLBAS - T1113 - Psr.exe - Reconnaissance - Can be used to take screenshots of the user environment [ed457ec]",
+      "description": "Windows Problem Steps Recorder, used to record screen and clicks.. Record a user screen without creating a GUI. You should use \"psr.exe /stop\" to stop recording and create output file. Use case: Can be used to take screenshots of the user environment. Privilege: User.",
+      "tactic": "Multiple",
+      "tcode": "T1113",
+      "executor": "cmd",
+      "platform": "windows",
+      "command": "psr.exe /start /output #{lotl_lolbas_local_path} /sc 1 /gui 0",
+      "cleanup_command": null,
+      "required_tags": [
+        "lotl_lolbas_local_path"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "source_file": "yml/OSBinaries/Psr.yml",
+        "source_documentation": "https://github.com/LOLBAS-Project/LOLBAS/blob/master/yml/OSBinaries/Psr.yml",
+        "source_directory": "OSBinaries",
+        "source_name": "Psr.exe",
+        "command_index": 0,
+        "category": "Reconnaissance",
+        "usecase": "Can be used to take screenshots of the user environment",
+        "privileges": "User",
+        "operating_system": "since Windows 7 (client) / Windows 2008 R2",
+        "source_mitre_id": "T1113",
+        "full_paths": [
+          "c:\\windows\\system32\\psr.exe",
+          "c:\\windows\\syswow64\\psr.exe"
+        ],
+        "aliases": [],
+        "resources": [
+          "https://social.technet.microsoft.com/wiki/contents/articles/51722.windows-problem-steps-recorder-psr-quick-and-easy-documenting-of-your-steps-and-procedures.aspx"
+        ],
+        "detection": [
+          {
+            "Sigma": "https://github.com/SigmaHQ/sigma/blob/c04bef2fbbe8beff6c7620d5d7ea6872dbe7acba/rules/windows/process_creation/proc_creation_win_psr_capture_screenshots.yml"
+          },
+          {
+            "IOC": "psr.exe spawned"
+          },
+          {
+            "IOC": "suspicious activity when running with \"/gui 0\" flag"
+          }
+        ],
+        "tags": [],
+        "provider": "lolbas",
+        "source_id": "lolbas:yml/OSBinaries/Psr.yml:0:0",
+        "source_tcodes": [
+          "T1113"
+        ],
+        "context": "all",
+        "readiness": "ready_with_parameters",
+        "prerequisites": []
+      }
+    }
+  ],
+  "chains": []
+}
