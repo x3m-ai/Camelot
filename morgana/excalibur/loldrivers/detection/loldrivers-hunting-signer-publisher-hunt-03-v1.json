@@ -1,0 +1,603 @@
+{
+  "package_id": "loldrivers-hunting-signer-publisher-hunt-03-v1",
+  "package_name": "LOLDrivers - Hunting - Signer Publisher Hunt Part 3",
+  "version": "1.0.0",
+  "summary": "10 source-derived LOLDrivers signer publisher hunt procedures for Windows driver threat validation.",
+  "description": "Metadata-only Windows driver validation content derived from LOLDrivers. It inventories files, hashes, loaded drivers, services, policies, and historical telemetry without distributing dangerous samples.",
+  "purpose": "Validate vulnerable/malicious driver exposure, hunting, Code Integrity, WDAC, Defender, Sysmon, and kernel-service telemetry in an authorized environment.",
+  "capabilities": [
+    "Contains 10 signer publisher hunt procedures covering 0 unique driver sample identities.",
+    "Driver category: Hunting; CVE coverage: 0; ATT&CK techniques: 2.",
+    "Preserves LOLDrivers hashes, filenames, publishers, products, verification state, source associations, and detection references."
+  ],
+  "use_cases": [
+    "Assess endpoints for known vulnerable or malicious driver evidence without loading source samples.",
+    "Validate driver inventory, service, Code Integrity, Sysmon, Defender, WDAC, and blocklist visibility.",
+    "Import only the procedure family and driver category needed for a focused Purple Team exercise."
+  ],
+  "prerequisites": [
+    "Morgana Agent on an explicitly authorized Windows endpoint.",
+    "Administrative event-log or driver inventory access where required by the selected procedure.",
+    "Operator-approved scan roots and lookback window; benign simulation additionally requires a valid test-signed driver."
+  ],
+  "safety_notes": [
+    "No known vulnerable or malicious driver binary is included, downloaded, or loaded by this package.",
+    "Presence and policy procedures report evidence; they do not claim exploitability or sample-specific blocking without proof.",
+    "Benign simulation Scripts accept only an operator-supplied valid signed driver and clean up the temporary service."
+  ],
+  "author": "LOLDrivers / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "LOLDRIVERS - ",
+  "provider": "loldrivers",
+  "source": "loldrivers",
+  "source_repository": "https://github.com/magicsword-io/LOLDrivers",
+  "source_commit": "c8652a34e287988f1c826ca671909342317eaf95",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://github.com/magicsword-io/LOLDrivers",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Windows Driver Security",
+  "mitre_tcodes": [
+    "T1014",
+    "T1068"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "category": "drivers/hunting",
+  "driver_category": "hunting",
+  "procedure_types": [
+    "signer_publisher_hunt"
+  ],
+  "unique_driver_samples": 0,
+  "cve_count": 0,
+  "cves": [],
+  "detection_sources": [],
+  "readiness_counts": {
+    "ready_with_parameters": 10
+  },
+  "tag_categories": [
+    {
+      "category_id": "loldrivers_runtime",
+      "label": "LOLDrivers Validation Parameters",
+      "description": "Authorized paths, event lookback, and optional benign-driver simulation parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "loldrivers_scan_roots",
+          "label": "Driver Scan Roots",
+          "description": "Semicolon-separated authorized roots searched for driver files.",
+          "default": "C:\\Windows\\System32\\drivers;C:\\Windows\\System32\\DriverStore\\FileRepository",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "loldrivers:signer:fc6d967a48dab2de089e52c0b649e54ddb4a5f8e7f607157b288ec2b1a2ba710",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - Shenzhen yundian Technology Co., Ltd [fc6d967a]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching Shenzhen yundian Technology Co., Ltd.",
+      "tactic": "Driver Security",
+      "tcode": "T1014",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='Shenzhen yundian Technology Co., Ltd'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "Shenzhen yundian Technology Co., Ltd",
+        "sample_count": 1,
+        "driver_categories": [
+          "malicious"
+        ],
+        "sample_identities": [
+          "sha256:b7703a59c39a0d2f7ef6422945aaeaaf061431af0533557246397551b8eed505"
+        ],
+        "sample_identity_count": 1,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1014"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:fc7d4a64de24b89d93d03a1b5860fa4fd989a626fecf385d1c1d279a9f859b95",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID CA,1 [fc7d4a64]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID CA,1.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID CA,1'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID CA,1",
+        "sample_count": 168,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:074ae477c8c7ae76c6f2b0bf77ac17935a8e8ee51b52155d2821d93ab30f3761",
+          "sha256:07fb2bb6c852f6a6fe982b2232f047e167be39738bac26806ffe0927ba873756",
+          "sha256:082c39fe2e3217004206535e271ebd45c11eb072efde4cc9885b25ba5c39f91d",
+          "sha256:0a9b608461d55815e99700607a52fbdb7d598f968126d38e10cc4293ac4b1ad8",
+          "sha256:0b205838a8271daea89656b1ec7c5bb7244c42a8b8000d7697e92095da6b9b94",
+          "sha256:0b2ad05939b0aabbdc011082fad7960baa0c459ec16a2b29f37c1fa31795a46d",
+          "sha256:0b542e47248611a1895018ec4f4033ea53464f259c74eb014d018b19ad818917",
+          "sha256:0bd164da36bd637bb76ca66602d732af912bd9299cb3d520d26db528cb54826d",
+          "sha256:0c42fe45ffa9a9c36c87a7f01510a077da6340ffd86bf8509f02c6939da133c5",
+          "sha256:0c512b615eac374d4d494e3c36838d8e788b3dc2691bf27916f7f42694b14467",
+          "sha256:0cd4ca335155062182608cad9ef5c8351a715bce92049719dd09c76422cd7b0c",
+          "sha256:0eace788e09c8d3f793a1fad94d35bcfd233f0777873412cd0c8172865562eec",
+          "sha256:0f016c80c4938fbcd47a47409969b3925f54292eba2ce01a8e45222ce8615eb8",
+          "sha256:0f17e5cfc5bdd74aff91bfb1a836071345ba2b5d1b47b0d5bf8e7e0d4d5e2dbf",
+          "sha256:0f3e7bf7b103613844a38afb574817ddaecd00e4d206d891660dbb0e5dfee04e",
+          "sha256:1072beb3ff6b191b3df1a339e3a8c87a8dc5eae727f2b993ea51b448e837636a",
+          "sha256:1078af0c70e03ac17c7b8aa5ee03593f5decfef2f536716646a4ded1e98c153c",
+          "sha256:119c48b79735fda0ecd973d77d9bdc6b329960caed09b38ab454236ca039d280",
+          "sha256:12656fc113b178fa3e6bfffc6473897766c44120082483eb8059ebff29b5d2df",
+          "sha256:1273b74c3c1553eaa92e844fbd51f716356cc19cf77c2c780d4899ec7738fbd1",
+          "sha256:12eda8b65ed8c1d80464a0c535ea099dffdb4981c134294cb0fa424efc85ee56",
+          "sha256:14adbf0bc43414a7700e5403100cff7fc6ade50bebfab16a17acf2fdda5a9da8",
+          "sha256:159dcf37dc723d6db2bad46ed6a1b0e31d72390ec298a5413c7be318aef4a241",
+          "sha256:17687cba00ec2c9036dd3cb5430aa1f4851e64990dafb4c8f06d88de5283d6ca",
+          "sha256:18b923b169b2c3c7db5cbfda0db0999f04adb2cf6c917e5b1fb2ff04714ecac1",
+          "sha256:19d0fc91b70d7a719f7a28b4ad929f114bf1de94a4c7cba5ad821285a4485da0",
+          "sha256:1a42ebde59e8f63804eaa404f79ee93a16bb33d27fb158c6bfbe6143226899a0",
+          "sha256:1a450ae0c9258ab0ae64f126f876b5feed63498db729ec61d06ed280e6c46f67",
+          "sha256:1aed62a63b4802e599bbd33162319129501d603cceeb5e1eb22fd4733b3018a3",
+          "sha256:1cd75de5f54b799b60789696587b56a4a793cf60775b81f236f0e65189d863af",
+          "sha256:20e52e0d7f579dc6884cc6e80266fddceda69ea5fdd0b095c0874b0d877e48a2",
+          "sha256:20f11a64bc4548f4edb47e3d3418da0f6d54a83158224b71662a6292bf45b5fb",
+          "sha256:26d67d479dafe6b33c980bd1eed0b6d749f43d05d001c5dcaaf5fcddb9b899fe",
+          "sha256:26d69e677d30bb53c7ac7f3fce76291fe2c44720ef17ee386f95f08ec5175288",
+          "sha256:26f41e4268be59f5de07552b51fa52d18d88be94f8895eb4a16de0f3940cf712",
+          "sha256:2732050a7d836ae0bdc5c0aea4cdf8ce205618c3e7f613b8139c176e86476d0c",
+          "sha256:2ad8c38f6e0ca6c93abe3228c8a5d4299430ce0a2eeb80c914326c75ba8a33f9",
+          "sha256:2b120de80a5462f8395cfb7153c86dfd44f29f0776ea156ec4a34fa64e5c4797",
+          "sha256:2ce81759bfa236913bbbb9b2cbc093140b099486fd002910b18e2c6e31fdc4f1",
+          "sha256:2f60536b25ba8c9014e4a57d7a9a681bd3189fa414eea88c256d029750e15cae",
+          "sha256:2fa78c2988f9580b0c18822b117d065fb419f9c476f4cfa43925ba6cd2dffac3",
+          "sha256:32e1a8513eee746d17eb5402fb9d8ff9507fb6e1238e7ff06f7a5c50ff3df993",
+          "sha256:33da2ce240b4559cc6e847d56c5fbeaa3d644ec160841920ea0a098dcee28d0e",
+          "sha256:342cf884840fc2b48c96398f690a1801ed8ac1ea59305af9e3d070d13ef85601",
+          "sha256:34e0364a4952d914f23f271d36e11161fb6bb7b64aea22ff965a967825a4a4bf",
+          "sha256:362c4f3dadc9c393682664a139d65d80e32caa2a97b6e0361dfd713a73267ecc",
+          "sha256:36aafa127736c7226c50061ea065f71e14f64ec60321f705bc52686d24117e0d",
+          "sha256:36e3127f045ef1fa7426a3ff8c441092d3b66923d2b69826034e48306609e289",
+          "sha256:37073e42ffa0322500f90cd7e3c8d02c4cdd695d31c77e81560abec20bfb68ba",
+          "sha256:3724b39e97936bb20ada51c6119aded04530ed86f6b8d6b45fbfb2f3b9a4114b",
+          "sha256:37d999df20c1a0b8ffaef9484c213a97b9987ed308b4ba07316a6013fbd31c60",
+          "sha256:38d87b51f4b69ba2dae1477684a1415f1a3b578eee5e1126673b1beaefee9a20",
+          "sha256:3a5ec83fe670e5e23aef3afa0a7241053f5b6be5e6ca01766d6b5f9177183c25",
+          "sha256:3b19a7207a55d752db1b366b1dea2fd2c7620a825a3f0dcffca10af76611118c",
+          "sha256:3b6e85c8fed9e39b21b2eab0b69bc464272b2c92961510c36e2e2df7aa39861b",
+          "sha256:3c4207c90c97733fae2a08679d63fbbe94dfcf96fdfdf88406aa7ab3f80ea78f",
+          "sha256:3d8cfc9abea6d83dfea6da03260ff81be3b7b304321274f696ff0fdb9920c645",
+          "sha256:3e1f592533625bf794e0184485a4407782018718ae797103f9e968ff6f0973a1",
+          "sha256:3f20ac5dac9171857fc5791865458fdb6eac4fab837d7eabc42cb0a83cb522fc",
+          "sha256:3f3684a37b2645fa6827943d9812ffc2d83e89e962935b29874bec7c3714a06f",
+          "sha256:42b31b850894bf917372ff50fbe1aff3990331e8bd03840d75e29dcc1026c180",
+          "sha256:442c18aeb09556bb779b21185c4f7e152b892410429c123c86fc209a802bff3c",
+          "sha256:453be8f63cc6b116e2049659e081d896491cf1a426e3d5f029f98146a3f44233",
+          "sha256:45b07a2f387e047a6bb0e59b7f22fb56182d57b50e84e386a38c2dbb7e773837",
+          "sha256:478917514be37b32d5ccf76e4009f6f952f39f5553953544f1b0688befd95e82",
+          "sha256:478d855b648ef4501d3b08b3b10e94076ac67546b0ce86b454324f1bf9a78aa0",
+          "sha256:48b1344e45e4de4dfb74ef918af5e0e403001c9061018e703261bbd72dc30548",
+          "sha256:4ba224af60a50cad10d0091c89134c72fc021da8d34a6f25c4827184dc6ca5c7",
+          "sha256:4da08c0681fbe028b60a1eaf5cb8890bd3eba4d0e6a8b976495ddcd315e147ba",
+          "sha256:4ed2d2c1b00e87b926fb58b4ea43d2db35e5912975f4400aa7bd9f8c239d08b7",
+          "sha256:509628b6d16d2428031311d7bd2add8d5f5160e9ecc0cd909f1e82bbbb3234d6",
+          "sha256:5bd41a29cbba0d24e639f49d1f201b9bd119b11f5e3b8a5fefa3a5c6f1e7692c",
+          "sha256:5c54a5cd3386ac14725a07962562e9fdcefbb7be0d19803f9d71de24573de1e3",
+          "sha256:5d7bfe05792189eaf7193bee85f0c792c33315cfcb40b2e62cc7baef6cafbc5c",
+          "sha256:5e3bc2d7bc56971457d642458563435c7e5c9c3c7c079ef5abeb6a61fb4d52ea",
+          "sha256:5fae7e491b0d919f0b551e15e0942ac7772f2889722684aea32cff369e975879",
+          "sha256:61a1bdddd3c512e681818debb5bee94db701768fc25e674fcad46592a3259bd0",
+          "sha256:65008817eb97635826a8708a6411d7b50f762bab81304e457119d669382944c3",
+          "sha256:65a3e69854c729659281d2c5f8a4c8274ad3606befdcd9e1b79d3262f260bfa1",
+          "sha256:65c26276cadda7a36f8977d1d01120edb5c3418be2317d501761092d5f9916c9",
+          "sha256:6703400b490b35bcde6e41ce1640920251855e6d94171170ae7ea22cdd0938c0",
+          "sha256:6a234a2b8eb3844f7b5831ee048f88e8a76e9d38e753cc82f61b234c79fe1660",
+          "sha256:6c64688444d3e004da77dcfb769d064bb38afceeef7ff915dfc71e60e19ff18a",
+          "sha256:6e0aa67cfdbe27a059cbd066443337f81c5b6d37444d14792d1c765d9d122dcf",
+          "sha256:6fb5bc9c51f6872de116c7db8a2134461743908efc306373f6de59a0646c4f5d",
+          "sha256:70211a3f90376bbc61f49c22a63075d1d4ddd53f0aefa976216c46e6ba39a9f4",
+          "sha256:7108613244f16c2279c3c917aa49cef8acf0b92fdaa9ace19bf5cf634360d727",
+          "sha256:7133a461aeb03b4d69d43f3d26cd1a9e3ee01694e97a0645a3d8aa1a44c39129",
+          "sha256:72322fa8bba20df6966acbcf41e83747893fd173cd29de99b5ad1a5d3bf8f2de",
+          "sha256:733789d0a253e8d80cc3240e365b8d4274e510e36007f6e4b5fd13b07b084c3e",
+          "sha256:747a4dc50915053649c499a508853a42d9e325a5eec22e586571e338c6d32465",
+          "sha256:773999db2f07c50aad70e50c1983fa95804369d25a5b4f10bd610f864c27f2fc",
+          "sha256:79e7165e626c7bde546cd1bea4b9ec206de8bed7821479856bdb0a2adc3e3617",
+          "sha256:7ad0ab23023bc500c3b46f414a8b363c5f8700861bc4745cecc14dd34bcee9ed",
+          "sha256:7c731c0ea7f28671ab7787800db69739ea5cd6be16ea21045b4580cf95cbf73b",
+          "sha256:7c830ed39c9de8fe711632bf44846615f84b10db383f47b7d7c9db29a2bd829a",
+          "sha256:7d39223e7eb902712aeac77c90b9fa00a6e5e56a68d4c542bcc88556a57ba735",
+          "sha256:7ff8fe4c220cf6416984b70a7e272006a018e5662da3cedc2a88efeb6411b4a4",
+          "sha256:854bc946b557ed78c7d40547eb39e293e83942a693c94d0e798d1c4fbde7efa9",
+          "sha256:85fdd255c5d7add25fd7cd502221387a5e11f02144753890218dd31a8333a1a3"
+        ],
+        "sample_identity_count": 168,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068",
+          "T1134"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:fcea11a286cb1c01425ff92b5952c0197d59d3f5de8c81e910c232c01da12585",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Code Signin... [fcea11a2]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Code Signing CA,1.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Code Signing CA,1'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Code Signing CA,1",
+        "sample_count": 37,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:07fb2bb6c852f6a6fe982b2232f047e167be39738bac26806ffe0927ba873756",
+          "sha256:0b205838a8271daea89656b1ec7c5bb7244c42a8b8000d7697e92095da6b9b94",
+          "sha256:0b2ad05939b0aabbdc011082fad7960baa0c459ec16a2b29f37c1fa31795a46d",
+          "sha256:0c42fe45ffa9a9c36c87a7f01510a077da6340ffd86bf8509f02c6939da133c5",
+          "sha256:0c512b615eac374d4d494e3c36838d8e788b3dc2691bf27916f7f42694b14467",
+          "sha256:0f016c80c4938fbcd47a47409969b3925f54292eba2ce01a8e45222ce8615eb8",
+          "sha256:1078af0c70e03ac17c7b8aa5ee03593f5decfef2f536716646a4ded1e98c153c",
+          "sha256:1aed62a63b4802e599bbd33162319129501d603cceeb5e1eb22fd4733b3018a3",
+          "sha256:247aadaf17ed894fcacf3fc4e109b005540e3659fd0249190eb33725d3d3082f",
+          "sha256:26d69e677d30bb53c7ac7f3fce76291fe2c44720ef17ee386f95f08ec5175288",
+          "sha256:342cf884840fc2b48c96398f690a1801ed8ac1ea59305af9e3d070d13ef85601",
+          "sha256:35035495a36f8537e2a5f56031277cd884de557257b40b92bd39454877a264fb",
+          "sha256:37d999df20c1a0b8ffaef9484c213a97b9987ed308b4ba07316a6013fbd31c60",
+          "sha256:3f3684a37b2645fa6827943d9812ffc2d83e89e962935b29874bec7c3714a06f",
+          "sha256:509628b6d16d2428031311d7bd2add8d5f5160e9ecc0cd909f1e82bbbb3234d6",
+          "sha256:64dddd5ac53fe2c9de2b317c09034d1bccaf21d6c03ccfde3518e5aa3623dd66",
+          "sha256:69e3fda487a5ec2ec0f67b7d79a5a836ff0036497b2d1aec514c67d2efa789b2",
+          "sha256:6e0aa67cfdbe27a059cbd066443337f81c5b6d37444d14792d1c765d9d122dcf",
+          "sha256:6e76764d750ebd835aa4bb055830d278df530303585614c1dc743f8d5adf97d7",
+          "sha256:6fb5bc9c51f6872de116c7db8a2134461743908efc306373f6de59a0646c4f5d",
+          "sha256:7326aefff9ea3a32286b423a62baebe33b73251348666c1ee569afe62dd60e11",
+          "sha256:7553c76b006bd2c75af4e4ee00a02279d3f1f5d691e7dbdc955eac46fd3614c3",
+          "sha256:7e783b0a0ff4710306bb3bca29296cf962ae77abc81245a99f12a9039158226f",
+          "sha256:8bdcf7457c2caf7fa0386571f972d7f5220d385ad686e2c3536f4c67ba4333e6",
+          "sha256:8cfd5b2102fbc77018c7fe6019ec15f07da497f6d73c32a31f4ba07e67ec85d9",
+          "sha256:9a54ef5cfbe6db599322967ee2c84db7daabcb468be10a3ccfcaa0f64d9173c7",
+          "sha256:a22358cb2fb1aa334272deaa24e2280425f9661862b46331cbdc786138ede8be",
+          "sha256:a2f45d95d54f4e110b577e621fefa0483fa0e3dcca14c500c298fb9209e491c1",
+          "sha256:ad2477632b9b07588cfe0e692f244c05fa4202975c1fe91dd3b90fa911ac6058",
+          "sha256:ae5cc99f3c61c86c7624b064fd188262e0160645c1676d231516bf4e716a22d3",
+          "sha256:b617a072c578cea38c460e2851f3d122ba1b7cfa1f5ee3e9f5927663ac37af61",
+          "sha256:b8b94c2646b62f6ac08f16514b6efaa9866aa3c581e4c0435a7aeafe569b2418",
+          "sha256:c0e74f565237c32989cb81234f4b5ad85f9dd731c112847c0a143d771021cb99",
+          "sha256:e2e79f1e696f27fa70d72f97e448081b1fa14d59cbb89bb4a40428534dd5c6f6",
+          "sha256:ea8c8f834523886b07d87e85e24f124391d69a738814a0f7c31132b6b712ed65",
+          "sha256:edeb35e4341034b2de389017c4884b081a821f34349a620897a2a845c84cb09e",
+          "sha256:f7d72d22cd4ad3e44fd617bdb4c90b9a884f4eb045688c0e3fb64dd33e033eaa"
+        ],
+        "sample_identity_count": 37,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068",
+          "T1134"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:fd7a440848d50605aa2aab293ba80ae8f42719a67bbbdff64332c93c079188d4",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - Interface Corporation [fd7a4408]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching Interface Corporation.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='Interface Corporation'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "Interface Corporation",
+        "sample_count": 5,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:05c15a75d183301382a082f6d76bf3ab4c520bf158abca4433d9881134461686",
+          "sha256:11832c345e9898c4f74d3bf8f126cf84b4b1a66ad36135e15d103dbf2ac17359",
+          "sha256:4b4ea21da21a1167c00b903c05a4e3af6c514ea3dfe0b5f371f6a06305e1d27f",
+          "sha256:63865f04c1150655817ed4c9f56ad9f637d41ebd2965b6127fc7c02757a7800e",
+          "sha256:9c8ed1506b3e35f5eea6ac539e286d46ef76ddbfdfc5406390fd2157c762ce91"
+        ],
+        "sample_identity_count": 5,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:fda3ecbce66315d090bc0fa9746682bb3473d211a7db32318640302d033e4bad",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=TW, ST=TAIWAN, L=Taipei, O=ASROCK Incorporation, OU=Digital ID Class 3 , Mi... [fda3ecbc]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=TW, ST=TAIWAN, L=Taipei, O=ASROCK Incorporation, OU=Digital ID Class 3 , Microsoft Software Validation v2, CN=ASROCK Incorporation.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=TW, ST=TAIWAN, L=Taipei, O=ASROCK Incorporation, OU=Digital ID Class 3 , Microsoft Software Validation v2, CN=ASROCK Incorporation'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=TW, ST=TAIWAN, L=Taipei, O=ASROCK Incorporation, OU=Digital ID Class 3 , Microsoft Software Validation v2, CN=ASROCK Incorporation",
+        "sample_count": 21,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:04cc7df4077e36199b04afa39204c8f568f7f66f045e73010fb9b7685324442f",
+          "sha256:0aafa9f47acf69d46c9542985994ff5321f00842a28df2396d4a3076776a83cb",
+          "sha256:1e0eb0811a7cf1bdaf29d3d2cab373ca51eb8d8b58889ab7728e2d3aed244abe",
+          "sha256:2003b478b9fd1b3d76ec5bf4172c2e8915babbbee7ad1783794acbf8d4c2519d",
+          "sha256:2470fd1b733314c9b0afa19fd39c5d19aa1b36db598b5ebbe93445caa545da5f",
+          "sha256:2a652de6b680d5ad92376ad323021850dab2c653abf06edf26120f7714b8e08a",
+          "sha256:2aa1b08f47fbb1e2bd2e4a492f5d616968e703e1359a921f62b38b8e4662f0c4",
+          "sha256:2bf29a2df52110ed463d51376562afceac0e80fbb1033284cf50edd86c406b14",
+          "sha256:3384f4a892f7aa72c43280ff682d85c8e3936f37a68d978d307a9461149192de",
+          "sha256:47f08f7d30d824a8f4bb8a98916401a37c0fd8502db308aba91fe3112b892dcc",
+          "sha256:4ae42c1f11a98dee07a0d7199f611699511f1fb95120fabc4c3c349c485467fe",
+          "sha256:4bf974f5d3489638a48ee508b4a8cfa0f0262909778ccdd2e871172b71654d89",
+          "sha256:53bb076e81f6104f41bc284eedae36bd99b53e42719573fa5960932720ebc854",
+          "sha256:6ed35f310c96920a271c59a097b382da07856e40179c2a4239f8daa04eef38e7",
+          "sha256:950a4c0c772021cee26011a92194f0e58d61588f77f2873aa0599dff52a160c9",
+          "sha256:a0728184caead84f2e88777d833765f2d8af6a20aad77b426e07e76ef91f5c3f",
+          "sha256:a7c2e7910942dd5e43e2f4eb159bcd2b4e71366e34a68109548b9fb12ac0f7cc",
+          "sha256:cea231333781085538127bdcfbf49ef1d7500c057295fba061e962376e8219e6",
+          "sha256:d20d8bf80017e98b6dfc9f6c3960271fa792a908758bef49a390e2692a2a4341",
+          "sha256:ece0a900ea089e730741499614c0917432246ceb5e11599ee3a1bb679e24fd2c",
+          "sha256:f40435488389b4fb3b945ca21a8325a51e1b5f80f045ab019748d0ec66056a8b"
+        ],
+        "sample_identity_count": 21,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:ff2899f7fc80589b673568ab47e9bd019c31d8649825565a4f4f6e007f6f192f",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - HP Inc. [ff2899f7]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching HP Inc..",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='HP Inc.'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "HP Inc.",
+        "sample_count": 2,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:a4680fabf606d6580893434e81c130ff7ec9467a15e6534692443465f264d3c9",
+          "sha256:c5050a2017490fff7aa53c73755982b339ddb0fd7cef2cde32c81bc9834331c5"
+        ],
+        "sample_identity_count": 2,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:ff29eed85d22eec2ddb32187d77c9ab851fe3eee5984a8b185db4a3ce6b32203",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - ??=Private Organization, ??=US, ??=Georgia, serialNumber=780491, ??=5555 Oakb... [ff29eed8]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching ??=Private Organization, ??=US, ??=Georgia, serialNumber=780491, ??=5555 Oakbrook Parkway Suite 200, postalCode=30093, C=US, ST=Georgia, L=Norcross, O=American Megatrends, Inc., CN=American Megatre....",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='??=Private Organization, ??=US, ??=Georgia, serialNumber=780491, ??=5555 Oakbrook Parkway Suite 200, postalCode=30093, C=US, ST=Georgia, L=Norcross, O=American Megatrends, Inc., CN=American Megatrends, Inc.'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "??=Private Organization, ??=US, ??=Georgia, serialNumber=780491, ??=5555 Oakbrook Parkway Suite 200, postalCode=30093, C=US, ST=Georgia, L=Norcross, O=American Megatrends, Inc., CN=American Megatrends, Inc.",
+        "sample_count": 3,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:2f60536b25ba8c9014e4a57d7a9a681bd3189fa414eea88c256d029750e15cae",
+          "sha256:37073e42ffa0322500f90cd7e3c8d02c4cdd695d31c77e81560abec20bfb68ba",
+          "sha256:6c64688444d3e004da77dcfb769d064bb38afceeef7ff915dfc71e60e19ff18a"
+        ],
+        "sample_identity_count": 3,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:ff42820151de5139ecda4a9badf025aa724921ec207580a164f76c10c9d5b580",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=US, ST=California, L=San Jose, O=Aquantia Corp., OU=IT, CN=Aquantia Corp. [ff428201]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=US, ST=California, L=San Jose, O=Aquantia Corp., OU=IT, CN=Aquantia Corp..",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=US, ST=California, L=San Jose, O=Aquantia Corp., OU=IT, CN=Aquantia Corp.'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=US, ST=California, L=San Jose, O=Aquantia Corp., OU=IT, CN=Aquantia Corp.",
+        "sample_count": 1,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:0b57569aaa0f4789d9642dd2189b0a82466b80ad32ff35f88127210ed105fe57"
+        ],
+        "sample_identity_count": 1,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:ff4e2fdec91182594bf88f8f97dd7bc7d069b53a84a04f933d34c30c1f174465",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=IN, ST=Rajasthan, L=Jaipur, O=SYSTWEAK SOFTWARE PVT. LTD., CN=SYSTWEAK SOFT... [ff4e2fde]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=IN, ST=Rajasthan, L=Jaipur, O=SYSTWEAK SOFTWARE PVT. LTD., CN=SYSTWEAK SOFTWARE PVT. LTD..",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=IN, ST=Rajasthan, L=Jaipur, O=SYSTWEAK SOFTWARE PVT. LTD., CN=SYSTWEAK SOFTWARE PVT. LTD.'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=IN, ST=Rajasthan, L=Jaipur, O=SYSTWEAK SOFTWARE PVT. LTD., CN=SYSTWEAK SOFTWARE PVT. LTD.",
+        "sample_count": 3,
+        "driver_categories": [
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:1a0f57a4d7c8137baf24c65d542729547b876979273df7a245aaeea87280c090",
+          "sha256:47e35f474f259314c588af35e88561a015801b52db523eb75fc7eccff8b3be4d",
+          "sha256:62b14bb308c99132d90646e85bc7d6eb593f38e225c8232f69f24b74a019c176"
+        ],
+        "sample_identity_count": 3,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    },
+    {
+      "id": "loldrivers:signer:ffc1471a3da4b4c5652467aafef109cfd2cb3ad4341914560af2ca8f4860ce4b",
+      "name": "LOLDRIVERS - T1068 - Signer Publisher Hunt - C=BE, O=GlobalSign nv,sa, CN=GlobalSign CodeSigning CA , G3 [ffc1471a]",
+      "description": "Hunt authorized driver roots for Authenticode signer or publisher evidence matching C=BE, O=GlobalSign nv,sa, CN=GlobalSign CodeSigning CA , G3.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1068",
+      "executor": "powershell",
+      "platform": "windows",
+      "command": "$roots = '#{loldrivers_scan_roots}'.Split(';',[System.StringSplitOptions]::RemoveEmptyEntries); $roots = $roots | ForEach-Object { $_.Trim() } | Where-Object { $_ -and (Test-Path $_) }; $signer='C=BE, O=GlobalSign nv,sa, CN=GlobalSign CodeSigning CA , G3'; $matches=@($roots | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter '*.sys' -File -Recurse -ErrorAction SilentlyContinue } | ForEach-Object { try { $signature=Get-AuthenticodeSignature -LiteralPath $_.FullName -ErrorAction Stop; if ($signature.SignerCertificate.Subject -like ('*'+$signer+'*')) { [pscustomobject]@{Path=$_.FullName;Status=$signature.Status;Subject=$signature.SignerCertificate.Subject;Thumbprint=$signature.SignerCertificate.Thumbprint} } } catch {} }); if (@($matches).Count) { Write-Output 'SIGNER_PUBLISHER_HUNT=PRESENT'; @($matches) | ConvertTo-Json -Depth 5 -Compress } else { Write-Output 'SIGNER_PUBLISHER_HUNT=NOT_PRESENT' }",
+      "cleanup_command": null,
+      "required_tags": [
+        "loldrivers_scan_roots"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "signer_publisher": "C=BE, O=GlobalSign nv,sa, CN=GlobalSign CodeSigning CA , G3",
+        "sample_count": 12,
+        "driver_categories": [
+          "malicious",
+          "vulnerable"
+        ],
+        "sample_identities": [
+          "sha256:082d4d4d4ba1bda5e1599bd24e930ae9f000e7d12b00f7021cca90a4600ea470",
+          "sha256:14807ce592bf8f12da8a338d7ef575ae60c2d513c5c7ecf1f276aef3b2aa627c",
+          "sha256:167730744bd7cb117aae9931f81d20cbd2ec6eee480388c53d2fc973ede920ea",
+          "sha256:2fdfdd13a0c548bb68c9d5aa8599a9265d4659da3e237fe7a42ac6ac06b9a06a",
+          "sha256:3c5d7069f85ec1d6f58147431f88c4d7c48df73baf94ffdefd664f2606baf09c",
+          "sha256:40061b30b1243be76d5283cbc8abfe007e148097d4de7337670ff1536c4c7ba1",
+          "sha256:4e99d454a56845bb0e622cfd68b895b7868ef7e8a43424e5b7b803f5a2d25eca",
+          "sha256:6f1fc8287dd8d724972d7a165683f2b2ad6837e16f09fe292714e8e38ecd1e38",
+          "sha256:a6deeea6607a7da9c8b4087d1424aac6dbbe70831e93c835b5a9e4a80ae59f28",
+          "sha256:c7079033659ac9459b3b7ab2510805832db2e2a70fe9beb1a6e13c1f51890d88",
+          "sha256:d9f15d91397d1c8d01b6d6871c4f18f3a85ca85f091a92f4e9221524344ca5fe",
+          "sha256:e1123b59a801e243a64270d0c6ab1277e5e3afba9c19023807409f53c1b0204b"
+        ],
+        "sample_identity_count": 12,
+        "provider": "loldrivers",
+        "procedure_family": "signer_publisher_hunt",
+        "readiness": "ready_with_parameters",
+        "source_tcodes": [
+          "T1068"
+        ],
+        "payload_policy": "Metadata only; no known vulnerable or malicious driver is acquired, distributed, loaded, or exploited."
+      }
+    }
+  ],
+  "chains": []
+}
