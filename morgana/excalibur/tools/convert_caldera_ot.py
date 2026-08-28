@@ -18,9 +18,15 @@ import sys
 import tempfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import quote
+
+try:
+    from catalog_guidance import ot_guidance, tactic_purpose
+except ImportError:
+    from morgana.excalibur.tools.catalog_guidance import ot_guidance, tactic_purpose
 
 try:
     import yaml
@@ -610,9 +616,13 @@ def catalog_entry(pack: dict[str, Any]) -> dict[str, Any]:
         "asset_count": len(pack["assets"]),
         "platform": pack["platform"],
         "prerequisites": pack["prerequisites"],
+        "capabilities": pack["capabilities"],
+        "use_cases": pack["use_cases"],
+        "safety_notes": pack["safety_notes"],
         "sentinel_connectors": [],
         "status": "community",
         "provider": SOURCE_NAME,
+        "author": pack["author"],
         "source": SOURCE_NAME,
         "source_commit": pack["source_commit"],
         "protocol": protocol,
@@ -675,8 +685,8 @@ def updated_catalog(catalog: dict[str, Any], packs: list[dict[str, Any]], source
     represented = {entry.get("package_id") for entry in merged}
     merged.extend(entries[key] for key in sorted(entries) if key not in represented)
     result = dict(catalog)
-    result["catalog_version"] = "1.4.0"
-    result["updated"] = max(str(catalog.get("updated") or ""), source_date)
+    result["catalog_version"] = "1.5.0"
+    result["updated"] = max(str(catalog.get("updated") or ""), source_date, str(date.today()))
     result["providers"] = provider_metadata()
     result["categories"] = category_metadata()
     result["packs"] = merged
@@ -825,16 +835,24 @@ def build_pack(
         }
         for script in scripts
     ]
+    risks = sorted(
+        {script["operational_risk"] for script in scripts},
+        key=RISK_LEVELS.index,
+    )
+    guidance = ot_guidance(PLUGINS[protocol]["label"], tactic_name, risks, len(clean_assets))
     return {
         "package_id": package_id,
         "package_name": f"OT - {PLUGINS[protocol]['label']} - {tactic_name} Pack (MITRE)",
         "version": "1.0.0",
         "description": (
-            f"Official MITRE CALDERA for OT {PLUGINS[protocol]['label']} abilities converted "
-            f"for ATT&CK for ICS {tactic_name}. CALDERA is not required at runtime."
+            f"Official MITRE CALDERA for OT {PLUGINS[protocol]['label']} abilities for validating "
+            f"{tactic_purpose(tactic_name)}. Provides {len(scripts)} Morgana Scripts for "
+            f"ATT&CK for ICS {tactic_name} with verified protocol assets where required; "
+            "CALDERA is not required at runtime."
         ),
         "author": "MITRE (converted by X3M.AI for Morgana)",
         "created": dates[protocol],
+        "provider": SOURCE_NAME,
         "script_prefix": SCRIPT_PREFIX,
         "source": SOURCE_NAME,
         "source_repository": SOURCE_REPOSITORY,
@@ -855,6 +873,7 @@ def build_pack(
             "Required OT facts supplied as Morgana tag values; no target defaults are provided",
             "Required assets downloaded from Camelot and verified by SHA256",
         ],
+        **guidance,
         "license": PLUGINS[protocol]["license"],
         "assets": clean_assets,
         "tag_categories": [

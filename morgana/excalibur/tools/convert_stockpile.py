@@ -22,6 +22,11 @@ from pathlib import Path
 from typing import Any, Iterable
 
 try:
+    from catalog_guidance import stockpile_guidance, tactic_purpose
+except ImportError:
+    from morgana.excalibur.tools.catalog_guidance import stockpile_guidance, tactic_purpose
+
+try:
     import yaml
 except ImportError:
     print("[ERROR] PyYAML is required. Run: python -m pip install pyyaml")
@@ -702,16 +707,20 @@ def build_pack(
             }
         )
 
+    guidance = stockpile_guidance(tactic_name, len(scripts), len(tcodes))
     return {
         "package_id": package_id,
         "package_name": f"STOCKPILE - {tactic_name} Pack (MITRE)",
         "version": "1.0.0",
         "description": (
-            f"MITRE CALDERA Stockpile command-based abilities converted to Morgana-native scripts "
-            f"for {tactic_name} ({tactic_id}). CALDERA is not required at runtime."
+            f"MITRE CALDERA Stockpile command-based abilities for validating "
+            f"{tactic_purpose(tactic_name)}. Provides {len(scripts)} Morgana-native Scripts "
+            f"covering {len(tcodes)} ATT&CK techniques for {tactic_name} ({tactic_id}); "
+            "CALDERA is not required at runtime."
         ),
         "author": "MITRE (converted by X3M.AI for Morgana)",
         "created": source_date,
+        "provider": SOURCE_NAME,
         "source": SOURCE_NAME,
         "source_repository": SOURCE_REPOSITORY,
         "source_commit": source_commit,
@@ -726,6 +735,7 @@ def build_pack(
             "Required Stockpile facts supplied as Morgana tag values",
             "CALDERA and Stockpile are not required at runtime",
         ],
+        **guidance,
         "license": "Apache-2.0",
         "tag_categories": tag_categories,
         "scripts": scripts,
@@ -746,8 +756,13 @@ def catalog_entry(pack: dict[str, Any]) -> dict[str, Any]:
         "chain_count": len(pack["chains"]),
         "platform": pack["platform"],
         "prerequisites": pack["prerequisites"],
+        "capabilities": pack["capabilities"],
+        "use_cases": pack["use_cases"],
+        "safety_notes": pack["safety_notes"],
         "sentinel_connectors": [],
         "status": "community",
+        "provider": SOURCE_NAME,
+        "author": pack["author"],
         "source": SOURCE_NAME,
         "source_commit": pack["source_commit"],
         "category": "stockpile",
@@ -768,6 +783,7 @@ def update_catalog(packs: list[dict[str, Any]], dry_run: bool) -> tuple[int, int
     represented = {entry.get("package_id") for entry in new_packs}
     new_packs.extend(entries[package_id] for package_id in sorted(entries) if package_id not in represented)
     catalog["packs"] = new_packs
+    catalog["catalog_version"] = "1.5.0"
     source_dates = sorted({str(pack.get("created") or "") for pack in packs if pack.get("created")})
     catalog_dates = [
         str(catalog.get("updated") or ""),
@@ -775,12 +791,6 @@ def update_catalog(packs: list[dict[str, Any]], dry_run: bool) -> tuple[int, int
         str(datetime.now(timezone.utc).date()),
     ]
     catalog["updated"] = max(date_value for date_value in catalog_dates if date_value)
-    if not any(str(package_id).startswith("stockpile-") for package_id in existing_ids):
-        version = str(catalog.get("catalog_version") or "1.0.0").split(".")
-        try:
-            catalog["catalog_version"] = f"{int(version[0])}.{int(version[1]) + 1}.0"
-        except (ValueError, IndexError):
-            catalog["catalog_version"] = "1.3.0"
     if not dry_run:
         temporary_catalog = CATALOG_FILE.with_suffix(".json.tmp")
         temporary_catalog.write_text(

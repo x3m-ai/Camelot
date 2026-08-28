@@ -31,7 +31,9 @@ $PublishPaths = @(
     "morgana/excalibur/stockpile/stockpile-persist-v1.json",
     "morgana/excalibur/stockpile/stockpile-privesc-v1.json",
     "morgana/excalibur/catalog.json",
+    "morgana/excalibur/tools/catalog_guidance.py",
     "morgana/excalibur/tools/convert_stockpile.py",
+    "morgana/excalibur/tools/test_catalog_metadata.py",
     "morgana/excalibur/tools/test_convert_stockpile.py",
     "morgana/excalibur/tools/test_stockpile_import.py",
     "morgana/excalibur/tools/update-stockpile-packs.ps1"
@@ -101,6 +103,11 @@ Write-Step "Validate generated packs"
 & python (Join-Path $ToolsDir "test_stockpile_import.py") --all --validate-only
 if ($LASTEXITCODE -ne 0) { Stop-Pipeline "Static pack validation failed" }
 Write-OK "All generated packs passed static validation"
+
+Write-Step "Validate package decision metadata"
+& python (Join-Path $ToolsDir "test_catalog_metadata.py")
+if ($LASTEXITCODE -ne 0) { Stop-Pipeline "Catalog metadata validation failed" }
+Write-OK "All catalog packages include operator guidance"
 
 if ($SmokeImport) {
     Write-Step "Smoke import Discovery pack into local Morgana"

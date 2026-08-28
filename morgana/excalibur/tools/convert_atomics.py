@@ -35,6 +35,11 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from catalog_guidance import art_guidance
+except ImportError:
+    from morgana.excalibur.tools.catalog_guidance import art_guidance
+
+try:
     import yaml
 except ImportError:
     print("[ERROR] PyYAML required. Run: pip install pyyaml")
@@ -480,6 +485,7 @@ def build_pack(
             "script_refs": [s["name"] for s in script_entries],
         })
 
+    guidance = art_guidance(tactic_name, len(script_entries), len(tcodes_seen))
     return {
         "package_id": package_id,
         "package_name": package_name,
@@ -492,6 +498,7 @@ def build_pack(
         ),
         "author": "Red Canary (converted by X3M.AI)",
         "created": str(date.today()),
+        "provider": "atomic-red-team",
         "source": "atomic-red-team",
         "mitre_domain": "enterprise-attack",
         "mitre_tactic": f"{tactic_name} ({tactic_id})",
@@ -502,6 +509,7 @@ def build_pack(
             "Morgana agent installed on target machine",
             "PyYAML not required at runtime — scripts are pre-converted",
         ],
+        **guidance,
         "tag_categories": tag_categories,
         "scripts": script_entries,
         "chains": chains,
@@ -537,8 +545,13 @@ def update_catalog(packs_meta: list[dict], dry_run: bool) -> None:
             "chain_count": meta["chain_count"],
             "platform": meta["platform"],
             "prerequisites": meta["prerequisites"],
+            "capabilities": meta["capabilities"],
+            "use_cases": meta["use_cases"],
+            "safety_notes": meta["safety_notes"],
             "sentinel_connectors": [],
             "status": "community",
+            "provider": "atomic-red-team",
+            "author": "Red Canary (converted by X3M.AI)",
             "source": "atomic-red-team",
             "category": "art",
             "url": f"{CATALOG_BASE_URL}/{pid}.json",
@@ -551,6 +564,7 @@ def update_catalog(packs_meta: list[dict], dry_run: bool) -> None:
             added += 1
 
     from datetime import date as _date
+    catalog["catalog_version"] = "1.5.0"
     catalog["updated"] = str(_date.today())
 
     if not dry_run:
@@ -705,6 +719,9 @@ def main() -> None:
             "chain_count": len(pack["chains"]),
             "platform": pack["platform"],
             "prerequisites": pack["prerequisites"],
+            "capabilities": pack["capabilities"],
+            "use_cases": pack["use_cases"],
+            "safety_notes": pack["safety_notes"],
         })
 
     if packs_meta and not args.no_update_catalog:
