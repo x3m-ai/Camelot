@@ -1,0 +1,3599 @@
+{
+  "package_id": "ctid-turla-snake-v1",
+  "package_name": "CTID - Turla - Snake Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed Turla - Snake full emulation based on 53 ordered CTID procedures. Use it to assess cross-tactic detection and response across a documented multi-stage intrusion; 8 procedure variants use source commands and 45 use executable Morgana-native simulations.",
+  "summary": "Threat-informed emulation of documented Turla - Snake behavior and attack progression.",
+  "purpose": "Validate defensive performance across a multi-stage Turla - Snake scenario rather than isolated techniques.",
+  "capabilities": [
+    "Preserves 53 CTID procedures in source order across 11 tactics.",
+    "Creates operational Morgana Attack Chains using source commands and labeled telemetry simulations.",
+    "Retains CTI references, procedure steps, source requirements, ATT&CK mappings, and conversion limitations."
+  ],
+  "use_cases": [
+    "Run a threat-informed Purple Team assessment modeled on documented Turla - Snake behaviors.",
+    "Evaluate cross-stage prevention, telemetry, detection, investigation, and response handoffs.",
+    "Customize a source-faithful baseline Chain for an authorized environment while retaining provenance."
+  ],
+  "safety_notes": [
+    "Review every source command, simulation, required Tag, and cleanup action before execution.",
+    "Payload-dependent and external C2 procedures use sandboxed or loopback Morgana simulations until exact dependencies are packaged.",
+    "Threat-informed adversary emulation content is for explicitly authorized security validation and defensive testing only."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/turla",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "13",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003.001",
+    "T1014",
+    "T1016",
+    "T1018",
+    "T1041",
+    "T1049",
+    "T1057",
+    "T1059.001",
+    "T1059.003",
+    "T1069.001",
+    "T1070.004",
+    "T1082",
+    "T1087.002",
+    "T1105",
+    "T1136.002",
+    "T1189",
+    "T1204.002",
+    "T1505.002",
+    "T1550.002",
+    "T1569.002",
+    "T1570"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "Turla - Snake",
+  "intelligence_summary": "Turla is a Russian-based threat group known for watering hole and spear phishing campaigns and leveraging in-house tools and malware.",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Canonical Emulation Flow"
+  ],
+  "chain_names": [
+    "CTID - Turla - Snake - Canonical Emulation Flow"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 53,
+  "converted_procedure_count": 53,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 45,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Morgana Agent installed on each explicitly authorized execution host",
+    "Plan Tags configured for the lab; credential and target defaults are intentionally blank",
+    "Operator review of every source command, simulation, and external dependency before Chain execution"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "ctid_turla_snake_inputs",
+      "label": "Turla - Snake Scenario Inputs",
+      "description": "Plan-wide CTID facts required by automated procedure variants.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1189",
+        "T1204.002",
+        "X"
+      ],
+      "tags": [
+        {
+          "key": "ctid_turla_snake_first_target_ip",
+          "label": "First Target Ip",
+          "description": "The IP address of the first target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_snake_first_target_user",
+          "label": "First Target User",
+          "description": "The username of the first target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_snake_first_target_password",
+          "label": "First Target Password",
+          "description": "The password of the first target host.",
+          "default": "",
+          "example": "",
+          "sensitive": true,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "credential-like"
+        },
+        {
+          "key": "ctid_turla_snake_network_domain_name",
+          "label": "Network Domain Name",
+          "description": "The network domain name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_snake_file_server_admin",
+          "label": "File Server Admin",
+          "description": "The username of the file server admin.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_snake_domain_admin_user",
+          "label": "Domain Admin User",
+          "description": "The username of a domain admin.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_snake_second_target_password",
+          "label": "Second Target Password",
+          "description": "The password of the second target user.",
+          "default": "",
+          "example": "",
+          "sensitive": true,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "credential-like"
+        },
+        {
+          "key": "ctid_turla_snake_third_target_ip",
+          "label": "Third Target Ip",
+          "description": "The IP address of the third target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - Turla - Snake - X - RDP to first target host (User)",
+      "name": "CTID - Turla - Snake - X - RDP to first target host (User)",
+      "description": "Use xfreerdp to RDP into the first host. Then, wait for the login to complete. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "cc9d5006-80d1-4dc5-863b-c38522ad5270",
+        "source_order": 1,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1189 - Download malicious update (User)",
+      "name": "CTID - Turla - Snake - T1189 - Download malicious update (User)",
+      "description": "Use xdotool to open Microsoft Edge, browse to nato-int.com. After redirection to anto-int.com, click to download the update (NFVersion_5e.exe) bundled with EPIC (a.k.a. Tavdig/Wipbot).",
+      "tactic": "Initial Access",
+      "tcode": "T1189",
+      "technique_name": "Drive-By Compromise",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_first_target_ip"
+      ],
+      "required_assets": [],
+      "command": "sleep 15;\nrdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_first_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"http\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"//nato-int.com/\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 20;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool key --window \"$rdp_window\" --repeat 5 --delay 1 shift+Tab;\nxdotool key --window \"$rdp_window\" Tab;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "78f44095-73b0-4ab4-a4cc-e5090ae1ae44",
+        "source_order": 2,
+        "procedure_step": "11.A.1-11.A.2",
+        "procedure_group": "procedure_initial_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1204.002 - Initial compromise (User)",
+      "name": "CTID - Turla - Snake - T1204.002 - Initial compromise (User)",
+      "description": "Run the downloaded malicious update via win+r, wait for it to finish running.",
+      "tactic": "Execution",
+      "tcode": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_first_target_user"
+      ],
+      "required_assets": [],
+      "command": "xdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" 'C';\nxdotool key --window \"$rdp_window\" shift+colon;           \nxdotool type --window \"$rdp_window\" '\\Users\\#{ctid_turla_snake_first_target_user}\\Downloads\\';\nxdotool key --window \"$rdp_window\" shift+N; \nxdotool key --window \"$rdp_window\" shift+F; \nxdotool key --window \"$rdp_window\" shift+V;\nxdotool type --window \"$rdp_window\" \"ersion\";\nxdotool key --window \"$rdp_window\" shift+minus;\nxdotool type --window \"$rdp_window\" \"5e.exe\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool key --window \"$rdp_window\" R;\nsleep 6;",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "0328ddeb-cc6b-4971-b695-771178b50ed7",
+        "source_order": 3,
+        "procedure_step": "11.A.3",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Log out of first target host (User)",
+      "name": "CTID - Turla - Snake - X - Log out of first target host (User)",
+      "description": "Use xdotool to log out of the first target host",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "xdotool key --window \"$rdp_window\" Ctrl+Alt+Delete;\nsleep 6;\nxdotool key --window \"$rdp_window\" Down;\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 15;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "e1d2f62e-0abf-4220-898b-4243d287466a",
+        "source_order": 4,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Log back in to first target host (User)",
+      "name": "CTID - Turla - Snake - X - Log back in to first target host (User)",
+      "description": "Use xfreerdp to log back in Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation X family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "49f05abe-1637-46c4-84ba-bd2fc0d6278f",
+        "source_order": 5,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Open Edge on first target host (User)",
+      "name": "CTID - Turla - Snake - X - Open Edge on first target host (User)",
+      "description": "Using the new xfreerdp and xdotool, open Microsoft Edge, and wait 3 minutes for the EPIC implant.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_first_target_ip"
+      ],
+      "required_assets": [],
+      "command": "sleep 15;\nrdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_first_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge:\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 180;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "8d5799fe-c9b2-42a4-bb1d-a0603d9d88ea",
+        "source_order": 6,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1082 - Systeminfo discovery (Adversary)",
+      "name": "CTID - Turla - Snake - T1082 - Systeminfo discovery (Adversary)",
+      "description": "Once C2 communications have been established between EPIC and the C2 via the proxy server, discovery is performed on the first host where information about the host device and domain computers is collected. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1082",
+      "technique_name": "System Information Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1082'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1082 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "32dd2b5f-5798-4c05-9d65-ee1e2d494cee",
+        "source_order": 7,
+        "procedure_step": "11.A.6",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download 1st Snake installer (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download 1st Snake installer (Adversary)",
+      "description": "Task the EPIC implant to download the Snake rootkit installer. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "bd51f583-249a-4995-b5d0-7da7e824bc56",
+        "source_order": 8,
+        "procedure_step": "12.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1014 - Execute the 1st Snake installer (Adversary)",
+      "name": "CTID - Turla - Snake - T1014 - Execute the 1st Snake installer (Adversary)",
+      "description": "Task the EPIC implant to execute the Snake rootkit installer with the privilege escalation option Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1014",
+      "technique_name": "Rootkit",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1014'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1014 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "0daff7a0-d1e4-4bf2-8100-c0a824a34c52",
+        "source_order": 9,
+        "procedure_step": "12.A.2-12.A.10",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Refresh Edge browser (User)",
+      "name": "CTID - Turla - Snake - X - Refresh Edge browser (User)",
+      "description": "Use xdotool to perform a hard refresh in Edge on the first target host to generate HTTP traffic and trigger the Snake implant",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_first_target_ip"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_first_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Ctrl+Shift+R;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "cb7d5320-981f-496e-bdb0-b6535025e59e",
+        "source_order": 10,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Run PowerShell as File Server Administrator on first target host (User)",
+      "name": "CTID - Turla - Snake - X - Run PowerShell as File Server Administrator on first target host (User)",
+      "description": "Use xdotool to run `runas /user:#{network.domain.name}\\#{file.server.admin} powershell` and to enter the user password.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_first_target_ip",
+        "ctid_turla_snake_network_domain_name",
+        "ctid_turla_snake_file_server_admin",
+        "ctid_turla_snake_first_target_password"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_first_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"runas /user:#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_file_server_admin} powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"#{ctid_turla_snake_first_target_password}\";\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "d042e47d-0519-41e7-a0f1-3190f3fcf43d",
+        "source_order": 11,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1057 - Search for File Server Administrator process in running processes (Adversary)",
+      "name": "CTID - Turla - Snake - T1057 - Search for File Server Administrator process in running processes (Adversary)",
+      "description": "Task the Snake rootkit to run the process discovery command. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1057",
+      "technique_name": "Process Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1057'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1057 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "4f222cd4-4c53-4cf5-869f-335a51711d8a",
+        "source_order": 12,
+        "procedure_step": "13.A.2",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1087.002 - Enumerate file server admin groups (Adversary)",
+      "name": "CTID - Turla - Snake - T1087.002 - Enumerate file server admin groups (Adversary)",
+      "description": "Execute the discovery command to confirm the user is in the file server admin's groups. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1087.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1087.002 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "5dbc34ff-eb4d-4897-8c4e-8288e5dd9e88",
+        "source_order": 13,
+        "procedure_step": "13.A.4",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1049 - Enumerate mapped network drives (Adversary)",
+      "name": "CTID - Turla - Snake - T1049 - Enumerate mapped network drives (Adversary)",
+      "description": "Execute the discovery command to the drive mapped to the file server. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1049'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1049 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "6315f9e9-a6ee-46f2-b846-24f9c3c219c9",
+        "source_order": 14,
+        "procedure_step": "13.A.8",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download PsExec (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download PsExec (Adversary)",
+      "description": "Task the implant to download PsExec. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "9c65d9cc-6f72-471c-80e0-4c3029fc5e6d",
+        "source_order": 15,
+        "procedure_step": "14.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download the 2nd Snake installer (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download the 2nd Snake installer (Adversary)",
+      "description": "Task the implant to download the 2nd Snake installer. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "f6c54eb3-f066-4721-812f-0bf6bfea01fc",
+        "source_order": 16,
+        "procedure_step": "14.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1569.002 - Execute PsExec as the File Server Administrator (Adversary)",
+      "name": "CTID - Turla - Snake - T1569.002 - Execute PsExec as the File Server Administrator (Adversary)",
+      "description": "Run the following command to execute PsExec as the file server admin, which will run the Snake installer on the file server Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1569.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1569.002 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "0970d7d6-279a-4ad8-a334-cfe0b5e7e0a6",
+        "source_order": 17,
+        "procedure_step": "14.A.4",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - RDP to second target host (User)",
+      "name": "CTID - Turla - Snake - X - RDP to second target host (User)",
+      "description": "Xfreerdp to the second target host as second victim user. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "2386792f-7bc9-445d-b868-64a0031ea40d",
+        "source_order": 18,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Navigate to google.com on second target host (User)",
+      "name": "CTID - Turla - Snake - X - Navigate to google.com on second target host (User)",
+      "description": "On the second target host, wait for the RDP to complete. Then, use xdotool to open Edge and navigate to google.com. Morgana-native operational simulation used because: hard-coded remote URL requires explicit operator review.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation X family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "a2e76ec5-6417-4da6-8a16-62ad85b49fa8",
+        "source_order": 19,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1070.004 - Delete artifacts from first target host (Adversary)",
+      "name": "CTID - Turla - Snake - T1070.004 - Delete artifacts from first target host (Adversary)",
+      "description": "After the new beacon is received, remove files from the first target. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1070.004 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "057a6b9b-36d6-456d-aa28-66e61295dd9c",
+        "source_order": 20,
+        "procedure_step": "14.A.6",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1059.001 - Check if ActiveDirectory is installed (Adversary)",
+      "name": "CTID - Turla - Snake - T1059.001 - Check if ActiveDirectory is installed (Adversary)",
+      "description": "Task Snake to check if the ActiveDirectory PowerShell module is installed. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: Powershell",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1059.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1059.001 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "79dae739-fd89-4842-946e-a4675110814e",
+        "source_order": 21,
+        "procedure_step": "15.A.1",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1069.001 - Enumerate Active Directory groups (Adversary)",
+      "name": "CTID - Turla - Snake - T1069.001 - Enumerate Active Directory groups (Adversary)",
+      "description": "Task Snake to collect a list of Active Directory groups containing the word \"management\", as members of these groups will likely have elevated permissions on the network. Confirm existence of a \"Server Management\" group. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.001",
+      "technique_name": "Permission Group Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.001 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "70a19730-04e9-45be-8463-7a359eaee657",
+        "source_order": 22,
+        "procedure_step": "15.A.2",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Server Management domain group (Adversary)",
+      "name": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Server Management domain group (Adversary)",
+      "description": "Task Snake to obtain the usernames of accounts within the Server Management domain group. This will instruct Turla which users to target next. Confirm the domain admin user is a member. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.001",
+      "technique_name": "Permission Group Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.001 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "bb06008c-561b-4a98-992e-fb7a0432aa45",
+        "source_order": 23,
+        "procedure_step": "15.A.3",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Domain Admins domain group (Adversary)",
+      "name": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Domain Admins domain group (Adversary)",
+      "description": "Task Snake to obtain the usernames of accounts within the Domain Admins domain group. Confirm the domain admin user is a member. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.001",
+      "technique_name": "Permission Group Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.001 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "8649c19c-0e25-43f3-a267-e0c0c92dd74f",
+        "source_order": 24,
+        "procedure_step": "15.A.3",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1087.002 - Enumerate account information (Adversary)",
+      "name": "CTID - Turla - Snake - T1087.002 - Enumerate account information (Adversary)",
+      "description": "Task Snake to discover domain users. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1087.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1087.002 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "d761e02e-fea4-457e-a434-aa49383b7996",
+        "source_order": 25,
+        "procedure_step": "15.A.4",
+        "procedure_group": null,
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1018 - Enumerate domain computer information (Adversary)",
+      "name": "CTID - Turla - Snake - T1018 - Enumerate domain computer information (Adversary)",
+      "description": "Task Snake to obtain a list of domain computers and some of their information (IP addresses, DNS names, and description). Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1018",
+      "technique_name": "Remote System Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1018'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1018 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "44daae27-4c78-4a38-9a68-88aeabd87a32",
+        "source_order": 26,
+        "procedure_step": "15.A.5",
+        "procedure_group": null,
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download Mimikatz to file server (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download Mimikatz to file server (Adversary)",
+      "description": "Task Snake to download Mimikatz to the file server. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Commmand and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation T1105 family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "bc88a0f3-245f-46a7-be47-42538fd0521d",
+        "source_order": 27,
+        "procedure_step": "16.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download PsExec to the file server (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download PsExec to the file server (Adversary)",
+      "description": "Task Snake to download PsExec to the file server. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Commmand and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation T1105 family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "55bef1eb-e1b5-46c6-94b9-a9637688d114",
+        "source_order": 28,
+        "procedure_step": "16.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download 3rd Snake installer to the file server (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download 3rd Snake installer to the file server (Adversary)",
+      "description": "Task Snake to download the 3rd Snake installer to the file server. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Commmand and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation T1105 family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "095324d9-a6e8-4964-a5ba-92fff6907c2e",
+        "source_order": 29,
+        "procedure_step": "16.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1003.001 - Dump NTLM hashes on the file server (Adversary)",
+      "name": "CTID - Turla - Snake - T1003.001 - Dump NTLM hashes on the file server (Adversary)",
+      "description": "Task Snake to run Mimikatz to dump all NTLM hashes from LSASS.exe. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Credential Access",
+      "tcode": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1003.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'credential_fixture=synthetic_value\\n' > \"$simulation_root/credentials.txt\"; grep 'credential_fixture' \"$simulation_root/credentials.txt\"; echo '[SUCCESS] CTID simulation T1003.001 family=credential'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "256ed126-a10c-4736-a074-216ab90da8f2",
+        "source_order": 30,
+        "procedure_step": "16.A.3",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1550.002 - Install the 3rd Snake installer on the third target host (Adversary)",
+      "name": "CTID - Turla - Snake - T1550.002 - Install the 3rd Snake installer on the third target host (Adversary)",
+      "description": "Task Snake to pass-the-hash using the previously discovered NTLM hash to run PsExec and install Snake on the target workstation. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1550.002",
+      "technique_name": "Use Alternate Authentication Material: Pass the Hash",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1550.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1550.002 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "b4018de2-bb0c-493e-8fe3-5f355831012f",
+        "source_order": 31,
+        "procedure_step": "17.A.1",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - RDP to the third target host (User)",
+      "name": "CTID - Turla - Snake - X - RDP to the third target host (User)",
+      "description": "Xfreerdp to the third host as the third target user Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "42859ec4-b714-48ca-be74-9438bbbaaf7b",
+        "source_order": 32,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Open Edge & run PowerShell as the domain admin on third target host (User)",
+      "name": "CTID - Turla - Snake - X - Open Edge & run PowerShell as the domain admin on third target host (User)",
+      "description": "Using xdotool, open Edge browser, wait, and open admin powershell.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_third_target_ip",
+        "ctid_turla_snake_network_domain_name",
+        "ctid_turla_snake_domain_admin_user",
+        "ctid_turla_snake_second_target_password"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_third_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge:\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\n\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"runas /user:#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_domain_admin_user} powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"#{ctid_turla_snake_second_target_password}\";\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "eddd5776-886a-4cde-97b7-46bf095ea049",
+        "source_order": 33,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the file server (Adversary)",
+      "name": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the file server (Adversary)",
+      "description": "Delete PsExec, the Snake installer, and Mimikatz from the file server. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1070.004 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "ca32f105-2e35-4524-8589-0f71d92d98f6",
+        "source_order": 34,
+        "procedure_step": "17.A.3",
+        "procedure_group": null,
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1057 - Enumerate processes (Adversary)",
+      "name": "CTID - Turla - Snake - T1057 - Enumerate processes (Adversary)",
+      "description": "Task Snake to enumerate running processes on the machine to discover processes under the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1057",
+      "technique_name": "Process Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1057'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1057 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "27083aa1-9a0d-4fe4-9154-fa6f0598e2f9",
+        "source_order": 35,
+        "procedure_step": "17.A.4",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1136.002 - Create a new domain user (Adversary)",
+      "name": "CTID - Turla - Snake - T1136.002 - Create a new domain user (Adversary)",
+      "description": "Task Snake to create a new domain user using an access token from one of the domain admin processes. The new domain user will be used as a backdoor domain admin account for persistence on the domain. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Persistence",
+      "tcode": "T1136.002",
+      "technique_name": "Create Account: Domain Account",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1136.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1136.002 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "384f3d1f-97f1-4070-98c5-764de023ed2c",
+        "source_order": 36,
+        "procedure_step": "17.A.5",
+        "procedure_group": "procedure_persistence",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1136.002 - Add the new domain user to the Domain Admins group (Adversary)",
+      "name": "CTID - Turla - Snake - T1136.002 - Add the new domain user to the Domain Admins group (Adversary)",
+      "description": "Task Snake to create a new domain admin using the domain admin's access token. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Persistence",
+      "tcode": "T1136.002",
+      "technique_name": "Create Account: Domain Account",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1136.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1136.002 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "36d93251-6932-49b9-82ad-994abd27730a",
+        "source_order": 37,
+        "procedure_step": "17.A.5",
+        "procedure_group": "procedure_persistence",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download LightNeuron (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download LightNeuron (Adversary)",
+      "description": "Task Snake to download LightNeuron Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1105 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "c5bceb16-2f13-40a5-b460-9adb1d567b76",
+        "source_order": 38,
+        "procedure_step": "18.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download the companion DLL for LightNeuron (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download the companion DLL for LightNeuron (Adversary)",
+      "description": "Task Snake to download the companion DLL for LightNeuron. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1105 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "b43fb6c6-05d2-42ff-9083-e70d5dbea078",
+        "source_order": 39,
+        "procedure_step": "18.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download the Powershell installation script for LightNeuron (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download the Powershell installation script for LightNeuron (Adversary)",
+      "description": "Task Snake to download the Powershell installation script for LightNeuron. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1105 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "bcea95e5-76a0-4774-b51d-cdf6b1fd9ce0",
+        "source_order": 40,
+        "procedure_step": "18.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download the LightNeuron email rules file (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download the LightNeuron email rules file (Adversary)",
+      "description": "Task Snake to download the LightNeuron email rules file. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; mkdir -p \"$simulation_root/collection\"; printf 'CTID sample data\\n' > \"$simulation_root/collection/sample.txt\"; tar -czf \"$simulation_root/collection.tar.gz\" -C \"$simulation_root\" collection; ls -l \"$simulation_root/collection.tar.gz\"; echo '[SUCCESS] CTID simulation T1105 family=collection'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "62f66621-1ff8-4054-bbd8-b3f374d55199",
+        "source_order": 41,
+        "procedure_step": "18.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1105 - Download the LightNeuron config file (Adversary)",
+      "name": "CTID - Turla - Snake - T1105 - Download the LightNeuron config file (Adversary)",
+      "description": "Task Snake to download the LightNeuron config file. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1105 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "09fc13b4-b345-41ce-b5a8-4214a37b627a",
+        "source_order": 42,
+        "procedure_step": "18.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1570 - Copy LightNeuron transport agent DLL to the Exchange Server (Adversary)",
+      "name": "CTID - Turla - Snake - T1570 - Copy LightNeuron transport agent DLL to the Exchange Server (Adversary)",
+      "description": "Task Snake to copy LightNeuron using token impersonation to perform the copy as the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1570 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "fea61ba7-d932-4a42-b988-5cf9de3ed118",
+        "source_order": 43,
+        "procedure_step": "18.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1570 - Copy LightNeuron companion DLL to the Exchange Server (Adversary)",
+      "name": "CTID - Turla - Snake - T1570 - Copy LightNeuron companion DLL to the Exchange Server (Adversary)",
+      "description": "Task Snake to copy the LightNeuron companion DLL using token impersonation to perform the copy as the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1570 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "8c6bfbe8-60f0-4ca8-a955-c35be84be374",
+        "source_order": 44,
+        "procedure_step": "18.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1570 - Copy PowerShell installation script to the Exchange Server (Adversary)",
+      "name": "CTID - Turla - Snake - T1570 - Copy PowerShell installation script to the Exchange Server (Adversary)",
+      "description": "Task Snake to copy PowerShell installation script to the Exchange Server using token impersonation to perform the copy as the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1570 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "2d061b67-5d49-4a0c-a7af-1b8a3a6fdd78",
+        "source_order": 45,
+        "procedure_step": "18.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1570 - Copy email rules file to the Exchange server (Adversary)",
+      "name": "CTID - Turla - Snake - T1570 - Copy email rules file to the Exchange server (Adversary)",
+      "description": "Task Snake to copy the email rules file to the Exchange server, using token impersonation to perform the copy as the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; mkdir -p \"$simulation_root/collection\"; printf 'CTID sample data\\n' > \"$simulation_root/collection/sample.txt\"; tar -czf \"$simulation_root/collection.tar.gz\" -C \"$simulation_root\" collection; ls -l \"$simulation_root/collection.tar.gz\"; echo '[SUCCESS] CTID simulation T1570 family=collection'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "ded4d5a0-bcd6-41f8-899b-9fa4fddac445",
+        "source_order": 46,
+        "procedure_step": "18.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1570 - Copy config file to the Exchange server (Adversary)",
+      "name": "CTID - Turla - Snake - T1570 - Copy config file to the Exchange server (Adversary)",
+      "description": "Task Snake to copy the config file to the Exchange server, using token impersonation to perform the copy as the domain admin. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1570 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "0ee2902a-f75e-4367-9e99-2124d3070b4e",
+        "source_order": 47,
+        "procedure_step": "18.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1505.002 - Install LightNeuron on the Exchange Server (Adversary)",
+      "name": "CTID - Turla - Snake - T1505.002 - Install LightNeuron on the Exchange Server (Adversary)",
+      "description": "Task Snake to install LightNeuron remotely using WMI and PowerShell, using the domain admin's token Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Persistence",
+      "tcode": "T1505.002",
+      "technique_name": "Server Software Component: Transport Agent",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1505.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1505.002 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "6dd62c1c-b65c-4e28-b241-04121cbbc9af",
+        "source_order": 48,
+        "procedure_step": "18.A.7",
+        "procedure_group": "procedure_persistence",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1059.003 - Check installation log (Adversary)",
+      "name": "CTID - Turla - Snake - T1059.003 - Check installation log (Adversary)",
+      "description": "Task Snake to check the installation log for any errors. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1059.003'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1059.003 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "658daa6f-97c0-41c0-af97-d6b4969d2e7c",
+        "source_order": 49,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the fourth target host (Adversary)",
+      "name": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the fourth target host (Adversary)",
+      "description": "Task Snake to remove artifacts from the fourth target host: Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1070.004 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "38023f7d-d776-46bb-bbfc-1f4853e8169b",
+        "source_order": 50,
+        "procedure_step": "18.A.9",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.snake.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.snake.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1016 - Perform system network configuration discovery (Adversary)",
+      "name": "CTID - Turla - Snake - T1016 - Perform system network configuration discovery (Adversary)",
+      "description": "Task LightNeuron to perform system network configuration discovery. Morgana-native operational simulation used because: source command depends on CALDERA, external C2, or implant primitives; source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1016'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1016 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "def5cfe8-7aea-4cd3-803f-2c55e616c1fe",
+        "source_order": 51,
+        "procedure_step": "19.A.1-19.A.5",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source command depends on CALDERA, external C2, or implant primitives",
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source command depends on CALDERA, external C2, or implant primitives",
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_lightneuron_registered": [
+              {
+                "source": "lightneuron.implant.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_lightneuron_registered": [
+                {
+                  "source": "lightneuron.implant.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - X - Send emails (User)",
+      "name": "CTID - Turla - Snake - X - Send emails (User)",
+      "description": "Generate email traffic for LightNeuron to capture",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_snake_network_domain_name",
+        "ctid_turla_snake_domain_admin_user",
+        "ctid_turla_snake_second_target_password",
+        "ctid_turla_snake_third_target_ip",
+        "ctid_turla_snake_first_target_ip"
+      ],
+      "required_assets": [],
+      "command": "sudo smbclient -U '#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_domain_admin_user}'%'#{ctid_turla_snake_second_target_password}' //#{ctid_turla_snake_third_target_ip}/c$ -c 'put ../caldera_port/send-email-to-egle.ps1 Users\\Public\\send-email-to-egle.ps1';\nsudo smbclient -U '#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_domain_admin_user}'%'#{ctid_turla_snake_second_target_password}' //#{ctid_turla_snake_third_target_ip}/c$ -c 'put ../caldera_port/Microsoft.Exchange.WebServices.dll Users\\Public\\Microsoft.Exchange.WebServices.dll';\nsudo smbclient -U '#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_domain_admin_user}'%'#{ctid_turla_snake_second_target_password}' //#{ctid_turla_snake_first_target_ip}/c$ -c 'put ../caldera_port/send-email-to-zilvinas.ps1 Users\\Public\\send-email-to-zilvinas.ps1';\nsudo smbclient -U '#{ctid_turla_snake_network_domain_name}\\#{ctid_turla_snake_domain_admin_user}'%'#{ctid_turla_snake_second_target_password}' //#{ctid_turla_snake_first_target_ip}/c$ -c 'put ../caldera_port/Microsoft.Exchange.WebServices.dll Users\\Public\\Microsoft.Exchange.WebServices.dll';\nrdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_third_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"cd C\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"\\Users\\Public\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \".\\send-email-to-egle.ps1\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\n\nrdp_pid=$(ps -ef | grep '[:]#{ctid_turla_snake_first_target_ip}' | awk {'print $2'});\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L+r;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"cd C\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"\\Users\\Public\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \".\\send-email-to-zilvinas.ps1\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "fdcbcf07-0487-4757-8b09-6c1ce93220b9",
+        "source_order": 52,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Snake - T1041 - Exfiltrate the email log file (Adversary)",
+      "name": "CTID - Turla - Snake - T1041 - Exfiltrate the email log file (Adversary)",
+      "description": "Task the LightNeuron implant to exfiltrate the email log file. Morgana-native operational simulation used because: source command depends on CALDERA, external C2, or implant primitives; source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Exfiltration",
+      "tcode": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1041'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1041 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Snake",
+        "plan_type": "full-emulation",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "source_ability_id": "4d10b3a8-6199-4615-861f-e4292630a9b9",
+        "source_order": 53,
+        "procedure_step": "19.A.12",
+        "procedure_group": "procedure_exfiltration",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_snake.yaml",
+        "simulation_reasons": [
+          "source command depends on CALDERA, external C2, or implant primitives",
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source command depends on CALDERA, external C2, or implant primitives",
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_lightneuron_registered": [
+              {
+                "source": "lightneuron.implant.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_lightneuron_registered": [
+                {
+                  "source": "lightneuron.implant.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - Turla - Snake - Canonical Emulation Flow",
+      "description": "Source-ordered Turla - Snake emulation flow. Self-contained source commands run directly; unavailable payload, C2, and executor dependencies use labeled operational simulations.",
+      "objective": "Emulate the documented multi-stage Turla - Snake intrusion flow to validate cross-tactic detection and response coverage.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:turla-snake"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Turla - Snake",
+        "source_plan_id": "2c03e8df-284d-4bda-900d-1c9523fba7eb",
+        "scenario_id": "canonical",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/turla"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Turla - Snake",
+      "scenario_id": "canonical",
+      "scenario_name": "Canonical Emulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - RDP to first target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1189 - Download malicious update (User)",
+            "source_step": "11.A.1-11.A.2"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1204.002 - Initial compromise (User)",
+            "source_step": "11.A.3"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Log out of first target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Log back in to first target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Open Edge on first target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1082 - Systeminfo discovery (Adversary)",
+            "source_step": "11.A.6"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download 1st Snake installer (Adversary)",
+            "source_step": "12.A.1"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1014 - Execute the 1st Snake installer (Adversary)",
+            "source_step": "12.A.2-12.A.10"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Refresh Edge browser (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-011-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Run PowerShell as File Server Administrator on first target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-012-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1057 - Search for File Server Administrator process in running processes (Adversary)",
+            "source_step": "13.A.2"
+          },
+          {
+            "id": "procedure-013-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1087.002 - Enumerate file server admin groups (Adversary)",
+            "source_step": "13.A.4"
+          },
+          {
+            "id": "procedure-014-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1049 - Enumerate mapped network drives (Adversary)",
+            "source_step": "13.A.8"
+          },
+          {
+            "id": "procedure-015-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download PsExec (Adversary)",
+            "source_step": "14.A.2"
+          },
+          {
+            "id": "procedure-016-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download the 2nd Snake installer (Adversary)",
+            "source_step": "14.A.2"
+          },
+          {
+            "id": "procedure-017-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1569.002 - Execute PsExec as the File Server Administrator (Adversary)",
+            "source_step": "14.A.4"
+          },
+          {
+            "id": "procedure-018-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - RDP to second target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-019-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Navigate to google.com on second target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-020-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1070.004 - Delete artifacts from first target host (Adversary)",
+            "source_step": "14.A.6"
+          },
+          {
+            "id": "procedure-021-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1059.001 - Check if ActiveDirectory is installed (Adversary)",
+            "source_step": "15.A.1"
+          },
+          {
+            "id": "procedure-022-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1069.001 - Enumerate Active Directory groups (Adversary)",
+            "source_step": "15.A.2"
+          },
+          {
+            "id": "procedure-023-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Server Management domain group (Adversary)",
+            "source_step": "15.A.3"
+          },
+          {
+            "id": "procedure-024-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1069.001 - Enumerate accounts belonging to the Domain Admins domain group (Adversary)",
+            "source_step": "15.A.3"
+          },
+          {
+            "id": "procedure-025-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1087.002 - Enumerate account information (Adversary)",
+            "source_step": "15.A.4"
+          },
+          {
+            "id": "procedure-026-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1018 - Enumerate domain computer information (Adversary)",
+            "source_step": "15.A.5"
+          },
+          {
+            "id": "procedure-027-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download Mimikatz to file server (Adversary)",
+            "source_step": "16.A.2"
+          },
+          {
+            "id": "procedure-028-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download PsExec to the file server (Adversary)",
+            "source_step": "16.A.2"
+          },
+          {
+            "id": "procedure-029-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download 3rd Snake installer to the file server (Adversary)",
+            "source_step": "16.A.2"
+          },
+          {
+            "id": "procedure-030-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1003.001 - Dump NTLM hashes on the file server (Adversary)",
+            "source_step": "16.A.3"
+          },
+          {
+            "id": "procedure-031-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1550.002 - Install the 3rd Snake installer on the third target host (Adversary)",
+            "source_step": "17.A.1"
+          },
+          {
+            "id": "procedure-032-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - RDP to the third target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-033-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Open Edge & run PowerShell as the domain admin on third target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-034-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the file server (Adversary)",
+            "source_step": "17.A.3"
+          },
+          {
+            "id": "procedure-035-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1057 - Enumerate processes (Adversary)",
+            "source_step": "17.A.4"
+          },
+          {
+            "id": "procedure-036-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1136.002 - Create a new domain user (Adversary)",
+            "source_step": "17.A.5"
+          },
+          {
+            "id": "procedure-037-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1136.002 - Add the new domain user to the Domain Admins group (Adversary)",
+            "source_step": "17.A.5"
+          },
+          {
+            "id": "procedure-038-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download LightNeuron (Adversary)",
+            "source_step": "18.A.2"
+          },
+          {
+            "id": "procedure-039-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download the companion DLL for LightNeuron (Adversary)",
+            "source_step": "18.A.2"
+          },
+          {
+            "id": "procedure-040-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download the Powershell installation script for LightNeuron (Adversary)",
+            "source_step": "18.A.2"
+          },
+          {
+            "id": "procedure-041-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download the LightNeuron email rules file (Adversary)",
+            "source_step": "18.A.2"
+          },
+          {
+            "id": "procedure-042-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1105 - Download the LightNeuron config file (Adversary)",
+            "source_step": "18.A.2"
+          },
+          {
+            "id": "procedure-043-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1570 - Copy LightNeuron transport agent DLL to the Exchange Server (Adversary)",
+            "source_step": "18.A.3"
+          },
+          {
+            "id": "procedure-044-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1570 - Copy LightNeuron companion DLL to the Exchange Server (Adversary)",
+            "source_step": "18.A.3"
+          },
+          {
+            "id": "procedure-045-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1570 - Copy PowerShell installation script to the Exchange Server (Adversary)",
+            "source_step": "18.A.3"
+          },
+          {
+            "id": "procedure-046-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1570 - Copy email rules file to the Exchange server (Adversary)",
+            "source_step": "18.A.3"
+          },
+          {
+            "id": "procedure-047-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1570 - Copy config file to the Exchange server (Adversary)",
+            "source_step": "18.A.3"
+          },
+          {
+            "id": "procedure-048-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1505.002 - Install LightNeuron on the Exchange Server (Adversary)",
+            "source_step": "18.A.7"
+          },
+          {
+            "id": "procedure-049-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1059.003 - Check installation log (Adversary)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-050-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1070.004 - Delete artifacts from the fourth target host (Adversary)",
+            "source_step": "18.A.9"
+          },
+          {
+            "id": "procedure-051-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1016 - Perform system network configuration discovery (Adversary)",
+            "source_step": "19.A.1-19.A.5"
+          },
+          {
+            "id": "procedure-052-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - X - Send emails (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-053-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Snake - T1041 - Exfiltrate the email log file (Adversary)",
+            "source_step": "19.A.12"
+          }
+        ]
+      }
+    }
+  ]
+}

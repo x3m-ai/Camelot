@@ -1,0 +1,906 @@
+{
+  "package_id": "ctid-menupass-v1",
+  "package_name": "CTID - menuPass Full Emulation",
+  "version": "1.0.0",
+  "description": "Threat-informed menuPass full emulation based on 15 ordered CTID procedures. Use it to assess cross-tactic detection and response across a documented multi-stage intrusion; 5 procedure variants use source commands and 10 use executable Morgana-native simulations.",
+  "summary": "Threat-informed emulation of documented menuPass behavior and attack progression.",
+  "purpose": "Validate defensive performance across a multi-stage menuPass scenario rather than isolated techniques.",
+  "capabilities": [
+    "Preserves 15 CTID procedures in source order across 7 tactics.",
+    "Creates operational Morgana Attack Chains using source commands and labeled telemetry simulations.",
+    "Retains CTI references, procedure steps, source requirements, ATT&CK mappings, and conversion limitations."
+  ],
+  "use_cases": [
+    "Run a threat-informed Purple Team assessment modeled on documented menuPass behaviors.",
+    "Evaluate cross-stage prevention, telemetry, detection, investigation, and response handoffs.",
+    "Customize a source-faithful baseline Chain for an authorized environment while retaining provenance."
+  ],
+  "safety_notes": [
+    "Review every source command, simulation, required Tag, and cleanup action before execution.",
+    "Payload-dependent and external C2 procedures use sandboxed or loopback Morgana simulations until exact dependencies are packaged.",
+    "Threat-informed adversary emulation content is for explicitly authorized security validation and defensive testing only."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/menu_pass",
+  "mitre_domain": "enterprise-attack",
+  "attack_version": "8.1",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1003.001",
+    "T1003.002",
+    "T1016",
+    "T1018",
+    "T1046",
+    "T1047",
+    "T1074.001",
+    "T1105",
+    "T1135",
+    "T1537",
+    "T1553.005",
+    "T1560.001",
+    "T1569.002"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "plan_type": "full-emulation",
+  "adversary": "menuPass",
+  "intelligence_summary": "menuPass is thought to be a Chinese cyber espionage group associated with activity directed by elements of the PRC MSS.",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Canonical Emulation Flow"
+  ],
+  "chain_names": [
+    "CTID - menuPass - Canonical Emulation Flow"
+  ],
+  "complexity": "advanced",
+  "source_procedure_count": 15,
+  "converted_procedure_count": 15,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 10,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Morgana Agent installed on each explicitly authorized execution host",
+    "Plan Tags configured for the lab; credential and target defaults are intentionally blank",
+    "Operator review of every source command, simulation, and external dependency before Chain execution"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "ctid_menupass_inputs",
+      "label": "menuPass Scenario Inputs",
+      "description": "Plan-wide CTID facts required by automated procedure variants.",
+      "scope": "local",
+      "used_by_tcodes": [
+        "T1018",
+        "T1074.001",
+        "T1553.005"
+      ],
+      "tags": [
+        {
+          "key": "ctid_menupass_host_address",
+          "label": "Host Address",
+          "description": "IP for host discovery",
+          "default": "192.0.2.10\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        },
+        {
+          "key": "ctid_menupass_copy_filename",
+          "label": "Copy Filename",
+          "description": "Name of file to copy",
+          "default": "aa.rar\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        },
+        {
+          "key": "ctid_menupass_schtask_schedule",
+          "label": "Schtask Schedule",
+          "description": "Value that specifies the schedule frequency. (MINUTE, HOURLY, DAILY, WEEKLY, MONTHLY, ONCE, ONLOGON, ONIDLE, and ONEVENT)",
+          "default": "DAILY\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        },
+        {
+          "key": "ctid_menupass_schtask_taskname",
+          "label": "Schtask Taskname",
+          "description": "A value that specifies a name which uniquely identifies the scheduled task.",
+          "default": "taskname\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        },
+        {
+          "key": "ctid_menupass_schtask_taskrun",
+          "label": "Schtask Taskrun",
+          "description": "A value that specifies the path and file name of the task to be run at the scheduled time.",
+          "default": "C:\\Windows\\Temp\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        },
+        {
+          "key": "ctid_menupass_schtask_username",
+          "label": "Schtask Username",
+          "description": "A value that specifies the user context under which the task runs.",
+          "default": "username\n",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "control",
+          "source_default_class": "generic"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID - menuPass - T1105 - Ingress Tool Transfer",
+      "name": "CTID - menuPass - T1105 - Ingress Tool Transfer",
+      "description": "Pushing tools to compromised host Morgana-native operational simulation used because: hard-coded remote URL requires explicit operator review.",
+      "tactic": "discovery",
+      "tcode": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1105'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-001-t1105.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1105 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "a750b196-8168-461a-8747-bdc4add107ac",
+        "source_order": 1,
+        "procedure_step": "2.A",
+        "procedure_group": "procedure_command_and_control",
+        "cti_source": "https://recordedfuture.com/apt10-cyberespionage-campaign/",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "hard-coded remote URL requires explicit operator review"
+        ],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1135 - Network Share Discovery",
+      "name": "CTID - menuPass - T1135 - Network Share Discovery",
+      "description": "Display network shares",
+      "tactic": "discovery",
+      "tcode": "T1135",
+      "technique_name": "Network Share Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "net use",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "7877ec4d-3c11-40f2-9650-35261e4ac879",
+        "source_order": 2,
+        "procedure_step": "3.A",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-report-final-v4.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1018 - Remote System Discovery",
+      "name": "CTID - menuPass - T1018 - Remote System Discovery",
+      "description": "Identify remote systems using net",
+      "tactic": "discovery",
+      "tcode": "T1018",
+      "technique_name": "Remote System Discovery",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "net view /domain",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "e132a235-fe43-45c2-a334-2f235a7646b5",
+        "source_order": 3,
+        "procedure_step": "3.B",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-report-final-v4.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1018 - Remote System Discovery [4.1]",
+      "name": "CTID - menuPass - T1018 - Remote System Discovery [4.1]",
+      "description": "Identify remote system using Powershell",
+      "tactic": "discovery",
+      "tcode": "T1018",
+      "technique_name": "Remote System Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [
+        "ctid_menupass_host_address"
+      ],
+      "required_assets": [],
+      "command": "Test-NetConnection \"#{ctid_menupass_host_address}\"",
+      "cleanup_command": null,
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "d19678ac-3bca-475e-89d4-f452bfc2cc2a",
+        "source_order": 4,
+        "procedure_step": "3.C",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-anex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1046 - Network Service Scanning",
+      "name": "CTID - menuPass - T1046 - Network Service Scanning",
+      "description": "Enumerate remote hosts for running services using tcping Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "discovery",
+      "tcode": "T1046",
+      "technique_name": "Network Service Scanning",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1046'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-005-t1046.txt'; $runKey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'; New-ItemProperty -Path $runKey -Name 'MorganaCTIDSimulation' -Value 'cmd.exe /c exit 0' -PropertyType String -Force | Out-Null; Get-ItemProperty $runKey -Name 'MorganaCTIDSimulation'; Write-Output '[SUCCESS] CTID simulation T1046 family=persistence';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "b6026408-c815-47ca-bbb0-6b74591badc8",
+        "source_order": 5,
+        "procedure_step": "3.D",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "tcping.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1016 - System Network Configuration Discovery",
+      "name": "CTID - menuPass - T1016 - System Network Configuration Discovery",
+      "description": "Scan for nameservers and enumerate NetBIOS sessions Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "discovery",
+      "tcode": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1016'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-006-t1016.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1016 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "814005f7-c8d3-45c8-aea2-45758b2d6e90",
+        "source_order": 6,
+        "procedure_step": "3.E",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "nbtscan.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1016 - System Network Configuration Discovery [7.1]",
+      "name": "CTID - menuPass - T1016 - System Network Configuration Discovery [7.1]",
+      "description": "Scan for nameservers and enumerate NetBIOS sessions Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "discovery",
+      "tcode": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1016'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-007-t1016.txt'; Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,LastBootUpTime; Get-Process | Select-Object -First 10 Name,Id,Path; Get-NetIPConfiguration -ErrorAction SilentlyContinue | Select-Object InterfaceAlias,IPv4Address; Write-Output '[SUCCESS] CTID simulation T1016 family=discovery';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "9d543214-6476-429a-9ca1-cf12233b808c",
+        "source_order": 7,
+        "procedure_step": "3.F",
+        "procedure_group": "procedure_discovery",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "discovery",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "netsess.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1003.001 - OS Credential Dumping",
+      "name": "CTID - menuPass - T1003.001 - OS Credential Dumping",
+      "description": "menuPass has used mimikatz.exe to dump credentials locally Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "credential-access",
+      "tcode": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1003.001'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-008-t1003-001.txt'; Set-Content $artifactPath 'credential_fixture=synthetic_value'; Select-String -Path $artifactPath -Pattern 'credential_fixture'; Write-Output '[SUCCESS] CTID simulation T1003.001 family=credential';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "ffb50e17-cb3c-4424-a4e7-99e3885f22cc",
+        "source_order": 8,
+        "procedure_step": "4.A",
+        "procedure_group": "procedure_cred_access",
+        "cti_source": "https://go.recordedfuture.com/hubfs/reports/cta-2019-0206.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "mimikatz.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1003.002 - OS Credential Dumping",
+      "name": "CTID - menuPass - T1003.002 - OS Credential Dumping",
+      "description": "menuPass has used secretsdump.exe to dump credentials remotely Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "credential-access",
+      "tcode": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1003.002'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-009-t1003-002.txt'; Set-Content $artifactPath 'credential_fixture=synthetic_value'; Select-String -Path $artifactPath -Pattern 'credential_fixture'; Write-Output '[SUCCESS] CTID simulation T1003.002 family=credential';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "fe3d4de1-50bf-4241-9546-72dc757e696f",
+        "source_order": 9,
+        "procedure_step": "4.B",
+        "procedure_group": "procedure_cred_access",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "credential",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "secretsdump.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1569.002 - Service Execution",
+      "name": "CTID - menuPass - T1569.002 - Service Execution",
+      "description": "Using compiled psexec.py to achieve remote code execution Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "lateral-movement",
+      "tcode": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1569.002'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-010-t1569-002.txt'; $runKey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'; New-ItemProperty -Path $runKey -Name 'MorganaCTIDSimulation' -Value 'cmd.exe /c exit 0' -PropertyType String -Force | Out-Null; Get-ItemProperty $runKey -Name 'MorganaCTIDSimulation'; Write-Output '[SUCCESS] CTID simulation T1569.002 family=persistence';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "4b1748e5-532c-453c-b195-557ce5550fef",
+        "source_order": 10,
+        "procedure_step": "5.A",
+        "procedure_group": "procedure_lateral_movement",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "persistence",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "psexec.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1560.001 - Archive Collected Data - Archive via Utility",
+      "name": "CTID - menuPass - T1560.001 - Archive Collected Data - Archive via Utility",
+      "description": "Compress and stage data for exfiltration Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "collection",
+      "tcode": "T1560.001",
+      "technique_name": "Archive Collected Data - Archive via Utility",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1560.001'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-011-t1560-001.txt'; $collectionDir = Join-Path $simulationRoot 'collection'; New-Item -ItemType Directory $collectionDir -Force | Out-Null; 1..3 | ForEach-Object { Set-Content (Join-Path $collectionDir \"sample-$_.txt\") \"CTID sample data $_\" }; Compress-Archive -Path (Join-Path $collectionDir '*') -DestinationPath (Join-Path $simulationRoot 'collection.zip') -Force; Get-Item (Join-Path $simulationRoot 'collection.zip'); Write-Output '[SUCCESS] CTID simulation T1560.001 family=collection';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "160a1e0f-0f9b-49bb-a0fe-7e362b51737f",
+        "source_order": 11,
+        "procedure_step": "6.A",
+        "procedure_group": "procedure_collection",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-report-final-v4.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "collection",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "rar.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1074.001 - Recycle Bin Staging",
+      "name": "CTID - menuPass - T1074.001 - Recycle Bin Staging",
+      "description": "menuPass actors are thought to have staged archives in the Recycle Bin for exfiltration.",
+      "tactic": "collection",
+      "tcode": "T1074.001",
+      "technique_name": "Local Data Staging",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "ctid_menupass_copy_filename"
+      ],
+      "required_assets": [],
+      "command": "copy #{ctid_menupass_copy_filename} \"C:\\$Recycle.Bin\\\"",
+      "cleanup_command": null,
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "b4fa6d2e-ed9c-4a86-81aa-19331983fe0d",
+        "source_order": 12,
+        "procedure_step": "6.B",
+        "procedure_group": "procedure_collection",
+        "cti_source": "https://www.pwc.co.uk/cyber-security/pdf/cloud-hopper-report-final-v4.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1537 - Transfer Data to Cloud Account",
+      "name": "CTID - menuPass - T1537 - Transfer Data to Cloud Account",
+      "description": "Exfil data to cloud account Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "exfiltration",
+      "tcode": "T1537",
+      "technique_name": "Transfer Data to Cloud Account",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1537'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-013-t1537.txt'; $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = ([Net.IPEndPoint]$listener.LocalEndpoint).Port; $client = [Net.Sockets.TcpClient]::new('127.0.0.1',$port); $serverClient = $listener.AcceptTcpClient(); $bytes = [Text.Encoding]::UTF8.GetBytes('CTID network simulation'); $client.GetStream().Write($bytes,0,$bytes.Length); $buffer = New-Object byte[] 64; $read = $serverClient.GetStream().Read($buffer,0,$buffer.Length); [Text.Encoding]::UTF8.GetString($buffer,0,$read); $client.Close(); $serverClient.Close(); $listener.Stop(); Write-Output '[SUCCESS] CTID simulation T1537 family=network';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "ea4bc858-ba13-4f97-9df3-c543d8f3d44c",
+        "source_order": 13,
+        "procedure_step": "7.A",
+        "procedure_group": "procedure_exfiltration",
+        "cti_source": "https://pwc.co.uk/cyber-secrity/pdf/cloud-hopper-report-final-v4.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "network",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "pscp.exe"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1047 - Windows Management Instrumentation",
+      "name": "CTID - menuPass - T1047 - Windows Management Instrumentation",
+      "description": "Using wmiexec.vbs to execute tactical malware Morgana-native operational simulation used because: required payloads are not approved for redistribution.",
+      "tactic": "execution",
+      "tcode": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "executor": "powershell",
+      "platform": "windows",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "Write-Output '[START] CTID simulation T1047'; $simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; New-Item -ItemType Directory -Path $simulationRoot -Force | Out-Null; $artifactPath = Join-Path $simulationRoot 'CTID-014-t1047.txt'; $childPath = Join-Path $simulationRoot 'ctid-child.ps1'; Set-Content $childPath \"Write-Output 'CTID child process telemetry'\"; & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $childPath; Write-Output '[SUCCESS] CTID simulation T1047 family=execution';",
+      "cleanup_command": "$simulationRoot = Join-Path $env:TEMP 'Morgana\\CTID'; Remove-Item $simulationRoot -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'MorganaCTIDSimulation' -ErrorAction SilentlyContinue;",
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "8911d502-747a-4155-adcd-b03a1f284ee7",
+        "source_order": 14,
+        "procedure_step": "8.A",
+        "procedure_group": "procedure_execution",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "simulation_family": "execution",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "manual_reasons": [
+          "required payloads are not approved for redistribution"
+        ],
+        "source_payloads": [
+          "wmiexec.vbs"
+        ],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    },
+    {
+      "id": "CTID - menuPass - T1553.005 - Scheduled Task Persistence",
+      "name": "CTID - menuPass - T1553.005 - Scheduled Task Persistence",
+      "description": "menuPass is reported to have used scheduled tasks to persist",
+      "tactic": "persistence",
+      "tcode": "T1553.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "executor": "cmd",
+      "platform": "windows",
+      "required_tags": [
+        "ctid_menupass_schtask_schedule",
+        "ctid_menupass_schtask_taskname",
+        "ctid_menupass_schtask_taskrun",
+        "ctid_menupass_schtask_username"
+      ],
+      "required_assets": [],
+      "command": "schtasks /create /sc \"#{ctid_menupass_schtask_schedule}\" /tn \"#{ctid_menupass_schtask_taskname}\" /tr \"#{ctid_menupass_schtask_taskrun}\" /ru \"#{ctid_menupass_schtask_username}\"",
+      "cleanup_command": null,
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "menuPass",
+        "plan_type": "full-emulation",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "source_ability_id": "236d1357-64f9-4a98-afc1-bccaa89aba8c",
+        "source_order": 15,
+        "procedure_step": "7.1",
+        "procedure_group": "procedure_persistence",
+        "cti_source": "https://pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf",
+        "source_path": "menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/menu_pass/Emulation_Plan/yaml/menupass.yaml",
+        "simulation_reasons": [],
+        "simulation_family": null,
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "ready",
+        "manual_reasons": [],
+        "source_payloads": [],
+        "source_requirements": [],
+        "classified_requirements": [],
+        "repeatable": null
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID - menuPass - Canonical Emulation Flow",
+      "description": "Source-ordered menuPass emulation flow. Self-contained source commands run directly; unavailable payload, C2, and executor dependencies use labeled operational simulations.",
+      "objective": "Emulate the documented multi-stage menuPass intrusion flow to validate cross-tactic detection and response coverage.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "full-emulation",
+        "adversary:menupass"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "full-emulation",
+        "adversary": "menuPass",
+        "source_plan_id": "b5192070-dff1-4134-bf66-c6b87c7498af",
+        "scenario_id": "canonical",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/menu_pass"
+      },
+      "plan_type": "full-emulation",
+      "adversary": "menuPass",
+      "scenario_id": "canonical",
+      "scenario_name": "Canonical Emulation Flow",
+      "flow": {
+        "nodes": [
+          {
+            "id": "procedure-001-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1105 - Ingress Tool Transfer",
+            "source_step": "2.A"
+          },
+          {
+            "id": "procedure-002-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1135 - Network Share Discovery",
+            "source_step": "3.A"
+          },
+          {
+            "id": "procedure-003-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1018 - Remote System Discovery",
+            "source_step": "3.B"
+          },
+          {
+            "id": "procedure-004-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1018 - Remote System Discovery [4.1]",
+            "source_step": "3.C"
+          },
+          {
+            "id": "procedure-005-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1046 - Network Service Scanning",
+            "source_step": "3.D"
+          },
+          {
+            "id": "procedure-006-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1016 - System Network Configuration Discovery",
+            "source_step": "3.E"
+          },
+          {
+            "id": "procedure-007-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1016 - System Network Configuration Discovery [7.1]",
+            "source_step": "3.F"
+          },
+          {
+            "id": "procedure-008-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1003.001 - OS Credential Dumping",
+            "source_step": "4.A"
+          },
+          {
+            "id": "procedure-009-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1003.002 - OS Credential Dumping",
+            "source_step": "4.B"
+          },
+          {
+            "id": "procedure-010-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1569.002 - Service Execution",
+            "source_step": "5.A"
+          },
+          {
+            "id": "procedure-011-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1560.001 - Archive Collected Data - Archive via Utility",
+            "source_step": "6.A"
+          },
+          {
+            "id": "procedure-012-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1074.001 - Recycle Bin Staging",
+            "source_step": "6.B"
+          },
+          {
+            "id": "procedure-013-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1537 - Transfer Data to Cloud Account",
+            "source_step": "7.A"
+          },
+          {
+            "id": "procedure-014-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1047 - Windows Management Instrumentation",
+            "source_step": "8.A"
+          },
+          {
+            "id": "procedure-015-1",
+            "type": "script",
+            "script_ref": "CTID - menuPass - T1553.005 - Scheduled Task Persistence",
+            "source_step": "7.1"
+          }
+        ]
+      }
+    }
+  ]
+}

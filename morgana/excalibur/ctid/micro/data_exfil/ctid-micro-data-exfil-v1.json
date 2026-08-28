@@ -1,0 +1,150 @@
+{
+  "package_id": "ctid-micro-data-exfil-v1",
+  "package_name": "CTID Micro - Data Exfiltration",
+  "version": "1.0.0",
+  "description": "Focused CTID micro emulation for Data Exfiltration. It runs a labeled Morgana-native behavior simulation while retaining provenance for upstream source and asset candidates.",
+  "summary": "This micro emulation plan targets malicious activity surrounding [TA0010 Exfiltration](https://attack.mitre.org/tactics/TA0010/). Data theft via exfiltration is very often part of, if not the primary objective, of an intrusion/campaign and is comprised of compound behaviors involving both exfiltration as well as [TA0009 Collection](https://attack.mitre.org/tactics/TA0009/) techniques.",
+  "purpose": "Validate defensive telemetry and controls for the compound Data Exfiltration behavior rather than testing one command in isolation.",
+  "capabilities": [
+    "Preserves the CTID Data Exfiltration defensive objective and source documentation as a focused Morgana Chain.",
+    "Preserves ATT&CK coverage and defensive intent as a focused Morgana Chain.",
+    "Runs an operational sandboxed simulation until a reviewed release asset is pinned with SHA256 and license provenance."
+  ],
+  "use_cases": [
+    "Plan a repeatable detection-validation exercise for Data Exfiltration.",
+    "Review required telemetry and environmental prerequisites before approving the upstream tool.",
+    "Compare detections for compound discovery behavior with isolated Atomic or Stockpile procedures."
+  ],
+  "safety_notes": [
+    "This package dispatches a labeled Morgana-native simulation, never an unreviewed upstream executable.",
+    "Use an explicitly authorized lab suitable for Data Exfiltration; source behavior may alter system or security state.",
+    "Pin a specific release asset, license, size, platform, architecture, and SHA256 before enabling automation."
+  ],
+  "author": "MITRE CTID / X3M.AI conversion",
+  "created": "2026-08-28",
+  "script_prefix": "CTID MICRO - ",
+  "provider": "mitre-ctid",
+  "source": "ctid-adversary-emulation-library",
+  "source_repository": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library",
+  "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+  "source_license": "Apache-2.0",
+  "reference_converter": {
+    "name": "MITRE Emu",
+    "repository": "https://github.com/mitre/emu",
+    "commit": "ef3bc4fa8fb605c774446ba7741365ba45d375a8"
+  },
+  "documentation_url": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/micro_emulation_plans/src/data_exfil",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Multiple",
+  "mitre_tcodes": [
+    "T1005",
+    "T1027",
+    "T1048",
+    "T1070",
+    "T1070.004",
+    "T1074",
+    "T1074.001",
+    "T1083",
+    "T1560",
+    "T1560.002"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "plan_type": "micro-emulation",
+  "behavior": "Data Exfiltration",
+  "scenario_count": 1,
+  "scenario_names": [
+    "Data Exfiltration"
+  ],
+  "chain_names": [
+    "CTID Micro - Data Exfiltration"
+  ],
+  "complexity": "focused",
+  "source_procedure_count": 1,
+  "converted_procedure_count": 1,
+  "manual_procedure_count": 0,
+  "simulated_procedure_count": 1,
+  "skipped_procedure_count": 0,
+  "prerequisites": [
+    "Explicitly authorized lab suitable for Data Exfiltration",
+    "Execution host and privileges required by the upstream plan documentation",
+    "Reviewed and pinned CTID release asset before automated execution"
+  ],
+  "tag_categories": [],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "CTID MICRO - Data Exfiltration - T1005 - Operational Simulation",
+      "name": "CTID MICRO - Data Exfiltration - T1005 - Operational Simulation",
+      "description": "Executable Morgana-native simulation of Data Exfiltration. Upstream executable or build output has not yet been pinned, licensed, hashed, and approved for Camelot redistribution.",
+      "tactic": "Multiple",
+      "tcode": "T1005",
+      "technique_name": "Data Exfiltration",
+      "executor": "bash",
+      "platform": "linux",
+      "required_tags": [],
+      "required_assets": [],
+      "command": "echo '[START] CTID simulation T1005'; simulation_root=/tmp/morgana-ctid; mkdir -p \"$simulation_root\"; python3 -c \"import socket,threading; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(1); p=s.getsockname()[1]; threading.Thread(target=lambda: s.accept()[0].recv(64),daemon=True).start(); c=socket.create_connection(('127.0.0.1',p)); c.sendall(b'CTID network simulation'); c.close(); s.close(); print('loopback network telemetry',p)\"; echo '[SUCCESS] CTID simulation T1005 family=network'",
+      "cleanup_command": "rm -rf /tmp/morgana-ctid",
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan": "Data Exfiltration",
+        "plan_type": "micro-emulation",
+        "source_path": "micro_emulation_plans/src/data_exfil",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "conversion_status": "simulated",
+        "simulation_reasons": [
+          "Upstream executable or build output has not yet been pinned, licensed, hashed, and approved for Camelot redistribution."
+        ],
+        "simulation_family": "network",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/blob/4467a6eed6e67d25009704130e1d27d1a8007f57/micro_emulation_plans/src/data_exfil/README.md",
+        "source_files": [
+          "cmd/main.go",
+          "pkg/microemuserver/microemuserver.go",
+          "pkg/microemuserver/microemuserver_vars.go"
+        ],
+        "unapproved_asset_candidates": [
+          ".gitignore",
+          "Makefile"
+        ],
+        "build_documentation": false
+      }
+    }
+  ],
+  "chains": [
+    {
+      "name": "CTID Micro - Data Exfiltration",
+      "description": "Focused compound Data Exfiltration scenario implemented as an executable Morgana-native telemetry simulation.",
+      "objective": "Validate detection coverage for compound Data Exfiltration behavior.",
+      "author": "MITRE CTID / X3M.AI conversion",
+      "tags": [
+        "ctid",
+        "threat-informed",
+        "micro-emulation",
+        "behavior:data-exfil"
+      ],
+      "source_metadata": {
+        "provider": "mitre-ctid",
+        "plan_type": "micro-emulation",
+        "behavior": "Data Exfiltration",
+        "scenario_id": "primary",
+        "source_commit": "4467a6eed6e67d25009704130e1d27d1a8007f57",
+        "source_documentation": "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/master/micro_emulation_plans/src/data_exfil"
+      },
+      "plan_type": "micro-emulation",
+      "scenario_id": "primary",
+      "scenario_name": "Data Exfiltration",
+      "flow": {
+        "nodes": [
+          {
+            "id": "simulation-data-exfil",
+            "type": "script",
+            "script_ref": "CTID MICRO - Data Exfiltration - T1005 - Operational Simulation"
+          }
+        ]
+      }
+    }
+  ]
+}
