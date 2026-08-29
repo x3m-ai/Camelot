@@ -27,7 +27,8 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [ANSSI FuzzySully](#10-anssi-fuzzysully) | 7 | 79 | 0 | ICS ATT&CK |
 | [Stratus Red Team](#11-stratus-red-team) | 30 | 93 | 0 | Enterprise ATT&CK |
 | [Elastic Cortado](#12-elastic-cortado) | 13 | 698 | 0 | Enterprise ATT&CK |
-| **Total** | **267** | **27 114** | **2 121** | |
+| [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
+| **Total** | **270** | **27 434** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
 
@@ -438,6 +439,33 @@ Red Team Automations (RTA) from [elastic/cortado](https://github.com/elastic/cor
 **Detection metadata:** Every script carries `expected_endpoint_rules` and `expected_siem_rules` — exact Elastic rule names and UUIDs for Detection Fabric correlation.
 
 See the [Cortado README](detection/cortado/README.md) for full details.
+
+---
+
+## 13. LOLRMM
+
+The complete [LOLRMM](https://lolrmm.io/) catalog — 320 RMM/RAT tools that may be abused by threat actors for persistence, lateral movement, and C2 (T1219 Remote Access Software).
+
+| Package | Scripts | Contents |
+|---|---|---|
+| `lolrmm-windows-v1` | Windows tools | Read-only artifact-presence probes |
+| `lolrmm-multiplatform-v1` | Multi-platform tools | Cross-platform probes |
+| `lolrmm-manual-v1` | 29 intelligence-only tools | Metadata profiles — no local artifact probe |
+
+**291 probe-capable tools** — bash read-only probes check for known file paths, filenames, registry keys, and file hashes.  
+**29 manual profiles** — tools with no locally probeable artifact; preserved as threat-hunting intelligence records.
+
+**Source:** [magicsword-io/LOLRMM](https://github.com/magicsword-io/LOLRMM) @ `fa85960`  
+**License:** Apache-2.0  
+**ATT&CK:** T1219 (Remote Access Software) — Command and Control  
+**Execution Platforms:** Windows, Linux, macOS (probes are read-only)  
+**Operational Risk:** observe (read-only artifact checks only)  
+
+Every profile preserves: PE metadata, installation paths, registry keys, Event Log indicators, network domains/ports, code-signing metadata, file hashes, Sigma detection rule links, CVE references.
+
+**LOLRMM catalogs legitimate tools.** Presence does not imply compromise. Use only in authorized environments.
+
+See the [LOLRMM README](lotl/lolrmm/README.md) for full details.
 
 ---
 
