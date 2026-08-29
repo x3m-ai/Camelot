@@ -1,0 +1,182 @@
+{
+  "package_id": "frida-universal-webview-v1",
+  "package_name": "Frida - Universal - Webview",
+  "version": "1.0.0",
+  "summary": "1 Frida instrumentation procedures for universal webview mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 1 standalone Frida procedures from 1 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 1}; compatibility: {'likely-compatible': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 1
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "method-hooking",
+    "webview"
+  ],
+  "source_providers": [
+    "iddoeldor-frida-snippets"
+  ],
+  "scope_counts": {
+    "generic": 1
+  },
+  "quality_distribution": {
+    "A": 1
+  },
+  "license_distribution": {
+    "unknown": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Webview URLS:js:20",
+      "name": "FRIDA - UNIVERSAL - Webview - Webview URLS [cd9ee998]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Webview URLS:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.use(\"android.webkit.WebView\").loadUrl.overload(\"java.lang.String\").implementation = function (s) {\n    send(s.toString());\n    this.loadUrl.overload(\"java.lang.String\").call(this, s);\n};",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Webview URLS:js",
+        "readme_snippet_index": 20,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Webview URLS:js:20",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "cd9ee9983bd96f38f95f4273c5fc7ce9681a7901bbbd73a49dc609b12b5d44a4",
+        "normalized_hash": "cd9ee9983bd96f38f95f4273c5fc7ce9681a7901bbbd73a49dc609b12b5d44a4",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "webview"
+        ],
+        "primary_behavior": "webview",
+        "frida_apis": [
+          "Java.use",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

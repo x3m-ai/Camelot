@@ -1,0 +1,260 @@
+{
+  "package_id": "frida-android-enumeration-v1",
+  "package_name": "Frida - Android - Enumeration",
+  "version": "1.0.0",
+  "summary": "2 Frida instrumentation procedures for android enumeration mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 2 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 2}; compatibility: {'likely-compatible': 2}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1418"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 2
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "enumeration"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 2
+  },
+  "quality_distribution": {
+    "C": 2
+  },
+  "license_distribution": {
+    "unknown": 2
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 2
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:BenGardiner/android-list-loaded-classes",
+      "name": "FRIDA - ANDROID - Enumeration - android list-loaded-classes [4bc927d9]",
+      "description": "trivial script to list all loaded classes",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    Java.enumerateLoadedClasses({\n        onMatch: function(className) {\n            console.log(className);\n        },\n        onComplete: function() {}\n    });\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "BenGardiner",
+        "codeshare_slug": "android-list-loaded-classes",
+        "codeshare_fingerprint": "4bc927d9e664401635b0f7bf9cfb3f44736b68a4e485931d845aed85946e6ffb",
+        "project_uuid": "12a689b8-72f0-492a-91ef-d90d265de492",
+        "popularity": {
+          "page": 7,
+          "browse_title": "android list-loaded-classes",
+          "likes": 2,
+          "views": "29K"
+        },
+        "discovery_page": 7,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:BenGardiner/android-list-loaded-classes",
+        "source_url": "https://codeshare.frida.re/@BenGardiner/android-list-loaded-classes/",
+        "source_hash": "4bc927d9e664401635b0f7bf9cfb3f44736b68a4e485931d845aed85946e6ffb",
+        "normalized_hash": "4bc927d9e664401635b0f7bf9cfb3f44736b68a4e485931d845aed85946e6ffb",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "Java.perform",
+          "Java.enumerateLoadedClasses"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:SNGWN/native-lib-functions",
+      "name": "FRIDA - ANDROID - Enumeration - Native Lib Functions [6b61178c]",
+      "description": "Scripts to analyse Application Native Library from Android App",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// frida script to get list of all loaded libraries from the application\n\n// Frida Command to trigger this scirpt\n// frida -U -f <target-package> --codeshare SNGWN/native-lib-functions -e 'package_name=\"package.name.here\"' -e 'class_name=\"class_name_here\"'\n\n// Variables for Package Name and Class Name\nvar package_name = \"package.name\";\nvar class_name = \"class_name\";\n\nJava.perform(function() {\n    var Process = Java.use(package_name + '.' + class_name);\n    console.log('\\nMethods available on ' + class_name + ' :-:');\n\n    // Get List of Functions from the class.\n    var methods = Process.class.getDeclaredMethods();\n    methods.forEach(function(method) {\n        var methodName = method.getName();\n        var parameterTypes = method.getParameterTypes();\n        var parameterInfo = parameterTypes.map(function(type) {\n            return type.getName();\n        }).join(', ');\n        console.log(methodName + '(' + parameterInfo + ')');\n    });\n\n    // Call the desired methods\n    var instance = Process.$new();\n    methods.forEach(function(method) {\n        var methodName = method.getName();\n        var parameterTypes = method.getParameterTypes();\n\n        // Call methods without parameters\n        if (parameterTypes.length === 0) {\n            try {\n                var result = instance[methodName]();\n                console.log('\\x1b[32m[+] ' + methodName + '(): ' + result + '\\x1b[0m'); // Green color\n            } catch (e) {\n                console.log('\\x1b[31m[!] Error calling ' + methodName + '(): ' + e.message + '\\x1b[0m'); // Red color\n            }\n        }\n\n        // Call methods with a single boolean parameter\n        if (parameterTypes.length === 1 && parameterTypes[0].getName() === 'boolean') {\n            try {\n                var result = instance[methodName](true);\n                console.log('\\x1b[34m[+] ' + methodName + '(true): ' + result + '\\x1b[0m'); // Blue color\n            } catch (e) {\n                console.log('\\x1b[31m[!] Error calling ' + methodName + '(true): ' + e.message + '\\x1b[0m'); // Red color\n            }\n        }\n    });\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "SNGWN",
+        "codeshare_slug": "native-lib-functions",
+        "codeshare_fingerprint": "6b61178ccdcf8303572c4d88d7fac591c092a7f12ff3fb78fec362796216f418",
+        "project_uuid": "84da3a0e-ff00-44ce-8d3a-17b8114c8027",
+        "popularity": {
+          "page": 29,
+          "browse_title": "Native Lib Functions",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:SNGWN/native-lib-functions",
+        "source_url": "https://codeshare.frida.re/@SNGWN/native-lib-functions/",
+        "source_hash": "6b61178ccdcf8303572c4d88d7fac591c092a7f12ff3fb78fec362796216f418",
+        "normalized_hash": "344e8150353da0e7b12573ce5fe2bc1e99b0df535888cf8c746120ee630eca7c",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

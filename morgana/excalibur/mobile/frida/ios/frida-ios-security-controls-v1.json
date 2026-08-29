@@ -1,0 +1,1729 @@
+{
+  "package_id": "frida-ios-security-controls-v1",
+  "package_name": "Frida - Ios - Security Controls",
+  "version": "1.0.0",
+  "summary": "20 Frida instrumentation procedures for ios security controls mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 20 standalone Frida procedures from 1 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 20}; compatibility: {'likely-compatible': 6, 'legacy': 14}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "modify",
+    "disrupt"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 20
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "crypto-observation",
+    "debugger-detection-testing",
+    "emulator-detection-testing",
+    "enumeration",
+    "filesystem",
+    "instrumentation-detection-testing",
+    "integrity-control-testing",
+    "ipc",
+    "jailbreak-state-testing",
+    "method-hooking",
+    "native-hooking",
+    "network-observation",
+    "root-state-testing",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 20
+  },
+  "quality_distribution": {
+    "C": 20
+  },
+  "license_distribution": {
+    "unknown": 20
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 6,
+    "legacy": 14
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:avltree9798/modify-ios-function",
+      "name": "FRIDA - IOS - Jailbreak State Testing - Modify iOS Function [0c6da1fe]",
+      "description": "Modify iOS function's implementation",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n * Modify iOS Function\n * \n * Created by avltree9798\n * \n * For example\n * modify_implementation(\"JailbreakDetection\", \"- isJailbroken\", function(){\n * return false;\n * });\n * \n * */\n \n function modify_implementation(class_name, method_name, functions) {\n    try {\n        console.error(\"- [\" + class_name + \" \" + method_name + \"] hooked\");\n        var methodObj = ObjC.classes[class_name][method_name]\n        var old_implementation = methodObj.implementation;\n        methodObj.implementation = ObjC.implement(methodObj, functions);\n    } catch (err) {\n        console.log('[!] Error while hooking ' + class_name + ' [' + method_name + ']', err);\n    }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "avltree9798",
+        "codeshare_slug": "modify-ios-function",
+        "codeshare_fingerprint": "0c6da1fe27b1177195cfd0d5020be24832368ccaabb501fc98861ca0f3c2e8ea",
+        "project_uuid": "82281fe8-48d8-4c23-8e49-bdc3af79fc9e",
+        "popularity": {
+          "page": 16,
+          "browse_title": "Modify iOS Function",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 16,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:avltree9798/modify-ios-function",
+        "source_url": "https://codeshare.frida.re/@avltree9798/modify-ios-function/",
+        "source_hash": "0c6da1fe27b1177195cfd0d5020be24832368ccaabb501fc98861ca0f3c2e8ea",
+        "normalized_hash": "33d8dbc7c612ae7bd5429223e4b46673b24732882ad3d19f8da88193d59208f5",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "jailbreak-state-testing",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:ChiChou/objective-c-class-hierarchy-dumper",
+      "name": "FRIDA - IOS - Root State Testing - Objective C class hierarchy dumper [836d63d8]",
+      "description": "dump Objective C classes hierarchy",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n * dump Objective C classes hierarchy\n * root = hierarchy()\n * console.log(JSON.stringify(root, null, 4))\n */\n\n\nfunction hierarchy() {\n  var objc_copyClassNamesForImage = new NativeFunction(Module.findExportByName(\n    null, 'objc_copyClassNamesForImage'), 'pointer', ['pointer', 'pointer'])\n  var free = new NativeFunction(Module.findExportByName(null, 'free'), 'void', ['pointer'])\n  var classes = new Array(count)\n  var p = Memory.alloc(Process.pointerSize)\n  Memory.writeUInt(p, 0)\n  var path = ObjC.classes.NSBundle.mainBundle().executablePath().UTF8String()\n  var pPath = Memory.allocUtf8String(path)\n  var pClasses = objc_copyClassNamesForImage(pPath, p)\n  var count = Memory.readUInt(p)\n  for (var i = 0; i < count; i++) {\n    var pClassName = Memory.readPointer(pClasses.add(i * Process.pointerSize))\n    classes[i] = Memory.readUtf8String(pClassName)\n  }\n  free(pClasses)\n\n  var tree = {}\n  classes.forEach(function(name) {\n    var clazz = ObjC.classes[name]\n    var chain = [name]\n    while (clazz = clazz.$superClass)\n      chain.unshift(clazz.$className)\n\n    var node = tree\n    chain.forEach(function(clazz) {\n      node[clazz] = node[clazz] || {}\n      node = node[clazz]\n    })\n  })\n  return tree\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "ChiChou",
+        "codeshare_slug": "objective-c-class-hierarchy-dumper",
+        "codeshare_fingerprint": "836d63d871a31520543c1a7a8458835be1412f4cb2e6118867d884e67c50a402",
+        "project_uuid": "d70b7bd5-179d-4d19-a2ef-97d1aeece678",
+        "popularity": {
+          "page": 17,
+          "browse_title": "Objective C class hierarchy dumper",
+          "likes": 1,
+          "views": "5K"
+        },
+        "discovery_page": 17,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ChiChou/objective-c-class-hierarchy-dumper",
+        "source_url": "https://codeshare.frida.re/@ChiChou/objective-c-class-hierarchy-dumper/",
+        "source_hash": "836d63d871a31520543c1a7a8458835be1412f4cb2e6118867d884e67c50a402",
+        "normalized_hash": "3457b02db58b1343c7dded5edb4252e9da08f87295c7030bba826b0c8b62ac9e",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "ObjC.classes",
+          "Module.findExportByName",
+          "Memory",
+          "Process",
+          "NativeFunction"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:DevTraleski/ios-jailbreak-detection-wordlist-catcher",
+      "name": "FRIDA - IOS - Jailbreak State Testing - iOS Jailbreak Detection Wordlist Catcher [b583ce35]",
+      "description": "Get the list of the checked paths during jailbreak detection",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    try {\n        //Hooking fileExistsAtPath:\n        Interceptor.attach(ObjC.classes.NSFileManager[\"- fileExistsAtPath:\"].implementation, {\n            onEnter(args) {\n                // Extract the path\n                var path = new ObjC.Object(args[2]).toString();\n                console.log(path);\n            }\n        });\n\n        //Hooking fopen\n        Interceptor.attach(Module.findExportByName(null, \"fopen\"), {\n            onEnter(args) {\n                var path = args[0].readCString();\n                console.log(path);\n            }\n        });\n\n        //Hooking canOpenURL for Cydia\n        Interceptor.attach(ObjC.classes.UIApplication[\"- canOpenURL:\"].implementation, {\n            onEnter(args) {\n                // Extract the path\n                var path = new ObjC.Object(args[2]).toString();\n                console.log(path);\n            }\n        });\n        \n        //Hooking libSystemBdylib stat64\n        const libSystemBdylibStat64 = Module.findExportByName(\"libSystem.B.dylib\", \"stat64\");\n        if (libSystemBdylibStat64) {\n            Interceptor.attach(libSystemBdylibStat64, {\n                onEnter: function(args) {\n                    var path = Memory.readUtf8String(args[0]);\n                    console.log(path);\n                }\n            });\n        }\n        \n        //Hooking libSystemBdylib stat\n        const libSystemBdylibStat = Module.findExportByName(\"libSystem.B.dylib\", \"stat\");\n        if (libSystemBdylibStat) {\n            Interceptor.attach(libSystemBdylibStat, {\n                onEnter: function(args) {\n                    var path = Memory.readUtf8String(args[0]);\n                    console.log(path);\n                }\n            });\n        }\n        \n    } catch (err) {\n        console.log(\"Exception : \" + err.message);\n    }\n} else {\n    console.log(\"Objective-C Runtime is not available!\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "DevTraleski",
+        "codeshare_slug": "ios-jailbreak-detection-wordlist-catcher",
+        "codeshare_fingerprint": "b583ce358805e9e4e41008c31a2e386fcf3c33570c4f1a9e320422abcc70e952",
+        "project_uuid": "b1d86c7e-515c-41ba-b1e3-0cf74ecd3b61",
+        "popularity": {
+          "page": 13,
+          "browse_title": "iOS Jailbreak Detection Wordlist Catcher",
+          "likes": 1,
+          "views": "3K"
+        },
+        "discovery_page": 13,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:DevTraleski/ios-jailbreak-detection-wordlist-catcher",
+        "source_url": "https://codeshare.frida.re/@DevTraleski/ios-jailbreak-detection-wordlist-catcher/",
+        "source_hash": "b583ce358805e9e4e41008c31a2e386fcf3c33570c4f1a9e320422abcc70e952",
+        "normalized_hash": "9143302d7237bb814e7999898ba9e9f8716e09dd9a6ff72fb6d30b6aae90e1e5",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dodal-omkar/iossecurity-slayer",
+      "name": "FRIDA - IOS - Jailbreak State Testing - IOSSecurity Slayer [a5f4263a]",
+      "description": "A hardened Frida script to bypass IOSSecurity framework protections in iOS applications by intercepting runtime security checks at their decision points.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\r\n\r\n/*\r\n═══════════════════════════════════════════════════════════════\r\n   Universal IOSSecurity Bypass (v2 - Hardened)\r\n   Target : iOS Apps using IOSSecurity\r\n\r\n   Improvements:\r\n     • Explicit return control (no ambiguity)\r\n     • Strict symbol matching (regex-based)\r\n     • ObjC fallback support (high reliability)\r\n     • Safer + cleaner logging\r\n     • Reduced false positives\r\n\r\n   Author : Slayer\r\n═══════════════════════════════════════════════════════════════\r\n*/\r\n\r\nconst hookedAddresses = new Set();\r\n\r\n/* =========================\r\n   CONFIG (EXPLICIT CONTROL)\r\n========================= */\r\n\r\n// Set based on target behavior\r\nconst FORCE_CLEAN = 1;   // change to 0 if needed after validation\r\nconst FORCE_FALSE = 0;\r\n\r\nconst ENABLE_PREVIEW = false; // set true to log matches without hooking\r\n\r\n/* ========================= */\r\n\r\nfunction isExecutable(address) {\r\n    try {\r\n        if (!address || address.isNull()) return false;\r\n        const range = Process.findRangeByAddress(address);\r\n        return !!(range && range.protection && range.protection.includes('x'));\r\n    } catch (_) {\r\n        return false;\r\n    }\r\n}\r\n\r\nfunction safeAttach(addr, name, meta) {\r\n    if (!addr || addr.isNull()) return false;\r\n\r\n    const key = addr.toString();\r\n    if (hookedAddresses.has(key)) return false;\r\n    if (!isExecutable(addr)) return false;\r\n\r\n    if (ENABLE_PREVIEW) {\r\n        console.log(`[PREVIEW] ${name} @ ${addr}`);\r\n        return false;\r\n    }\r\n\r\n    try {\r\n        Interceptor.attach(addr, {\r\n            onLeave: function (retval) {\r\n\r\n                if (meta?.hookType === 'performChecks') {\r\n                    retval.replace(FORCE_CLEAN);\r\n                    console.log(`[Slayer] ${name} → forced CLEAN state`);\r\n                }\r\n\r\n                else if (meta?.hookType === 'boolAPI') {\r\n                    retval.replace(FORCE_FALSE);\r\n                    console.log(`[Slayer] ${name} → forced Bool = false`);\r\n                }\r\n\r\n                else {\r\n                    try { retval.replace(FORCE_FALSE); } catch (_) {}\r\n                    console.log(`[Slayer] ${name} → fallback forced false`);\r\n                }\r\n            }\r\n        });\r\n\r\n        hookedAddresses.add(key);\r\n        return true;\r\n\r\n    } catch (err) {\r\n        console.log(`[!] Hook failed ${name} @ ${addr}: ${err}`);\r\n        return false;\r\n    }\r\n}\r\n\r\n/* =========================\r\n   ObjC HIGH-RELIABILITY HOOK\r\n========================= */\r\n\r\nfunction hookObjC() {\r\n    if (!ObjC.available) return false;\r\n\r\n    try {\r\n        const cls = ObjC.classes.JailbreakChecker;\r\n        if (!cls) return false;\r\n\r\n        let hooked = false;\r\n\r\n        if (cls['- performChecks']) {\r\n            Interceptor.attach(cls['- performChecks'].implementation, {\r\n                onLeave(retval) {\r\n                    retval.replace(FORCE_CLEAN);\r\n                    console.log('[ObjC] performChecks → forced CLEAN');\r\n                }\r\n            });\r\n            hooked = true;\r\n        }\r\n\r\n        [\r\n            'amIJailbroken',\r\n            'amIDebugged',\r\n            'amIRuntimeHooked',\r\n            'amIReverseEngineered'\r\n        ].forEach(method => {\r\n            if (cls[`- ${method}`]) {\r\n                Interceptor.attach(cls[`- ${method}`].implementation, {\r\n                    onLeave(retval) {\r\n                        retval.replace(FORCE_FALSE);\r\n                        console.log(`[ObjC] ${method} → false`);\r\n                    }\r\n                });\r\n                hooked = true;\r\n            }\r\n        });\r\n\r\n        if (hooked) {\r\n            console.log('[✓] ObjC JailbreakChecker hooks installed');\r\n            return true;\r\n        }\r\n\r\n    } catch (e) {\r\n        console.log('[!] ObjC hook error:', e);\r\n    }\r\n\r\n    return false;\r\n}\r\n\r\n/* =========================\r\n   SYMBOL HOOKING (STRICT)\r\n========================= */\r\n\r\nconst PERFORM_REGEX = /JailbreakChecker.*performChecks/i;\r\nconst BOOL_REGEX = /(amIJailbroken|amIDebugged|amIRuntimeHooked|amIReverseEngineered)/i;\r\n\r\nfunction scanSymbols() {\r\n\r\n    let foundPerform = false;\r\n    let foundBool = false;\r\n\r\n    Process.enumerateModules().forEach(module => {\r\n        try {\r\n            module.enumerateSymbols().forEach(sym => {\r\n\r\n                if (!sym?.name) return;\r\n\r\n                if (PERFORM_REGEX.test(sym.name)) {\r\n\r\n                    if (safeAttach(sym.address,\r\n                        `${module.name} -> ${sym.name}`,\r\n                        { hookType: 'performChecks' })) {\r\n\r\n                        console.log(`[+] performChecks hooked in ${module.name}`);\r\n                        foundPerform = true;\r\n                    }\r\n                }\r\n\r\n                else if (BOOL_REGEX.test(sym.name)) {\r\n\r\n                    if (safeAttach(sym.address,\r\n                        `${module.name} -> ${sym.name}`,\r\n                        { hookType: 'boolAPI' })) {\r\n\r\n                        console.log(`[+] Bool API hooked in ${module.name}`);\r\n                        foundBool = true;\r\n                    }\r\n                }\r\n\r\n            });\r\n        } catch (_) {}\r\n    });\r\n\r\n    return foundPerform || foundBool;\r\n}\r\n\r\n/* =========================\r\n   ENTRY\r\n========================= */\r\n\r\nsetImmediate(function () {\r\n\r\n    console.log('[*] IOSSecurity bypass starting (Hardened v2)');\r\n\r\n    const objcHooked = hookObjC();\r\n    const symbolHooked = scanSymbols();\r\n\r\n    if (!objcHooked && !symbolHooked) {\r\n        console.log('[!] No hooks applied');\r\n        console.log('[i] Possible reasons:');\r\n        console.log('    • Symbols stripped');\r\n        console.log('    • Static linking');\r\n        console.log('    • Different framework implementation');\r\n    } else {\r\n        console.log('[✓] Hooking completed');\r\n    }\r\n\r\n    console.log(`[Slayer] total hooks: ${hookedAddresses.size}`);\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "dodal-omkar",
+        "codeshare_slug": "iossecurity-slayer",
+        "codeshare_fingerprint": "a5f4263a2f0683ffd398fa416add519881d31e659705afc97e028d19d69a72bc",
+        "project_uuid": "04916c3c-9404-4e6c-9c58-970afe5a0936",
+        "popularity": {
+          "page": 8,
+          "browse_title": "IOSSecurity Slayer",
+          "likes": 1,
+          "views": "549"
+        },
+        "discovery_page": 8,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dodal-omkar/iossecurity-slayer",
+        "source_url": "https://codeshare.frida.re/@dodal-omkar/iossecurity-slayer/",
+        "source_hash": "a5f4263a2f0683ffd398fa416add519881d31e659705afc97e028d19d69a72bc",
+        "normalized_hash": "019bf91bd94a4c35f1a150882adb29015e4a73f73a82e64f0d9cb1f9eeb2cc8c",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "enumeration",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dodal-omkar/no-exit-please-ios",
+      "name": "FRIDA - IOS - Jailbreak State Testing - no exit please ios [cb8af242]",
+      "description": "A universal Frida script to bypass application self-termination at both Objective-C and native levels on iOS. Designed for penetration testing, ethical hacking, reverse engineering, bug bounty and dynamic analysis of iOS applications that intentionally terminate when security checks (jailbreak detection, tampering, instrumentation) are triggered.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\r\n═══════════════════════════════════════════════════════════════\r\n   no_exit_please_ios.js\r\n   Universal Frida No-Exit Harness (Objective-C + Native)\r\n\r\n   Purpose : Block application termination to enable\r\n             reverse engineering and security analysis\r\n   Author  : Slayer\r\n   Version : 1.2\r\n═══════════════════════════════════════════════════════════════\r\n*/\r\n\r\n'use strict';\r\n\r\n/* =========================\r\n * Native-level hooks\r\n * ========================= */\r\n\r\nfunction installNativeHooks() {\r\n\r\n    function safeReplace(moduleName, symbol, ret, args, impl) {\r\n        const addr = Module.findExportByName(moduleName, symbol);\r\n        if (!addr) {\r\n            console.log('[i] Native symbol not found:', symbol);\r\n            return;\r\n        }\r\n\r\n        Interceptor.replace(addr, new NativeCallback(impl, ret, args));\r\n        console.log('[+] Replaced native', symbol);\r\n    }\r\n\r\n    try {\r\n\r\n        safeReplace(null, 'exit', 'void', ['int'], function(code) {\r\n            console.log('[BLOCKED][Slayer] exit(' + code + ')');\r\n        });\r\n\r\n        safeReplace(null, '_exit', 'void', ['int'], function(code) {\r\n            console.log('[BLOCKED][Slayer] _exit(' + code + ')');\r\n        });\r\n\r\n        safeReplace(null, 'abort', 'void', [], function() {\r\n            console.log('[BLOCKED][Slayer] abort()');\r\n        });\r\n\r\n        safeReplace(null, 'kill', 'int', ['int', 'int'], function(pid, sig) {\r\n            console.log('[BLOCKED][Slayer] kill(' + pid + ',' + sig + ')');\r\n            return 0;\r\n        });\r\n\r\n        safeReplace(null, 'pthread_exit', 'void', ['pointer'], function(retval) {\r\n            console.log('[BLOCKED][Slayer] pthread_exit()');\r\n        });\r\n\r\n        safeReplace(null, '__assert_rtn', 'void', ['pointer', 'pointer', 'int', 'pointer'],\r\n            function(func, file, line, expr) {\r\n                console.log('[BLOCKED][Slayer] __assert_rtn()');\r\n            });\r\n\r\n    } catch (e) {\r\n        console.log('[-] Native hook error:', e);\r\n    }\r\n}\r\n\r\n/* =========================\r\n * Objective-C hooks\r\n * ========================= */\r\n\r\nfunction installObjCHooks() {\r\n\r\n    if (!ObjC.available) {\r\n        console.log('[-] Objective-C runtime not available');\r\n        return;\r\n    }\r\n\r\n    try {\r\n\r\n        // UIApplication terminateWithSuccess\r\n        const UIApplication = ObjC.classes.UIApplication;\r\n        if (UIApplication && UIApplication['- terminateWithSuccess']) {\r\n            Interceptor.attach(\r\n                UIApplication['- terminateWithSuccess'].implementation, {\r\n                    onEnter: function() {\r\n                        console.log('[BLOCKED][Slayer] UIApplication terminateWithSuccess');\r\n                    }\r\n                }\r\n            );\r\n        }\r\n\r\n    } catch (e) {\r\n        console.log('[i] UIApplication hook skipped');\r\n    }\r\n\r\n    try {\r\n\r\n        // NSException raise\r\n        const NSException = ObjC.classes.NSException;\r\n        if (NSException && NSException['- raise']) {\r\n            Interceptor.attach(\r\n                NSException['- raise'].implementation, {\r\n                    onEnter: function(args) {\r\n                        const name = new ObjC.Object(args[0]).name().toString();\r\n                        console.log('[BLOCKED][Slayer] NSException raise: ' + name);\r\n                    }\r\n                }\r\n            );\r\n        }\r\n\r\n    } catch (e) {\r\n        console.log('[i] NSException hook skipped');\r\n    }\r\n\r\n    try {\r\n\r\n        // objc_exception_throw\r\n        const objcThrow = Module.findExportByName(null, 'objc_exception_throw');\r\n        if (objcThrow) {\r\n            Interceptor.attach(objcThrow, {\r\n                onEnter: function(args) {\r\n                    try {\r\n                        const ex = new ObjC.Object(args[0]);\r\n                        console.log('[BLOCKED][Slayer] objc_exception_throw: ' + ex.$className);\r\n                    } catch (_) {\r\n                        console.log('[BLOCKED][Slayer] objc_exception_throw');\r\n                    }\r\n                }\r\n            });\r\n        }\r\n\r\n    } catch (e) {\r\n        console.log('[i] objc_exception_throw hook skipped');\r\n    }\r\n\r\n    console.log('[*] Objective-C no-exit hooks installed (Slayer)');\r\n}\r\n\r\n/* =========================\r\n * Deferred install\r\n * ========================= */\r\n\r\nsetImmediate(function() {\r\n\r\n    if (typeof NativeCallback === 'function') {\r\n        installNativeHooks();\r\n    }\r\n\r\n    installObjCHooks();\r\n\r\n    console.log('[*] no_exit_please_ios.js fully loaded - Slayer');\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "codeshare_author": "dodal-omkar",
+        "codeshare_slug": "no-exit-please-ios",
+        "codeshare_fingerprint": "cb8af24234fef032ef322aa38e0cc56cd2380036f6ef04348547de391022eeb0",
+        "project_uuid": "28b8c740-88fc-45ea-a882-41f29884a29e",
+        "popularity": {
+          "page": 8,
+          "browse_title": "no exit please ios",
+          "likes": 1,
+          "views": "417"
+        },
+        "discovery_page": 8,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dodal-omkar/no-exit-please-ios",
+        "source_url": "https://codeshare.frida.re/@dodal-omkar/no-exit-please-ios/",
+        "source_hash": "cb8af24234fef032ef322aa38e0cc56cd2380036f6ef04348547de391022eeb0",
+        "normalized_hash": "d45f83c808922092f58fb8774cc7204ce17809feea6f18677e5ffc9cf6d5232d",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "enumeration",
+          "integrity-control-testing",
+          "ipc",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:harshitreylon/ios-talsec-freerasp-bypass",
+      "name": "FRIDA - IOS - Debugger Detection Testing - iOS Talsec FreeRASP bypass [bf4a2006]",
+      "description": "A Frida-based iOS bypass script that successfully deceives Talsec's FreeRASP mobile application protection",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\r\n * iOS Talsec FreeRASP Bypass\r\n * @author HAMMER (https://github.com/harshitreylon)\r\n * \r\n * Bypasses Talsec's anti-debugging and anti-tampering protections.\r\n * \r\n */\r\n\r\n// Track bypass statistics for monitoring effectiveness\r\nvar stats = { exit: 0, exceptions: 0 };\r\n\r\n/**\r\n * Delayed initialization to ensure process stability\r\n */\r\nsetTimeout(function() {\r\n    try {\r\n        // Find system libraries using manual enumeration\r\n        // This bypasses Module.findExportByName() detection issues\r\n        var mods = Process.enumerateModules();\r\n        var kernelLib = null, cLib = null;\r\n        \r\n        // Locate critical system libraries dynamically\r\n        // This ensures compatibility across iOS versions and devices\r\n        for (var i = 0; i < mods.length; i++) {\r\n            if (mods[i].name === 'libsystem_kernel.dylib') kernelLib = mods[i];\r\n            if (mods[i].name === 'libsystem_c.dylib') cLib = mods[i];\r\n        }\r\n        \r\n        // Hook ptrace - prevents debugger detection\r\n        if (kernelLib) {\r\n            var exports = kernelLib.enumerateExports();\r\n            for (var i = 0; i < exports.length; i++) {\r\n                if (exports[i].name === 'ptrace') {\r\n                    Interceptor.replace(exports[i].address, new NativeCallback(function() {\r\n                        // Always return success to bypass debugger detection\r\n                        return 0;\r\n                    }, 'int', ['int']));\r\n                    break;\r\n                }\r\n            }\r\n        }\r\n        \r\n        // Hook exit - prevents forced app termination\r\n        // Talsec attempts to exit() when security violations are detected\r\n        if (cLib) {\r\n            var exports = cLib.enumerateExports();\r\n            for (var i = 0; i < exports.length; i++) {\r\n                if (exports[i].name === 'exit') {\r\n                    Interceptor.replace(exports[i].address, new NativeCallback(function() {\r\n                        stats.exit++;\r\n                        if (stats.exit <= 3) console.log(\"[Bypass] exit() blocked!\");\r\n                    }, 'void', ['int']));\r\n                    break;\r\n                }\r\n            }\r\n        }\r\n        \r\n        // Handle security exceptions generated by Talsec's anti-tampering\r\n        Process.setExceptionHandler(function() {\r\n            stats.exceptions++;\r\n            return true; // Continue execution despite security interference\r\n        });\r\n        \r\n    } catch (e) {\r\n        // Silent fail\r\n    }\r\n    \r\n}, 1000);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "codeshare_author": "harshitreylon",
+        "codeshare_slug": "ios-talsec-freerasp-bypass",
+        "codeshare_fingerprint": "bf4a2006cd6d591218eb340808964d77e13a9c35febe6e00045f62a0ec555b39",
+        "project_uuid": "fdcafa41-43bf-4232-8363-c66af74881fb",
+        "popularity": {
+          "page": 10,
+          "browse_title": "iOS Talsec FreeRASP bypass",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 10,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:harshitreylon/ios-talsec-freerasp-bypass",
+        "source_url": "https://codeshare.frida.re/@harshitreylon/ios-talsec-freerasp-bypass/",
+        "source_hash": "bf4a2006cd6d591218eb340808964d77e13a9c35febe6e00045f62a0ec555b39",
+        "normalized_hash": "b628c99e954a65c6a2a1e3c596ce02f65a044e754fcb26073e46071eaf133eb2",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "integrity-control-testing",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "Process",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:jorgenytterstad/cs-1",
+      "name": "FRIDA - IOS - Jailbreak State Testing - CS-1 [041434dc]",
+      "description": "Bypass+log+zoom",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// ── Cheapshot — Combined Frida Script ────────────────────────────────────────\n//\n// Modules included:\n//   1. IOSSecuritySuite bypass  — keeps app running on jailbroken device\n//   2. WebSocket monitor        — full hex dump of every in/out frame\n//   3. Zoom bypass              — removes Google Maps SDK min-zoom restriction\n//\n// Execution order:\n//   Poll for IOSSecuritySuite (50ms) → once hooked, wire up WebSocket monitor\n//   and zoom bypass in parallel on the main queue.\n//\n// Usage (Frida Codeshare or local):\n//   frida -U -f co.cheapshot.new --codeshare <slug> --no-pause\n//   frida -U -f co.cheapshot.new -l cheapshot-combined.js --no-pause\n// ─────────────────────────────────────────────────────────────────────────────\n\n// ════════════════════════════════════════════════════════════════════════════\n// 1. IOSSecuritySuite bypass\n//    Hooks every Bool-returning method (name ends in \"SbyFZ\") and forces\n//    return value to false — disabling all jailbreak/debug/proxy detections.\n// ════════════════════════════════════════════════════════════════════════════\n\nconst hookedAddresses = new Set();\n\nfunction hookIOSSecuritySuite() {\n    const mod = Process.findModuleByName(\"IOSSecuritySuite\");\n    if (!mod) return false;\n\n    try {\n        mod.enumerateSymbols().forEach(sym => {\n            if (!sym.name.endsWith(\"SbyFZ\")) return;\n            if (sym.address.isNull()) return;\n            if (hookedAddresses.has(sym.address.toString())) return;\n            hookedAddresses.add(sym.address.toString());\n            console.log(\"[ISS] Hooked:\", sym.name);\n            Interceptor.attach(sym.address, {\n                onLeave() {\n                    this.context.x0 = ptr(0);\n                }\n            });\n        });\n        console.log(\"[ISS] All checks bypassed.\");\n    } catch (e) {\n        console.log(\"[ISS] Hook error:\", e);\n        return false;\n    }\n    return true;\n}\n\nlet issDone = false;\nconst pollInterval = setInterval(() => {\n    if (!issDone) issDone = hookIOSSecuritySuite();\n    if (issDone) {\n        clearInterval(pollInterval);\n        ObjC.schedule(ObjC.mainQueue, function () {\n            hookWebSocket();\n            hookZoomBypass();\n        });\n    }\n}, 50);\n\n\n// ════════════════════════════════════════════════════════════════════════════\n// 2. WebSocket monitor\n//    Intercepts SRWebSocket (outgoing) and Cheapshot.SocketManager (incoming).\n//    Dumps full binary frames — no byte cap.\n// ════════════════════════════════════════════════════════════════════════════\n\nfunction hookWebSocket() {\n\n    // ── Outgoing (SRWebSocket) ────────────────────────────────────────────\n    const SRWebSocket = ObjC.classes.SRWebSocket;\n    if (!SRWebSocket) {\n        console.log(\"[WS] SRWebSocket not found.\");\n    } else {\n        const sendBin = SRWebSocket[\"- sendData:error:\"];\n        if (sendBin) {\n            Interceptor.attach(sendBin.implementation, {\n                onEnter(args) {\n                    try {\n                        const data = new ObjC.Object(args[2]);\n                        if (data.isKindOfClass_(ObjC.classes.NSData)) {\n                            const len = data.length();\n                            const bytes = Memory.readByteArray(data.bytes(), len);\n                            console.log(\"\\n[WS OUT] \" + len + \" bytes\");\n                            console.log(hexdump(bytes, { ansi: false }));\n                        }\n                    } catch (e) {\n                        console.log(\"[WS OUT] error:\", e);\n                    }\n                }\n            });\n            console.log(\"[WS] Outgoing (binary) hooked.\");\n        }\n\n        const sendStr = SRWebSocket[\"- sendString:error:\"];\n        if (sendStr) {\n            Interceptor.attach(sendStr.implementation, {\n                onEnter(args) {\n                    try {\n                        const msg = new ObjC.Object(args[2]);\n                        if (!msg.isNull()) console.log(\"[WS TEXT OUT]\", msg.toString());\n                    } catch (e) {}\n                }\n            });\n            console.log(\"[WS] Outgoing (text) hooked.\");\n        }\n    }\n\n    // ── Incoming (Cheapshot.SocketManager) ───────────────────────────────\n    const SocketManager = ObjC.classes[\"Cheapshot.SocketManager\"];\n    if (!SocketManager) {\n        console.log(\"[WS] SocketManager not found, retrying in 200ms...\");\n        setTimeout(function () {\n            ObjC.schedule(ObjC.mainQueue, hookWebSocket);\n        }, 200);\n        return;\n    }\n\n    const recvSel = \"webSocket:didReceiveMessage:\";\n    if (SocketManager[\"- \" + recvSel]) {\n        Interceptor.attach(SocketManager[\"- \" + recvSel].implementation, {\n            onEnter(args) {\n                try {\n                    const msg = new ObjC.Object(args[3]);\n                    if (msg.isKindOfClass_(ObjC.classes.NSData)) {\n                        const len = msg.length();\n                        const bytes = Memory.readByteArray(msg.bytes(), len);\n                        console.log(\"\\n[WS IN] \" + len + \" bytes\");\n                        console.log(hexdump(bytes, { ansi: false }));\n                    } else {\n                        console.log(\"[WS IN TEXT]\", msg.toString());\n                    }\n                } catch (e) {\n                    console.log(\"[WS IN] error:\", e);\n                }\n            }\n        });\n        console.log(\"[WS] Incoming hooked on Cheapshot.SocketManager.\");\n    }\n\n    console.log(\"[WS] WebSocket monitor active (in + out).\");\n}\n\n\n// ════════════════════════════════════════════════════════════════════════════\n// 3. Zoom bypass\n//    Forces GMSMapView minZoom to 0.0, defeating the developer-set zoom-out\n//    limit. Each new viewport position after panning triggers a fresh\n//    Wire_GridResponse from the server.\n//\n//    ARM64 note: float args live in FPU registers (s0, s1…), not x2/x3.\n//    Interceptor.replace + NativeCallback with typed 'float' args is required\n//    to correctly override the zoom value — args[] would silently read garbage.\n// ════════════════════════════════════════════════════════════════════════════\n\nfunction hookZoomBypass() {\n    const GMSMapView = ObjC.classes.GMSMapView;\n    if (!GMSMapView) {\n        console.log(\"[ZOOM] GMSMapView not loaded yet, retrying in 500ms...\");\n        setTimeout(function () {\n            ObjC.schedule(ObjC.mainQueue, hookZoomBypass);\n        }, 500);\n        return;\n    }\n\n    let hooked = 0;\n\n    // Layer 1: setMinZoom:maxZoom: — primary constraint\n    const m1 = GMSMapView[\"- setMinZoom:maxZoom:\"];\n    if (m1) {\n        const orig1 = new NativeFunction(m1.implementation, \"void\",\n            [\"pointer\", \"pointer\", \"float\", \"float\"]);\n        Interceptor.replace(m1.implementation, new NativeCallback(\n            function (self, sel, minZoom, maxZoom) {\n                console.log(\"[ZOOM] setMinZoom:maxZoom: \" + minZoom.toFixed(2) + \" → 0.0\");\n                orig1(self, sel, 0.0, maxZoom);\n            },\n            \"void\", [\"pointer\", \"pointer\", \"float\", \"float\"]\n        ));\n        hooked++;\n    }\n\n    // Layer 2: setMinZoom: — single-arg variant\n    const m2 = GMSMapView[\"- setMinZoom:\"];\n    if (m2) {\n        const orig2 = new NativeFunction(m2.implementation, \"void\",\n            [\"pointer\", \"pointer\", \"float\"]);\n        Interceptor.replace(m2.implementation, new NativeCallback(\n            function (self, sel, minZoom) {\n                console.log(\"[ZOOM] setMinZoom: \" + minZoom.toFixed(2) + \" → 0.0\");\n                orig2(self, sel, 0.0);\n            },\n            \"void\", [\"pointer\", \"pointer\", \"float\"]\n        ));\n        hooked++;\n    }\n\n    // Layer 3: setMinZoomLevel: — GMS internal ivar writer\n    const m3 = GMSMapView[\"- setMinZoomLevel:\"];\n    if (m3) {\n        const orig3 = new NativeFunction(m3.implementation, \"void\",\n            [\"pointer\", \"pointer\", \"float\"]);\n        Interceptor.replace(m3.implementation, new NativeCallback(\n            function (self, sel, level) {\n                console.log(\"[ZOOM] setMinZoomLevel: \" + level.toFixed(2) + \" → 0.0\");\n                orig3(self, sel, 0.0);\n            },\n            \"void\", [\"pointer\", \"pointer\", \"float\"]\n        ));\n        hooked++;\n    }\n\n    // Layer 4: setMinimumZoom: — UIScrollView-style, belt-and-suspenders\n    const m4 = GMSMapView[\"- setMinimumZoom:\"];\n    if (m4) {\n        const orig4 = new NativeFunction(m4.implementation, \"void\",\n            [\"pointer\", \"pointer\", \"float\"]);\n        Interceptor.replace(m4.implementation, new NativeCallback(\n            function (self, sel, zoom) {\n                console.log(\"[ZOOM] setMinimumZoom: \" + zoom.toFixed(2) + \" → 0.0\");\n                orig4(self, sel, 0.0);\n            },\n            \"void\", [\"pointer\", \"pointer\", \"float\"]\n        ));\n        hooked++;\n    }\n\n    if (hooked === 0) {\n        console.log(\"[ZOOM] WARNING: No zoom methods found — may be renamed/inlined.\");\n    } else {\n        console.log(\"[ZOOM] \" + hooked + \" constraint(s) bypassed. Pinch to zoom out freely.\");\n    }\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "jorgenytterstad",
+        "codeshare_slug": "cs-1",
+        "codeshare_fingerprint": "041434dc30563039a39fc088298c7b6e2359d74c5e2012efab9a3ea1771defeb",
+        "project_uuid": "320d5b69-a46b-4887-bf1a-9ea4af3d67f7",
+        "popularity": {
+          "page": 20,
+          "browse_title": "CS-1",
+          "likes": 0,
+          "views": "269"
+        },
+        "discovery_page": 20,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:jorgenytterstad/cs-1",
+        "source_url": "https://codeshare.frida.re/@jorgenytterstad/cs-1/",
+        "source_hash": "041434dc30563039a39fc088298c7b6e2359d74c5e2012efab9a3ea1771defeb",
+        "normalized_hash": "78504729ea0d888963a6277c7af6fb9322ee7cb672e06aaf6ac66cfe0790410c",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Interceptor.replace",
+          "Memory",
+          "Process",
+          "NativeFunction",
+          "NativeCallback"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/a",
+      "name": "FRIDA - IOS - Jailbreak State Testing - a [0c2e6228]",
+      "description": "a",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    var paths = [\n        \"/Applications/Cydia.app\",\n        \"/Applications/FakeCarrier.app\",\n        \"/Applications/Icy.app\",\n        \"/bin/bash\",\n        \"/bin/sh\",\n        \"/etc/apt\",\n        \"/var/lib/cydia\",\n        \"/var/log/syslog\",\n        \"/Library/MobileSubstrate/MobileSubstrate.dylib\"\n    ];\n\n    var stat = Module.findExportByName(\"libSystem.B.dylib\", \"stat\");\n    Interceptor.attach(stat, {\n        onEnter: function(args) {\n            if (args[0].isNull()) return; // Fix for crash\n            var arg = Memory.readUtf8String(args[0]);\n            for (var path of paths) {\n                if (arg.includes(path)) {\n                    console.log(\"Blocking stat: \" + arg);\n                    args[0] = ptr(0);\n                }\n            }\n        },\n        onLeave: function(retval) {\n            retval.replace(-1);\n        }\n    });\n\n    var getenv = Module.findExportByName(null, \"getenv\");\n    Interceptor.attach(getenv, {\n        onEnter: function(args) {\n            if (args[0].isNull()) return;\n            var variable = Memory.readUtf8String(args[0]);\n            if (variable === \"DYLD_INSERT_LIBRARIES\") {\n                console.log(\"Hiding DYLD_INSERT_LIBRARIES\");\n                this.should_block = true;\n            }\n        },\n        onLeave: function(retval) {\n            if (this.should_block) {\n                retval.replace(ptr(0));\n            }\n        }\n    });\n\n    var syscall = Module.findExportByName(null, \"syscall\");\n    Interceptor.attach(syscall, {\n        onEnter: function(args) {\n            if (args[0].isNull()) return;\n            var syscall_number = args[0].toInt32();\n            if (syscall_number === 26 || syscall_number === 39) { // csops, getppid\n                console.log(\"Blocking syscall: \" + syscall_number);\n                retval.replace(-1);\n            }\n        }\n    });\n\n    var task_info = Module.findExportByName(null, \"task_info\");\n    Interceptor.attach(task_info, {\n        onEnter: function(args) {\n            console.log(\"Blocking task_info\");\n        },\n        onLeave: function(retval) {\n            retval.replace(-1);\n        }\n    });\n\n    var ptrace = Module.findExportByName(null, \"ptrace\");\n    Interceptor.attach(ptrace, {\n        onEnter: function(args) {\n            console.log(\"Blocking ptrace anti-debugging\");\n        },\n        onLeave: function(retval) {\n            retval.replace(0);\n        }\n    });\n\n    var mmap = Module.findExportByName(null, \"mmap\");\n    Interceptor.attach(mmap, {\n        onEnter: function(args) {\n            console.log(\"Blocking mmap jailbreak detection\");\n        },\n        onLeave: function(retval) {\n            retval.replace(ptr(-1));\n        }\n    });\n\n    var csops = Module.findExportByName(null, \"csops\");\n    Interceptor.attach(csops, {\n        onEnter: function(args) {\n            console.log(\"Blocking csops jailbreak detection\");\n        },\n        onLeave: function(retval) {\n            retval.replace(ptr(0));\n        }\n    });\n\n    // **Frida Detection Bypass**\n    var dlopen = Module.findExportByName(null, \"dlopen\");\n    Interceptor.attach(dlopen, {\n        onEnter: function(args) {\n            if (args[0].isNull()) return;\n            var libname = Memory.readUtf8String(args[0]);\n            if (libname.includes(\"frida\") || libname.includes(\"FridaGadget\")) {\n                console.log(\"Blocking Frida detection: \" + libname);\n                retval.replace(ptr(0)); // Prevent loading Frida hooks\n            }\n        }\n    });\n\n    console.log(\"✅ Advanced Jailbreak Bypass Loaded! (Fixed Version)\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "a",
+        "codeshare_fingerprint": "0c2e6228463e884c2de863da04bb8321d0e97cbf6185ef7551f5abdd00d2c960",
+        "project_uuid": "251b2dc8-6718-4e76-b919-2369cadbc35c",
+        "popularity": {
+          "page": 30,
+          "browse_title": "a",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 30,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/a",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/a/",
+        "source_hash": "0c2e6228463e884c2de863da04bb8321d0e97cbf6185ef7551f5abdd00d2c960",
+        "normalized_hash": "d4c4ab35e413416487c67c710aba4db060847450c903bbc095aef767dba4d010",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "instrumentation-detection-testing",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/dsa",
+      "name": "FRIDA - IOS - Debugger Detection Testing - dsa [586c7529]",
+      "description": "sda",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    console.log(\"✅ Tinder Full System Call Logger Loaded\");\n\n    var syscall = Module.findExportByName(null, \"syscall\");\n    if (syscall) {\n        Interceptor.attach(syscall, {\n            onEnter: function(args) {\n                var syscall_number = args[0].toInt32();\n                console.log(\"🔥 syscall() called: \" + syscall_number);\n            }\n        });\n    }\n\n    var open = Module.findExportByName(null, \"open\");\n    if (open) {\n        Interceptor.attach(open, {\n            onEnter: function(args) {\n                var filename = Memory.readUtf8String(args[0]);\n                console.log(\"🔥 open() called with filename: \" + filename);\n            }\n        });\n    }\n\n    var opendir = Module.findExportByName(null, \"opendir\");\n    if (opendir) {\n        Interceptor.attach(opendir, {\n            onEnter: function(args) {\n                var dirname = Memory.readUtf8String(args[0]);\n                console.log(\"🔥 opendir() called: \" + dirname);\n            }\n        });\n    }\n\n    var readdir = Module.findExportByName(null, \"readdir\");\n    if (readdir) {\n        Interceptor.attach(readdir, {\n            onEnter: function(args) {\n                console.log(\"🔥 readdir() called\");\n            }\n        });\n    }\n\n    var csops = Module.findExportByName(null, \"csops\");\n    if (csops) {\n        Interceptor.attach(csops, {\n            onEnter: function(args) {\n                console.log(\"🔥 csops() called – Checking app integrity\");\n            }\n        });\n    }\n\n    var fork = Module.findExportByName(null, \"fork\");\n    if (fork) {\n        Interceptor.attach(fork, {\n            onEnter: function(args) {\n                console.log(\"🔥 fork() called – Checking sandbox\");\n            }\n        });\n    }\n\n    var task_info = Module.findExportByName(null, \"task_info\");\n    if (task_info) {\n        Interceptor.attach(task_info, {\n            onEnter: function(args) {\n                console.log(\"🔥 task_info() called – Checking system state\");\n            }\n        });\n    }\n\n    var ptrace = Module.findExportByName(null, \"ptrace\");\n    if (ptrace) {\n        Interceptor.attach(ptrace, {\n            onEnter: function(args) {\n                console.log(\"🔥 ptrace() called – Possible anti-debugging\");\n            }\n        });\n    }\n\n    console.log(\"✅ Tinder Full System Call Logger Ready!\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "dsa",
+        "codeshare_fingerprint": "586c752913667a942d2567362da360164145cfc4b137c83a546683287a90c24c",
+        "project_uuid": "2b1c33b4-ce73-442f-ab70-15ba9cdc1535",
+        "popularity": {
+          "page": 29,
+          "browse_title": "dsa",
+          "likes": 0,
+          "views": "978"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/dsa",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/dsa/",
+        "source_hash": "586c752913667a942d2567362da360164145cfc4b137c83a546683287a90c24c",
+        "normalized_hash": "586c752913667a942d2567362da360164145cfc4b137c83a546683287a90c24c",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "filesystem",
+          "integrity-control-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/fk",
+      "name": "FRIDA - IOS - Jailbreak State Testing - fk [9022fc7e]",
+      "description": "fk",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    console.log(\"✅ Loading Ultimate Jailbreak Bypass\");\n\n    // csops() - Stops signature & integrity checks\n    var csops = Module.findExportByName(null, \"csops\");\n    if (csops) {\n        Interceptor.attach(csops, {\n            onEnter: function(args) {\n                console.log(\"🔥 csops() called, faking clean iOS\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0); // Always return clean\n            }\n        });\n    }\n\n    // sysctl() - Blocks jailbreak environment detection\n    var sysctl = Module.findExportByName(null, \"sysctl\");\n    if (sysctl) {\n        Interceptor.attach(sysctl, {\n            onEnter: function(args) {\n                console.log(\"🔥 sysctl() called, faking clean iOS\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0); // Always return clean\n            }\n        });\n    }\n\n    // task_info() - Blocks deep process checks\n    var task_info = Module.findExportByName(null, \"task_info\");\n    if (task_info) {\n        Interceptor.attach(task_info, {\n            onEnter: function(args) {\n                console.log(\"🔥 task_info() called, blocking detection\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0); // Always return clean\n            }\n        });\n    }\n\n    // syscall() - Stops any hidden jailbreak checks\n    var syscall = Module.findExportByName(null, \"syscall\");\n    if (syscall) {\n        Interceptor.attach(syscall, {\n            onEnter: function(args) {\n                var syscall_number = args[0].toInt32();\n                console.log(\"🔥 syscall() detected: \" + syscall_number);\n            },\n            onLeave: function(retval) {\n                retval.replace(0); // Always return clean\n            }\n        });\n    }\n\n    console.log(\"✅ Ultimate Jailbreak Bypass Fully Loaded!\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "fk",
+        "codeshare_fingerprint": "9022fc7e08de5692a383426ca14b004f2fb567c0d3f7a3f8d1cdf49c6a03aefd",
+        "project_uuid": "712ee272-fbae-458c-836f-25af1a27f529",
+        "popularity": {
+          "page": 30,
+          "browse_title": "fk",
+          "likes": 0,
+          "views": "904"
+        },
+        "discovery_page": 30,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/fk",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/fk/",
+        "source_hash": "9022fc7e08de5692a383426ca14b004f2fb567c0d3f7a3f8d1cdf49c6a03aefd",
+        "normalized_hash": "c16ae03afd506ef28a455ef4d48da3d7213cecf7580362b2003f56a77e494fd8",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "integrity-control-testing",
+          "jailbreak-state-testing",
+          "native-hooking"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/logall",
+      "name": "FRIDA - IOS - Debugger Detection Testing - logall [7b2c06f7]",
+      "description": "logall",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    console.log(\"✅ Loading Full Tinder Debug Logger\");\n\n    // Hook and log sysctl()\n    var sysctl = Module.findExportByName(null, \"sysctl\");\n    if (sysctl) {\n        Interceptor.attach(sysctl, {\n            onEnter: function(args) {\n                console.log(\"🔥 sysctl() called\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0);\n            }\n        });\n    }\n\n    // Hook and log csops()\n    var csops = Module.findExportByName(null, \"csops\");\n    if (csops) {\n        Interceptor.attach(csops, {\n            onEnter: function(args) {\n                console.log(\"🔥 csops() called\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0);\n            }\n        });\n    }\n\n    // Hook and log task_info()\n    var task_info = Module.findExportByName(null, \"task_info\");\n    if (task_info) {\n        Interceptor.attach(task_info, {\n            onEnter: function(args) {\n                console.log(\"🔥 task_info() called\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0);\n            }\n        });\n    }\n\n    // Hook and log syscall()\n    var syscall = Module.findExportByName(null, \"syscall\");\n    if (syscall) {\n        Interceptor.attach(syscall, {\n            onEnter: function(args) {\n                var syscall_number = args[0].toInt32();\n                console.log(\"🔥 syscall() detected: \" + syscall_number);\n            },\n            onLeave: function(retval) {\n                retval.replace(0);\n            }\n        });\n    }\n\n    // Hook and log mmap() (used for memory checks)\n    var mmap = Module.findExportByName(null, \"mmap\");\n    if (mmap) {\n        Interceptor.attach(mmap, {\n            onEnter: function(args) {\n                console.log(\"🔥 mmap() called\");\n            },\n            onLeave: function(retval) {\n                retval.replace(ptr(-1));\n            }\n        });\n    }\n\n    // Hook and log ptrace() (used for anti-debugging)\n    var ptrace = Module.findExportByName(null, \"ptrace\");\n    if (ptrace) {\n        Interceptor.attach(ptrace, {\n            onEnter: function(args) {\n                console.log(\"🔥 ptrace() called (possible anti-debugging)\");\n            },\n            onLeave: function(retval) {\n                retval.replace(0);\n            }\n        });\n    }\n\n    console.log(\"✅ Full Tinder Debug Logger Loaded\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "logall",
+        "codeshare_fingerprint": "7b2c06f751bfb727d7379e48801852ad3c6fceafee81d4a8810024702242a541",
+        "project_uuid": "59d55368-7ba1-413c-95bd-58e7d77882d4",
+        "popularity": {
+          "page": 30,
+          "browse_title": "logall",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 30,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/logall",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/logall/",
+        "source_hash": "7b2c06f751bfb727d7379e48801852ad3c6fceafee81d4a8810024702242a541",
+        "normalized_hash": "481ea3d8c5be2588434c2ba4877840dcf00c2bdd2df6d12b67ea783bc2225404",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/sd",
+      "name": "FRIDA - IOS - Jailbreak State Testing - sd [9db0ba94]",
+      "description": "sd",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    console.log(\"✅ Ultimate Tinder Jailbreak Bypass Loaded\");\n\n    // Hook and block mmap()\n    var mmap = Module.findExportByName(null, \"mmap\");\n    if (mmap) {\n        Interceptor.attach(mmap, {\n            onEnter: function(args) {\n                console.log(\"🔥 mmap() called – Blocking!\");\n                retval.replace(ptr(-1));  // Return error\n            },\n            onLeave: function(retval) {\n                retval.replace(ptr(-1));  // Return error again just in case\n            }\n        });\n    }\n\n    console.log(\"✅ mmap() Fully Blocked! Tinder can't scan memory now.\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "sd",
+        "codeshare_fingerprint": "9db0ba94c603a92e9653afb79839eeb3d329bdbe7fb3307b4341ae65b3f029ce",
+        "project_uuid": "a5a63d01-1e01-4a14-b0ff-4f9842e4c0f5",
+        "popularity": {
+          "page": 29,
+          "browse_title": "sd",
+          "likes": 0,
+          "views": "836"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/sd",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/sd/",
+        "source_hash": "9db0ba94c603a92e9653afb79839eeb3d329bdbe7fb3307b4341ae65b3f029ce",
+        "normalized_hash": "b9a5c6e15e08dd44cc8625d51138382dd9c06146025c4b7e15423db4ba3fb4b4",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lichao890427/jailbreak-detect-trace",
+      "name": "FRIDA - IOS - Jailbreak State Testing - jailbreak detect trace [31ff0052]",
+      "description": "跟踪App的越狱检测逻辑： trace app behaviour of jailbreak detecting",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// 合作&交流  git：https://github.com/lich4 个人Q：571652571 Q群：560017652\n\nfunction logtrace(ctx) {\n    var content = Thread.backtrace(ctx.context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join('\\n') + '\\n';\n    if (content.indexOf('SubstrateLoader') == -1 && content.indexOf('JavaScriptCore') == -1 &&\n        content.indexOf('FLEXing.dylib') == -1 && content.indexOf('NSResolveSymlinksInPathUsingCache') == -1 &&\n        content.indexOf('MediaServices') == -1 && content.indexOf('bundleWithPath') == -1 &&\n        content.indexOf('CoreMotion') == -1 && content.indexOf('infoDictionary') == -1 &&\n        content.indexOf('objectForInfoDictionaryKey') == -1)  {\n            console.log(content);\n        return true;\n    }\n    return false;\n}\n\nfunction iswhite(path) {\n    if (path == null) return true;\n    if (path.startsWith('/var/mobile/Containers')) return true;\n    if (path.startsWith('/var/containers')) return true;\n    if (path.startsWith('/var/mobile/Library')) return true;\n    if (path.startsWith('/var/db')) return true;\n    if (path.startsWith('/private/var/mobile')) return true;\n    if (path.startsWith('/private/var/containers')) return true;\n    if (path.startsWith('/private/var/mobile/Library')) return true;\n    if (path.startsWith('/private/var/db')) return true;\n    if (path.startsWith('/System')) return true;\n    if (path.startsWith('/Library/Preferences')) return true;\n    if (path.startsWith('/Library/Managed')) return true;\n    if (path.startsWith('/usr')) return true;\n    if (path.startsWith('/dev')) return true;\n    if (path == '/AppleInternal') return true;\n    if (path == '/etc/hosts') return true;\n    if (path == '/Library') return true;\n    if (path == '/var') return true;\n    if (path == '/private/var') return true;\n    if (path == '/private') return true;\n    if (path == '/') return true;\n    if (path == '/var/mobile') return true;\n    if (path.indexOf('/containers/Bundle/Application') != -1) return true;\n    return false;\n}\n\nInterceptor.attach(Module.findExportByName(null, \"access\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        console.log(\"access \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"chdir\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (!iswhite(path)) console.log(\"chdir \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"chflags\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (!iswhite(path)) console.log(\"chflags \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"connect\"), {\n    onEnter: function(args) {\n        var port = Memory.readUShort(args[1].add(2));\n        port = ((port & 0xFF) << 8) | ((port & 0xFF00) >> 8); \n        if (port == 22 || port == 27042) {\n            console.log(\"connect \" + port);\n        }\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"creat\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"creat \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"dlopen\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (!iswhite(path)) console.log(\"dlopen \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"dlopen_preflight\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (!iswhite(path)) console.log(\"dlopen_preflight \" + path);\n    }\n})\n\nvar dyld_get_image_name_show = false;\nInterceptor.attach(Module.findExportByName(null, \"_dyld_get_image_name\"), {\n    onEnter: function(args) {\n        if (!dyld_get_image_name_show) {\n            if (logtrace(this)) {\n                console.log(\"dyld_get_image_name\");\n                dyld_get_image_name_show = true;\n            }\n        }\n    }\n})\n\n\nInterceptor.attach(Module.findExportByName(null, \"execve\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        console.log(\"execve \" + Memory.readUtf8String(args[0]));\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"fork\"), {\n    onEnter: function(args) {\n        console.log(\"fork\");\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"getenv\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var envname = Memory.readUtf8String(args[0]);\n        if (envname == 'DYLD_INSERT_LIBRARIES' || envname == 'MSSafeMode') {\n            if (logtrace(this)) console.log(content);\n        }\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"getxattr\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"getxattr \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"link\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"link \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"listxattr\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"listxattr \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"lstat\"), {\n    block: false,\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"lstat \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"open\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = Memory.readUtf8String(args[0]);\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"open \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"opendir\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"opendir \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"__opendir2\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"opendir2 \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"popen\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (!iswhite(path)) console.log(\"popen \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"ptrace\"), {\n    onEnter: function(args) {\n        console.log(\"ptrace\");\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"readlink\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"readlink \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"realpath\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"realpath \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"realpath$DARWIN_EXTSN\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"realpath$DARWIN_EXTSN \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"stat\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"stat \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"statfs\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"statfs \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"symlink\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var path = args[0].readUtf8String();\n        if (iswhite(path)) return;\n        if (logtrace(this)) console.log(\"symlink \" + path);\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"syscall\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        var callnum = args[0].toInt32();\n        if (callnum == 180) return;\n        console.log(\"syscall \" + args[0].toInt32());\n        if (callnum == 5) {\n            console.log('syscall open ' + args[8].readUtf8String());\n        }\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"system\"), {\n    onEnter: function(args) {\n        if (args[0].isNull()) return;\n        console.log(\"system \" + Memory.readUtf8String(args[0]));\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"task_for_pid\"), {\n    onEnter: function(args) {\n        console.log(\"task_for_pid\");\n    }\n})\n\nvar LSCanOpenURLManager = ObjC.classes._LSCanOpenURLManager;\nvar NSFileManager = ObjC.classes.NSFileManager;\nvar UIApplication = ObjC.classes.UIApplication;\n\nInterceptor.attach(LSCanOpenURLManager[\"- canOpenURL:publicSchemes:privateSchemes:XPCConnection:error:\"].implementation, {\n    onEnter: function(args) {\n        var path = ObjC.Object(args[2]).toString();\n        if (path.startsWith('cydia') || path.startsWith('Cydia'))\n            console.log(\"LSCanOpenURLManager canOpenURL:publicSchemes:privateSchemes:XPCConnection:error: \" + path);\n    }\n})\n\nInterceptor.attach(UIApplication[\"- canOpenURL:\"].implementation, {\n    onEnter: function(args) {\n        var path = ObjC.Object(args[2]).toString();\n        if (path.startsWith('cydia') || path.startsWith('Cydia'))\n            console.log(\"UIApplication canOpenURL: \" + path);\n    }\n})\n\nInterceptor.attach(UIApplication[\"- openURL:\"].implementation, {\n    onEnter: function(args) {\n        console.log(\"UIApplication openURL: \" + ObjC.Object(args[2]).toString());\n    }\n})\n\nInterceptor.attach(Module.findExportByName(null, \"__libc_do_syscall\"), {\n    onEnter: function(args) {\n        var callnum = args[0].toInt32() - 233;\n        if (false) {\n        } else if (callnum == 3) {\n            // read\n        } else if (callnum == 5) {\n            console.log('open ' + args[8].readUtf8String());\n        } else if (callnum == 6) {\n            // close\n        } else if (callnum == 20) {\n            // getpid\n        } else if (callnum == 39) {\n            // getppid\n        } else if (callnum == 202) {\n            // sysctl\n        } else if (callnum == 294) {\n            // shared_region_check_np\n        } else if (callnum == 340) {\n            console.log('stat64 ' + args[8].readUtf8String());\n        } else if (callnum == 344) {\n            // getdirentries64\n        } else {\n            console.log('__libc_do_syscall() ' + callnum);\n        }\n    }\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "lichao890427",
+        "codeshare_slug": "jailbreak-detect-trace",
+        "codeshare_fingerprint": "31ff005234cb9c230cebcabaa4ba6412210afb40782109ed568fc2ae1d30638a",
+        "project_uuid": "3552cf9b-e9f4-4208-a772-e8a3b3d5cb58",
+        "popularity": {
+          "page": 16,
+          "browse_title": "jailbreak detect trace",
+          "likes": 1,
+          "views": "10K"
+        },
+        "discovery_page": 16,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lichao890427/jailbreak-detect-trace",
+        "source_url": "https://codeshare.frida.re/@lichao890427/jailbreak-detect-trace/",
+        "source_hash": "31ff005234cb9c230cebcabaa4ba6412210afb40782109ed568fc2ae1d30638a",
+        "normalized_hash": "e946c6a6409ece5e778781661d3d04d272b61d1df30513436aa5f3809c1f578e",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "filesystem",
+          "ipc",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "Thread.backtrace",
+          "DebugSymbol",
+          "Backtracer"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:mgrela/ibm-trusteer-ios-sdk-bypass",
+      "name": "FRIDA - IOS - Jailbreak State Testing - IBM Trusteer iOS SDK Bypass [ee664b17]",
+      "description": "Bypass the jailbreak and malware detection in apps using the IBM Security Trusteer Mobile SDK for iOS",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available)\n{\n  try {\n\n    const Tas = ObjC.classes.Tas;\n\n    //\n    // The TasDraGetRiskItem count is the key function to hook as it returns the number of \"risk factors\" for an app.\n    // If there are no risk factors, welp ;).\n    //\n    // Reference: http://public.dhe.ibm.com/partnerworld/pub/certify/ibm_security_trusteer_mobile_sdk_developers_guide_ios.pdf\n    const TasDraGetRiskItemCount = Tas['- TasDraGetRiskItemCount:'];\n    TasDraGetRiskItemCount.implementation = ObjC.implement(TasDraGetRiskItemCount, function(handle, selector, arg1) {\n      console.log(`Called TasDraGetRiskItemCount`);\n      arg1 = 0;\n      return 0;\n    })\n\n  } catch(err) {\n    console.log(\"[!] Exception while hooking: \" + err.message);\n  } \n} else {\n  console.log(\"Objective-C Runtime is not available!\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "mgrela",
+        "codeshare_slug": "ibm-trusteer-ios-sdk-bypass",
+        "codeshare_fingerprint": "ee664b17312bf02344bb3ae8f139b680fb3657b9460caa1c8cc944aa6856446f",
+        "project_uuid": "287442db-7749-4318-aa75-b27bae86d1df",
+        "popularity": {
+          "page": 15,
+          "browse_title": "IBM Trusteer iOS SDK Bypass",
+          "likes": 1,
+          "views": "3K"
+        },
+        "discovery_page": 15,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:mgrela/ibm-trusteer-ios-sdk-bypass",
+        "source_url": "https://codeshare.frida.re/@mgrela/ibm-trusteer-ios-sdk-bypass/",
+        "source_hash": "ee664b17312bf02344bb3ae8f139b680fb3657b9460caa1c8cc944aa6856446f",
+        "normalized_hash": "fad3d0299a821ad9c622a48a727573f47c1f058de9f39cd6763edee9aaaea1ab",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "jailbreak-state-testing",
+          "method-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:mrmacete/substrate-unloader",
+      "name": "FRIDA - IOS - Jailbreak State Testing - Substrate unloader [1c8fecc3]",
+      "description": "Keep MobileSubstrate from injecting an iOS app (to be used with -f to take advantage of early instrumentation)",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var dlopen = new NativeFunction(\n    Module.findExportByName(null, 'dlopen'),\n    'pointer', ['pointer', 'int']);\n\nInterceptor.replace(dlopen, new NativeCallback(function(path, mode) {\n    var name = Memory.readUtf8String(path);\n    if (name !== null && name.indexOf('SubstrateLoader') !== -1) {\n        return NULL;\n    }\n    return dlopen(path, mode);\n}, 'pointer', ['pointer', 'int']));",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "mrmacete",
+        "codeshare_slug": "substrate-unloader",
+        "codeshare_fingerprint": "1c8fecc35ef3f6d5e69c5c81af5c602438dc1a1700ccd4b1ef166a3889fac01d",
+        "project_uuid": "11a77380-aad6-4d45-a70f-66e67ffd4dca",
+        "popularity": {
+          "page": 17,
+          "browse_title": "Substrate unloader",
+          "likes": 1,
+          "views": "4K"
+        },
+        "discovery_page": 17,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:mrmacete/substrate-unloader",
+        "source_url": "https://codeshare.frida.re/@mrmacete/substrate-unloader/",
+        "source_hash": "1c8fecc35ef3f6d5e69c5c81af5c602438dc1a1700ccd4b1ef166a3889fac01d",
+        "normalized_hash": "1c8fecc35ef3f6d5e69c5c81af5c602438dc1a1700ccd4b1ef166a3889fac01d",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "jailbreak-state-testing",
+          "native-hooking"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "Memory",
+          "NativeFunction",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Numenorean/cryptoswiftsha1",
+      "name": "FRIDA - IOS - Debugger Detection Testing - CryptoSwiftSHA1 [96d1c1c8]",
+      "description": "Just a small script hooking the sha1 method of CryptoSwift library(you will be able to get raw string of the hashing)",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "console.log(\"[+] script started...\")\r\nif (ObjC.available) {\r\n    if (Process.isDebuggerAttached() === true) {\r\n        console.log(\"[+] Debugger attached, in addition to Frida.\");\r\n    }\r\n    var a = Process.arch.toString()\r\n\tsha1Func()\r\n    console.log(\"[+] Device chip: \" + a);\r\n\r\n    \r\n} else {\r\n    console.log(\"[+] Objective-C Runtime not available!\");\r\n}\r\nconsole.log(\"[+] ...script completed\")\r\n\r\n\r\n\r\nfunction sha1Func(){\r\n\tvar sha1 = Module.findExportByName(null, \"$sSS11CryptoSwiftE4sha1SSyF\");\r\n\r\n    if (sha1) {\r\n        console.log(\"[+] Found sha1: \" + sha1);\r\n        Interceptor.attach(sha1, {\r\n            onEnter: hookSha1,\r\n\t\t\t\r\n\t\t\tonLeave: function (retval) {\r\n\t\t\t\tconsole.log(\"=====================================\")\r\n\t\t\t}\r\n        });\r\n    }\r\n}\r\n\r\n\r\nfunction hookSha1(args) {\r\n\tconsole.log(\"=================SHA1=================\")\r\n    // String is parsed by value\r\n    let ptr1 = args[0];\r\n    let ptr2 = args[1];\r\n\r\n     \r\n    let ptr1hex = '0x' + ptr1.toString(16);\r\n    let ptr2hex = '0x' + ptr2.toString(16);\r\n\r\n    let ptr1value = BigInt(ptr1hex);\r\n    let ptr2value = BigInt(ptr2hex);\r\n    let smallObject = ptr2value & 0xFFn; // the last byte\r\n    \r\n    // first, try parse smallstring\r\n    if (isSmallString(smallObject)) {\r\n        let smallStr = new SDSwiftSmallString(ptr1hex, ptr2hex);\r\n        console.log(`${smallStr.desc()}`)\r\n\t\treturn\r\n    }\r\n    \r\n    // Large String\r\n    let largeStr = new SDSwiftLargeString(ptr1value, ptr2value);\r\n    console.log(`${largeStr.desc()}`)\r\n}\r\n\r\n\r\nfunction isSmallString(value) {\r\n    let smth = (value >> 4n) & 0xFn;\r\n    return (smth & 2n) > 0n;\r\n}\r\n\r\n\r\nclass SDSwiftSmallString { \r\n    strValue;\r\n    count;\r\n    isHex;\r\n    constructor(h1, h2) {\r\n        // max small string length is 15 bytes\r\n        let h1Array = hexStrToUIntArray(h1).reverse();\r\n        let h2Array = hexStrToUIntArray(h2).reverse();\r\n        function isValidChar(element, index, array) { \r\n            return (element > 0); \r\n        }\r\n        let dataArr = h1Array.concat(h2Array).slice(0, 15);\r\n        \r\n        let data = dataArr.filter(isValidChar);\r\n        let str = String.fromCharCode.apply(null, data);\r\n        if (isPrintableString(str)) {\r\n            this.strValue = str;\r\n            this.count = str.length;\r\n            this.isHex = false;\r\n        } else {\r\n            this.strValue = uintArrayToHexStr(dataArr)\r\n            this.count = dataArr.length;\r\n            this.isHex = true;\r\n        }\r\n        \r\n    }\r\n\r\n    desc() {\r\n        let hexTip = this.isHex ? \"hex\" : \"str\";\r\n        return `<Swift.String(Small), count=${this.count}, ${hexTip}='${this.strValue}'>`;\r\n    }\r\n}\r\n\r\n\r\nclass SDSwiftLargeString {\r\n    // https://github.com/TannerJin/Swift-MemoryLayout/blob/master/SwiftCore/String.swift\r\n\r\n    _countAndFlagsBits;\r\n    _object;\r\n\r\n    isASCII;\r\n    isNFC;\r\n    isNativelyStored;\r\n    isTailAllocated;\r\n\r\n    count;\r\n    strValue;\r\n\r\n    constructor(inCountAndFlag, inObject) {\r\n        this._countAndFlagsBits = inCountAndFlag;\r\n        this._object = inObject;\r\n\r\n        // 1. parse _countAndFlagsBits\r\n        let abcd = inCountAndFlag >> 48n >> 12n & 0xFn; // 16bits, 2bytes\r\n        this.isASCII = (abcd & 0x8n) > 0n;\r\n        this.isNFC = (abcd & 0x4n) > 0n;\r\n        this.isNativelyStored = (abcd & 0x2n) > 0n;\r\n        this.isTailAllocated = (abcd & 0x1n) > 0n;\r\n\r\n        this.count = inCountAndFlag & 0xFFFFFFFFFFFFn ; // 48bits,6bytes\r\n\r\n        // 2. parse _object\r\n        let objectFlag = inObject >> 56n & 0xFFn;\r\n        let strAddress = '0x' + (inObject & 0xFFFFFFFFFFFFFFn).toString(16); // low 56 bits\r\n        \r\n        let strPtr = new NativePointer(strAddress);\r\n        let cstrPtr = strPtr.add(32);\r\n        this.strValue = cstrPtr.readCString() ?? \"\";\r\n    }\r\n\r\n    desc() {\r\n        return `<Swift.String(Large), count=${this.count}, str='${this.strValue}'>`;\r\n    }\r\n}\r\n\r\n\r\nfunction isPrintableChar(val) {\r\n    // [A-Za-z0-9_$ ]\r\n    //0-9  0x30-0x39\r\n    //A-Z  0x41-0x5a\r\n    //a-z  97-122\r\n    //0x5f 0x24 0x20\r\n    let isNumber = (val >= 0x30 && val <= 0x39);\r\n    let isUpper = (val >= 0x41 && val <= 0x5a);\r\n    let isLower = (val >= 0x61 && val <= 0x7a);\r\n    let isSpecial = (val == 0x5f) || (val == 0x24) || (val == 0x20);\r\n    return isNumber || isUpper || isLower || isSpecial;\r\n}\r\n\r\nfunction isPrintableString(str) {\r\n    for(var i = 0; i < str.length; i++) {\r\n        let val = str.charCodeAt(i);\r\n        if (!isPrintableChar(val)) {\r\n            return false;\r\n        }\r\n    }\r\n    return true;\r\n}\r\n\r\n\r\nfunction hexString(str) {\r\n    var ret = \"0x\";\r\n    for(var i = 0; i < str.length; i++) {\r\n        let val = str.charCodeAt(i);\r\n        var valstr = val.toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        ret = ret + valstr;\r\n    }\r\n    return ret;\r\n}\r\n\r\nfunction readUCharHexString(ptr, maxlen) {\r\n    var idx = 0;\r\n    var hexStr = \"\";\r\n    while (true) {\r\n        let val = ptr.add(idx).readU8()\r\n        if (val == 0) {\r\n            break;\r\n        }\r\n        var valstr = val.toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        hexStr += valstr;\r\n        idx++;\r\n        if (idx >= maxlen) {\r\n            break;\r\n        }\r\n    }\r\n\r\n    if (hexStr.length > 0) {\r\n        hexStr = \"0x\" + hexStr;\r\n    }\r\n\r\n    return hexStr;\r\n}\r\n\r\nfunction swapInt16(val) {\r\n    return ((val & 0xff) << 8) | ((val >> 8) & 0xff);\r\n}\r\n\r\nfunction swapInt32(val) {\r\n    return (\r\n        ((val & 0xff) << 24) |\r\n        ((val & 0xff00) << 8) |\r\n        ((val & 0xff0000) >> 8) |\r\n        ((val >> 24) & 0xff)\r\n    );\r\n}\r\n\r\nfunction hexStrToUIntArray(inputStr) {\r\n    var str = inputStr\r\n    if (str.startsWith('0x')) {\r\n        str = str.substr(2);\r\n    }\r\n    var hex = str.toString();\r\n    var result = [];\r\n    for (var n = 0; n < hex.length; n += 2) {\r\n        result.push(parseInt(hex.substr(n, 2), 16));\r\n    }\r\n    return result;\r\n}\r\n  \r\nfunction uintArrayToHexStr(array) {\r\n    var str = \"\";\r\n\r\n    for (var n = 0; n < array.length; n += 1) {\r\n        let val = array[n];\r\n        var valstr = array[n].toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        str += valstr;\r\n    }\r\n    if (str.length > 0) {\r\n        str = \"0x\" + str;\r\n    }\r\n    return str;\r\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Numenorean",
+        "codeshare_slug": "cryptoswiftsha1",
+        "codeshare_fingerprint": "96d1c1c8d55b2b4d3b2d8dd817d9a9c755969e08d5c7a9be8f289b9b035e210f",
+        "project_uuid": "b679abff-ff7e-4aa8-87a2-7eb42eb7651e",
+        "popularity": {
+          "page": 42,
+          "browse_title": "CryptoSwiftSHA1",
+          "likes": 0,
+          "views": "4K"
+        },
+        "discovery_page": 42,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Numenorean/cryptoswiftsha1",
+        "source_url": "https://codeshare.frida.re/@Numenorean/cryptoswiftsha1/",
+        "source_hash": "96d1c1c8d55b2b4d3b2d8dd817d9a9c755969e08d5c7a9be8f289b9b035e210f",
+        "normalized_hash": "2ee98b5dd5ce80c229e92349745972e1d6609cc31975b6fc6c683c67c3e22266",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "debugger-detection-testing",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Process"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Numenorean/swiftstring",
+      "name": "FRIDA - IOS - Debugger Detection Testing - SwiftString [95b8462d]",
+      "description": "Functions and classes that help you in hooking some Swift functions",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "console.log(\"[+] script started...\")\r\nif (ObjC.available) {\r\n    if (Process.isDebuggerAttached() === true) {\r\n        console.log(\"[+] Debugger attached, in addition to Frida.\");\r\n    }\r\n    var a = Process.arch.toString()\r\n\ttestFunc()\r\n    console.log(\"[+] Device chip: \" + a);\r\n\r\n    \r\n} else {\r\n    console.log(\"[+] Objective-C Runtime not available!\");\r\n}\r\nconsole.log(\"[+] ...script completed\")\r\n\r\n\r\n\r\nfunction testFunc(){\r\n\tvar someFunc = Module.findExportByName(null, \"someSwiftFunc\");\r\n\r\n    if (someFunc) {\r\n        console.log(\"[+] Found someSwiftFunc: \" + someFunc);\r\n        Interceptor.attach(someFunc, {\r\n            onEnter: hook,\r\n\t\t\t\r\n\t\t\tonLeave: function (retval) {\r\n\t\t\t\tconsole.log(\"=====================================\")\r\n\t\t\t}\r\n        });\r\n    }\r\n}\r\n\r\n\r\nfunction hook(args) {\r\n\tconsole.log(\"=================Hooked=================\")\r\n    // String is parsed by value\r\n    let ptr1 = args[0];\r\n    let ptr2 = args[1];\r\n\r\n     \r\n    let ptr1hex = '0x' + ptr1.toString(16);\r\n    let ptr2hex = '0x' + ptr2.toString(16);\r\n\r\n    let ptr1value = BigInt(ptr1hex);\r\n    let ptr2value = BigInt(ptr2hex);\r\n    let smallObject = ptr2value & 0xFFn; // the last byte\r\n    \r\n    // first, try parse smallstring\r\n    if (isSmallString(smallObject)) {\r\n        let smallStr = new SDSwiftSmallString(ptr1hex, ptr2hex);\r\n        console.log(`${smallStr.desc()}`)\r\n\t\treturn\r\n    }\r\n    \r\n    // Large String\r\n    let largeStr = new SDSwiftLargeString(ptr1value, ptr2value);\r\n    console.log(`${largeStr.desc()}`)\r\n}\r\n\r\n\r\nfunction isSmallString(value) {\r\n    let smth = (value >> 4n) & 0xFn;\r\n    return (smth & 2n) > 0n;\r\n}\r\n\r\n\r\nclass SDSwiftSmallString { \r\n    strValue;\r\n    count;\r\n    isHex;\r\n    constructor(h1, h2) {\r\n        // max small string length is 15 bytes\r\n        let h1Array = hexStrToUIntArray(h1).reverse();\r\n        let h2Array = hexStrToUIntArray(h2).reverse();\r\n        function isValidChar(element, index, array) { \r\n            return (element > 0); \r\n        }\r\n        let dataArr = h1Array.concat(h2Array).slice(0, 15);\r\n        \r\n        let data = dataArr.filter(isValidChar);\r\n        let str = String.fromCharCode.apply(null, data);\r\n        if (isPrintableString(str)) {\r\n            this.strValue = str;\r\n            this.count = str.length;\r\n            this.isHex = false;\r\n        } else {\r\n            this.strValue = uintArrayToHexStr(dataArr)\r\n            this.count = dataArr.length;\r\n            this.isHex = true;\r\n        }\r\n        \r\n    }\r\n\r\n    desc() {\r\n        let hexTip = this.isHex ? \"hex\" : \"str\";\r\n        return `<Swift.String(Small), count=${this.count}, ${hexTip}='${this.strValue}'>`;\r\n    }\r\n}\r\n\r\n\r\nclass SDSwiftLargeString {\r\n    // https://github.com/TannerJin/Swift-MemoryLayout/blob/master/SwiftCore/String.swift\r\n\r\n    _countAndFlagsBits;\r\n    _object;\r\n\r\n    isASCII;\r\n    isNFC;\r\n    isNativelyStored;\r\n    isTailAllocated;\r\n\r\n    count;\r\n    strValue;\r\n\r\n    constructor(inCountAndFlag, inObject) {\r\n        this._countAndFlagsBits = inCountAndFlag;\r\n        this._object = inObject;\r\n\r\n        // 1. parse _countAndFlagsBits\r\n        let abcd = inCountAndFlag >> 48n >> 12n & 0xFn; // 16bits, 2bytes\r\n        this.isASCII = (abcd & 0x8n) > 0n;\r\n        this.isNFC = (abcd & 0x4n) > 0n;\r\n        this.isNativelyStored = (abcd & 0x2n) > 0n;\r\n        this.isTailAllocated = (abcd & 0x1n) > 0n;\r\n\r\n        this.count = inCountAndFlag & 0xFFFFFFFFFFFFn ; // 48bits,6bytes\r\n\r\n        // 2. parse _object\r\n        let objectFlag = inObject >> 56n & 0xFFn;\r\n        let strAddress = '0x' + (inObject & 0xFFFFFFFFFFFFFFn).toString(16); // low 56 bits\r\n        \r\n        let strPtr = new NativePointer(strAddress);\r\n        let cstrPtr = strPtr.add(32);\r\n        this.strValue = cstrPtr.readCString() ?? \"\";\r\n    }\r\n\r\n    desc() {\r\n        return `<Swift.String(Large), count=${this.count}, str='${this.strValue}'>`;\r\n    }\r\n}\r\n\r\n\r\nfunction isPrintableChar(val) {\r\n    // [A-Za-z0-9_$ ]\r\n    //0-9  0x30-0x39\r\n    //A-Z  0x41-0x5a\r\n    //a-z  97-122\r\n    //0x5f 0x24 0x20\r\n    let isNumber = (val >= 0x30 && val <= 0x39);\r\n    let isUpper = (val >= 0x41 && val <= 0x5a);\r\n    let isLower = (val >= 0x61 && val <= 0x7a);\r\n    let isSpecial = (val == 0x5f) || (val == 0x24) || (val == 0x20);\r\n    return isNumber || isUpper || isLower || isSpecial;\r\n}\r\n\r\nfunction isPrintableString(str) {\r\n    for(var i = 0; i < str.length; i++) {\r\n        let val = str.charCodeAt(i);\r\n        if (!isPrintableChar(val)) {\r\n            return false;\r\n        }\r\n    }\r\n    return true;\r\n}\r\n\r\n\r\nfunction hexString(str) {\r\n    var ret = \"0x\";\r\n    for(var i = 0; i < str.length; i++) {\r\n        let val = str.charCodeAt(i);\r\n        var valstr = val.toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        ret = ret + valstr;\r\n    }\r\n    return ret;\r\n}\r\n\r\nfunction readUCharHexString(ptr, maxlen) {\r\n    var idx = 0;\r\n    var hexStr = \"\";\r\n    while (true) {\r\n        let val = ptr.add(idx).readU8()\r\n        if (val == 0) {\r\n            break;\r\n        }\r\n        var valstr = val.toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        hexStr += valstr;\r\n        idx++;\r\n        if (idx >= maxlen) {\r\n            break;\r\n        }\r\n    }\r\n\r\n    if (hexStr.length > 0) {\r\n        hexStr = \"0x\" + hexStr;\r\n    }\r\n\r\n    return hexStr;\r\n}\r\n\r\nfunction swapInt16(val) {\r\n    return ((val & 0xff) << 8) | ((val >> 8) & 0xff);\r\n}\r\n\r\nfunction swapInt32(val) {\r\n    return (\r\n        ((val & 0xff) << 24) |\r\n        ((val & 0xff00) << 8) |\r\n        ((val & 0xff0000) >> 8) |\r\n        ((val >> 24) & 0xff)\r\n    );\r\n}\r\n\r\nfunction hexStrToUIntArray(inputStr) {\r\n    var str = inputStr\r\n    if (str.startsWith('0x')) {\r\n        str = str.substr(2);\r\n    }\r\n    var hex = str.toString();\r\n    var result = [];\r\n    for (var n = 0; n < hex.length; n += 2) {\r\n        result.push(parseInt(hex.substr(n, 2), 16));\r\n    }\r\n    return result;\r\n}\r\n  \r\nfunction uintArrayToHexStr(array) {\r\n    var str = \"\";\r\n\r\n    for (var n = 0; n < array.length; n += 1) {\r\n        let val = array[n];\r\n        var valstr = array[n].toString(16);\r\n        if (valstr.length == 1) {\r\n            valstr = '0' + valstr;\r\n        }\r\n        str += valstr;\r\n    }\r\n    if (str.length > 0) {\r\n        str = \"0x\" + str;\r\n    }\r\n    return str;\r\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Numenorean",
+        "codeshare_slug": "swiftstring",
+        "codeshare_fingerprint": "95b8462d4c6ef3204d2ee764dfc9bc871c186e5619c6f306201fc9ce6a010c49",
+        "project_uuid": "0883cd0d-99d1-4e06-b371-35754f56de34",
+        "popularity": {
+          "page": 15,
+          "browse_title": "SwiftString",
+          "likes": 1,
+          "views": "5K"
+        },
+        "discovery_page": 15,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Numenorean/swiftstring",
+        "source_url": "https://codeshare.frida.re/@Numenorean/swiftstring/",
+        "source_hash": "95b8462d4c6ef3204d2ee764dfc9bc871c186e5619c6f306201fc9ce6a010c49",
+        "normalized_hash": "99873ba40f2650f51d31035211ceb99e55701f8696b9cd4e0a7e5f71d4875f09",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Process"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": "codeshare:Numenorean/cryptoswiftsha1",
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:oleavr/vipps-antijb",
+      "name": "FRIDA - IOS - Jailbreak State Testing - vipps-antijb [d4217526]",
+      "description": "Disables jailbreak detection in the Vipps app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\n\nvar method = ObjC.classes.VPSUtils['+ isJailbroken'];\nmethod.implementation = ObjC.implement(method, function (handle, selector) {\n  console.log('+[VPSUtils isJailbroken] => nope!');\n  return false;\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "oleavr",
+        "codeshare_slug": "vipps-antijb",
+        "codeshare_fingerprint": "d42175267e3e30c3dd16bc82fc44479bb8915dacbad1b59178143a542246de9f",
+        "project_uuid": "086fc3cf-81aa-42ad-8df0-e31b58291fec",
+        "popularity": {
+          "page": 17,
+          "browse_title": "vipps-antijb",
+          "likes": 1,
+          "views": "4K"
+        },
+        "discovery_page": 17,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:oleavr/vipps-antijb",
+        "source_url": "https://codeshare.frida.re/@oleavr/vipps-antijb/",
+        "source_hash": "d42175267e3e30c3dd16bc82fc44479bb8915dacbad1b59178143a542246de9f",
+        "normalized_hash": "d42175267e3e30c3dd16bc82fc44479bb8915dacbad1b59178143a542246de9f",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "jailbreak-state-testing",
+          "method-hooking"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:patarisac/iossecuritysuite-bypass",
+      "name": "FRIDA - IOS - Jailbreak State Testing - IOSSecuritySuite Bypass [92637c09]",
+      "description": "Frida script that disables IOSSecuritySuite protections. Hooks Swift checks like jailbreak, debugger, emulator, proxy, and reverse-engineering detection, forcing safe results.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "const mod = \"IOSSecuritySuite\";\n\nconsole.log(\"Bypassing IOSSecuritySuite...\");\n\nModule.enumerateSymbolsSync(mod).forEach(sym => {\n    if (!sym.name.endsWith(\"SbyFZ\")) return;\n    if (sym.address.isNull()) return;\n    console.log(\"Hooked & Bypassed: \", sym.name);\n\n\n    Interceptor.attach(sym.address, {\n        onLeave() {\n            this.context.x0 = ptr(0);\n        }\n    });\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "patarisac",
+        "codeshare_slug": "iossecuritysuite-bypass",
+        "codeshare_fingerprint": "92637c09ea51da1a7f788537f89844ffce734d9b1e23e131a4206d503f4373bb",
+        "project_uuid": "37609ea7-34e0-4a23-954c-5f3c6286c03e",
+        "popularity": {
+          "page": 9,
+          "browse_title": "IOSSecuritySuite Bypass",
+          "likes": 1,
+          "views": "1K"
+        },
+        "discovery_page": 9,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:patarisac/iossecuritysuite-bypass",
+        "source_url": "https://codeshare.frida.re/@patarisac/iossecuritysuite-bypass/",
+        "source_hash": "92637c09ea51da1a7f788537f89844ffce734d9b1e23e131a4206d503f4373bb",
+        "normalized_hash": "1c45eedf3fbdaa13b537670680b215e8d3f321f5435c8bff5de392dc94a21ee6",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "emulator-detection-testing",
+          "enumeration",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.enumerateSymbols"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:stek29/launchd-xpc-hack",
+      "name": "FRIDA - IOS - Jailbreak State Testing - launchd xpc hack [35578df3]",
+      "description": "load into launchd to get working bootstrap_look_up",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n    libxpc is broken in launchd itself, so we have to fix it up manually\n    first of all, bootstrap port is needed. there probably is a nicier way to do this,\n    but I've just stolen bootstrap_donor_pid's bootstrap port to our process\n    \n    notice: whatever has pid 20 likekly doesn't have get_task-allow, so see jailbreakd_client\n    \n    when we have bootstrap port, we set it to xpc's \"xpc_global_data.task_bootstrap_port\"\n    see http://newosxbook.com/articles/jlaunchctl.html\n    \n    after that we create an xpc_pipe and set it to xpc_global_data.xpc_bootstrap_pipe\n    \n    and finally we change whatever looks like as initialization flag (different\n    from xpc_flags, referred by J as \"uint64_t a\").\n    \n    after that bootstrap_look_up should work fine\n*/\n\nvar bootstrap_donor_pid = 20;\n\nvar mach_task_self_ = Memory.readU32(Module.findExportByName(null, \"mach_task_self_\"))\n\nvar task_get_special_port = new NativeFunction(Module.findExportByName(null, \"task_get_special_port\"), \"int\", [\"int\", \"int\", \"pointer\"]);\nvar task_set_special_port = new NativeFunction(Module.findExportByName(null, \"task_set_special_port\"), \"int\", [\"int\", \"int\", \"int\"]);\nvar task_for_pid = new NativeFunction(Module.findExportByName(null, \"task_for_pid\"), \"int\", [\"int\", \"int\", \"pointer\"]);\nvar xpc_pipe_create_from_port = new NativeFunction(Module.findExportByName(null, \"xpc_pipe_create_from_port\"), \"pointer\", [\"int\", \"int\"]);\n\nvar xpg_gd__a = Memory.readPointer(Module.findExportByName(null, \"_os_alloc_once_table\").add(0x18)).add(0x00);\nvar xpg_gd__xpc_flags = Memory.readPointer(Module.findExportByName(null, \"_os_alloc_once_table\").add(0x18)).add(0x08);\nvar xpg_gd__task_bootstrap_port = Memory.readPointer(Module.findExportByName(null, \"_os_alloc_once_table\").add(0x18)).add(0x10);\nvar xpg_gd__xpc_bootstrap_pipe = Memory.readPointer(Module.findExportByName(null, \"_os_alloc_once_table\").add(0x18)).add(0x18);\n\ntask_for_pid(mach_task_self_, bootstrap_donor_pid, xpg_gd__task_bootstrap_port);\nvar tfp20 = Memory.readU32(xpg_gd__task_bootstrap_port);\ntask_get_special_port(tfp20, 4, xpg_gd__task_bootstrap_port);\nvar bp = Memory.readU32(xpg_gd__task_bootstrap_port);\n\n// sync everywhere\ntask_set_special_port(mach_task_self_, 4, bp);\nMemory.writeU32(Module.findExportByName(null, \"bootstrap_port\"), bp);\n\nvar bpipe = xpc_pipe_create_from_port(bp, 0);\nMemory.writePointer(xpg_gd__xpc_bootstrap_pipe, bpipe);\n\nMemory.writeU64(xpg_gd__a, 0x1000000); // likely initialization state\n\n// test\nvar bootstrap_look_up = new NativeFunction(Module.findExportByName(null, \"bootstrap_look_up\"), \"int\", [\"int\", \"pointer\", \"pointer\"]);\nvar jbdp = Memory.alloc(4);\n// put some other service here\nvar jbds = Memory.allocUtf8String(\"com.apple.uikit.viewservice.frida\");\nbootstrap_look_up(bp, jbds, jbdp);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "stek29",
+        "codeshare_slug": "launchd-xpc-hack",
+        "codeshare_fingerprint": "35578df38fd0e0a0d282974fb2f914b332f81b5541cc95628242987f3f0af3e6",
+        "project_uuid": "22fc9f46-1030-4f46-9f1b-8b1b0898ffd3",
+        "popularity": {
+          "page": 5,
+          "browse_title": "launchd xpc hack",
+          "likes": 3,
+          "views": "6K"
+        },
+        "discovery_page": 5,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:stek29/launchd-xpc-hack",
+        "source_url": "https://codeshare.frida.re/@stek29/launchd-xpc-hack/",
+        "source_hash": "35578df38fd0e0a0d282974fb2f914b332f81b5541cc95628242987f3f0af3e6",
+        "normalized_hash": "93f790a43e43c15a2dce65064209a21caff8d8df66dfa3c8a883a9e3433bd9ec",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "Module.findExportByName",
+          "Memory",
+          "NativeFunction"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

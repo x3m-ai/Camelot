@@ -1,0 +1,830 @@
+{
+  "package_id": "frida-universal-storage-v1",
+  "package_name": "Frida - Universal - Storage",
+  "version": "1.0.0",
+  "summary": "9 Frida instrumentation procedures for universal storage mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 9 standalone Frida procedures from 3 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 9}; compatibility: {'legacy': 3, 'likely-compatible': 6}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1420",
+    "T1636.002"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact",
+    "modify"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 9
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "database",
+    "enumeration",
+    "filesystem",
+    "integrity-control-testing",
+    "keystore-keychain",
+    "method-hooking",
+    "native-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare",
+    "iddoeldor-frida-snippets",
+    "interference-frida-scripts"
+  ],
+  "scope_counts": {
+    "generic": 9
+  },
+  "quality_distribution": {
+    "C": 1,
+    "A": 8
+  },
+  "license_distribution": {
+    "unknown": 9
+  },
+  "compatibility_distribution": {
+    "legacy": 3,
+    "likely-compatible": 6
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:juliusdeane/censor-hashes-on-write",
+      "name": "FRIDA - UNIVERSAL - Filesystem - Censor Hashes on write [83a676a7]",
+      "description": "Quick tool to censor (replace with *) hashes being written to the disk. Useful, for example, for log daemons or applications where we need to filter hashes for confidentiality.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// PLATFORM: libc based (Linux, *ix).\n//[Usage] frida --codeshare juliusdeane/censor-hashes-on-write <your binary>\n\n\n/* *******************************************************************\n * Just a proof of concept supporting md5 only.\n *\n * Really easy to improve for multi-hashes.\n ******************************************************************* */\n// md5, but it is easy to create regex for uuid, sha, blowfish...\nconst md5_regex = /[a-fA-F0-9]{32}/gi;\n\n// how many chars on the original hash we want to keep (at the end)\nconst KEEP_ORIGINAL_CHARS = 4;\n// which is the replacement character.\nconst REPLACEMENT_CHAR = '*';\n\n// We pass a string and lenToReplace chars at the end will be replaced\n// with the replacementChar.\nfunction replace_string(string, lenToReplace, replacementChar) {\n    return string.substring(0, lenToReplace).split(\"\").map(item => item = replacementChar).join(\"\").concat(string.substring(lenToReplace, string.length));\n\n}\n\n// This is a callback that is invoked by string.replace() so it will\n// transform the string using replace_string() if matches md5_regex.\nfunction censor_hash(str, p1, offset, s) {\n    const lenToReplace = str.length - KEEP_ORIGINAL_CHARS;\n    return replace_string(str, lenToReplace, REPLACEMENT_CHAR);\n}\n\n// write is the low level call to write to the file.\n// Even when using fprintf the system will invoke write.\nvar write_ptr = Module.findExportByName(null, \"write\")\n\nInterceptor.attach(write_ptr, {\n    onEnter: function(args) {\n        // ssize_t write(int fd, const void *buf, size_t count);\n        //                   args[0],       args[1],     args[2]\n\n        // Parse a UTF8 string onto source_string.\n        const source_string = args[1].readUtf8String();\n\n        // If matches mdg_regex, apply censor_hash.\n        var replacement_string = source_string.replace(md5_regex, censor_hash);\n\n        // Use Frida's magic to replace the string in the argument.\n        args[1].writeUtf8String(replacement_string);\n    },\n    onLeave: function(retval) {\n        // by now do nothing.\n    }\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "juliusdeane",
+        "codeshare_slug": "censor-hashes-on-write",
+        "codeshare_fingerprint": "83a676a7278c635d99a89f55c730a048fcb2f745b6e5e6e17d89ea8041ddc48b",
+        "project_uuid": "ceacaa11-d1fd-4431-b909-01e26830824f",
+        "popularity": {
+          "page": 43,
+          "browse_title": "Censor Hashes on write",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 43,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:juliusdeane/censor-hashes-on-write",
+        "source_url": "https://codeshare.frida.re/@juliusdeane/censor-hashes-on-write/",
+        "source_hash": "83a676a7278c635d99a89f55c730a048fcb2f745b6e5e6e17d89ea8041ddc48b",
+        "normalized_hash": "63c07549806c00af5d4d9d9266bdab2108eb3231890e164416a75af9617fc7be",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "native-hooking"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Dump memory segments:js:45",
+      "name": "FRIDA - UNIVERSAL - Filesystem - Dump memory segments [1d4b47be]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Dump memory segments:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Process.enumerateRanges('rw-', {\n\tonMatch: function (range) {\n\t\tvar fname = `/sdcard/${range.base}_dump`;\n\t\tvar f = new File(fname, 'wb');\n\t\tf.write(instance.base.readByteArray(instance.size));\n\t\tf.flush();\n\t\tf.close();\n\t\tconsole.log(`base=${range.base} size=${range.size} prot=${range.protection} fname=${fname}`);\n\t},\n\tonComplete: function () {}\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Dump memory segments:js",
+        "readme_snippet_index": 45,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Dump memory segments:js:45",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "1d4b47be526bbc6606098d03fb1974287db1309654db460cb2b54de071c45088",
+        "normalized_hash": "1d4b47be526bbc6606098d03fb1974287db1309654db460cb2b54de071c45088",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:File Access:js:38",
+      "name": "FRIDA - UNIVERSAL - Filesystem - File Access [8e8a1a48]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section File Access:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Interceptor.attach(ObjC.classes.NSFileManager['- fileExistsAtPath:'].implementation, {\n    onEnter: function (args) {\n        console.log('open' , ObjC.Object(args[2]).toString());\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "File Access:js",
+        "readme_snippet_index": 38,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:File Access:js:38",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "8e8a1a4865ba6397bfd1936cb7edca9efc24c590dac668e49473a4ac83290496",
+        "normalized_hash": "8e8a1a4865ba6397bfd1936cb7edca9efc24c590dac668e49473a4ac83290496",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem",
+          "native-hooking"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Find iOS application UUID:js:40",
+      "name": "FRIDA - UNIVERSAL - Filesystem - Find iOS application UUID [6248b9d7]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Find iOS application UUID:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var PLACEHOLDER = '{UUID}';\nfunction extractUUIDfromPath(path) {\n    var bundleIdentifier = String(ObjC.classes.NSBundle.mainBundle().objectForInfoDictionaryKey_('CFBundleIdentifier'));\n    var path_prefix = path.substr(0, path.indexOf(PLACEHOLDER));\n    var plist_metadata = '/.com.apple.mobile_container_manager.metadata.plist';\n    var errorPtr = Memory.alloc(Process.pointerSize); \n    Memory.writePointer(errorPtr, NULL); \n    var folders = ObjC.classes.NSFileManager.defaultManager().contentsOfDirectoryAtPath_error_(path_prefix, errorPtr);\n    var error = Memory.readPointer(errorPtr);\n    if (errorPtr) \n    \tconsole.error( new ObjC.Object( error ) );\n    for (var i = 0, l = folders.count(); i < l; i++) {\n        var uuid = folders.objectAtIndex_(i);\n        var metadata = path_prefix + uuid + plist_metadata;\n        var dict = ObjC.classes.NSMutableDictionary.alloc().initWithContentsOfFile_(metadata);\n        var enumerator = dict.keyEnumerator();\n        var key;\n        while ((key = enumerator.nextObject()) !== null) {\n            if (key == 'MCMMetadataIdentifier') {\n                var appId = String(dict.objectForKey_(key));\n                if (appId.indexOf(bundleIdentifier) != -1) {\n                    return path.replace(PLACEHOLDER, uuid);\n                }\n            }\n        }\n    }\n}\nconsole.log( extractUUIDfromPath('/var/mobile/Containers/Data/Application/' + PLACEHOLDER + '/Documents') );",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Find iOS application UUID:js",
+        "readme_snippet_index": 40,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Find iOS application UUID:js:40",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "6248b9d78cda359264e35ae1d53613a29b3af7cfcea8188bc0b628b11fe6b0df",
+        "normalized_hash": "e1f2dd855fc489a3c4afb60d2b68941e28025333e2b6e5edd61fff60548e8e5c",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.classes",
+          "Memory",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Log SQLite query:js:8",
+      "name": "FRIDA - UNIVERSAL - Database - Log SQLite query [1da1d014]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Log SQLite query:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Interceptor.attach(Module.findExportByName('libsqlite.so', 'sqlite3_prepare16_v2'), {\n      onEnter: function(args) {\n          console.log('DB: ' + Memory.readUtf16String(args[0]) + '\\tSQL: ' + Memory.readUtf16String(args[1]));\n      }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Log SQLite query:js",
+        "readme_snippet_index": 8,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Log SQLite query:js:8",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "1da1d01446f0efafbe7520e124c694217542eeb33141fa8b9743edd70f625287",
+        "normalized_hash": "1da1d01446f0efafbe7520e124c694217542eeb33141fa8b9743edd70f625287",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "native-hooking"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:scripts/WIP_unpack_64.js",
+      "name": "FRIDA - UNIVERSAL - Filesystem - WIP unpack 64 [d98539c1]",
+      "description": "Curated Frida source from iddoeldor/frida-snippets: scripts/WIP_unpack_64.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var art_DexFile_OpenMemory = Module.findExportByName('libart.so','_ZN3art7DexFile10OpenMemoryEPKhmRKNSt3__112basic_stringIcNS3_11char_traitsIcEENS3_9allocatorIcEEEEjPNS_6MemMapEPKNS_10OatDexFileEPS9_'); // art::DexFile::OpenMemory > 64bit version\nconsole.log(art_DexFile_OpenMemory);\nInterceptor.attach(art_DexFile_OpenMemory, { \n  onEnter: function (_args) {     \n    var begin = this.context.x0;\n    this.o = {};\n    this.o.begin = begin;\n    this.o.magic = Memory.readUtf8String(begin);\n    var address = parseInt(begin, 16) + 0x20;\n    var dexSize = Memory.readInt(ptr(address));\n    this.o.dexSize = dexSize;\n    var file = new File('/sdcard/unpack/' + dexSize + '.dex', 'wb');\n    file.write(Memory.readByteArray(begin, dexSize));\n    file.flush();\n    file.close();\n  },\n  onLeave: function (retval) {\n    this.o.retval = retval;\n    console.log(JSON.stringify(this.o, null, 2));\n  }\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "scripts/WIP_unpack_64.js",
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:scripts/WIP_unpack_64.js",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/scripts/WIP_unpack_64.js",
+        "source_hash": "d98539c196821370a026eb2d274651e55c1b98351cc24348b39cb991235157e6",
+        "normalized_hash": "c95d437b80627242c0c1b8c25c9fd023438eefffceef36303e38921c0525cd97",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "native-hooking"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:interference-security/frida-scripts:android/hook-method-of-class.js",
+      "name": "FRIDA - UNIVERSAL - Keystore Keychain - hook method of class [ef9989fc]",
+      "description": "Curated Frida source from interference-security/frida-scripts: android/hook-method-of-class.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1636.002",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n  //enter class name here: example android.security.keystore.KeyGenParameterSpec$Builder\n\t//class inside a class is defined using CLASS_NAME$SUB_CLASS_NAME\n\tvar class_name = Java.use(\"android.security.keystore.KeyGenParameterSpec$Builder\");\n  //replace FUNC_NAME_HERE with method name you want to hook and remove arg1 or add more if the function has arguments\n\tclass_name.FUNC_NAME_HERE.implementation = function (arg1) {\n\t\tconsole.log(\"[*] CLASS_NAME:FUNC_NAME was called\");\n\t\treturn this.FUNC_NAME_HERE(arg1)\n\t}\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/interference-security/frida-scripts",
+        "source_commit": "5fb5f078535296a2f1c9b99bee663f1ea9d7011b",
+        "source_commit_date": "2022-09-26",
+        "source_path": "android/hook-method-of-class.js",
+        "platform_hint": [
+          "android",
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "interference-frida-scripts",
+        "source_id": "frida:github:interference-security/frida-scripts:android/hook-method-of-class.js",
+        "source_url": "https://github.com/interference-security/frida-scripts/blob/5fb5f078535296a2f1c9b99bee663f1ea9d7011b/android/hook-method-of-class.js",
+        "source_hash": "ef9989fca16c61899430f2f68f6da7e8eb65fef439c4f64d3134f6281b52e9e7",
+        "normalized_hash": "64559b751326dd7b909bce5cdbe4447259a1ec922d357de17ef32da787a92aae",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "keystore-keychain",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "keystore-keychain",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1636.002"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:interference-security/frida-scripts:android/modify-return-value.js",
+      "name": "FRIDA - UNIVERSAL - Keystore Keychain - modify return value [7c629213]",
+      "description": "Curated Frida source from interference-security/frida-scripts: android/modify-return-value.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1636.002",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n  //enter class name here: example android.security.keystore.KeyGenParameterSpec$Builder\n\t//class inside a class is defined using CLASS_NAME$SUB_CLASS_NAME\n\tvar class_name = Java.use(\"CLASS_NAME_HERE\");\n  //replace FUNC_NAME_HERE with method name you want to hook and remove arg1 or add more if the function has arguments\n\tclass_name[\"FUNC_NAME_HERE\"].overload('ARG1_SIGNATURE_HERE','ARG2_SIGNATURE_HERE').implementation = function (arg1, arg2) {\n\t\tconsole.log(\"\\n[*] CLASS_NAME_HERE:FUNC_NAME_HERE() was called\");\n\t\t//console.log(\"\\t[-] Tampering return value to FALSE\");\n\t\treturn this.FUNC_NAME_HERE(arg1, arg2);\n\t}\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "repository": "https://github.com/interference-security/frida-scripts",
+        "source_commit": "5fb5f078535296a2f1c9b99bee663f1ea9d7011b",
+        "source_commit_date": "2022-09-26",
+        "source_path": "android/modify-return-value.js",
+        "platform_hint": [
+          "android",
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "interference-frida-scripts",
+        "source_id": "frida:github:interference-security/frida-scripts:android/modify-return-value.js",
+        "source_url": "https://github.com/interference-security/frida-scripts/blob/5fb5f078535296a2f1c9b99bee663f1ea9d7011b/android/modify-return-value.js",
+        "source_hash": "7c629213705b5e620e5e9dabc419d9d1a88de70f7c3beeb58b37b822ffb0cf18",
+        "normalized_hash": "ad68c5a7cf4d9af67e6accf2fb6bbe731e0ae0d6d86732868553cd13aed14bcb",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "integrity-control-testing",
+          "keystore-keychain",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "keystore-keychain",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1636.002"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:interference-security/frida-scripts:android/show-specific-class-methods.js",
+      "name": "FRIDA - UNIVERSAL - Keystore Keychain - show specific class methods [c2e50b4d]",
+      "description": "Curated Frida source from interference-security/frida-scripts: android/show-specific-class-methods.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1636.002",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n\t//enter class name here: example android.security.keystore.KeyGenParameterSpec$Builder\n\t//class inside a class is defined using CLASS_NAME$SUB_CLASS_NAME\n\tvar class_name = \"android.security.keystore.KeyGenParameterSpec$Builder\";\n\tvar db1 = Java.use(class_name);\n\tvar methodArr = db1.class.getMethods();\n\tconsole.log(\"[*] Class Name: \" + class_name)\n\tconsole.log(\"[*] Method Names:\")\n\tfor(var m in methodArr)\n\t{\n\t\tconsole.log(methodArr[m]);\n\t}\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/interference-security/frida-scripts",
+        "source_commit": "5fb5f078535296a2f1c9b99bee663f1ea9d7011b",
+        "source_commit_date": "2022-09-26",
+        "source_path": "android/show-specific-class-methods.js",
+        "platform_hint": [
+          "android",
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "interference-frida-scripts",
+        "source_id": "frida:github:interference-security/frida-scripts:android/show-specific-class-methods.js",
+        "source_url": "https://github.com/interference-security/frida-scripts/blob/5fb5f078535296a2f1c9b99bee663f1ea9d7011b/android/show-specific-class-methods.js",
+        "source_hash": "c2e50b4d125441b8dd05bb851cc006a7ce72d534ee4d47ceaca0a1ff89115f23",
+        "normalized_hash": "27a8b3adf014cab297f9046b0504384d4b4475050dbe01331a53a9384149c90a",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "keystore-keychain"
+        ],
+        "primary_behavior": "keystore-keychain",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1636.002"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

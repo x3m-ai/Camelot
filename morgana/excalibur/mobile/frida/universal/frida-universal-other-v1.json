@@ -1,0 +1,484 @@
+{
+  "package_id": "frida-universal-other-v1",
+  "package_name": "Frida - Universal - Other",
+  "version": "1.0.0",
+  "summary": "5 Frida instrumentation procedures for universal other mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 5 standalone Frida procedures from 3 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 3, 'research-snippet': 2}; compatibility: {'likely-compatible': 5}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 5
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "other"
+  ],
+  "source_providers": [
+    "frida-codeshare",
+    "iddoeldor-frida-snippets",
+    "medusa"
+  ],
+  "scope_counts": {
+    "generic": 3,
+    "research-snippet": 2
+  },
+  "quality_distribution": {
+    "C": 2,
+    "A": 3
+  },
+  "license_distribution": {
+    "unknown": 4,
+    "GPL-3.0": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 5
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:oleavr/read-std-string",
+      "name": "FRIDA - UNIVERSAL - Other - read-std-string [f2f4ac83]",
+      "description": "How to read an std::string",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Note: Only compatible with libc++, though libstdc++'s std::string is a lot simpler.\n */\n\nfunction readStdString (str) {\n  const isTiny = (str.readU8() & 1) === 0;\n  if (isTiny) {\n    return str.add(1).readUtf8String();\n  }\n\n  return str.add(2 * Process.pointerSize).readPointer().readUtf8String();\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "oleavr",
+        "codeshare_slug": "read-std-string",
+        "codeshare_fingerprint": "f2f4ac838e5a850b61aee2b1ca530b4130379ea33570a373b97b1a2f3c2e173d",
+        "project_uuid": "e1fc18b2-4fc9-48ec-a454-ed0a35165abf",
+        "popularity": {
+          "page": 5,
+          "browse_title": "read-std-string",
+          "likes": 3,
+          "views": "14K"
+        },
+        "discovery_page": 5,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:oleavr/read-std-string",
+        "source_url": "https://codeshare.frida.re/@oleavr/read-std-string/",
+        "source_hash": "f2f4ac838e5a850b61aee2b1ca530b4130379ea33570a373b97b1a2f3c2e173d",
+        "normalized_hash": "f2f4ac838e5a850b61aee2b1ca530b4130379ea33570a373b97b1a2f3c2e173d",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "other"
+        ],
+        "primary_behavior": "other",
+        "frida_apis": [
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sdcampbell/advanced-codeshare-loader",
+      "name": "FRIDA - UNIVERSAL - Other - advanced-codeshare-loader [5a60a557]",
+      "description": "Cross-platform Frida CodeShare script loader.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// advanced-codeshare-loader.js\nconst platformScripts = {\n    android: [\n        'sdcampbell/script1',\n        'sdcampbell/script2',\n        'sdcampbell/script3'\n    ],\n    ios: [\n        'sdcampbell/script4',\n        'sdcampbell/script5',\n        'sdcampbell/script6'\n    ]\n};\n\nfunction loadCodeshareScript(scriptName, platform) {\n    return new Promise((resolve, reject) => {\n        try {\n            if (platform === 'android') {\n                Java.perform(() => {\n                    const codeshare = require('frida-codeshare');\n                    codeshare.load(scriptName)\n                        .then(() => {\n                            console.log(`[+] Loaded Android script: ${scriptName}`);\n                            resolve();\n                        })\n                        .catch(reject);\n                });\n            } else if (platform === 'ios') {\n                ObjC.schedule(ObjC.mainQueue, () => {\n                    const codeshare = require('frida-codeshare');\n                    codeshare.load(scriptName)\n                        .then(() => {\n                            console.log(`[+] Loaded iOS script: ${scriptName}`);\n                            resolve();\n                        })\n                        .catch(reject);\n                });\n            }\n        } catch (error) {\n            reject(error);\n        }\n    });\n}\n\nasync function determineplatform() {\n    try {\n        await Java.perform(() => {});\n        return 'android';\n    } catch (e) {\n        try {\n            if (ObjC.available) return 'ios';\n        } catch (e) {\n            throw new Error('Unable to determine platform');\n        }\n    }\n}\n\nasync function loadAllScripts() {\n    try {\n        const platform = await determineplatform();\n        console.log(`[+] Detected platform: ${platform}`);\n\n        const scripts = platformScripts[platform];\n\n        for (const script of scripts) {\n            try {\n                await loadCodeshareScript(script, platform);\n            } catch (error) {\n                console.log(`[!] Failed to load ${script}: ${error.message}`);\n            }\n        }\n\n        console.log('[+] Finished loading all codeshare scripts');\n    } catch (error) {\n        console.log(`[!] Error: ${error.message}`);\n    }\n}\n\n// Add error handling for script initialization\nsetTimeout(() => {\n    loadAllScripts().catch(error => {\n        console.log('[!] Fatal error in script loading:', error);\n    });\n}, 1000);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "sdcampbell",
+        "codeshare_slug": "advanced-codeshare-loader",
+        "codeshare_fingerprint": "5a60a5574bb478a32807541f6f664cd3644bd18cf9e0730053137180cd785a0a",
+        "project_uuid": "e51fe2bd-0a6e-482f-9864-ff46c3479b86",
+        "popularity": {
+          "page": 31,
+          "browse_title": "advanced-codeshare-loader",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 31,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sdcampbell/advanced-codeshare-loader",
+        "source_url": "https://codeshare.frida.re/@sdcampbell/advanced-codeshare-loader/",
+        "source_hash": "5a60a5574bb478a32807541f6f664cd3644bd18cf9e0730053137180cd785a0a",
+        "normalized_hash": "25fe77884f743c08ed6e7b5a4128b70d4add659fc88f9e4c1023dc59cbe1dafe",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "other"
+        ],
+        "primary_behavior": "other",
+        "frida_apis": [
+          "Java.perform",
+          "ObjC.available"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:Ch0pin/medusa:snippets/className.js",
+      "name": "FRIDA - UNIVERSAL - Other - className [e2a0defa]",
+      "description": "Curated Frida source from Ch0pin/medusa: snippets/className.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var clz = Java.use(\"java.lang.Class\");\nvar clz_name = clz.getName.call(obj.getClass());",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/Ch0pin/medusa",
+        "source_commit": "8c62447d082f8612aeb9e07f8d8c20d8fa5f1fbb",
+        "source_commit_date": "2026-08-11",
+        "source_path": "snippets/className.js",
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "medusa",
+        "source_id": "frida:github:Ch0pin/medusa:snippets/className.js",
+        "source_url": "https://github.com/Ch0pin/medusa/blob/8c62447d082f8612aeb9e07f8d8c20d8fa5f1fbb/snippets/className.js",
+        "source_hash": "e2a0defaa3ba8f3a156c6ec9597f80e916969bc2ef8d6c6dcd013e9335846cf0",
+        "normalized_hash": "e2a0defaa3ba8f3a156c6ec9597f80e916969bc2ef8d6c6dcd013e9335846cf0",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "research-snippet",
+        "behaviors": [
+          "other"
+        ],
+        "primary_behavior": "other",
+        "frida_apis": [
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Get Android ID:javascript:28",
+      "name": "FRIDA - UNIVERSAL - Other - Get Android ID [4d98b7d0]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Get Android ID:javascript.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function getContext() {\n  return Java.use('android.app.ActivityThread').currentApplication().getApplicationContext().getContentResolver();\n}\n\nfunction logAndroidId() {\n  console.log('[-]', Java.use('android.provider.Settings$Secure').getString(getContext(), 'android_id'));\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Get Android ID:javascript",
+        "readme_snippet_index": 28,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Get Android ID:javascript:28",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "4d98b7d0ceab0c009496a300a4bdddd7a01aedd54f621478fc0a49bf90c2b908",
+        "normalized_hash": "4d98b7d0ceab0c009496a300a4bdddd7a01aedd54f621478fc0a49bf90c2b908",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "other"
+        ],
+        "primary_behavior": "other",
+        "frida_apis": [
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Get IMEI:js:16",
+      "name": "FRIDA - UNIVERSAL - Other - Get IMEI [6d078b84]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Get IMEI:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function getIMEI(){\n    console.log('IMEI =', Java.use(\"android.telephony.TelephonyManager\").$new().getDeviceId());\n}\nJava.perform(getIMEI)",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Get IMEI:js",
+        "readme_snippet_index": 16,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Get IMEI:js:16",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "6d078b840a81fe04df2a9d4cf0aaf609d4b9fd9e0a8300af201d102d91cad261",
+        "normalized_hash": "6d078b840a81fe04df2a9d4cf0aaf609d4b9fd9e0a8300af201d102d91cad261",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "research-snippet",
+        "behaviors": [
+          "other"
+        ],
+        "primary_behavior": "other",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

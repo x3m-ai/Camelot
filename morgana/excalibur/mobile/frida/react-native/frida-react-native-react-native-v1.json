@@ -1,0 +1,1502 @@
+{
+  "package_id": "frida-react-native-react-native-v1",
+  "package_name": "Frida - React Native - React Native",
+  "version": "1.0.0",
+  "summary": "17 Frida instrumentation procedures for react native react native mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 17 standalone Frida procedures from 1 source families.",
+    "Target platforms: ios, android, universal-native; frameworks: react-native.",
+    "Scope mix: {'framework-specific': 2, 'app-specific': 12, 'version-specific': 3}; compatibility: {'likely-compatible': 13, 'legacy': 4}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact",
+    "modify"
+  ],
+  "category": "mobile/frida/react-native",
+  "target_platform_counts": {
+    "ios": 4,
+    "android": 11,
+    "universal-native": 2
+  },
+  "frameworks": [
+    "react-native"
+  ],
+  "behavior_categories": [
+    "biometrics",
+    "crypto-observation",
+    "debugger-detection-testing",
+    "emulator-detection-testing",
+    "enumeration",
+    "filesystem",
+    "integrity-control-testing",
+    "ipc",
+    "jailbreak-state-testing",
+    "location",
+    "method-hooking",
+    "native-hooking",
+    "network-observation",
+    "root-state-testing",
+    "runtime-tracing",
+    "tls-pinning-testing",
+    "webview"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "framework-specific": 2,
+    "app-specific": 12,
+    "version-specific": 3
+  },
+  "quality_distribution": {
+    "C": 17
+  },
+  "license_distribution": {
+    "unknown": 17
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 13,
+    "legacy": 4
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:0tax00/ios-freerasp-bypass",
+      "name": "FRIDA - IOS - Network Observation - ios-freerasp-bypass [d6e7e0ca]",
+      "description": "Frida script that bypasses FreeRASP security framework by hooking and nullifying the talsecStart method to disable runtime application self-protection (RASP) checks.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n    GitHub: https://github.com/0tax00/ios-freerasp-bypass\n    Usage: frida -U -f <bundle_identifier> -l freerasp-bypass-ios.js\n*/\n\nconsole.log(\"[+] freerasp-bypass-ios\");\nif (ObjC.available) {\n    const cls = ObjC.classes.FreeraspReactNative;\n    const method = cls['- talsecStart:withResolver:withRejecter:'];\n    if (method) {\n        method.implementation = new NativeCallback(() => {}, 'void', []);\n    }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "0tax00",
+        "codeshare_slug": "ios-freerasp-bypass",
+        "codeshare_fingerprint": "d6e7e0ca4ced9716f4bb7779e69b7728bc9682d2404171c32dda690bbcf413f3",
+        "project_uuid": "b6d6cd97-f9c8-4326-b2b4-a9ef47589e2d",
+        "popularity": {
+          "page": 25,
+          "browse_title": "ios-freerasp-bypass",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 25,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:0tax00/ios-freerasp-bypass",
+        "source_url": "https://codeshare.frida.re/@0tax00/ios-freerasp-bypass/",
+        "source_hash": "d6e7e0ca4ced9716f4bb7779e69b7728bc9682d2404171c32dda690bbcf413f3",
+        "normalized_hash": "d6e7e0ca4ced9716f4bb7779e69b7728bc9682d2404171c32dda690bbcf413f3",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "framework-specific",
+        "behaviors": [
+          "enumeration",
+          "method-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "network-observation",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "NativeCallback"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "framework_prerequisite",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:0x25CBFC4F/firebase-for-android-react-native-dumper",
+      "name": "FRIDA - ANDROID APP - Method Hooking - Firebase for Android React Native Dumper [222af623]",
+      "description": "Dumps options relating to Firebase for React Native",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n    Obviously only works on application start.\n    Start your app via frida -U -f <app name> --codeshare 0x25CBFC4F/firebase-for-react-native-dumper\n    And wait a bit.\n*/\n\nlet AppModuleInstance = null;\n\nJava.perform(() => {\n    const c = \"io.invertase.firebase.app.ReactNativeFirebaseAppModule\";\n    let ReactNativeFirebaseAppModule = Java.use(c);\n    ReactNativeFirebaseAppModule[\"$init\"].implementation = function(bridgeAppContext) {\n        console.log(\"\\nCaught instance ReactNativeFirebaseAppModule: \" + this);\n        AppModuleInstance = Java.retain(this);\n        return this[\"$init\"](bridgeAppContext);\n    }\n});\n\nsetTimeout(function() {\n    Java.perform(() => {\n        console.log(\"Got appmodule: \" + AppModuleInstance);\n        console.log(\"getConstants() -> \");\n        let constants = AppModuleInstance.getConstants();\n\n        var keys = constants.keySet();\n        var iterator = keys.iterator();\n        while (iterator.hasNext()) {\n            var k = iterator.next();\n            console.log(k + \" : \" + constants.get(k));\n        }\n    });\n}, 1000);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "0x25CBFC4F",
+        "codeshare_slug": "firebase-for-android-react-native-dumper",
+        "codeshare_fingerprint": "222af623ac58307a38a554deb86286b460e68801897385fbe8d1141abc406517",
+        "project_uuid": "336218e4-a85d-4697-b6e3-5e5bbeb9826d",
+        "popularity": {
+          "page": 35,
+          "browse_title": "Firebase for Android React Native Dumper",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 35,
+        "target_app": "io.invertase.firebase.app.reactnativefirebaseappmodule",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:0x25CBFC4F/firebase-for-android-react-native-dumper",
+        "source_url": "https://codeshare.frida.re/@0x25CBFC4F/firebase-for-android-react-native-dumper/",
+        "source_hash": "222af623ac58307a38a554deb86286b460e68801897385fbe8d1141abc406517",
+        "normalized_hash": "222af623ac58307a38a554deb86286b460e68801897385fbe8d1141abc406517",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "method-hooking"
+        ],
+        "primary_behavior": "method-hooking",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:aiexz/react-native-android-js-execution",
+      "name": "FRIDA - ANDROID APP - Network Observation - React native android js execution [fac71b51]",
+      "description": "React native android js execution. tested with Hermes JavaScript bytecode, version 96. You can view the output with `adb logcat \"*:S\" ReactNativeJS:I -v raw`",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// all taken from https://pilfer.github.io/mobile-reverse-engineering/react-native/\n\n// This is the app identifier you're trying to hook\nconst package_name = 'com.example.app';\n\n// Write the hermes-hook.js payload to file\nconst f = new File(`/data/data/${package_name}/files/hermes-hook.js`, 'w');\nf.write(`console.log(JSON.stringify(this.process)); console.log('hello from React Native!');`);\nf.close();\n\nif (Java.available) {\n    Java.perform(() => {\n        const waitForClass = (className, callback) => {\n            const interval = setInterval(() => {\n                try {\n                    Java.use(className);\n                    clearInterval(interval);\n                    callback();\n                } catch (e) {\n                    // Class not yet available, keep waiting\n                }\n            }, 10);\n        };\n\n\n        const hookJS = () => {\n            try {\n                const func = Java.use('com.facebook.react.bridge.CatalystInstanceImpl').loadScriptFromAssets;\n\n                func.implementation = function(assetManager, assetURL, z) {\n                    // Store for later I guess\n\n                    this.loadScriptFromAssets(assetManager, assetURL, z);\n                    this.loadScriptFromFile(`/data/data/${package_name}/files/hermes-hook.js`, `/data/data/${package_name}/files/hermes-hook.js`, z);\n                };\n            } catch (e) {\n                console.error(e);\n            }\n        };\n\n        // We have to wait for SoLoader.init to be called before we can hook into the JS runtime.\n        // There's a few overloads, so we have to hook into all of them and then call our hookJS function.\n        waitForClass('com.facebook.soloader.SoLoader', () => {\n            let SoLoader = Java.use('com.facebook.soloader.SoLoader');\n            SoLoader.init.overload('android.content.Context', 'int').implementation = function(context, i) {\n                this.init(context, i);\n                hookJS();\n            };\n\n            SoLoader.init.overload('android.content.Context', 'int', 'com.facebook.soloader.SoFileLoader').implementation = function(context, i, soFileLoader) {\n                this.init(context, i, soFileLoader);\n                hookJS();\n            };\n\n            SoLoader.init.overload('android.content.Context', 'int', 'com.facebook.soloader.SoFileLoader', '[Ljava.lang.String;').implementation = function(context, i, soFileLoader, strArr) {\n                this.init(context, i, soFileLoader, strArr);\n                hookJS();\n            };\n\n            SoLoader.init.overload('android.content.Context', 'boolean').implementation = function(context, z) {\n                this.init(context, z);\n                hookJS();\n            };\n        });\n    });\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "aiexz",
+        "codeshare_slug": "react-native-android-js-execution",
+        "codeshare_fingerprint": "fac71b51b58a11fd87193dab5b598d60e169f5ba5f2d2f62641da8f789f6835c",
+        "project_uuid": "71212095-b9f3-4e1c-bfe0-4bb059f7f298",
+        "popularity": {
+          "page": 24,
+          "browse_title": "React native android js execution",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 24,
+        "target_app": "com.example.app",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:aiexz/react-native-android-js-execution",
+        "source_url": "https://codeshare.frida.re/@aiexz/react-native-android-js-execution/",
+        "source_hash": "fac71b51b58a11fd87193dab5b598d60e169f5ba5f2d2f62641da8f789f6835c",
+        "normalized_hash": "a2ea5f3964cd9ea691ebbf818c75fe7ef16fb2d154a072f8143f4a2532abd28b",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "network-observation",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:anubi5egypt/jailmonkey-root-detection-bypass",
+      "name": "FRIDA - ANDROID APP - Root State Testing - JailMonkey Root Detection Bypass [0abf6ca3]",
+      "description": "Bypasses jailbreak detection in any \"React-Native\" app that relies on the 'jail-monkey' library for it's jailbreak detection.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\nRoot detection bypass script for Gantix JailMoney\nhttps://github.com/GantMan/jail-monkey\n**/\nJava.perform(() => {\n    const klass = Java.use(\"com.gantix.JailMonkey.JailMonkeyModule\");\n    const hashmap_klass = Java.use(\"java.util.HashMap\");\n    const false_obj = Java.use(\"java.lang.Boolean\").FALSE.value;\n\n    klass.getConstants.implementation = function() {\n        var h = hashmap_klass.$new();\n        h.put(\"isJailBroken\", false_obj);\n        h.put(\"hookDetected\", false_obj);\n        h.put(\"canMockLocation\", false_obj);\n        h.put(\"isOnExternalStorage\", false_obj);\n        h.put(\"AdbEnabled\", false_obj);\n        return h;\n    };\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "anubi5egypt",
+        "codeshare_slug": "jailmonkey-root-detection-bypass",
+        "codeshare_fingerprint": "0abf6ca3b298cb96eeb076090e98b1c06ff02eddcfb4a31ba7a0b046a701bd9b",
+        "project_uuid": "c73dd25a-a246-42be-8f37-868f04870001",
+        "popularity": {
+          "page": 12,
+          "browse_title": "JailMonkey Root Detection Bypass",
+          "likes": 1,
+          "views": "3K"
+        },
+        "discovery_page": 12,
+        "target_app": "com.gantix.jailmonkey.jailmonkeymodule",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:anubi5egypt/jailmonkey-root-detection-bypass",
+        "source_url": "https://codeshare.frida.re/@anubi5egypt/jailmonkey-root-detection-bypass/",
+        "source_hash": "0abf6ca3b298cb96eeb076090e98b1c06ff02eddcfb4a31ba7a0b046a701bd9b",
+        "normalized_hash": "0abf6ca3b298cb96eeb076090e98b1c06ff02eddcfb4a31ba7a0b046a701bd9b",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "jailbreak-state-testing",
+          "location",
+          "method-hooking",
+          "network-observation",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:d0UBleW/dump-index-android-bundle",
+      "name": "FRIDA - ANDROID APP - Crypto Observation - dump-index-android-bundle [1a0c6b11]",
+      "description": "Dump encrypted index.android.bundle at runtime",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n * Copyright (c) 2024 d0ublew\n *\n * Permission is hereby granted, free of charge, to any person obtaining a copy of\n * this software and associated documentation files (the \"Software\"), to deal in\n * the Software without restriction, including without limitation the rights to\n * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\n * the Software, and to permit persons to whom the Software is furnished to do so,\n * subject to the following conditions:\n *\n * The above copyright notice and this permission notice shall be included in all\n * copies or substantial portions of the Software.\n *\n * THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\n * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\n * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\n * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\n * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n *\n * SPDX-License-Identifier: MIT\n */\n\n/**\n * \n * Dump encrypted index.android.bundle at runtime\n * \n */\n\nlet do_dlopen = null;\nProcess.enumerateModules().forEach(function(module) {\n    module.enumerateSymbols().forEach(function(symbol) {\n        if (symbol.name.includes(\"do_dlopen\")) {\n            // console.log(\"[*] do_dlopen found @ \" + module.name);\n            do_dlopen = symbol.address;\n        }\n    });\n});\n\n\nJava.perform(function() {\n    hookLibs();\n})\n\nlet index_android_bundle_length = 0;\n\nlet libs = {};\nlet libHooks = {\n    \"libreactnativejni.so\": {\n        \"hook\": hookLibrnjni,\n        \"hooked\": false,\n    },\n    \"libandroid.so\": {\n        \"hook\": hookLibandroid,\n        \"hooked\": false,\n    }\n};\n\nfunction hookLibrnjni(lib_base) {\n    console.log(\"[*] Installing hook for libreactnativejni.so @ \" + lib_base);\n    // nm -gD ./libreactnativejni.so | grep isHermes\n    Interceptor.attach(get_addr(\"libreactnativejni.so\", \"_ZN8facebook5react22isHermesBytecodeBundleERKNS0_12BundleHeaderE\"), {\n        onEnter: function(args) {\n            console.log(\"[*] isHermesBytecodeBundle called\");\n            console.log(\"[*] bundle size: \" + index_android_bundle_length);\n            // let d = new Date();\n            // var timestamp = (\"0\" + d.getFullYear()).slice(-2) + \"-\" + (\"0\"+(d.getMonth()+1)).slice(-2) + \"-\" + d.getDate() + \"_\" + (\"0\" + d.getHours()).slice(-2) + \"-\" + (\"0\" + d.getMinutes()).slice(-2) + \"-\" + (\"0\" + d.getSeconds()).slice(-2) + \"-\" + (\"0\" + d.getMilliseconds()).slice(-2);\n            var timestamp = Date.now();\n            let bundle = args[0].readByteArray(index_android_bundle_length);\n            const filename = `/sdcard/Download/index.android.bundle_${timestamp}`;\n            console.log(`[*] Writing bundle to ${filename}`)\n            const f = new File(filename, 'wb');\n            f.write(bundle);\n            f.close();\n            console.log(`[*] Successfully wrote bundle to ${filename}`);\n        },\n        onLeave: function(retval) {\n            return retval;\n        }\n    });\n}\n\nfunction hookLibandroid(lib_base) {\n    console.log(\"[*] Installing hook for libandroid.so @ \" + lib_base);\n    let aa_get_length = new NativeFunction(\n        get_addr(\"libandroid.so\", \"AAsset_getLength64\"),\n        \"pointer\", [\"pointer\"],\n    );\n    Interceptor.attach(get_addr(\"libandroid.so\", \"AAssetManager_open\"), {\n        onEnter: function(args) {\n            this.filename = args[1].readCString();\n            console.log(\"[*] AAssetManager_open \" + this.filename);\n        },\n        onLeave: function(retval) {\n            if (!retval.compare(ptr(0))) {\n                return retval;\n            }\n            if (this.filename == \"index.android.bundle\") {\n                let aasset = retval;\n                let len = aa_get_length(aasset);\n                index_android_bundle_length = parseInt(len.toString(), 16);\n            }\n            return retval;\n        }\n    });\n}\n\nfunction hookLibs() {\n    Interceptor.attach(do_dlopen, {\n        onEnter: function(args) {\n            this.is_null = false;\n            this.libname = args[0].readCString();\n            if (this.libname !== null) {\n                this.libname = this.libname.split(\"/\").reverse()[0];\n                // console.log(\"[*] do_dlopen \" + this.libname);\n            } else {\n                this.is_null = true;\n                return;\n            }\n        },\n        onLeave: function(retval) {\n            if (this.is_null) {\n                return retval;\n            }\n            if (this.libname in libHooks) {\n                let lib = Process.findModuleByName(this.libname);\n                // console.log(\"[*] Loaded \" + this.libname + \" @ \" + lib.base);\n                let libh = libHooks[this.libname];\n                if (!libh.hooked) {\n                    libh.hook(lib.base);\n                    libh.hooked = true;\n                }\n            }\n            return retval;\n        }\n    });\n}\n\nfunction get_addr(libname, sym) {\n    return Module.getExportByName(libname, sym);\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "d0UBleW",
+        "codeshare_slug": "dump-index-android-bundle",
+        "codeshare_fingerprint": "1a0c6b11e84bb11bbdfd43d6e0c2159ca2574286010a78461d896c7933f4518c",
+        "project_uuid": "a30e9d63-93e4-403d-be32-9d302653adf6",
+        "popularity": {
+          "page": 32,
+          "browse_title": "dump-index-android-bundle",
+          "likes": 0,
+          "views": "3K"
+        },
+        "discovery_page": 32,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:d0UBleW/dump-index-android-bundle",
+        "source_url": "https://codeshare.frida.re/@d0UBleW/dump-index-android-bundle/",
+        "source_hash": "1a0c6b11e84bb11bbdfd43d6e0c2159ca2574286010a78461d896c7933f4518c",
+        "normalized_hash": "086872ac1461197a0d6222fcef6a26156399c8f9fc96506184d3673cb1601e84",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "crypto-observation",
+          "enumeration",
+          "filesystem",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Java.perform",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Process",
+          "NativeFunction"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:DevTraleski/android-ios-freerasp-bypass",
+      "name": "FRIDA - UNIVERSAL APP - Root State Testing - Android iOS freeRASP Bypass [0ee7749f]",
+      "description": "Bypass for jailbreak/root detection of the freeRASP library. Works on Android and iOS. Based on the work of https://github.com/rodolfomarianocy",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\r\n    Android/iOS freeRASP Bypass by DevTraleski (Based on rodolfomarianocy/ios-freerasp-react-native-bypass )\r\n    frida -U -f <bundle_identifier> --codeshare DevTraleski/android-ios-freerasp-bypass\r\n    https://github.com/rodolfomarianocy/iOS-freeRASP-React-Native-Bypass\r\n    https://github.com/rodolfomarianocy/Tricks-Pentest-Android-and-iOS-Applications\r\n*/\r\n//In case of class not found, use JADX to find the path\r\nconsole.warn(\"[+] Android/iOS freeRASP React Native Bypass...\")\r\nif (ObjC.available) {\r\n    try {\r\n        Interceptor.replace(\r\n            ObjC.classes.FreeraspReactNative['- talsecStart:withResolver:withRejecter:'].implementation,\r\n            new NativeCallback(function() {}, 'void', [])\r\n        );\r\n    } catch (error) {\r\n        console.log(error.message);\r\n    }\r\n} else if (Java.available) {\r\n    Java.perform(function() {\r\n        try {\r\n            Interceptor.replace(\r\n                Java.use(\"com.freerasp.FreeraspNativeModule\").talsecStart.implementation,\r\n                new NativeCallback(function() {}, 'void', [])\r\n            );\r\n        } catch (error) {\r\n            console.log(error.message);\r\n        }\r\n    });\r\n} else {\r\n    console.log(\"[-] ObjC/Java Runtime unavailable\");\r\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "DevTraleski",
+        "codeshare_slug": "android-ios-freerasp-bypass",
+        "codeshare_fingerprint": "0ee7749f5eee9e2d6563bd8915de8176d7ee8e97218e93cd4cc8d47cb2cec481",
+        "project_uuid": "1385a948-1e41-4d31-819b-5c1724e55781",
+        "popularity": {
+          "page": 25,
+          "browse_title": "Android iOS freeRASP Bypass",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 25,
+        "target_app": "com.freerasp.freeraspnativemodule",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:DevTraleski/android-ios-freerasp-bypass",
+        "source_url": "https://codeshare.frida.re/@DevTraleski/android-ios-freerasp-bypass/",
+        "source_hash": "0ee7749f5eee9e2d6563bd8915de8176d7ee8e97218e93cd4cc8d47cb2cec481",
+        "normalized_hash": "9852afdaf3e1d4401dc90c25c7397ac58b002760a58120004ebaf75451b7918e",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "enumeration",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "network-observation",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.replace",
+          "NativeCallback"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:fahad-source/bypass-jailmonkey-jailbreak-detection-in-ios-apps-frida-script",
+      "name": "FRIDA - IOS APP - Jailbreak State Testing - Bypass JailMonkey Jailbreak Detection in iOS Apps Frida Script [2097418b]",
+      "description": "The script returns false/failure for checks on ~50 jailbreak-related paths including Cydia, Sileo, Zebra, substrate libraries, and various jailbreak tool artifacts (checkra1n, palera1n, unc0ver, etc.) 1. JailMonkey - A React Native library that detects jailbroken devices. The script hooks methods like isJailBroken, checkPaths, checkSchemes, checkDylibs, etc. 2. Native iOS APIs - System-level detection methods: - NSFileManager - File existence checks for jailbreak artifacts - UIApplication canOpenURL: - URL scheme checks (cydia://, sileo://, etc.) - C functions: stat, lstat, access - Low-level file checks 3. Anti-debugging measures - Hooks sysctl to remove the P_TRACED flag (0x800) 4. UIAlertController - Blocks jailbreak warning dialogs from being displayed",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n * iOS Jailbreak Detection Bypass v2\n * Bypasses: JailMonkey, AppsFlyer SDK, and native file checks\n *\n * Usage: frida -U -f com.test -l ios_JailMonkey_jailbreak_bypass.js --no-pause\n */\n\nconsole.log(\"[*] Jailbreak Bypass Script v2 Loaded\");\n\n// Jailbreak-related paths to hide\nvar jailbreakPaths = [\n    \"/Applications/Cydia.app\",\n    \"/Library/MobileSubstrate\",\n    \"/Library/MobileSubstrate/DynamicLibraries\",\n    \"/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist\",\n    \"/Library/MobileSubstrate/DynamicLibraries/Veency.plist\",\n    \"/Library/MobileSubstrate/CydiaSubstrate.dylib\",\n    \"/Library/MobileSubstrate/MobileSubstrate.dylib\",\n    \"/private/var/lib/cydia\",\n    \"/private/var/tmp/cydia.log\",\n    \"/private/var/lib/apt\",\n    \"/private/var/stash\",\n    \"/private/var/mobile/Library/SBSettings/Themes\",\n    \"/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist\",\n    \"/System/Library/LaunchDaemons/com.ikey.bbot.plist\",\n    \"/usr/libexec/sftp-server\",\n    \"/usr/libexec/ssh-keysign\",\n    \"/usr/sbin/sshd\",\n    \"/usr/bin/sshd\",\n    \"/usr/bin/ssh\",\n    \"/etc/apt\",\n    \"/bin/bash\",\n    \"/bin/sh\",\n    \"/private/jailbreak.txt\",\n    \"/jb/jailbreakd.plist\",\n    \"/jb/libjailbreak.dylib\",\n    \"/usr/lib/libjailbreak.dylib\",\n    \"/usr/share/jailbreak/injectme.plist\",\n    \"/var/cache/apt\",\n    \"/var/lib/apt\",\n    \"/var/lib/cydia\",\n    \"/var/log/syslog\",\n    \"/Applications/Sileo.app\",\n    \"/Applications/Zebra.app\",\n    \"/var/jb\",\n    \"/var/binpack\",\n    \"/Library/PreferenceBundles/ABypassPrefs.bundle\",\n    \"/Library/PreferenceBundles/FlyJBPrefs.bundle\",\n    \"/Library/PreferenceBundles/ShadowPreferences.bundle\",\n    \"/var/checkra1n.dmg\",\n    \"/private/var/containers/Bundle/Application/palera1n\",\n    \"/cores/binpack\",\n    \"/private/etc/apt\",\n    \"/private/var/cache/apt\",\n    \"/etc/apt/sources.list.d/electra.list\",\n    \"/etc/apt/sources.list.d/sileo.sources\",\n    \"/etc/apt/undecimus/undecimus.list\"\n];\n\nif (ObjC.available) {\n\n    // ==================== JailMonkey - Most Important ====================\n\n    console.log(\"[*] Hooking JailMonkey module...\");\n\n    try {\n        var JailMonkey = ObjC.classes.JailMonkey;\n        if (JailMonkey) {\n            console.log(\"[+] Found JailMonkey class\");\n\n            // Hook isJailBroken - returns BOOL\n            if (JailMonkey[\"- isJailBroken\"]) {\n                Interceptor.attach(JailMonkey[\"- isJailBroken\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed isJailBroken -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook jailBrokenMessage - returns NSDictionary, NOT boolean\n            if (JailMonkey[\"- jailBrokenMessage\"]) {\n                Interceptor.attach(JailMonkey[\"- jailBrokenMessage\"].implementation, {\n                    onLeave: function(retval) {\n                        // Return empty NSDictionary instead of modifying\n                        var emptyDict = ObjC.classes.NSDictionary.dictionary();\n                        console.log(\"[+] Bypassed jailBrokenMessage -> empty dict\");\n                        retval.replace(emptyDict);\n                    }\n                });\n            }\n\n            // Hook constantsToExport - returns NSDictionary with isJailBroken key\n            if (JailMonkey[\"- constantsToExport\"]) {\n                Interceptor.attach(JailMonkey[\"- constantsToExport\"].implementation, {\n                    onLeave: function(retval) {\n                        var dict = ObjC.Object(retval);\n                        // Create new dictionary with isJailBroken = false\n                        var mutableDict = ObjC.classes.NSMutableDictionary.dictionaryWithDictionary_(dict);\n                        mutableDict.setObject_forKey_(ObjC.classes.NSNumber.numberWithBool_(false), \"isJailBroken\");\n                        mutableDict.setObject_forKey_(ObjC.classes.NSNumber.numberWithBool_(false), \"canMockLocation\");\n                        mutableDict.setObject_forKey_(ObjC.classes.NSDictionary.dictionary(), \"jailBrokenMessage\");\n                        console.log(\"[+] Patched constantsToExport\");\n                        retval.replace(mutableDict);\n                    }\n                });\n            }\n\n            // Hook checkPaths - returns BOOL\n            if (JailMonkey[\"- checkPaths\"]) {\n                Interceptor.attach(JailMonkey[\"- checkPaths\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed checkPaths -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook checkSchemes - returns BOOL\n            if (JailMonkey[\"- checkSchemes\"]) {\n                Interceptor.attach(JailMonkey[\"- checkSchemes\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed checkSchemes -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook checkDylibs - returns BOOL\n            if (JailMonkey[\"- checkDylibs\"]) {\n                Interceptor.attach(JailMonkey[\"- checkDylibs\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed checkDylibs -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook checkSymlinks - returns BOOL\n            if (JailMonkey[\"- checkSymlinks\"]) {\n                Interceptor.attach(JailMonkey[\"- checkSymlinks\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed checkSymlinks -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook canViolateSandbox - returns BOOL\n            if (JailMonkey[\"- canViolateSandbox\"]) {\n                Interceptor.attach(JailMonkey[\"- canViolateSandbox\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed canViolateSandbox -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook canFork - returns BOOL\n            if (JailMonkey[\"- canFork\"]) {\n                Interceptor.attach(JailMonkey[\"- canFork\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed canFork -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook isDebugged - returns BOOL\n            if (JailMonkey[\"- isDebugged\"]) {\n                Interceptor.attach(JailMonkey[\"- isDebugged\"].implementation, {\n                    onLeave: function(retval) {\n                        console.log(\"[+] Bypassed isDebugged -> NO\");\n                        retval.replace(0x0);\n                    }\n                });\n            }\n\n            // Hook message methods - return empty NSDictionary\n            var messageMethods = [\"- checkPathsMessage\", \"- checkSchemesMessage\", \"- checkSymlinksMessage\", \"- checkDylibsMessage\"];\n            messageMethods.forEach(function(method) {\n                if (JailMonkey[method]) {\n                    Interceptor.attach(JailMonkey[method].implementation, {\n                        onLeave: function(retval) {\n                            var emptyDict = ObjC.classes.NSDictionary.dictionary();\n                            console.log(\"[+] Bypassed \" + method + \" -> empty dict\");\n                            retval.replace(emptyDict);\n                        }\n                    });\n                }\n            });\n        }\n    } catch (e) {\n        console.log(\"[!] JailMonkey hook error: \" + e);\n    }\n\n    // ==================== NSFileManager Hooks ====================\n\n    console.log(\"[*] Hooking NSFileManager...\");\n\n    try {\n        var NSFileManager = ObjC.classes.NSFileManager;\n\n        // Hook fileExistsAtPath:\n        Interceptor.attach(NSFileManager[\"- fileExistsAtPath:\"].implementation, {\n            onEnter: function(args) {\n                this.path = ObjC.Object(args[2]).toString();\n            },\n            onLeave: function(retval) {\n                for (var i = 0; i < jailbreakPaths.length; i++) {\n                    if (this.path && this.path.indexOf(jailbreakPaths[i]) !== -1) {\n                        retval.replace(0);\n                        return;\n                    }\n                }\n            }\n        });\n\n        // Hook fileExistsAtPath:isDirectory:\n        Interceptor.attach(NSFileManager[\"- fileExistsAtPath:isDirectory:\"].implementation, {\n            onEnter: function(args) {\n                this.path = ObjC.Object(args[2]).toString();\n            },\n            onLeave: function(retval) {\n                for (var i = 0; i < jailbreakPaths.length; i++) {\n                    if (this.path && this.path.indexOf(jailbreakPaths[i]) !== -1) {\n                        retval.replace(0);\n                        return;\n                    }\n                }\n            }\n        });\n    } catch (e) {\n        console.log(\"[!] NSFileManager hook error: \" + e);\n    }\n\n    // ==================== C Functions Hooks ====================\n\n    console.log(\"[*] Hooking C file functions...\");\n\n    // Hook stat\n    try {\n        var stat = Module.findExportByName(null, \"stat\");\n        if (stat) {\n            Interceptor.attach(stat, {\n                onEnter: function(args) {\n                    if (args[0]) {\n                        this.path = args[0].readCString();\n                    }\n                },\n                onLeave: function(retval) {\n                    if (this.path) {\n                        for (var i = 0; i < jailbreakPaths.length; i++) {\n                            if (this.path.indexOf(jailbreakPaths[i]) !== -1) {\n                                retval.replace(-1);\n                                return;\n                            }\n                        }\n                    }\n                }\n            });\n        }\n    } catch (e) {}\n\n    // Hook lstat\n    try {\n        var lstat = Module.findExportByName(null, \"lstat\");\n        if (lstat) {\n            Interceptor.attach(lstat, {\n                onEnter: function(args) {\n                    if (args[0]) {\n                        this.path = args[0].readCString();\n                    }\n                },\n                onLeave: function(retval) {\n                    if (this.path) {\n                        for (var i = 0; i < jailbreakPaths.length; i++) {\n                            if (this.path.indexOf(jailbreakPaths[i]) !== -1) {\n                                retval.replace(-1);\n                                return;\n                            }\n                        }\n                    }\n                }\n            });\n        }\n    } catch (e) {}\n\n    // Hook access\n    try {\n        var access = Module.findExportByName(null, \"access\");\n        if (access) {\n            Interceptor.attach(access, {\n                onEnter: function(args) {\n                    if (args[0]) {\n                        this.path = args[0].readCString();\n                    }\n                },\n                onLeave: function(retval) {\n                    if (this.path) {\n                        for (var i = 0; i < jailbreakPaths.length; i++) {\n                            if (this.path.indexOf(jailbreakPaths[i]) !== -1) {\n                                retval.replace(-1);\n                                return;\n                            }\n                        }\n                    }\n                }\n            });\n        }\n    } catch (e) {}\n\n    // ==================== URL Scheme Check Bypass ====================\n\n    console.log(\"[*] Hooking UIApplication canOpenURL...\");\n\n    var jailbreakSchemes = [\"cydia://\", \"sileo://\", \"zbra://\", \"filza://\", \"undecimus://\", \"activator://\"];\n\n    try {\n        var UIApplication = ObjC.classes.UIApplication;\n        Interceptor.attach(UIApplication[\"- canOpenURL:\"].implementation, {\n            onEnter: function(args) {\n                this.url = ObjC.Object(args[2]).toString();\n            },\n            onLeave: function(retval) {\n                for (var i = 0; i < jailbreakSchemes.length; i++) {\n                    if (this.url && this.url.indexOf(jailbreakSchemes[i]) !== -1) {\n                        retval.replace(0);\n                        return;\n                    }\n                }\n            }\n        });\n    } catch (e) {}\n\n    // ==================== Block Jailbreak Alert ====================\n\n    console.log(\"[*] Hooking UIAlertController...\");\n\n    try {\n        var UIAlertController = ObjC.classes.UIAlertController;\n        Interceptor.attach(UIAlertController[\"+ alertControllerWithTitle:message:preferredStyle:\"].implementation, {\n            onEnter: function(args) {\n                var message = ObjC.Object(args[3]);\n                if (message) {\n                    var msgStr = message.toString();\n                    if (msgStr.indexOf(\"Rooted\") !== -1 ||\n                        msgStr.indexOf(\"Jailbroken\") !== -1 ||\n                        msgStr.indexOf(\"can not use\") !== -1) {\n                        console.log(\"[+] Blocking jailbreak alert!\");\n                        args[2] = ObjC.classes.NSString.stringWithString_(\"\");\n                        args[3] = ObjC.classes.NSString.stringWithString_(\"\");\n                    }\n                }\n            }\n        });\n\n        // Block presentation of jailbreak alerts\n        var UIViewController = ObjC.classes.UIViewController;\n        Interceptor.attach(UIViewController[\"- presentViewController:animated:completion:\"].implementation, {\n            onEnter: function(args) {\n                var vc = ObjC.Object(args[2]);\n                if (vc && vc.$className === \"UIAlertController\") {\n                    try {\n                        var msg = vc.message();\n                        if (msg) {\n                            var msgStr = msg.toString();\n                            if (msgStr.indexOf(\"Rooted\") !== -1 ||\n                                msgStr.indexOf(\"Jailbroken\") !== -1 ||\n                                msgStr.indexOf(\"can not use\") !== -1) {\n                                console.log(\"[+] Preventing alert presentation!\");\n                                // Don't present - replace with nil\n                                args[2] = NULL;\n                            }\n                        }\n                    } catch (e) {}\n                }\n            }\n        });\n    } catch (e) {\n        console.log(\"[!] Alert hook error: \" + e);\n    }\n\n    // ==================== sysctl Anti-Debug Bypass ====================\n\n    console.log(\"[*] Hooking sysctl...\");\n\n    try {\n        var sysctl = Module.findExportByName(null, \"sysctl\");\n        if (sysctl) {\n            Interceptor.attach(sysctl, {\n                onEnter: function(args) {\n                    this.mib = args[0];\n                    this.oldp = args[2];\n                },\n                onLeave: function(retval) {\n                    if (this.mib && this.oldp) {\n                        try {\n                            var mib0 = this.mib.readInt();\n                            var mib1 = this.mib.add(4).readInt();\n                            if (mib0 === 1 && mib1 === 14) {\n                                var flagsPtr = this.oldp.add(32);\n                                var flags = flagsPtr.readInt();\n                                if (flags & 0x800) {\n                                    flagsPtr.writeInt(flags & ~0x800);\n                                }\n                            }\n                        } catch (e) {}\n                    }\n                }\n            });\n        }\n    } catch (e) {}\n\n    console.log(\"[*] ========================================\");\n    console.log(\"[*]  Jailbreak Bypass v2 Active!\");\n    console.log(\"[*] ========================================\");\n\n} else {\n    console.log(\"[!] Objective-C runtime not available\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "fahad-source",
+        "codeshare_slug": "bypass-jailmonkey-jailbreak-detection-in-ios-apps-frida-script",
+        "codeshare_fingerprint": "2097418b3f2177c56c0197e4d2dba3e156924eee559c0922654479961f6fd2e7",
+        "project_uuid": "66b08082-d916-45eb-88e2-814500308673",
+        "popularity": {
+          "page": 21,
+          "browse_title": "Bypass JailMonkey Jailbreak Detection in iOS Apps Frida Script",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 21,
+        "target_app": "com.test",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:fahad-source/bypass-jailmonkey-jailbreak-detection-in-ios-apps-frida-script",
+        "source_url": "https://codeshare.frida.re/@fahad-source/bypass-jailmonkey-jailbreak-detection-in-ios-apps-frida-script/",
+        "source_hash": "2097418b3f2177c56c0197e4d2dba3e156924eee559c0922654479961f6fd2e7",
+        "normalized_hash": "36fd26efae76d112bf7149781a4335502a8433db8f32a4929baafd7605e3013f",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "filesystem",
+          "jailbreak-state-testing",
+          "location",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:fdciabdul/shopee-bypass-shpssdk",
+      "name": "FRIDA - ANDROID APP - Tls Pinning Testing - Shopee Bypass SHPSSDK [112b8c65]",
+      "description": "Shopee Bypass SHPSSDK ( imtaqin.id )",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\r\n\r\n// Shopee Lite bypass — Frida 17+ compatible\r\n\r\nfunction log(tag, msg) {\r\n    console.log('[' + tag + '] ' + msg);\r\n}\r\n\r\nfunction addr(p) {\r\n    try {\r\n        return '0x' + p.toString(16).toUpperCase().padStart(12, '0');\r\n    } catch (_e) {\r\n        return '0x?';\r\n    }\r\n}\r\n\r\nfunction hexpreview(str, maxBytes) {\r\n    if (!str) return '<null>';\r\n    var n = Math.min(str.length, maxBytes || 32);\r\n    var hex = '';\r\n    for (var i = 0; i < n; i++) {\r\n        hex += ('0' + str.charCodeAt(i).toString(16)).slice(-2) + ' ';\r\n    }\r\n    return hex.trim() + (str.length > n ? ' ...' : '');\r\n}\r\n\r\nfunction dumpModules() {\r\n    var targets = ['libc.so', 'libshpssdk.so', 'libandroid.so', 'libssl.so', 'libart.so'];\r\n    var found = {};\r\n    Process.enumerateModules().forEach(function(m) {\r\n        for (var i = 0; i < targets.length; i++) {\r\n            if (m.name === targets[i] && !found[m.name]) {\r\n                found[m.name] = true;\r\n                log('MOD', m.name + '\\t base=' + addr(m.base) + '  size=0x' + m.size.toString(16));\r\n            }\r\n        }\r\n    });\r\n}\r\n\r\n// ─── 1. RootBeer native ───────────────────────────────────────────────────────\r\n\r\nfunction bypassRootBeer() {\r\n    try {\r\n        const RootBeerNative = Java.use('com.scottyab.rootbeer.RootBeerNative');\r\n        RootBeerNative.checkForRoot.implementation = function(_paths) {\r\n            log('ROOT', 'RootBeerNative.checkForRoot() -> 0');\r\n            return 0;\r\n        };\r\n    } catch (e) {\r\n        log('WARN', 'RootBeerNative: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── 1b. androidx.core.b.q() — THE root check ────────────────────────────────\r\n// x.f() and y.f() both call: is_rooted(Boolean.valueOf(androidx.core.b.q()))\r\n// Killing q() here stops is_rooted=true from reaching DeviceExt.Builder in both\r\n// TCP login request paths.\r\n\r\nfunction bypassCoreRootCheck() {\r\n    // Main root check: Build.TAGS test-keys + su file check + which su exec\r\n    try {\r\n        const CoreUtils = Java.use('androidx.core.b');\r\n        log('ROOT', 'androidx.core.b class resolved OK');\r\n        try {\r\n            CoreUtils.q.implementation = function() {\r\n                log('ROOT', 'androidx.core.b.q() -> false');\r\n                return false;\r\n            };\r\n            log('ROOT', 'CoreUtils.q hook installed');\r\n        } catch (e) {\r\n            log('WARN', 'CoreUtils.q hook: ' + e.message);\r\n        }\r\n        try {\r\n            CoreUtils.b.implementation = function() {\r\n                log('ROOT', 'androidx.core.b.b() -> false');\r\n                return false;\r\n            };\r\n            log('ROOT', 'CoreUtils.b hook installed');\r\n        } catch (e) {\r\n            log('WARN', 'CoreUtils.b hook: ' + e.message);\r\n        }\r\n    } catch (e) {\r\n        log('WARN', 'CoreRootCheck: ' + e.message);\r\n    }\r\n\r\n    // File existence helper called by b() for su binary paths\r\n    try {\r\n        const MediaSessionA = Java.use('android.support.v4.media.session.a');\r\n        MediaSessionA.b.overload('java.lang.String').implementation = function(path) {\r\n            if (path && (path.indexOf('/su') !== -1 || path.indexOf('uperuser') !== -1 || path.indexOf('rootbeer') !== -1)) {\r\n                log('ROOT', 'session.a.b(' + path + ') -> false');\r\n                return false;\r\n            }\r\n            return this.b(path);\r\n        };\r\n    } catch (_e) {}\r\n\r\n    // Block Runtime.exec([\"which\", \"su\"]) — q() exec-checks su after file checks\r\n    // If which su succeeds on emulator, q() returns true regardless of file hooks\r\n    try {\r\n        const Runtime = Java.use('java.lang.Runtime');\r\n        Runtime.exec.overload('[Ljava.lang.String;').implementation = function(cmdarray) {\r\n            if (cmdarray && cmdarray.length >= 2) {\r\n                const last = String(cmdarray[cmdarray.length - 1]);\r\n                if (last === 'su' || last === 'su\\n') {\r\n                    log('ROOT', 'Runtime.exec(which su) -> /system/bin/true (empty output)');\r\n                    return this.exec(['/system/bin/true']);\r\n                }\r\n            }\r\n            return this.exec(cmdarray);\r\n        };\r\n        log('ROOT', 'Runtime.exec hook installed');\r\n    } catch (e) {\r\n        log('WARN', 'Runtime.exec hook: ' + e.message);\r\n    }\r\n\r\n    // Belt+suspenders: intercept at DeviceExt.Builder.is_rooted() protobuf builder\r\n    try {\r\n        const DeviceExtBuilder = Java.use('com.shopee.protocol.action.DeviceExt$Builder');\r\n        DeviceExtBuilder.is_rooted.overload('java.lang.Boolean').implementation = function(_val) {\r\n            log('ROOT', 'DeviceExt.Builder.is_rooted() -> false');\r\n            return this.is_rooted(Java.use('java.lang.Boolean').valueOf(false));\r\n        };\r\n        log('ROOT', 'DeviceExt.Builder.is_rooted hook installed');\r\n    } catch (e) {\r\n        log('WARN', 'DeviceExtBuilder.is_rooted: ' + e.message);\r\n    }\r\n\r\n    // ClientStats.toProtobuf() sends is_rooted / tongdunBlackboxData / szDeviceFingerPrint\r\n    // All are final Kotlin fields — patch via reflection before serialization\r\n    try {\r\n        const ClientStats = Java.use('com.shopee.app.network.request.extended.clientstats.ClientStats');\r\n\r\n        function patchClientStatsFields(instance) {\r\n            const clazz = instance.getClass();\r\n            const fields = {\r\n                'isRooted': {\r\n                    bool: false\r\n                },\r\n                'isFingerprintTempered': {\r\n                    bool: false\r\n                },\r\n                'tongdunBlackboxData': {\r\n                    str: ''\r\n                }\r\n            };\r\n            for (const name in fields) {\r\n                try {\r\n                    const f = clazz.getDeclaredField(name);\r\n                    f.setAccessible(true);\r\n                    if (fields[name].bool !== undefined) {\r\n                        f.setBoolean(instance, fields[name].bool);\r\n                    } else {\r\n                        f.set(instance, fields[name].str);\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n            log('ROOT', 'ClientStats patched: isRooted=false tongdun=\"\"');\r\n        }\r\n\r\n        ClientStats.toProtobuf.overload().implementation = function() {\r\n            try {\r\n                patchClientStatsFields(this);\r\n            } catch (e) {\r\n                log('WARN', 'ClientStats reflect: ' + e.message);\r\n            }\r\n            return this.toProtobuf();\r\n        };\r\n        ClientStats.toProtobuf.overload('com.shopee.app.network.request.extended.clientstats.ClientStats').implementation = function(oldStats) {\r\n            try {\r\n                patchClientStatsFields(this);\r\n            } catch (e) {\r\n                log('WARN', 'ClientStats(oldStats) reflect: ' + e.message);\r\n            }\r\n            return this.toProtobuf(oldStats);\r\n        };\r\n    } catch (e) {\r\n        log('WARN', 'ClientStats.toProtobuf: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── 8. SHPSSDK / TongDun bypass ────────────────────────────────────────────\r\n// SHPSSDK.getRiskToken() generates an encrypted device-fingerprint token from\r\n// libshpssdk.so. Returning \"\" breaks the server-side validation differently from\r\n// F13 (\"Halaman Tidak Tersedia\"). Instead, let libshpssdk.so generate a real\r\n// token but with root/Frida/emulator signals scrubbed via native hooks (see\r\n// bypassNativeSecurity below). Only TongDun blackbox is zeroed (separate SDK).\r\n\r\nfunction bypassSPSSdk() {\r\n    // TongDun blackbox only — cleared at ClientIdentifier proto builder level\r\n    try {\r\n        const CIBuilder = Java.use('com.shopee.protocol.action.ClientIdentifier$Builder');\r\n        CIBuilder.tongdun_blackbox.overload('java.lang.String').implementation = function(_str) {\r\n            log('SPS', 'ClientIdentifier.Builder.tongdun_blackbox() -> \"\"');\r\n            try {\r\n                const f = this.getClass().getDeclaredField('tongdun_blackbox');\r\n                f.setAccessible(true);\r\n                f.set(this, '');\r\n            } catch (_e) {}\r\n            return this;\r\n        };\r\n        log('SPS', 'ClientIdentifier.Builder.tongdun_blackbox hook installed');\r\n    } catch (e) {\r\n        log('WARN', 'ClientIdentifier.tongdun_blackbox: ' + e.message);\r\n    }\r\n\r\n    // SHPSSDK.Builder.toggle(boolean) controls sensor-data collection.\r\n    // toggle() is sometimes NOT called by the app (remote config feature flag OFF) → default=false.\r\n    // Hook build() to force toggle(true) before building so sensor collection always happens.\r\n    // Native ASensor_getVendor is hooked separately to spoof \"Goldfish\" → \"STMicroelectronics\".\r\n    // NOTE: build()→toggle(true) was tried but causes sensor-wait delay that breaks\r\n    // login form timing. Toggle() is not called by the app (server feature flag=OFF),\r\n    // so default=false (no sensor collection) → 155-byte short token generated quickly.\r\n    try {\r\n        const SHPSSBuilder = Java.use('com.shopee.shpssdk.SHPSSDK$Builder');\r\n        SHPSSBuilder.toggle.overload('boolean').implementation = function(_z) {\r\n            log('SPS', 'SHPSSDK.Builder.toggle(' + _z + ') called');\r\n            return this.toggle.call(this, _z);\r\n        };\r\n        log('SPS', 'SHPSSDK.Builder.toggle hook installed (pass-through, logging)');\r\n    } catch (e) {\r\n        log('WARN', 'SHPSSDK.Builder.toggle: ' + e.message);\r\n    }\r\n\r\n    // getRiskToken: pass-through + log (needed for startup; don't return \"\" here).\r\n    try {\r\n        const SHPSSDK_cls = Java.use('com.shopee.shpssdk.SHPSSDK');\r\n        SHPSSDK_cls.getRiskToken.overload('android.content.Context').implementation = function(ctx) {\r\n            const token = this.getRiskToken.call(this, ctx);\r\n            const preview = token ? token.substring(0, 60) : '<null>';\r\n            log('SPS', 'getRiskToken() len=' + (token ? token.length : 0) + ' preview=' + preview);\r\n            return token;\r\n        };\r\n        log('SPS', 'SHPSSDK.getRiskToken hook installed (logging)');\r\n    } catch (e) {\r\n        log('WARN', 'SHPSSDK.getRiskToken: ' + e.message);\r\n    }\r\n\r\n    // getRiskSync / getRiskAsync — local device integrity checks returning SPSType enum list.\r\n    // EMULATOR/ROOT/HOOK in the list causes HaTe locally. Force SAFETY.\r\n    try {\r\n        const SHPSSDK_cls2 = Java.use('com.shopee.shpssdk.SHPSSDK');\r\n        const ArrayList = Java.use('java.util.ArrayList');\r\n        try {\r\n            SHPSSDK_cls2.getRiskSync.overload('android.content.Context').implementation = function(_ctx) {\r\n                const lst = ArrayList.$new();\r\n                log('SPS', 'getRiskSync() -> [] (forced SAFETY)');\r\n                return lst;\r\n            };\r\n        } catch (_e) {}\r\n        try {\r\n            // getRiskAsync with callback — find overloads by trying common signatures\r\n            const overloads = SHPSSDK_cls2.getRiskAsync.overloads;\r\n            overloads.forEach(function(ov) {\r\n                ov.implementation = function() {\r\n                    log('SPS', 'getRiskAsync() intercepted — invoking with forced SAFETY callback');\r\n                    // Call original but we'll hook the callback result\r\n                    return ov.apply(this, arguments);\r\n                };\r\n            });\r\n        } catch (_e) {}\r\n        log('SPS', 'getRiskSync/Async hooks installed');\r\n    } catch (e) {\r\n        log('WARN', 'getRiskSync/Async: ' + e.message);\r\n    }\r\n\r\n    // Log the risk_token returned by df.infra.sz.shopee.co.id.\r\n    // Called with (false, riskToken) when a fresh server token is stored.\r\n    // Logging helps understand what Part2 the server sends — useful for crafting bypass.\r\n    try {\r\n        const RiskStore = Java.use('com.shopee.shpssdk.uuuvuvvww.vwwwuwwvv.vwwuvwwvv');\r\n        RiskStore.uwwuwuwuv.overload('boolean', 'java.lang.String').implementation = function(fresh, token) {\r\n            var tlen = token ? token.length : 0;\r\n            log('SPS', 'RISK_TOKEN_STORED: fresh=' + fresh + ' len=' + tlen);\r\n            if (token && tlen > 0) {\r\n                log('SPS', 'TOKEN_TXT: ' + token.substring(0, 80) + (tlen > 80 ? '...' : ''));\r\n                log('SPS', 'TOKEN_HEX: ' + hexpreview(token, 24));\r\n            }\r\n            return this.uwwuwuwuv(fresh, token);\r\n        };\r\n        log('SPS', 'risk_token storage hook installed');\r\n    } catch (e) {\r\n        log('WARN', 'risk_token storage hook: ' + e.message);\r\n    }\r\n\r\n    // F13 bypass: SPSSDKDelegate.getDeviceFingerPrint is called ONLY from Login.Builder\r\n    // to set security_device_fingerprint in the login protobuf.\r\n    // Returning \"\" sends no SPS token with the login request → server cannot do risk-based F13 block.\r\n    try {\r\n        const SPSDelegate = Java.use('com.shopee.app.util.tongdun.SPSSDKDelegate');\r\n        SPSDelegate.getDeviceFingerPrint.implementation = function(_ctx) {\r\n            log('SPS', 'getDeviceFingerPrint -> \"\" (F13 bypass)');\r\n            return '';\r\n        };\r\n        log('SPS', 'getDeviceFingerPrint hook installed (F13 bypass)');\r\n    } catch (e) {\r\n        log('WARN', 'getDeviceFingerPrint hook: ' + e.message);\r\n    }\r\n\r\n}\r\n\r\n// ─── 2. Emulator detection ────────────────────────────────────────────────────\r\n\r\nfunction bypassEmulator() {\r\n    try {\r\n        const EmulatorA = Java.use('com.shopee.libdeviceinfo.emulator.a');\r\n        EmulatorA.a.overload('[Ljava.lang.String;').implementation = function(_paths) {\r\n            log('EMULATOR', 'emulator.a.a() -> false');\r\n            return false;\r\n        };\r\n        EmulatorA.b.overload('android.content.Context').implementation = function(_ctx) {\r\n            log('EMULATOR', 'emulator.a.b() -> false');\r\n            return false;\r\n        };\r\n    } catch (e) {\r\n        log('WARN', 'emulator.a: ' + e.message);\r\n    }\r\n\r\n    try {\r\n        const RNInfo = Java.use('com.facebook.react.modules.systeminfo.AndroidInfoHelpers');\r\n        try {\r\n            RNInfo.isRunningOnGenymotion.implementation = function() {\r\n                return false;\r\n            };\r\n        } catch (_e) {}\r\n        try {\r\n            RNInfo.isRunningOnStockEmulator.implementation = function() {\r\n                return false;\r\n            };\r\n        } catch (_e) {}\r\n    } catch (_e) {}\r\n}\r\n\r\n// ─── 3. CommonInfo telemetry ──────────────────────────────────────────────────\r\n\r\nfunction bypassTelemetry() {\r\n    try {\r\n        const CommonInfo = Java.use('com.shopee.luban.common.model.common.CommonInfo');\r\n\r\n        try {\r\n            CommonInfo.isRoot.overload().implementation = function() {\r\n                log('TELEMETRY', 'CommonInfo.isRoot() -> false');\r\n                return false;\r\n            };\r\n        } catch (_e) {}\r\n\r\n        try {\r\n            CommonInfo.isEmulator.overload().implementation = function() {\r\n                log('TELEMETRY', 'CommonInfo.isEmulator() -> false');\r\n                return false;\r\n            };\r\n        } catch (_e) {}\r\n\r\n        try {\r\n            CommonInfo.toPBCommonInfo.implementation = function() {\r\n                try {\r\n                    const clazz = this.getClass();\r\n\r\n                    const setBool = function(name, val) {\r\n                        try {\r\n                            const f = clazz.getDeclaredField(name);\r\n                            f.setAccessible(true);\r\n                            try {\r\n                                f.setBoolean(this, val);\r\n                            } catch (_e) {\r\n                                f.set(this, Java.use('java.lang.Boolean').valueOf(val));\r\n                            }\r\n                        } catch (e) {\r\n                            log('WARN', 'setBool ' + name + ': ' + e.message);\r\n                        }\r\n                    }.bind(this);\r\n\r\n                    const setStr = function(name, val) {\r\n                        try {\r\n                            const f = clazz.getDeclaredField(name);\r\n                            f.setAccessible(true);\r\n                            f.set(this, val);\r\n                        } catch (e) {\r\n                            log('WARN', 'setStr ' + name + ': ' + e.message);\r\n                        }\r\n                    }.bind(this);\r\n\r\n                    setBool('isRoot', false);\r\n                    setBool('isEmulator', false);\r\n                    setStr('deviceFingerPrint', 'ed083ba0ae636b33_SM-G9750');\r\n                    setStr('region', 'ID');\r\n\r\n                    log('TELEMETRY', 'toPBCommonInfo() patched: isRoot=false isEmulator=false region=ID');\r\n                } catch (e) {\r\n                    log('WARN', 'toPBCommonInfo reflect: ' + e.message);\r\n                }\r\n                return this.toPBCommonInfo();\r\n            };\r\n        } catch (_e) {}\r\n\r\n    } catch (e) {\r\n        log('WARN', 'CommonInfo: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── 4. SSL pinning (OkHttp3) ────────────────────────────────────────────────\r\n\r\nfunction bypassSSL() {\r\n    try {\r\n        const CertPinner = Java.use('okhttp3.CertificatePinner');\r\n        CertPinner['check'].overload('java.lang.String', 'java.util.List').implementation =\r\n            function(host, _certs) {\r\n                log('SSL', 'CertificatePinner.check(' + host + ') bypassed');\r\n            };\r\n        try {\r\n            CertPinner['check'].overload('java.lang.String', 'kotlin.jvm.functions.Function0').implementation =\r\n                function(host, _fn) {\r\n                    log('SSL', 'CertificatePinner.check(kotlin)(' + host + ') bypassed');\r\n                };\r\n        } catch (_e) {}\r\n    } catch (e) {\r\n        log('WARN', 'OkHttp3 CertPinner: ' + e.message);\r\n    }\r\n\r\n    try {\r\n        const TMImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');\r\n        TMImpl.verifyChain.implementation = function(chain, _anchors, host, _clientAuth, _ocsp, _sct) {\r\n            log('SSL', 'TrustManagerImpl.verifyChain(' + host + ') bypassed');\r\n            return chain;\r\n        };\r\n    } catch (e) {\r\n        log('WARN', 'TrustManagerImpl: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── 5. Build props spoof ────────────────────────────────────────────────────\r\n// Build.TAGS must be \"release-keys\" — androidx.core.b.q() checks TAGS.contains(\"test-keys\")\r\n// Emulators default to \"test-keys\" which triggers isRooted=true before any file check.\r\n\r\nfunction spoofBuild() {\r\n    try {\r\n        const Build = Java.use('android.os.Build');\r\n        Build.FINGERPRINT.value = 'samsung/beyond1qltezxm/beyond1q:12/SP1A.210812.016/G9750ZHU7GVI5:user/release-keys';\r\n        Build.HARDWARE.value = 'kona';\r\n        Build.PRODUCT.value = 'beyond1q';\r\n        Build.BOARD.value = 'msmnile';\r\n        Build.MANUFACTURER.value = 'samsung';\r\n        Build.MODEL.value = 'SM-G9750';\r\n        Build.BRAND.value = 'samsung';\r\n        Build.TAGS.value = 'release-keys';\r\n        Build.TYPE.value = 'user';\r\n        log('SPOOF', 'Build props -> Samsung SM-G9750 (release-keys)');\r\n    } catch (e) {\r\n        log('WARN', 'Build spoof: ' + e.message);\r\n    }\r\n\r\n    // IMEI spoofing — emulator returns \"000000000000000\" which is a well-known emulator ID.\r\n    // TelephonyManager.getDeviceId() (deprecated API 26) and getImei() (API 26+) both leak it.\r\n    try {\r\n        const TelephonyManager = Java.use('android.telephony.TelephonyManager');\r\n        const FAKE_IMEI = '358423097812345'; // fresh IMEI — rotated to change SPS token\r\n        try {\r\n            TelephonyManager.getDeviceId.overload().implementation = function() {\r\n                log('SPOOF', 'TelephonyManager.getDeviceId() -> ' + FAKE_IMEI);\r\n                return FAKE_IMEI;\r\n            };\r\n        } catch (_e) {}\r\n        try {\r\n            TelephonyManager.getImei.overload().implementation = function() {\r\n                log('SPOOF', 'TelephonyManager.getImei() -> ' + FAKE_IMEI);\r\n                return FAKE_IMEI;\r\n            };\r\n        } catch (_e) {}\r\n        try {\r\n            TelephonyManager.getImei.overload('int').implementation = function(_slot) {\r\n                return FAKE_IMEI;\r\n            };\r\n        } catch (_e) {}\r\n        log('SPOOF', 'IMEI hooks installed (' + FAKE_IMEI + ')');\r\n    } catch (e) {\r\n        log('WARN', 'IMEI spoof: ' + e.message);\r\n    }\r\n\r\n    // NOTE: Settings.Secure.android_id hook removed — Settings.Secure.getString is called too\r\n    // frequently during app init, causing V8 overhead that delays login form rendering.\r\n    // If android_id proves to be an F13 signal, address via lower-level ContentProvider hook.\r\n}\r\n\r\n// ─── 6 & 7. Native hooks ─────────────────────────────────────────────────────\r\n\r\nfunction resolveExport(exportName, optModuleName) {\r\n    if (optModuleName) {\r\n        try {\r\n            const m = Process.getModuleByName(optModuleName);\r\n            const a = m.findExportByName(exportName);\r\n            if (a && !a.isNull()) return a;\r\n        } catch (_e) {}\r\n    }\r\n    try {\r\n        const a = Module.findExportByName(optModuleName || null, exportName);\r\n        if (a && !a.isNull()) return a;\r\n    } catch (_e) {}\r\n    try {\r\n        const a = Module.findExportByName(exportName);\r\n        if (a && !a.isNull()) return a;\r\n    } catch (_e) {}\r\n    try {\r\n        for (const m of Process.enumerateModules()) {\r\n            try {\r\n                const a = m.findExportByName(exportName);\r\n                if (a && !a.isNull()) return a;\r\n            } catch (_e) {}\r\n        }\r\n    } catch (_e) {}\r\n    return null;\r\n}\r\n\r\nfunction safeAttach(sym, callbacks, label) {\r\n    if (!sym || sym.isNull()) return false;\r\n    try {\r\n        Interceptor.attach(sym, callbacks);\r\n        if (label) log('HOOK', label + ' @ ' + addr(sym));\r\n        return true;\r\n    } catch (_e) {\r\n        return false;\r\n    }\r\n}\r\n\r\nfunction bypassNativeExists() {\r\n    try {\r\n        const sym = resolveExport('_Z6existsPKc', 'libtoolChecker.so');\r\n        if (sym) {\r\n            safeAttach(sym, {\r\n                onEnter: function(args) {\r\n                    try {\r\n                        this.path = args[0].readUtf8String();\r\n                    } catch (_e) {\r\n                        this.path = '?';\r\n                    }\r\n                },\r\n                onLeave: function(retval) {\r\n                    if (retval.toInt32() !== 0) {\r\n                        log('NATIVE', 'exists(' + this.path + ') -> 0');\r\n                        retval.replace(ptr(0));\r\n                    }\r\n                }\r\n            });\r\n            log('NATIVE', 'libtoolChecker.exists() hooked (early)');\r\n            return;\r\n        }\r\n\r\n        const dlopenSym = resolveExport('android_dlopen_ext') || resolveExport('dlopen');\r\n        if (!dlopenSym) {\r\n            log('WARN', 'dlopen not found — skip exists() watch');\r\n            return;\r\n        }\r\n\r\n        let hooked = false;\r\n        safeAttach(dlopenSym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.lib = args[0].readUtf8String();\r\n                } catch (_e) {\r\n                    this.lib = '';\r\n                }\r\n            },\r\n            onLeave: function(_ret) {\r\n                if (hooked || !this.lib || this.lib.indexOf('libtoolChecker.so') === -1) return;\r\n                const s = resolveExport('_Z6existsPKc', 'libtoolChecker.so');\r\n                if (s && safeAttach(s, {\r\n                        onEnter: function(a) {\r\n                            try {\r\n                                this.path = a[0].readUtf8String();\r\n                            } catch (_e) {\r\n                                this.path = '?';\r\n                            }\r\n                        },\r\n                        onLeave: function(r) {\r\n                            if (r.toInt32() !== 0) {\r\n                                log('NATIVE', 'exists(' + this.path + ') -> 0');\r\n                                r.replace(ptr(0));\r\n                            }\r\n                        }\r\n                    })) {\r\n                    hooked = true;\r\n                    log('NATIVE', 'libtoolChecker.exists() hooked (late)');\r\n                }\r\n            }\r\n        });\r\n        log('NATIVE', 'dlopen watcher set for libtoolChecker.so');\r\n    } catch (e) {\r\n        log('WARN', 'bypassNativeExists: ' + e.message);\r\n    }\r\n}\r\n\r\n// Filtered /proc/self/maps — real maps with Frida entries removed.\r\n// /dev/null was previously used but an EMPTY maps file is a strong anomaly signal.\r\n// Generated once in Java.perform using Java IO (bypasses our libc hooks) at startup.\r\nvar _fakeMapsPath = '/data/local/tmp/fake_maps_sps';\r\nvar _fakeMapsReady = false;\r\nvar _trafficIntercepted = false; // guard against CLEAR_TASK infinite loop\r\n\r\nfunction generateFilteredMaps() {\r\n    // Use shell cat on /proc/<pid>/maps so our own fopen/open hooks don't intercept it.\r\n    // The child sh process reads from /proc/<shopee-pid>/maps directly (no hook).\r\n    try {\r\n        var pid = Java.use('android.os.Process').myPid();\r\n        var rt = Java.use('java.lang.Runtime').getRuntime();\r\n        var proc = rt.exec([\r\n            '/system/bin/sh', '-c',\r\n            \"cat /proc/\" + pid + \"/maps | grep -v frida | grep -v gadget | grep -v xposed > \" + _fakeMapsPath\r\n        ]);\r\n        proc.waitFor();\r\n        _fakeMapsReady = true;\r\n        log('MAPS', 'Filtered maps written via shell for PID ' + pid + ' -> ' + _fakeMapsPath);\r\n    } catch (e) {\r\n        log('WARN', 'generateFilteredMaps (shell): ' + e.message);\r\n    }\r\n}\r\n\r\n// Module-range cache for caller-attribution in I/O hooks.\r\n// Populated lazily after libshpssdk.so loads. Only used for diagnostic logging.\r\nvar _spsMod = null;\r\n\r\nfunction _spsFromHere(ra) {\r\n    try {\r\n        if (!_spsMod) _spsMod = Process.findModuleByName('libshpssdk.so');\r\n        if (!_spsMod || !ra) return false;\r\n        return ra.compare(_spsMod.base) >= 0 &&\r\n            ra.compare(_spsMod.base.add(_spsMod.size)) < 0;\r\n    } catch (_e) {\r\n        return false;\r\n    }\r\n}\r\n\r\nfunction hideFrida() {\r\n    try {\r\n        const fopen = resolveExport('fopen', 'libc.so');\r\n        if (!fopen) {\r\n            log('WARN', 'fopen not found');\r\n            return;\r\n        }\r\n        const ok = safeAttach(fopen, { /* label logged separately via ok path below */\r\n            onEnter: function(args) {\r\n                try {\r\n                    const path = args[0].readUtf8String();\r\n                    // Log every fopen from libshpssdk.so so we can see ALL paths it reads\r\n                    if (path && _spsFromHere(this.returnAddress)) {\r\n                        log('SPS_IO', 'libshpssdk.fopen(\"' + path + '\")');\r\n                    }\r\n                    // /proc/self/maps → filtered maps (real entries minus frida).\r\n                    // Redirecting to /dev/null creates an empty file which is a strong\r\n                    // anomaly signal (real apps always have many mappings).\r\n                    if (path && path.indexOf('/proc/self/maps') !== -1) {\r\n                        var mapsTarget = _fakeMapsReady ? _fakeMapsPath : '/dev/null';\r\n                        args[0] = Memory.allocUtf8String(mapsTarget);\r\n                        log('NATIVE', 'fopen(' + path + ') -> ' + (_fakeMapsReady ? 'fake_maps_sps' : '/dev/null'));\r\n                    }\r\n                    // /proc/self/smaps — extended maps with memory details; redirect to /dev/null\r\n                    if (path && path.indexOf('/proc/self/smaps') !== -1) {\r\n                        args[0] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', 'fopen(' + path + ') -> /dev/null (smaps)');\r\n                    }\r\n                    // Network/version paths that could reveal QEMU topology or kernel version:\r\n                    if (path && (path.indexOf('/proc/net/tcp') !== -1 ||\r\n                            path.indexOf('/proc/net/unix') !== -1)) {\r\n                        args[0] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', 'fopen(' + path + ') -> /dev/null');\r\n                    }\r\n                    // cpuinfo → fake ARM64 Exynos 9820 (SPS-only, not global).\r\n                    // Global redirect caused non-SPS libs (OpenSSL etc.) to see ARM64 → SIGILL.\r\n                    // Previous: global /dev/null = empty suspicious. Now: SPS-only fake ARM64.\r\n                    if (path && path.indexOf('/proc/cpuinfo') !== -1 && _spsFromHere(this.returnAddress)) {\r\n                        args[0] = Memory.allocUtf8String('/data/local/tmp/fake_cpuinfo');\r\n                        log('NATIVE', 'fopen(' + path + ') [SPS] -> fake_cpuinfo (ARM64)');\r\n                    } else if (path && path.indexOf('/proc/cpuinfo') !== -1) {\r\n                        // Non-SPS callers still need empty (not real x86 content for anti-cheat tools)\r\n                        args[0] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', 'fopen(' + path + ') -> /dev/null');\r\n                    }\r\n                    // Redirect /proc/net/arp for SPS only: real QEMU ARP (52:54:00:..., 10.0.2.x)\r\n                    // is a definitive emulator signal. Fake WiFi ARP consistent with ARM64 HWCAP\r\n                    // + aarch64 uname. SPS-only (not global) to avoid HaTe.\r\n                    if (path && path.indexOf('/proc/net/arp') !== -1 && _spsFromHere(this.returnAddress)) {\r\n                        args[0] = Memory.allocUtf8String('/data/local/tmp/fake_arp');\r\n                        log('NATIVE', 'fopen(/proc/net/arp) [SPS] -> fake_arp (WiFi)');\r\n                    }\r\n                    // Battery cycle: emulator has no battery files → ENOENT → suspicious.\r\n                    // Real device (SM-G9750, ~1yr): battery_cycle ≈ 280.\r\n                    if (path && _spsFromHere(this.returnAddress) &&\r\n                        (path.indexOf('/sys/class/power_supply/battery/battery_cycle') !== -1 ||\r\n                            path.indexOf('/sys/class/power_supply/battery/cycle_count') !== -1)) {\r\n                        args[0] = Memory.allocUtf8String('/data/local/tmp/fake_battery_cycle');\r\n                        log('NATIVE', 'fopen(' + path + ') [SPS] -> fake_battery_cycle (280)');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        });\r\n        if (ok) log('HOOK', 'fopen @ ' + addr(fopen));\r\n        log('NATIVE', ok ? 'fopen hook active' : 'fopen attach failed');\r\n    } catch (e) {\r\n        log('WARN', 'hideFrida: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── 9. Broad native security hook ───────────────────────────────────────────\r\n// Hook open/access/stat/__system_property_get so libshpssdk.so (and any other\r\n// native detector) sees no su binaries, no Frida maps, and real-device props.\r\n// This lets libshpssdk.so generate a structurally-valid SPS token without\r\n// root/Frida/emulator signals — server accepts the token and doesn't send F13.\r\n\r\nfunction bypassNativeSecurity() {\r\n    const SU_PATHS = [\r\n        '/system/bin/su', '/system/xbin/su', '/sbin/su',\r\n        '/data/local/xbin/su', '/data/local/su', '/su/bin/su',\r\n        '/system/sd/xbin/su', '/system/bin/failsafe/su',\r\n        '/system/app/Superuser.apk', '/system/app/SuperSU.apk',\r\n        '/data/local/bin/su',\r\n        // Magisk-specific paths\r\n        '/data/adb/magisk', '/sbin/.magisk', '/dev/.magisk',\r\n        '/data/adb/ksu', '/data/adb/apatch'\r\n    ];\r\n\r\n    function isSuPath(p) {\r\n        if (!p) return false;\r\n        for (var i = 0; i < SU_PATHS.length; i++) {\r\n            if (p === SU_PATHS[i] || p.indexOf(SU_PATHS[i]) === 0) return true;\r\n        }\r\n        return false;\r\n    }\r\n\r\n    // Paths redirected via open/openat/__open_2 (NOT fopen — see hideFrida).\r\n    // /proc/self/maps: use filtered maps (real entries minus frida), not /dev/null.\r\n    // /proc/net/tcp, /proc/net/unix: /dev/null (QEMU network topology detection).\r\n    function isMapsPath(p) {\r\n        return p && (p.indexOf('/proc/net/tcp') !== -1 ||\r\n            p.indexOf('/proc/net/unix') !== -1);\r\n    }\r\n\r\n    function isSelfMapsPath(p) {\r\n        return p && p.indexOf('/proc/self/maps') !== -1;\r\n    }\r\n\r\n    // QEMU-specific device/pseudo-paths → redirect to non-existent path\r\n    var QEMU_PATHS = [\r\n        '/dev/goldfish_pipe', '/dev/qemu_pipe', '/dev/goldfish_sync_fence',\r\n        '/dev/goldfish_audio', '/dev/goldfish_fb'\r\n    ];\r\n\r\n    function isQemuPath(p) {\r\n        if (!p) return false;\r\n        for (var i = 0; i < QEMU_PATHS.length; i++) {\r\n            if (p === QEMU_PATHS[i] || p.indexOf(QEMU_PATHS[i]) === 0) return true;\r\n        }\r\n        return false;\r\n    }\r\n\r\n    // open() / open64() — redirect su/qemu/tcp paths; maps → filtered fake\r\n    var open_sym = resolveExport('open', 'libc.so') || resolveExport('open64', 'libc.so');\r\n    if (open_sym) {\r\n        safeAttach(open_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    var p = args[0].readUtf8String();\r\n                    if (isSelfMapsPath(p)) {\r\n                        args[0] = Memory.allocUtf8String(_fakeMapsReady ? _fakeMapsPath : '/dev/null');\r\n                        log('NATIVE', 'open(' + p + ') -> ' + (_fakeMapsReady ? 'fake_maps_sps' : '/dev/null'));\r\n                    } else if (isMapsPath(p)) {\r\n                        args[0] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', 'open(' + p + ') -> /dev/null');\r\n                    } else if (isSuPath(p) || isQemuPath(p)) {\r\n                        args[0] = Memory.allocUtf8String('/proc/_no_su_');\r\n                        log('NATIVE', 'open(' + p + ') -> blocked');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, 'open');\r\n        log('NATIVE', 'open() hook active');\r\n    } else {\r\n        log('WARN', 'open() not found in libc.so');\r\n    }\r\n\r\n    // openat() — same filters, path is args[1]\r\n    var openat_sym = resolveExport('openat', 'libc.so') || resolveExport('openat64', 'libc.so');\r\n    if (openat_sym) {\r\n        safeAttach(openat_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    var p = args[1].readUtf8String();\r\n                    if (isSelfMapsPath(p)) {\r\n                        args[1] = Memory.allocUtf8String(_fakeMapsReady ? _fakeMapsPath : '/dev/null');\r\n                        log('NATIVE', 'openat(' + p + ') -> ' + (_fakeMapsReady ? 'fake_maps_sps' : '/dev/null'));\r\n                    } else if (isMapsPath(p)) {\r\n                        args[1] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', 'openat(' + p + ') -> /dev/null');\r\n                    } else if (isSuPath(p) || isQemuPath(p)) {\r\n                        args[1] = Memory.allocUtf8String('/proc/_no_su_');\r\n                        log('NATIVE', 'openat(' + p + ') -> blocked');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, 'openat');\r\n        log('NATIVE', 'openat() hook active');\r\n    }\r\n\r\n    // access() — return -1 for su paths\r\n    var access_sym = resolveExport('access', 'libc.so');\r\n    if (access_sym) {\r\n        safeAttach(access_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.p = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (isSuPath(this.p) && retval.toInt32() === 0) {\r\n                    retval.replace(ptr(-1));\r\n                    log('NATIVE', 'access(' + this.p + ') -> -1');\r\n                }\r\n            }\r\n        }, 'access');\r\n        log('NATIVE', 'access() hook active');\r\n    }\r\n\r\n    // stat() / lstat() — return -1 for su paths\r\n    var stat_sym = resolveExport('stat', 'libc.so') || resolveExport('stat64', 'libc.so') || resolveExport('__stat64', 'libc.so');\r\n    if (stat_sym) {\r\n        safeAttach(stat_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.p = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (isSuPath(this.p) && retval.toInt32() === 0) {\r\n                    retval.replace(ptr(-1));\r\n                    log('NATIVE', 'stat(' + this.p + ') -> -1');\r\n                }\r\n            }\r\n        }, 'stat');\r\n        log('NATIVE', 'stat() hook active');\r\n    }\r\n\r\n    var lstat_sym = resolveExport('lstat', 'libc.so') || resolveExport('lstat64', 'libc.so');\r\n    if (lstat_sym) {\r\n        safeAttach(lstat_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.p = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (isSuPath(this.p) && retval.toInt32() === 0) {\r\n                    retval.replace(ptr(-1));\r\n                    log('NATIVE', 'lstat(' + this.p + ') -> -1');\r\n                }\r\n            }\r\n        }, 'lstat');\r\n        log('NATIVE', 'lstat() hook active');\r\n    }\r\n\r\n    // __open_2 — Android's 2-arg open() variant that libc.so compiles to\r\n    var open2_sym = resolveExport('__open_2', 'libc.so');\r\n    if (open2_sym) {\r\n        safeAttach(open2_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    var p = args[0].readUtf8String();\r\n                    if (isSelfMapsPath(p)) {\r\n                        args[0] = Memory.allocUtf8String(_fakeMapsReady ? _fakeMapsPath : '/dev/null');\r\n                        log('NATIVE', '__open_2(' + p + ') -> ' + (_fakeMapsReady ? 'fake_maps_sps' : '/dev/null'));\r\n                    } else if (isMapsPath(p)) {\r\n                        args[0] = Memory.allocUtf8String('/dev/null');\r\n                        log('NATIVE', '__open_2(' + p + ') -> /dev/null');\r\n                    } else if (isSuPath(p) || isQemuPath(p)) {\r\n                        args[0] = Memory.allocUtf8String('/proc/_no_su_');\r\n                        log('NATIVE', '__open_2(' + p + ') -> blocked');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, '__open_2');\r\n        log('NATIVE', '__open_2() hook active');\r\n    } else {\r\n        log('WARN', '__open_2 not found');\r\n    }\r\n\r\n    // fstatat — stat with dirfd, used instead of stat() on Android\r\n    var fstatat_sym = resolveExport('fstatat', 'libc.so') || resolveExport('fstatat64', 'libc.so');\r\n    if (fstatat_sym) {\r\n        safeAttach(fstatat_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.p = args[1].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (isSuPath(this.p) && retval.toInt32() === 0) {\r\n                    retval.replace(ptr(-1));\r\n                    log('NATIVE', 'fstatat(' + this.p + ') -> -1');\r\n                }\r\n            }\r\n        }, 'fstatat');\r\n        log('NATIVE', 'fstatat() hook active');\r\n    }\r\n\r\n    // popen — shell command execution e.g. \"which su\"\r\n    var popen_sym = resolveExport('popen', 'libc.so');\r\n    if (popen_sym) {\r\n        safeAttach(popen_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    var cmd = args[0].readUtf8String();\r\n                    if (cmd && (cmd.indexOf('su') !== -1 || cmd.indexOf('busybox') !== -1 || cmd.indexOf('magisk') !== -1)) {\r\n                        args[0] = Memory.allocUtf8String('echo \"\"');\r\n                        log('NATIVE', 'popen(\"' + cmd + '\") -> \"echo \"\"\"');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, 'popen');\r\n        log('NATIVE', 'popen() hook active');\r\n    }\r\n\r\n    // dl_iterate_phdr — dynamic linker scans its own linked list (NOT /proc/self/maps)\r\n    // so frida-agent-64.so appears even if we redirect maps to /dev/null.\r\n    // IMPORTANT: create NativeCallback ONCE (not per-library entry) to avoid V8 alloc\r\n    // overhead on every iteration (dl_iterate_phdr may be called 100s of times at startup).\r\n    var dl_iter_sym = resolveExport('dl_iterate_phdr', 'libc.so');\r\n    if (dl_iter_sym) {\r\n        try {\r\n            var _dlOrigFn = null; // cached NativeFunction for current invocation's callback\r\n            var _dlWrapper = new NativeCallback(function(info, sz, ud) {\r\n                try {\r\n                    var np = info.add(8).readPointer();\r\n                    if (!np.isNull()) {\r\n                        var nm = np.readCString();\r\n                        if (nm && (nm.indexOf('frida') !== -1 ||\r\n                                nm.indexOf('gadget') !== -1 ||\r\n                                nm.indexOf('xposed') !== -1)) {\r\n                            log('NATIVE', 'dl_iterate_phdr: hiding \"' + nm + '\"');\r\n                            return 0;\r\n                        }\r\n                    }\r\n                } catch (_e) {}\r\n                return _dlOrigFn ? _dlOrigFn(info, sz, ud) : 0;\r\n            }, 'int', ['pointer', 'uint64', 'pointer']);\r\n            safeAttach(dl_iter_sym, {\r\n                onEnter: function(args) {\r\n                    _dlOrigFn = new NativeFunction(args[0], 'int', ['pointer', 'uint64', 'pointer']);\r\n                    args[0] = _dlWrapper;\r\n                },\r\n                onLeave: function(_retval) {\r\n                    _dlOrigFn = null;\r\n                }\r\n            }, 'dl_iterate_phdr');\r\n            log('NATIVE', 'dl_iterate_phdr() hooked (Frida filter, single-alloc)');\r\n        } catch (e) {\r\n            log('WARN', 'dl_iterate_phdr: ' + e.message);\r\n        }\r\n    } else {\r\n        log('WARN', 'dl_iterate_phdr not found');\r\n    }\r\n\r\n    // syscall() wrapper — raw syscall interception for openat/access/faccessat\r\n    // libshpssdk.so imports syscall() directly; libc open/access hooks can be bypassed\r\n    // x86-64 syscall numbers: openat=257, open=2, access=21, faccessat=269\r\n    var syscall_sym = resolveExport('syscall', 'libc.so');\r\n    if (syscall_sym) {\r\n        safeAttach(syscall_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    var nr = args[0].toInt32();\r\n                    var pathArgIdx;\r\n                    if (nr === 2) {\r\n                        pathArgIdx = 1;\r\n                    } // SYS_open\r\n                    else if (nr === 257) {\r\n                        pathArgIdx = 2;\r\n                    } // SYS_openat\r\n                    else if (nr === 21) {\r\n                        pathArgIdx = 1;\r\n                    } // SYS_access\r\n                    else if (nr === 269) {\r\n                        pathArgIdx = 2;\r\n                    } // SYS_faccessat\r\n                    else {\r\n                        return;\r\n                    }\r\n                    var p = args[pathArgIdx].readUtf8String();\r\n                    // Use arg pointer replacement (not in-place write) to avoid buffer overflow\r\n                    // when new path is longer than original. Store ref on this to prevent GC.\r\n                    if (p && p.indexOf('/proc/cpuinfo') !== -1) {\r\n                        this._ref = Memory.allocUtf8String('/data/local/tmp/fake_cpuinfo');\r\n                        args[pathArgIdx] = this._ref;\r\n                        log('NATIVE', 'syscall(' + nr + ',' + p + ') -> fake_cpuinfo (ARM64)');\r\n                    } else if (isSelfMapsPath(p)) {\r\n                        this._ref = Memory.allocUtf8String(_fakeMapsReady ? _fakeMapsPath : '/dev/null');\r\n                        args[pathArgIdx] = this._ref;\r\n                        log('NATIVE', 'syscall(' + nr + ',' + p + ') -> ' + (_fakeMapsReady ? 'fake_maps_sps' : '/dev/null'));\r\n                    } else if (isMapsPath(p)) {\r\n                        this._ref = Memory.allocUtf8String('/dev/null');\r\n                        args[pathArgIdx] = this._ref;\r\n                        log('NATIVE', 'syscall(' + nr + ',' + p + ') -> /dev/null');\r\n                    } else if (isSuPath(p)) {\r\n                        this.blockSyscall = true;\r\n                        this.nr = nr;\r\n                        this._ref = Memory.allocUtf8String('/proc/_no_su_');\r\n                        args[pathArgIdx] = this._ref;\r\n                        log('NATIVE', 'syscall(' + nr + ',' + p + ') -> blocked');\r\n                    }\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                // For access()/faccessat() raw syscall, also force -1 return\r\n                if (this.blockSyscall && (this.nr === 21 || this.nr === 269)) {\r\n                    if (retval.toInt32() === 0) {\r\n                        retval.replace(ptr(-1));\r\n                    }\r\n                }\r\n            }\r\n        }, 'syscall');\r\n        log('NATIVE', 'syscall() hook active');\r\n    }\r\n\r\n    // __system_property_get — spoof emulator-revealing props\r\n    var SPOOF_PROPS = {\r\n        'ro.hardware': 'kona',\r\n        'ro.kernel.qemu': '0',\r\n        'ro.kernel.android.qemud': '0',\r\n        'ro.build.tags': 'release-keys',\r\n        'ro.build.type': 'user',\r\n        'ro.product.model': 'SM-G9750',\r\n        'ro.product.manufacturer': 'samsung',\r\n        'ro.product.brand': 'samsung',\r\n        'ro.build.fingerprint': 'samsung/beyond1qltezxm/beyond1q:12/SP1A.210812.016/G9750ZHU7GVI5:user/release-keys',\r\n        'qemu.sf.fake_camera': '',\r\n        'init.svc.qemu-props': '',\r\n        'ro.product.board': 'msmnile',\r\n        'ro.product.cpu.abi': 'arm64-v8a',\r\n        'ro.product.cpu.abilist': 'arm64-v8a,armeabi-v7a,armeabi'\r\n    };\r\n    var propget_sym = resolveExport('__system_property_get', 'libc.so');\r\n    if (propget_sym) {\r\n        safeAttach(propget_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.name = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n                this.valPtr = args[1];\r\n            },\r\n            onLeave: function(retval) {\r\n                if (this.name && SPOOF_PROPS.hasOwnProperty(this.name)) {\r\n                    try {\r\n                        var spoofed = SPOOF_PROPS[this.name];\r\n                        Memory.writeUtf8String(this.valPtr, spoofed);\r\n                        retval.replace(ptr(spoofed.length));\r\n                        log('NATIVE', '__system_property_get(' + this.name + ') -> \"' + spoofed + '\"');\r\n                    } catch (_e) {}\r\n                }\r\n            }\r\n        }, '__system_property_get');\r\n        log('NATIVE', '__system_property_get() hook active');\r\n    }\r\n\r\n    // __system_property_find — returns prop_info* (modern property API)\r\n    // Return null for emulator-specific properties so find+read path is also blocked.\r\n    // Block find() for emulator-revealing props so the find+read path is covered too.\r\n    // __system_property_get is still hooked to spoof values for callers using get() directly.\r\n    var BLOCK_PROP_FIND = {\r\n        'ro.hardware': true,\r\n        'ro.kernel.qemu': true,\r\n        'ro.kernel.android.qemud': true,\r\n        'qemu.sf.fake_camera': true,\r\n        'init.svc.qemu-props': true,\r\n        'ro.product.board': true\r\n    };\r\n    var propfind_sym = resolveExport('__system_property_find', 'libc.so');\r\n    if (propfind_sym) {\r\n        safeAttach(propfind_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.name = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (this.name && BLOCK_PROP_FIND[this.name] && !retval.isNull()) {\r\n                    retval.replace(ptr(0)); // null = property not found\r\n                    log('NATIVE', '__system_property_find(' + this.name + ') -> null');\r\n                }\r\n            }\r\n        }, '__system_property_find');\r\n        log('NATIVE', '__system_property_find() hook active');\r\n    }\r\n\r\n    // uname() — returns kernel/machine info; x86_64 reveals emulator on ARM device\r\n    // struct utsname offsets (Linux x86-64): sysname[65], nodename[65], release[65],\r\n    // version[65], machine[65], domainname[65] — machine at offset 65*4=260\r\n    var uname_sym = resolveExport('uname', 'libc.so');\r\n    if (uname_sym) {\r\n        safeAttach(uname_sym, {\r\n            onEnter: function(args) {\r\n                this.utsPtr = args[0];\r\n            },\r\n            onLeave: function(retval) {\r\n                if (retval.toInt32() === 0 && this.utsPtr && !this.utsPtr.isNull()) {\r\n                    try {\r\n                        var mach = this.utsPtr.add(65 * 4).readUtf8String();\r\n                        if (mach && mach.indexOf('x86') !== -1) {\r\n                            this.utsPtr.add(65 * 4).writeUtf8String('aarch64');\r\n                            log('NATIVE', 'uname: machine x86_64 -> aarch64');\r\n                        }\r\n                    } catch (_e) {}\r\n                }\r\n            }\r\n        }, 'uname');\r\n        log('NATIVE', 'uname() hook active');\r\n    }\r\n\r\n    // ASensor_getVendor — native NDK sensor API used directly by libshpssdk.so.\r\n    // Java Sensor.getVendor() hook doesn't cover this C function.\r\n    // On QEMU emulator all sensors return vendor \"Goldfish\" — definitive emulator flag.\r\n    // Persistent allocation so the returned pointer outlives the hook call.\r\n    // ASensor_getVendor: LOG ONLY — spoofing \"AOSP\"→\"STMicroelectronics\" was tried but\r\n    // caused server to detect \"impossible device profile\" → \"Halaman Tidak Tersedia\" (stronger\r\n    // than F13, blocks home page). Logging only to confirm which sensors SPS enumerates.\r\n    var asensorVendor = resolveExport('ASensor_getVendor', 'libandroid.so');\r\n    if (asensorVendor) {\r\n        safeAttach(asensorVendor, {\r\n            onEnter: function(_args) {\r\n                this._fromSps = _spsFromHere(this.returnAddress);\r\n            },\r\n            onLeave: function(retval) {\r\n                try {\r\n                    if (!this._fromSps) return;\r\n                    if (!retval.isNull()) {\r\n                        var v = retval.readCString();\r\n                        if (v) log('NATIVE', 'ASensor_getVendor (SPS) = \"' + v + '\"');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, 'ASensor_getVendor');\r\n        log('NATIVE', 'ASensor_getVendor() hook active (log-only)');\r\n    }\r\n\r\n    // getenv() — check for QEMU-specific env vars\r\n    var BLOCK_ENVS = {\r\n        'ANDROID_QEMUD': '0',\r\n        'QEMU_PIPE': ''\r\n    };\r\n    var getenv_sym = resolveExport('getenv', 'libc.so');\r\n    if (getenv_sym) {\r\n        safeAttach(getenv_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.name = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n            },\r\n            onLeave: function(retval) {\r\n                if (this.name && BLOCK_ENVS.hasOwnProperty(this.name) && !retval.isNull()) {\r\n                    retval.replace(ptr(0));\r\n                    log('NATIVE', 'getenv(' + this.name + ') -> null');\r\n                }\r\n            }\r\n        }, 'getenv');\r\n        log('NATIVE', 'getenv() hook active');\r\n    }\r\n\r\n    // readlink() — /proc/self/fd/X symlinks point to \"/memfd:frida-agent-64.so (deleted)\"\r\n    // Guard: minimum address 0x1000 for buf (callers may pass NULL/1 on error paths).\r\n    var readlink_sym = resolveExport('readlink', 'libc.so');\r\n    var _minBufAddr = ptr('0x1000');\r\n    if (readlink_sym) {\r\n        safeAttach(readlink_sym, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    this.path = args[0].readUtf8String();\r\n                } catch (_e) {}\r\n                this.buf = args[1];\r\n            },\r\n            onLeave: function(retval) {\r\n                try {\r\n                    var n = retval.toInt32();\r\n                    if (n <= 0 || n >= 4096) return;\r\n                    if (!this.buf || this.buf.isNull()) return;\r\n                    if (this.buf.compare(_minBufAddr) <= 0) return; // guard: reject 0x1 etc.\r\n                    var resolved = this.buf.readUtf8String(n);\r\n                    if (resolved && (resolved.indexOf('frida') !== -1 ||\r\n                            resolved.indexOf('gadget') !== -1 ||\r\n                            resolved.indexOf('xposed') !== -1)) {\r\n                        retval.replace(ptr(-1)); // ENOENT\r\n                        log('NATIVE', 'readlink(' + this.path + ') hidden: \"' + resolved + '\"');\r\n                    }\r\n                } catch (_e) {}\r\n            }\r\n        }, 'readlink');\r\n        log('NATIVE', 'readlink() hook active');\r\n    }\r\n\r\n    // getauxval: Spoof AT_HWCAP for SPS calls only.\r\n    // Real x86_64 value 0x178bfbff is a definitive emulator signal in the SPS token.\r\n    // Exynos 9820 (SM-G9750) ARM64 HWCAP: fp|asimd|evtstrm|aes|pmull|sha1|sha2|crc32\r\n    //   |atomics|fphp|asimdhp|cpuid|asimdrdm|jscvt|fcma|lrcpc = 0xFFFF\r\n    // Keep ARP unblocked (blocking ARP caused stronger \"Halaman Tidak Tersedia\" block).\r\n    try {\r\n        var _arm64Hwcap = ptr(0xFFFF); // ARM64 Exynos 9820 typical HWCAP\r\n        var getauxval_ptr = resolveExport('getauxval', 'libc.so');\r\n        if (getauxval_ptr) {\r\n            safeAttach(getauxval_ptr, {\r\n                onEnter: function(args) {\r\n                    try {\r\n                        this._auxType = args[0].toInt32();\r\n                        this._fromSps = _spsFromHere(this.returnAddress);\r\n                    } catch (_e) {}\r\n                },\r\n                onLeave: function(retval) {\r\n                    try {\r\n                        if (this._fromSps) {\r\n                            if (this._auxType === 16) { // AT_HWCAP\r\n                                log('NATIVE', 'getauxval(AT_HWCAP) [SPS] ' + retval.toUInt32().toString(16) + ' -> 0xffff');\r\n                                retval.replace(_arm64Hwcap);\r\n                            } else if (this._auxType === 15 || this._auxType === 26) {\r\n                                log('NATIVE', 'getauxval(' + this._auxType + ') [SPS] = ' + retval.toUInt32().toString(16));\r\n                            }\r\n                        }\r\n                    } catch (_e) {}\r\n                }\r\n            }, 'getauxval');\r\n            log('NATIVE', 'getauxval() hook active (AT_HWCAP SPS-only -> 0xffff ARM64)');\r\n        }\r\n    } catch (e) {\r\n        log('WARN', 'getauxval hook: ' + e.message);\r\n    }\r\n}\r\n\r\n// ─── Entry ───────────────────────────────────────────────────────────────────\r\n// Native hooks: install immediately (no Java bridge needed)\r\nlog('INIT', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');\r\nlog('INIT', '  Shopee Lite bypass  pid=' + Process.id + '  arch=' + Process.arch);\r\nlog('INIT', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');\r\ndumpModules();\r\nbypassNativeExists();\r\nhideFrida();\r\nbypassNativeSecurity();\r\n\r\n// Java hooks: must wait for Shopee's DEX to be loaded into a class loader.\r\n// After pm clear / fresh install, Zygote forks the process before the APK's\r\n// DEX is loaded. Java.available becomes true (ART is running) but\r\n// Java.use('com.shopee.*') throws ClassNotFoundException because the Shopee\r\n// class loader isn't the active one yet.\r\n// Fix: enumerate all class loaders, wait until one has CommonInfo, then set\r\n// Java.classFactory.loader so all subsequent Java.use() calls hit Shopee DEX.\r\n\r\n// ─── OkHttp request capture (no body read → no crash) ────────────────────────\r\n// Hook OkHttpClient.newCall() — fires BEFORE the request is executed.\r\n// Only reads URL/method/headers — never touches request or response body.\r\n// Output: [REQ] {\"method\":\"GET\",\"url\":\"...\",\"cookie\":\"...\"} — parsed by replay.js.\r\n\r\nfunction hookOkHttpRequests() {\r\n    var CAPTURE_HEADERS = [\r\n        'cookie', 'Cookie', 'authorization', 'Authorization',\r\n        'sz-token', 'shopee-session', 'x-csrftoken', 'X-CSRFToken',\r\n        'if-none-match', 'If-None-Match', 'x-sap-ri', 'x-sap-sec'\r\n    ];\r\n    try {\r\n        var OkHttpClient = Java.use('okhttp3.OkHttpClient');\r\n        OkHttpClient.newCall.implementation = function(req) {\r\n            try {\r\n                var url = req.url().toString();\r\n                var method = req.method();\r\n                var hh = req.headers();\r\n                var out = {\r\n                    method: method,\r\n                    url: url\r\n                };\r\n                for (var i = 0; i < CAPTURE_HEADERS.length; i++) {\r\n                    var v = hh.get(CAPTURE_HEADERS[i]);\r\n                    if (v) {\r\n                        var k = CAPTURE_HEADERS[i].toLowerCase();\r\n                        out[k] = v.length > 300 ? v.substring(0, 300) + '...' : v;\r\n                    }\r\n                }\r\n                log('REQ', JSON.stringify(out));\r\n            } catch (_e) {}\r\n            return this.newCall(req);\r\n        };\r\n        log('REQ', 'OkHttpClient.newCall hooked (request capture)');\r\n    } catch (e) {\r\n        log('WARN', 'hookOkHttpRequests: ' + e.message);\r\n    }\r\n}\r\n\r\nvar _javaRetries = 0;\r\n\r\nfunction doInstallHooks() {\r\n    Java.perform(function() {\r\n        log('INIT', 'Java.perform started (attempt ' + _javaRetries + ')');\r\n        hookOkHttpRequests(); // request-only capture (no body = safe)\r\n        bypassRootBeer();\r\n        bypassCoreRootCheck();\r\n        bypassEmulator();\r\n        bypassTelemetry();\r\n        bypassSPSSdk();\r\n        bypassSSL();\r\n        spoofBuild();\r\n        generateFilteredMaps(); // must run after Java is ready; writes fake_maps_sps\r\n\r\n        // Intercept WebView URL loads.\r\n        // Shopee's traffic verification redirects to /verify/traffic/error when device risk is HIGH.\r\n        // Bypass: redirect to the home page instead, which loads as guest content without risk check.\r\n        try {\r\n            const WebView = Java.use('android.webkit.WebView');\r\n            const Activity = Java.use('android.app.Activity');\r\n\r\n            function interceptTrafficError(webView) {\r\n                // Finish the host WebPageActivity_ and relaunch the app's main intent with\r\n                // FLAG_ACTIVITY_CLEAR_TASK so the logged-in home page appears regardless\r\n                // of how LoginActivity was started (HaTe tap vs su am start).\r\n                try {\r\n                    var ctx = webView.getContext();\r\n                    var act = Java.cast(ctx, Activity);\r\n                    log('WEBVIEW', 'traffic/error -> clearing task and relaunching home');\r\n                    try {\r\n                        var pm = ctx.getPackageManager();\r\n                        var launchIntent = pm.getLaunchIntentForPackage('com.shopee.lite.id');\r\n                        if (launchIntent !== null) {\r\n                            launchIntent.setFlags(0x10000000 | 0x20000000); // NEW_TASK | CLEAR_TASK\r\n                            ctx.startActivity(launchIntent);\r\n                            log('WEBVIEW', 'relaunched main with CLEAR_TASK');\r\n                        }\r\n                    } catch (e2) {\r\n                        log('WEBVIEW', 'relaunch failed: ' + e2.message);\r\n                    }\r\n                    act.finish();\r\n                } catch (e) {\r\n                    log('WEBVIEW', 'interceptTrafficError failed: ' + e.message);\r\n                }\r\n            }\r\n\r\n            WebView.loadUrl.overload('java.lang.String').implementation = function(url) {\r\n                log('WEBVIEW', 'loadUrl: ' + url);\r\n                if (url && url.indexOf('/verify/traffic/error') !== -1) {\r\n                    if (url.indexOf('is_logged_in=true') !== -1) {\r\n                        if (!_trafficIntercepted) {\r\n                            // First post-login traffic check: CLEAR_TASK relaunch to logged-in home\r\n                            _trafficIntercepted = true;\r\n                            interceptTrafficError(this);\r\n                        } else {\r\n                            // Subsequent fires (from relaunched app): just finish WebPageActivity\r\n                            log('WEBVIEW', 'traffic/error (repeat) -> just finish WebPageActivity');\r\n                            try {\r\n                                var ctx2 = this.getContext();\r\n                                Java.cast(ctx2, Activity).finish();\r\n                            } catch (e2) {\r\n                                log('WEBVIEW', 'repeat finish: ' + e2.message);\r\n                            }\r\n                        }\r\n                        return;\r\n                    }\r\n                    // Pre-login startup check (is_logged_in=false) — let HaTe show; UI automation taps \"Log In\"\r\n                }\r\n                return this.loadUrl(url);\r\n            };\r\n            WebView.loadUrl.overload('java.lang.String', 'java.util.Map').implementation = function(url, headers) {\r\n                log('WEBVIEW', 'loadUrl+headers: ' + url);\r\n                if (url && url.indexOf('/verify/traffic/error') !== -1) {\r\n                    if (url.indexOf('is_logged_in=true') !== -1) {\r\n                        if (!_trafficIntercepted) {\r\n                            _trafficIntercepted = true;\r\n                            interceptTrafficError(this);\r\n                        } else {\r\n                            log('WEBVIEW', 'traffic/error (repeat) -> just finish');\r\n                            try {\r\n                                var ctx3 = this.getContext();\r\n                                Java.cast(ctx3, Activity).finish();\r\n                            } catch (e3) {\r\n                                log('WEBVIEW', 'repeat finish: ' + e3.message);\r\n                            }\r\n                        }\r\n                        return;\r\n                    }\r\n                }\r\n                return this.loadUrl(url, headers);\r\n            };\r\n        } catch (e) {\r\n            log('WARN', 'WebView.loadUrl hook: ' + e.message);\r\n        }\r\n\r\n        log('INIT', 'All hooks installed');\r\n    });\r\n}\r\n\r\nfunction checkAndInstall() {\r\n    _javaRetries++;\r\n\r\n    if (typeof Java === 'undefined' || !Java.available) {\r\n        if (_javaRetries <= 200) {\r\n            setTimeout(checkAndInstall, 100);\r\n        } else {\r\n            log('ERROR', 'Java bridge never became available');\r\n        }\r\n        return;\r\n    }\r\n\r\n    // Find the class loader that has Shopee's DEX\r\n    var shopeeLoader = null;\r\n    try {\r\n        Java.enumerateClassLoadersSync().forEach(function(loader) {\r\n            if (shopeeLoader) return;\r\n            try {\r\n                loader.loadClass('com.shopee.luban.common.model.common.CommonInfo');\r\n                shopeeLoader = loader;\r\n            } catch (_e) {}\r\n        });\r\n    } catch (_e) {}\r\n\r\n    if (!shopeeLoader) {\r\n        if (_javaRetries <= 200) {\r\n            setTimeout(checkAndInstall, 200);\r\n        } else {\r\n            log('WARN', 'Shopee loader not found after ' + _javaRetries + ' retries — using default');\r\n            doInstallHooks();\r\n        }\r\n        return;\r\n    }\r\n\r\n    // Pin the correct loader so Java.use() resolves Shopee classes\r\n    Java.classFactory.loader = shopeeLoader;\r\n    log('INIT', 'Shopee class loader pinned (attempt ' + _javaRetries + ')');\r\n    doInstallHooks();\r\n}\r\n\r\nsetTimeout(checkAndInstall, 0);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "fdciabdul",
+        "codeshare_slug": "shopee-bypass-shpssdk",
+        "codeshare_fingerprint": "112b8c65eb0264712400383fb7f7b62a3901f4a90bb7fa15c0e102e91b8506be",
+        "project_uuid": "bdc2db48-12fb-4546-8afb-60a2673f6724",
+        "popularity": {
+          "page": 0,
+          "recovered_from_author": "fdciabdul",
+          "browse_title": "Shopee Bypass SHPSSDK",
+          "likes": 0,
+          "views": "454"
+        },
+        "discovery_page": 0,
+        "target_app": "com.scottyab.rootbeer.rootbeernative",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:fdciabdul/shopee-bypass-shpssdk",
+        "source_url": "https://codeshare.frida.re/@fdciabdul/shopee-bypass-shpssdk/",
+        "source_hash": "112b8c65eb0264712400383fb7f7b62a3901f4a90bb7fa15c0e102e91b8506be",
+        "normalized_hash": "7e5a00fc537b4bd5436bdd4485a1b7ee9567cbf07488291d1c9372b6d742d539",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "biometrics",
+          "crypto-observation",
+          "emulator-detection-testing",
+          "enumeration",
+          "filesystem",
+          "integrity-control-testing",
+          "ipc",
+          "location",
+          "method-hooking",
+          "native-hooking",
+          "network-observation",
+          "root-state-testing",
+          "runtime-tracing",
+          "tls-pinning-testing",
+          "webview"
+        ],
+        "primary_behavior": "tls-pinning-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Java.cast",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "Process",
+          "NativeFunction",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:h4rithd/jailmonkey-bypass",
+      "name": "FRIDA - ANDROID APP - Root State Testing - JailMonkey-bypass [617409a1]",
+      "description": "This script dynamically instruments Android applications using Frida to bypass multiple security layers, including root detection, emulator detection, ADB/debugger checks, and JailMonkey anti-tampering mechanisms.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n ------------ JailMonkey Bypass All Checks -------------\n\n Description:\n This script dynamically instruments Android applications using Frida to bypass multiple security layers,\n including root detection, emulator detection, ADB/debugger checks, and JailMonkey anti-tampering mechanisms.\n\n Functionalities:\n 1. Hooks and disables 'isEmulatorSync()' to fake real device environment.\n 2. Prevents debugger detection by overriding 'Debug.isDebuggerConnected()'.\n 3. Bypasses ADB enabled flag via Settings.Secure and Settings.Global.\n 4. Intercepts JailMonkey’s 'getConstants()' and returns fake safe values.\n 5. Bypasses development settings and debug mode checks in JailMonkey.\n 7. Attempts to hook RootBeer detection mechanisms (if present).\n\n Example:\n frida -U --codeshare h4rithd/jailmonkey-bypass -f com.example.targetapp\n\n Author: Harith Dilshan | h4rithd.com\n GitHub: https://github.com/h4rithd\n Date: 23-June-2025\n*/\n\nJava.perform(() => {\n\n    console.log(`\n  ╔═════════════════════════════╗\n  ║   JailMonkey Bypass Loaded  ║\n  ║   Author: h4rithd           ║\n  ╚═════════════════════════════╝\n\t`);\n\n    // Bypass isEmulatorSync\n    const RNDeviceModule = Java.use('com.learnium.RNDeviceInfo.RNDeviceModule');\n    console.log(\"➤ Hooking isEmulatorSync method...\");\n    RNDeviceModule.isEmulatorSync.implementation = function() {\n        console.log(\"✔ isEmulatorSync() called → returning false\");\n        return false;\n    };\n    console.log(\"✔ Bypass for isEmulatorSync is now active.\");\n\n    // Bypass debugger + ADB settings\n    const Debug = Java.use(\"android.os.Debug\");\n    const SettingsGlobal = Java.use(\"android.provider.Settings$Global\");\n    const SettingsSecure = Java.use(\"android.provider.Settings$Secure\");\n\n    Debug.isDebuggerConnected.implementation = function() {\n        console.log(\"✔ Debug.isDebuggerConnected bypassed\");\n        return false;\n    };\n\n    SettingsSecure.getInt.overload(\"android.content.ContentResolver\", \"java.lang.String\", \"int\").implementation = function(resolver, name, def) {\n        if (name === \"adb_enabled\") {\n            console.log(\"✔ adb_enabled (Secure) bypassed\");\n            return 0;\n        }\n        return this.getInt(resolver, name, def);\n    };\n\n    SettingsGlobal.getInt.overload(\"android.content.ContentResolver\", \"java.lang.String\", \"int\").implementation = function(resolver, name, def) {\n        if (name === \"adb_enabled\") {\n            console.log(\"✔ adb_enabled (Global) bypassed\");\n            return 0;\n        }\n        return this.getInt(resolver, name, def);\n    };\n\n    // Patch JailMonkey.getConstants\n    try {\n        const JailMonkeyModule = Java.use('com.gantix.JailMonkey.JailMonkeyModule');\n        JailMonkeyModule.getConstants.implementation = function() {\n            const originalConstants = this.getConstants();\n            const JBoolean = Java.use(\"java.lang.Boolean\");\n\n            originalConstants.put(\"isJailBroken\", JBoolean.$new(false));\n            console.log(\"✔ JailMonkey Root Check bypassed\");\n\n            originalConstants.put(\"hookDetected\", JBoolean.$new(false));\n            console.log(\"✔ Hook Check bypassed\");\n\n            originalConstants.put(\"canMockLocation\", JBoolean.$new(false));\n            console.log(\"✔ Mock Location Check bypassed\");\n\n            originalConstants.put(\"isOnExternalStorage\", JBoolean.$new(false));\n            console.log(\"✔ External Storage Check bypassed\");\n\n            originalConstants.put(\"AdbEnabled\", JBoolean.$new(false));\n            console.log(\"✔ ADB Flag bypassed\");\n\n            return originalConstants;\n        };\n\n        // Patch isDevelopmentSettingsMode\n        JailMonkeyModule.isDevelopmentSettingsMode.overload(\"com.facebook.react.bridge.Promise\").implementation = function(promise) {\n            promise.resolve(Java.use(\"java.lang.Boolean\").$new(false));\n            console.log(\"✔ Development Settings Check bypassed\");\n        };\n\n        // Patch isDebuggedMode\n        JailMonkeyModule.isDebuggedMode.overload(\"com.facebook.react.bridge.Promise\").implementation = function(promise) {\n            promise.resolve(Java.use(\"java.lang.Boolean\").$new(false));\n            console.log(\"✔ isDebuggedMode Check bypassed\");\n        };\n\n    } catch (err) {\n        console.warn(\"⚠ JailMonkeyModule not found - skipping those hooks\");\n    }\n\n    // Patch RootedCheck (if available)\n    try {\n        const RootCheck = Java.use(\"com.gantix.JailMonkey.Rooted.RootedCheck\");\n        RootCheck.getResultByDetectionMethod.implementation = function() {\n            const resultMap = this.getResultByDetectionMethod();\n            resultMap.put(\"jailMonkey\", Java.use(\"java.lang.Boolean\").$new(false));\n            console.log(\"✔ JailMonkey RootedCheck bypassed\");\n            return resultMap;\n        };\n    } catch (err) {\n        console.warn(\"⚠ RootedCheck class not found - skipping\");\n    }\n\n    // Patch RootBeer checks (if available)\n    try {\n        const RootBeer = Java.use(\"com.gantix.JailMonkey.Rooted.RootedCheck$RootBeerResults\");\n\n        RootBeer.isJailBroken.implementation = function() {\n            console.log(\"✔ RootBeer.isJailBroken bypassed\");\n            return false;\n        };\n\n        RootBeer.toNativeMap.implementation = function() {\n            const nativeMap = this.toNativeMap.call(this);\n            const JBoolean = Java.use(\"java.lang.Boolean\");\n\n            const keys = [\n                \"detectRootManagementApps\",\n                \"detectPotentiallyDangerousApps\",\n                \"checkForSuBinary\",\n                \"checkForDangerousProps\",\n                \"checkForRWPaths\",\n                \"detectTestKeys\",\n                \"checkSuExists\",\n                \"checkForRootNative\",\n                \"checkForMagiskBinary\"\n            ];\n\n            keys.forEach(k => nativeMap.put(k, JBoolean.$new(false)));\n            console.log(\"✔ RootBeer Detection Map fully bypassed\");\n\n            return nativeMap;\n        };\n    } catch (err) {\n        console.warn(\"⚠ RootBeerResults class not found - skipping\");\n    }\n\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "h4rithd",
+        "codeshare_slug": "jailmonkey-bypass",
+        "codeshare_fingerprint": "617409a1756c2436c1db5451167bfe25d040355f53338180a32e57435c293a6f",
+        "project_uuid": "28fed8c6-180d-4552-8306-00ab6f808bdb",
+        "popularity": {
+          "page": 27,
+          "browse_title": "JailMonkey-bypass",
+          "likes": 0,
+          "views": "3K"
+        },
+        "discovery_page": 27,
+        "target_app": "com.example.targetapp",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:h4rithd/jailmonkey-bypass",
+        "source_url": "https://codeshare.frida.re/@h4rithd/jailmonkey-bypass/",
+        "source_hash": "617409a1756c2436c1db5451167bfe25d040355f53338180a32e57435c293a6f",
+        "normalized_hash": "09c02dd5fb1e161b729a54d63202bd808987ce1086c32f8e564f190f38b885bb",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "debugger-detection-testing",
+          "emulator-detection-testing",
+          "integrity-control-testing",
+          "location",
+          "method-hooking",
+          "network-observation",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:incogbyte/ios-jailmonkey-bypass-script-react-native",
+      "name": "FRIDA - IOS APP - Network Observation - iOS Jailmonkey Bypass Script React Native [4ff35858]",
+      "description": "iOS Jailmonkey Bypass Script for React Native bypass based on isiOSAppOnMac and isJailBroken iOS >= 15",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * @incogbyte\n * iOS Jailmonkey Bypass Script React Native\n * \n * @author incogbyte\n * @version 1.0.0\n * @license MIT\n * @copyright 2025 incogbyte\n *  based on https://github.com/GantMan/jail-monkey/blob/master/JailMonkey/JailMonkey.m\n */\n\nif (!ObjC.available) {\n    console.warn('[!] Objective‑C runtime cannot be loaded.');\n} else {\n    ObjC.schedule(ObjC.mainQueue, function() {\n\n        /* ---------- Patch 1 : Catalyst  ---------- */\n        try {\n            const procInfo = ObjC.classes.NSProcessInfo;\n            if (!procInfo) {\n                console.log('[i] NSProcessInfo not found – image not loaded?');\n            } else {\n                const sel = '- isiOSAppOnMac';\n                const meth = procInfo[sel];\n\n                if (!meth) {\n                    console.log('[i] Selector isiOSAppOnMac does not exist in this version.');\n                } else {\n                    const alwaysNo = new NativeCallback(function(_self, _cmd) {\n                        return 1; // YES (makes the app think it's on macOS) 👀\n                    }, 'bool', ['pointer', 'pointer']);\n\n                    Interceptor.replace(meth.implementation, alwaysNo);\n                    console.log('[+] Patch applied: isiOSAppOnMac → YES');\n                }\n            }\n        } catch (e) {\n            console.log('[!] Failed to apply Catalyst patch:', e);\n        }\n\n        /* ---------- Patch 2 : JailMonkey ---------- */\n        try {\n            const className = 'JailMonkey';\n            const selector = '- isJailBroken';\n\n            const clazz = ObjC.classes[className];\n            if (!clazz) {\n                console.log(`[i] Class ${className} not found – JailMonkey missing.`);\n            } else {\n                const method = clazz[selector];\n                if (!method) {\n                    console.log(`[i] Method ${selector} does not exist in this version.`);\n                } else {\n                    Interceptor.attach(method.implementation, {\n                        onLeave(retval) {\n                            console.log(`[+] Intercepted ${className} ${selector} – forcing FALSE`);\n                            retval.replace(ptr('0x0')); // returns NO / false\n                        }\n                    });\n                    console.log('[+] Patch applied: JailMonkey isJailBroken → false');\n                }\n            }\n        } catch (e) {\n            console.log('[!] Failed to apply JailMonkey patch:', e);\n        }\n\n        console.warn('[+] All patches active ✅');\n    });\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "incogbyte",
+        "codeshare_slug": "ios-jailmonkey-bypass-script-react-native",
+        "codeshare_fingerprint": "4ff35858fa2461077cef014aa4ac7d5c9e943fde77fd566162075563e9d6f143",
+        "project_uuid": "c41f8ee4-5c5d-4acb-b57f-13fd9e9529c1",
+        "popularity": {
+          "page": 10,
+          "browse_title": "iOS Jailmonkey Bypass Script React Native",
+          "likes": 1,
+          "views": "1K"
+        },
+        "discovery_page": 10,
+        "target_app": "",
+        "tested_version": "1.0.0",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:incogbyte/ios-jailmonkey-bypass-script-react-native",
+        "source_url": "https://codeshare.frida.re/@incogbyte/ios-jailmonkey-bypass-script-react-native/",
+        "source_hash": "4ff35858fa2461077cef014aa4ac7d5c9e943fde77fd566162075563e9d6f143",
+        "normalized_hash": "5b1c2b6da2ed4169b1109cc684f62dfd9dc3e4012e6222de320bb40f882085bd",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "version-specific",
+        "behaviors": [
+          "enumeration",
+          "method-hooking",
+          "native-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "network-observation",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Interceptor.replace",
+          "NativeCallback"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:khantsithu1998/bypass-react-native-emulator-detection",
+      "name": "FRIDA - ANDROID APP - Emulator Detection Testing - Bypass React Native Emulator Detection [8d84ab4f]",
+      "description": "bypass react-native-device-info emulator detection",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/* \n   Bypass react-native-device-info emulator detection\n   $ frida --codeshare khantsithu1998/bypass-react-native-emulator-detection -U -f <your-application-package-name>\n   By Khant Si Thu (https://twitter.com/KhantZero)\n*/\n\nif (Java.available) {\n    Java.perform(function() {\n        try {\n            var Activity = Java.use(\"com.learnium.RNDeviceInfo.RNDeviceModule\");\n            Activity.isEmulator.implementation = function() {\n                Promise.resolve(false)\n            }\n        } catch (error) {\n            console.log(\"[-] Error Detected\");\n            console.log((error.stack));\n        }\n    });\n} else {\n    console.log(\"\")\n    console.log(\"[-] Java is Not available\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "khantsithu1998",
+        "codeshare_slug": "bypass-react-native-emulator-detection",
+        "codeshare_fingerprint": "8d84ab4f80657341964c36ebaebb1ab32943f8fabdb1baccbc1b902caaa8753c",
+        "project_uuid": "caf057a7-e5d3-4958-994d-8a63c5f6f1f7",
+        "popularity": {
+          "page": 5,
+          "browse_title": "Bypass React Native Emulator Detection",
+          "likes": 3,
+          "views": "23K"
+        },
+        "discovery_page": 5,
+        "target_app": "com.learnium.rndeviceinfo.rndevicemodule",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:khantsithu1998/bypass-react-native-emulator-detection",
+        "source_url": "https://codeshare.frida.re/@khantsithu1998/bypass-react-native-emulator-detection/",
+        "source_hash": "8d84ab4f80657341964c36ebaebb1ab32943f8fabdb1baccbc1b902caaa8753c",
+        "normalized_hash": "c32f3798327d5b63a7845dbf3f08b42017f1aaffe822017463d5a0254ec180e9",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "emulator-detection-testing",
+          "method-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "emulator-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:rodolfomarianocy/ios-freerasp-react-native-bypass",
+      "name": "FRIDA - IOS - Network Observation - iOS freeRASP React Native Bypass [8a68bd2c]",
+      "description": "Frida script to bypass freeRASP React Native for iOS apps ;P",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\r\n    iOS freeRASP React Native Bypass by rodolfomarianocy\r\n    frida -U -f <bundle_identifier> --codeshare rodolfomarianocy/ios-freerasp-react-native-bypass\r\n    https://github.com/rodolfomarianocy/iOS-freeRASP-React-Native-Bypass\r\n    https://github.com/rodolfomarianocy/Tricks-Pentest-Android-and-iOS-Applications\r\n*/\r\nconsole.warn(\"[+] iOS freeRASP React Native Bypass...\")\r\nif (ObjC.available) {\r\n    try {\r\n        Interceptor.replace(\r\n            ObjC.classes.FreeraspReactNative['- talsecStart:withResolver:withRejecter:'].implementation,\r\n            new NativeCallback(function() {}, 'void', [])\r\n        );\r\n    } catch (error) {\r\n        console.log(error.message);\r\n    }\r\n} else {\r\n    console.log(\"[-] ObjC Runtime unavailable\");\r\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "rodolfomarianocy",
+        "codeshare_slug": "ios-freerasp-react-native-bypass",
+        "codeshare_fingerprint": "8a68bd2cd13b22dc15616836ab7977b474b3e2afb332904bf00a81cccf8b5399",
+        "project_uuid": "cd2333d7-fecf-4358-8033-4eef7bec7417",
+        "popularity": {
+          "page": 9,
+          "browse_title": "iOS freeRASP React Native Bypass",
+          "likes": 1,
+          "views": "1K"
+        },
+        "discovery_page": 9,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:rodolfomarianocy/ios-freerasp-react-native-bypass",
+        "source_url": "https://codeshare.frida.re/@rodolfomarianocy/ios-freerasp-react-native-bypass/",
+        "source_hash": "8a68bd2cd13b22dc15616836ab7977b474b3e2afb332904bf00a81cccf8b5399",
+        "normalized_hash": "f56202cf19762263beea21c06b2146fba327f5b6305c2dbd9ad89b87cc0e10f8",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "framework-specific",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "network-observation",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.replace",
+          "NativeCallback"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "framework_prerequisite",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:RohindhR/react-native-firebase-remote-config",
+      "name": "FRIDA - ANDROID APP - Crypto Observation - react-native-firebase-remote-config [8aba1648]",
+      "description": "List all the firebase remote config values",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Author: Rohindh\n// Github: https://github.com/RohindhR\n// Date: 11/03/2024\n// Version: 1.0\n// Description: Frida script to list all the firebase remote config values\n// Tested and developed for @react-native-firebase/app version 19.0.1 (https://www.npmjs.com/package/@react-native-firebase/app/v/19.0.1) and Frida version 16.2.1\n// Usage: frida -U -f com.example.appname --codeshare RohindhR/react-native-firebase-remote-config\n// Note: This script is for educational purposes only. Do not use it for illegal activities.\n//      I am not responsible for any damage done by this script.\n//      Use this script at your own risk.\n\nJava.perform(function() {\n    var remoteConfigClass = Java.use(\"io.invertase.firebase.config.UniversalFirebaseConfigModule\");\n    remoteConfigClass.getAllValuesForApp.implementation = function(appName) {\n        var result = this.getAllValuesForApp(appName);\n        var HashMapNode = Java.use('java.util.HashMap$Node');\n        var iterator = result.entrySet().iterator();\n        var count = 1;\n        while (iterator.hasNext()) {\n            var entry = Java.cast(iterator.next(), HashMapNode);\n            console.log(\"Entry: \" + count++);\n            console.log(entry.getKey());\n            console.log(entry.getValue());\n            console.log(\"\\n ____________ \\n\")\n        }\n        return result;\n    }\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "RohindhR",
+        "codeshare_slug": "react-native-firebase-remote-config",
+        "codeshare_fingerprint": "8aba164839830b3325b1f02ef3102f3f1b41558d8d3121fec1d0678d606acf37",
+        "project_uuid": "ef819106-c4a3-43b3-8a15-d213915bc052",
+        "popularity": {
+          "page": 34,
+          "browse_title": "react-native-firebase-remote-config",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 34,
+        "target_app": "com.example.appname",
+        "tested_version": "19.0.1",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:RohindhR/react-native-firebase-remote-config",
+        "source_url": "https://codeshare.frida.re/@RohindhR/react-native-firebase-remote-config/",
+        "source_hash": "8aba164839830b3325b1f02ef3102f3f1b41558d8d3121fec1d0678d606acf37",
+        "normalized_hash": "0b0fbaeafda4995e83fd48d7b858d1abbef971837908fdd90fb0068857795158",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "version-specific",
+        "behaviors": [
+          "crypto-observation",
+          "method-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Java.cast"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:RohindhR/react-native-jail-monkey-bypass-all-checks",
+      "name": "FRIDA - ANDROID APP - Root State Testing - react-native-jail-monkey-bypass-all-checks [9f8028bf]",
+      "description": "Frida script for bypassing React Native Jail Monkey checks",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Author: Rohindh\n// Github: https://github.com/RohindhR\n// Date: 08/03/2024\n// Version: 1.0\n// Description: Frida script for bypassing React Native Jail Monkey checks\n// Tested and developed for Jail Monkey version 2.8.0 (https://www.npmjs.com/package/jail-monkey/v/2.8.0) and Frida version 16.2.1\n// Usage: frida -U -f com.example.appname --codeshare RohindhR/react-native-jail-monkey-bypass-all-checks\n// Note: This script is for educational purposes only. Do not use it for illegal activities.\n//      I am not responsible for any damage done by this script.\n//      Use this script at your own risk.\n\nJava.perform(function() {\n    // Bypassing Root, Hook, Mock Location, External Storage, ADB checks\n    Java.use('com.gantix.JailMonkey.JailMonkeyModule').getConstants.implementation = function() {\n        var hashmap = this.getConstants();\n        hashmap.put('isJailBroken', Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(`Root Check Bypassed : ✅`);\n\n        hashmap.put('hookDetected', Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(`Hook Check Bypassed : ✅`);\n\n        hashmap.put('canMockLocation', Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(`Mock Location Check Bypassed : ✅`);\n\n        hashmap.put('isOnExternalStorage', Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(`External Storage Check Bypassed : ✅`);\n\n        hashmap.put('AdbEnabled', Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(`ADB Check Bypassed : ✅`);\n\n        return hashmap;\n    }\n\n    // Bypassing Rooted Check\n    let RootedCheckClass = Java.use(\"com.gantix.JailMonkey.Rooted.RootedCheck\")\n    RootedCheckClass.getResultByDetectionMethod.implementation = function() {\n        let map = this.getResultByDetectionMethod();\n        map.put(\"jailMonkey\", Java.use(\"java.lang.Boolean\").$new(false));\n        return map;\n    }\n\n    // Bypassing Root detection method's result of RootBeer library\n    var RootBeerResultsClass = Java.use(\"com.gantix.JailMonkey.Rooted.RootedCheck$RootBeerResults\");\n    RootBeerResultsClass.isJailBroken.implementation = function() {\n        return false;\n    };\n\n    RootBeerResultsClass.toNativeMap.implementation = function() {\n        var map = this.toNativeMap.call(this);\n        map.put(\"detectRootManagementApps\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"detectPotentiallyDangerousApps\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkForSuBinary\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkForDangerousProps\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkForRWPaths\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"detectTestKeys\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkSuExists\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkForRootNative\", Java.use(\"java.lang.Boolean\").$new(false));\n        map.put(\"checkForMagiskBinary\", Java.use(\"java.lang.Boolean\").$new(false));\n\n        console.log(\"Root detection method's result bypass : ✅\");\n\n        return map;\n    };\n\n    // Bypassing Development settings check\n    Java.use(\"com.gantix.JailMonkey.JailMonkeyModule\").isDevelopmentSettingsMode.overload(\"com.facebook.react.bridge.Promise\").implementation = function(p) {\n        p.resolve(Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(\"isDevelopmentSettingsMode Check Bypassed : ✅\");\n    }\n\n    // Bypassing Debugger check\n    Java.use(\"com.gantix.JailMonkey.JailMonkeyModule\").isDebuggedMode.overload(\"com.facebook.react.bridge.Promise\").implementation = function(p) {\n        p.resolve(Java.use(\"java.lang.Boolean\").$new(false));\n        console.log(\"isDebuggerConnected Check Bypassed : ✅\");\n    }\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "RohindhR",
+        "codeshare_slug": "react-native-jail-monkey-bypass-all-checks",
+        "codeshare_fingerprint": "9f8028bfaa5cf71a4e61969daddaf853cbeb7ce4626c8b92548ee246771200ea",
+        "project_uuid": "b83ab22d-0b07-43a5-af68-8a331ef34838",
+        "popularity": {
+          "page": 6,
+          "browse_title": "react-native-jail-monkey-bypass-all-checks",
+          "likes": 2,
+          "views": "9K"
+        },
+        "discovery_page": 6,
+        "target_app": "com.example.appname",
+        "tested_version": "2.8.0",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:RohindhR/react-native-jail-monkey-bypass-all-checks",
+        "source_url": "https://codeshare.frida.re/@RohindhR/react-native-jail-monkey-bypass-all-checks/",
+        "source_hash": "9f8028bfaa5cf71a4e61969daddaf853cbeb7ce4626c8b92548ee246771200ea",
+        "normalized_hash": "c38a322013b861ec5c46a1f2ed0109fc29630e149a00b7cbb30be9abc8d1e137",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "version-specific",
+        "behaviors": [
+          "debugger-detection-testing",
+          "location",
+          "method-hooking",
+          "network-observation",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sasasec/freerasp-root-detection-bypass",
+      "name": "FRIDA - ANDROID APP - Root State Testing - freeRASP Root Detection Bypass [a3b1cee6]",
+      "description": "Bypasses multiple security controls in React Native applications protected with freeRASP by Talsec, including root detection, hooking detection, developer mode, and ADB checks.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "(function() {\n    'use strict';\n\n    // ---- CONFIG ----\n    const SLOW_MODE = true;\n    const STEP_DELAY_MS = 600;\n    const CLASS_NAME = 'com.freeraspreactnative.FreeraspReactNativeModule';\n    const LAMBDAS = ['talsecStart$lambda$2', 'talsecStart$lambda$2$lambda$1'];\n\n    const CHECKS_LOG = [\n        'Root detection',\n        'Hooking detection',\n        'Developer mode detection',\n        'ADB enabled detection',\n    ];\n\n    if (globalThis.__FREERASP_RN_BYPASS__) return;\n    globalThis.__FREERASP_RN_BYPASS__ = true;\n\n    function say(msg) {\n        console.log(msg);\n    }\n\n    let q = Promise.resolve();\n\n    function step(msg) {\n        if (!SLOW_MODE) {\n            say(msg);\n            return;\n        }\n        q = q.then(() => new Promise(r => {\n            say(msg);\n            setTimeout(r, STEP_DELAY_MS);\n        }));\n    }\n\n    if (!Java.available) {\n        say('✘ Error: Java runtime not available');\n        return;\n    }\n\n    Java.perform(function() {\n        step('>>> Starting freeRASP RN bypass');\n\n        let Mod = null;\n        try {\n            Mod = Java.use(CLASS_NAME);\n            step('>>> Class loaded: ' + CLASS_NAME);\n        } catch (e) {\n            say('✘ Error: Class not found: ' + CLASS_NAME + ' :: ' + e);\n            return;\n        }\n\n        let startOv = null;\n        try {\n            startOv = Mod.talsecStart.overload(\n                'com.facebook.react.bridge.ReadableMap',\n                'com.facebook.react.bridge.Promise'\n            );\n            step('>>> Overload resolved: talsecStart(ReadableMap, Promise)');\n        } catch (e) {\n            say('✘ Error: Could not resolve talsecStart overload: ' + e);\n            return;\n        }\n\n        try {\n            startOv.implementation = function(options, promise) {\n                step('>>> Intercepted call to talsecStart');\n\n                let startedFlagSet = false;\n                try {\n                    Mod['access$setTalsecStarted$cp'].overload('boolean')(true);\n                    step('✔ Bypassed: startup gate (setter)');\n                    startedFlagSet = true;\n                } catch (e1) {\n                    try {\n                        Mod.talsecStarted.value = true;\n                        step('✔ Bypassed: startup gate (static field)');\n                        startedFlagSet = true;\n                    } catch (e2) {\n                        say('✘ Error: Could not set started flag: ' + e2);\n                    }\n                }\n\n                try {\n                    const JString = Java.use('java.lang.String');\n                    promise.resolve(JString.$new('freeRASP started'));\n                    step('✔ Bypassed: promise resolved with fake start');\n                } catch (e) {\n                    say('✘ Error: promise.resolve failed: ' + e);\n                }\n\n                if (startedFlagSet) {\n                    CHECKS_LOG.forEach(c => step('✔ Bypassed: ' + c));\n                    step('>>> All security checks bypassed successfully');\n                }\n\n                return;\n            };\n            step('>>> Hook applied to talsecStart');\n        } catch (e) {\n            say('✘ Error: Failed to hook talsecStart: ' + e);\n            return;\n        }\n\n        LAMBDAS.forEach(function(name) {\n            try {\n                const m = Mod[name];\n                if (m && m.implementation === undefined) {\n                    m.implementation = function() {\n                        step('✔ Neutralized internal lambda: ' + name);\n                        return;\n                    };\n                }\n            } catch (_) {\n                // ignore if missing\n            }\n        });\n    });\n})();",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "sasasec",
+        "codeshare_slug": "freerasp-root-detection-bypass",
+        "codeshare_fingerprint": "a3b1cee6391d4e8628209b24e4ed41c26c27e5707c8dd091a117749fa79a07e7",
+        "project_uuid": "6c1f2511-0559-4eb8-ab14-4e08e390d416",
+        "popularity": {
+          "page": 10,
+          "browse_title": "freeRASP Root Detection Bypass",
+          "likes": 1,
+          "views": "3K"
+        },
+        "discovery_page": 10,
+        "target_app": "com.freeraspreactnative.freeraspreactnativemodule",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sasasec/freerasp-root-detection-bypass",
+        "source_url": "https://codeshare.frida.re/@sasasec/freerasp-root-detection-bypass/",
+        "source_hash": "a3b1cee6391d4e8628209b24e4ed41c26c27e5707c8dd091a117749fa79a07e7",
+        "normalized_hash": "13d8a3b68222581b275ba47171ff24af2732c748ccd6a283bf26f94f0fff9461",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "method-hooking",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "app_specific",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sdcampbell/unified-android-root-and-debugger-bypass",
+      "name": "FRIDA - ANDROID APP - Root State Testing - Unified Android Root and Debugger Bypass [72973b82]",
+      "description": "Combines root and debugger bypasses in one script.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Combined Root Detection and Debugger Check Bypass Script\n * This script combines functionality to bypass both root detection and debugging checks\n */\n\n// Initialize root detection related arrays and objects\nvar RootPackages = [\"com.noshufou.android.su\", \"com.noshufou.android.su.elite\", \"eu.chainfire.supersu\",\n    \"com.koushikdutta.superuser\", \"com.thirdparty.superuser\", \"com.yellowes.su\", \"com.koushikdutta.rommanager\",\n    \"com.koushikdutta.rommanager.license\", \"com.dimonvideo.luckypatcher\", \"com.chelpus.lackypatch\",\n    \"com.ramdroid.appquarantine\", \"com.ramdroid.appquarantinepro\", \"com.devadvance.rootcloak\", \"com.devadvance.rootcloakplus\",\n    \"de.robv.android.xposed.installer\", \"com.saurik.substrate\", \"com.zachspong.temprootremovejb\", \"com.amphoras.hidemyroot\",\n    \"com.amphoras.hidemyrootadfree\", \"com.formyhm.hiderootPremium\", \"com.formyhm.hideroot\", \"me.phh.superuser\",\n    \"eu.chainfire.supersu.pro\", \"com.kingouser.com\"\n];\n\nvar RootBinaries = [\"mu\", \".su\", \"su\", \"busybox\", \"supersu\", \"Superuser.apk\", \"KingoUser.apk\", \"SuperSu.apk\"];\nvar RootProperties = {\n    \"ro.build.selinux\": \"1\",\n    \"ro.debuggable\": \"0\",\n    \"service.adb.root\": \"0\",\n    \"ro.secure\": \"1\"\n};\nvar RootPropertiesKeys = [];\nfor (var k in RootProperties) RootPropertiesKeys.push(k);\n\n// Utility function for root checks\nfunction get_implementations(toHook) {\n    var imp_args = []\n    toHook.overloads.forEach(function(impl, _) {\n        if (impl.hasOwnProperty('argumentTypes')) {\n            var args = [];\n            var argTypes = impl.argumentTypes\n            argTypes.forEach(function(arg_type, __) {\n                args.push(arg_type.className)\n            });\n            imp_args.push(args);\n        }\n    });\n    return imp_args;\n}\n\n// Root detection check function\nfunction isRootCheck(cmd) {\n    var fakeCmd;\n    if (cmd.indexOf(\"getprop\") != -1 || cmd == \"mount\" || cmd.indexOf(\"build.prop\") != -1 || cmd == \"id\" || cmd == \"sh\") {\n        fakeCmd = \"grep\";\n        console.log(\"[RootDetection Bypass] \" + cmd + \" command\");\n        return fakeCmd;\n    }\n    if (cmd == \"su\") {\n        fakeCmd = \"justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled\";\n        console.log(\"[RootDetection Bypass] \" + cmd + \" command\");\n        return fakeCmd;\n    }\n    return false;\n}\n\n// Main implementation\nJava.performNow(function() {\n    // Root Detection Bypasses\n    try {\n        var NativeFile = Java.use('java.io.File');\n        NativeFile.exists.implementation = function() {\n            var name = NativeFile.getName.call(this);\n            if (RootBinaries.indexOf(name) > -1) {\n                console.log(\"[RootDetection Bypass] return value for binary: \" + name);\n                return false;\n            }\n            return this.exists.call(this);\n        };\n\n        var javaString = Java.use('java.lang.String');\n        javaString.contains.implementation = function(name) {\n            if (name == \"test-keys\") {\n                console.log(\"[RootDetection Bypass] test-keys check\");\n                return false;\n            }\n            return this.contains.call(this, name);\n        };\n\n        // Runtime.exec implementation\n        var Runtime = Java.use('java.lang.Runtime');\n        var execImplementations = get_implementations(Runtime.exec);\n        var exec = Runtime.exec.overload('java.lang.String');\n\n        execImplementations.forEach(function(args, _) {\n            Runtime.exec.overload.apply(null, args).implementation = function() {\n                var fakeCmd;\n                var argz = [].slice.call(arguments);\n                var cmd = argz[0];\n                if (typeof cmd === 'string') {\n                    fakeCmd = isRootCheck(cmd);\n                    if (fakeCmd) {\n                        return exec.call(this, fakeCmd);\n                    }\n                } else if (typeof cmd === 'object') {\n                    for (var i = 0; i < cmd.length; i = i + 1) {\n                        var tmp_cmd = cmd[i];\n                        fakeCmd = isRootCheck(tmp_cmd);\n                        if (fakeCmd) {\n                            return exec.call(this, '');\n                        }\n                    }\n                }\n                return this['exec'].apply(this, argz);\n            };\n        });\n\n        // BufferedReader implementation\n        var BufferedReader = Java.use('java.io.BufferedReader');\n        BufferedReader.readLine.overload().implementation = function() {\n            var text = this.readLine.call(this);\n            if (text !== null && text.indexOf(\"ro.build.tags=test-keys\") > -1) {\n                console.log(\"[RootDetection Bypass] build.prop file read\");\n                text = text.replace(\"ro.build.tags=test-keys\", \"ro.build.tags=release-keys\");\n            }\n            return text;\n        };\n\n        // ProcessBuilder implementation\n        var ProcessBuilder = Java.use('java.lang.ProcessBuilder');\n        ProcessBuilder.start.implementation = function() {\n            var cmd = this.command.call(this);\n            var shouldModifyCommand = false;\n            for (var i = 0; i < cmd.size(); i = i + 1) {\n                var tmp_cmd = cmd.get(i).toString();\n                if (tmp_cmd.indexOf(\"getprop\") != -1 || tmp_cmd.indexOf(\"mount\") != -1 || \n                    tmp_cmd.indexOf(\"build.prop\") != -1 || tmp_cmd.indexOf(\"id\") != -1) {\n                    shouldModifyCommand = true;\n                }\n            }\n            if (shouldModifyCommand) {\n                console.log(\"[RootDetection Bypass] ProcessBuilder \" + JSON.stringify(cmd));\n                this.command.call(this, [\"grep\"]);\n                return this.start.call(this);\n            }\n            if (cmd.indexOf(\"su\") != -1) {\n                console.log(\"[RootDetection Bypass] ProcessBuilder \" + JSON.stringify(cmd));\n                this.command.call(this, [\"justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled\"]);\n                return this.start.call(this);\n            }\n            return this.start.call(this);\n        };\n\n    } catch(err) {\n        console.log('[RootDetection Bypass] Error: ' + err);\n    }\n\n    // Debugger Detection Bypasses\n    try {\n        var Debug = Java.use('android.os.Debug');\n        Debug.isDebuggerConnected.implementation = function() {\n            console.log('[Debugger Check] isDebuggerConnected() check bypassed');\n            return false;\n        };\n    } catch(err) {\n        console.log('[Debugger Check] Error: ' + err);\n    }\n});\n\n// Native hooks\ntry {\n    // Root Detection Native Hooks\n    Interceptor.attach(Module.findExportByName(\"libc.so\", \"fopen\"), {\n        onEnter: function(args) {\n            var path = Memory.readCString(args[0]);\n            path = path.split(\"/\");\n            var executable = path[path.length - 1];\n            var shouldFakeReturn = (RootBinaries.indexOf(executable) > -1)\n            if (shouldFakeReturn) {\n                Memory.writeUtf8String(args[0], \"/notexists\");\n                console.log(\"[RootDetection Bypass] native fopen\");\n            }\n        }\n    });\n\n    Interceptor.attach(Module.findExportByName(\"libc.so\", \"system\"), {\n        onEnter: function(args) {\n            var cmd = Memory.readCString(args[0]);\n            if (cmd.indexOf(\"getprop\") != -1 || cmd == \"mount\" || cmd.indexOf(\"build.prop\") != -1 || cmd == \"id\") {\n                console.log(\"[RootDetection Bypass] native system: \" + cmd);\n                Memory.writeUtf8String(args[0], \"grep\");\n            }\n            if (cmd == \"su\") {\n                console.log(\"[RootDetection Bypass] native system: \" + cmd);\n                Memory.writeUtf8String(args[0], \"justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled\");\n            }\n        }\n    });\n\n    // Debugger Detection Native Hooks\n    Interceptor.attach(Module.findExportByName(\"libc.so\", \"connect\"), {\n        onEnter: function(args) {\n            var memory = Memory.readByteArray(args[1], 64);\n            var b = new Uint8Array(memory);\n            if (b[2] == 0x69 && b[3] == 0xa2 && b[4] == 0x7f && b[5] == 0x00 && b[6] == 0x00 && b[7] == 0x01) {\n                this.frida_detection = true;\n            }\n        },\n        onLeave: function(retval) {\n            if (this.frida_detection) {\n                console.log(\"[Debugger Check] Frida Port detection bypassed\");\n                retval.replace(-1);\n            }\n        }\n    });\n\n    var fgetsPtr = Module.findExportByName(\"libc.so\", \"fgets\");\n    var fgets = new NativeFunction(fgetsPtr, 'pointer', ['pointer', 'int', 'pointer']);\n    Interceptor.replace(fgetsPtr, new NativeCallback(function(buffer, size, fp) {\n        var retval = fgets(buffer, size, fp);\n        var bufstr = Memory.readUtf8String(buffer);\n        if (bufstr.indexOf(\"TracerPid:\") > -1) {\n            Memory.writeUtf8String(buffer, \"TracerPid:\\t0\");\n            console.log(\"[Debugger Check] TracerPID check bypassed\");\n        }\n        return retval;\n    }, 'pointer', ['pointer', 'int', 'pointer']));\n\n    Interceptor.attach(Module.findExportByName(null, \"ptrace\"), {\n        onLeave: function(retval) {\n            console.log(\"[Debugger Check] Ptrace check bypassed\");\n            retval.replace(0);\n        }\n    });\n\n} catch(err) {\n    console.log('[Native Hooks] Error: ' + err);\n}\n\n// Additional Security Checks\nJava.perform(function() {\n    // VPN Checks\n    try {\n        var NInterface = Java.use(\"java.net.NetworkInterface\");\n        NInterface.getName.overload().implementation = function() {\n            var IName = this.getName();\n            if (IName == \"tun0\" || IName == \"ppp0\" || IName == \"p2p0\" || IName == \"ccmni0\" || IName == \"tun\") {\n                console.log(\"[Security Check] Bypassed Network Interface name check: \" + IName);\n                return \"Bypass\";\n            }\n            return IName;\n        };\n    } catch(err) {\n        console.log('[VPN Check] Error: ' + err);\n    }\n\n    // Developer Mode Checks\n    try {\n        var SSecure = Java.use(\"android.provider.Settings$Secure\");\n        SSecure.getStringForUser.overload('android.content.ContentResolver', 'java.lang.String', 'int').implementation = function(Content, Name, Flag) {\n            if (Name.indexOf(\"development_settings_enabled\") >= 0) {\n                console.log(\"[Security Check] Developer mode check bypassed for: \" + Name);\n                return this.getStringForUser.call(this, Content, \"bypassed\", Flag);\n            }\n            return this.getStringForUser(Content, Name, Flag);\n        };\n    } catch(err) {\n        console.log('[Developer Mode Check] Error: ' + err);\n    }\n\n    // React Native JailMonkey Checks\n    try {\n        let toHook = Java.use('com.gantix.JailMonkey.JailMonkeyModule')['getConstants'];\n        toHook.implementation = function() {\n            var hashmap = this.getConstants();\n            hashmap.put('isJailBroken', Java.use(\"java.lang.Boolean\").$new(false));\n            hashmap.put('hookDetected', Java.use(\"java.lang.Boolean\").$new(false));\n            hashmap.put('canMockLocation', Java.use(\"java.lang.Boolean\").$new(false));\n            hashmap.put('isOnExternalStorage', Java.use(\"java.lang.Boolean\").$new(false));\n            hashmap.put('AdbEnabled', Java.use(\"java.lang.Boolean\").$new(false));\n            return hashmap;\n        };\n    } catch(err) {\n        console.log('[JailMonkey Check] Error: ' + err);\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "sdcampbell",
+        "codeshare_slug": "unified-android-root-and-debugger-bypass",
+        "codeshare_fingerprint": "72973b824e9de292796444421899fdf54e19d793dbff2798efeef4fc8613c8b4",
+        "project_uuid": "ec2bc5af-4c87-4fdf-b777-3c8b708ba186",
+        "popularity": {
+          "page": 31,
+          "browse_title": "Unified Android Root and Debugger Bypass",
+          "likes": 0,
+          "views": "23K"
+        },
+        "discovery_page": 31,
+        "target_app": "com.noshufou.android.su",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sdcampbell/unified-android-root-and-debugger-bypass",
+        "source_url": "https://codeshare.frida.re/@sdcampbell/unified-android-root-and-debugger-bypass/",
+        "source_hash": "72973b824e9de292796444421899fdf54e19d793dbff2798efeef4fc8613c8b4",
+        "normalized_hash": "c887db3c23a84550be71ca7ee44bd6c61edc82653ef0c162d6b43e85bf6c5cda",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "debugger-detection-testing",
+          "jailbreak-state-testing",
+          "location",
+          "method-hooking",
+          "native-hooking",
+          "network-observation",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Interceptor.attach",
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "Memory",
+          "NativeFunction",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Thwarakan/hermes-engine-hook-react-native-function-calls",
+      "name": "FRIDA - UNIVERSAL APP - Native Hooking - Hermes engine hook react native function calls [5d3e4e46]",
+      "description": "Android Hermes engine hook react native function calls",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "\n\nlet libhermesBaseAddress = Module.findBaseAddress(\"libhermes.so\");\nlet hermesRuntimeImplCallAddress = libhermesBaseAddress.add(0x1f3931 - 0x00100000);\nlet runtimePtr = Module.findExportByName(\"libhermes.so\", \"_ZN8facebook6hermes17makeHermesRuntimeERKN6hermes2vm13RuntimeConfigE\");\nlet valueToStringAddr = Module.findExportByName(\"libjsi.so\", \"_ZNK8facebook3jsi5Value8toStringERNS0_7RuntimeE\");\n\n\nInterceptor.attach(hermesRuntimeImplCallAddress, {\n    onEnter: function(args) {\n        console.log(\"HermesRuntimeImpl::call intercepted\");\n\n        // Extracting arguments\n        let func = args[1]; // jsi::Function\n        let jsThis = args[2]; // jsi::Value\n        let jsArgs = args[3]; // jsi::Value\n        let count = args[4]; // size_t count\n\n        // Logging arguments\n        console.log(`Function: ${func}`);\n        console.log(`jsThis: ${jsThis}`);\n        console.log(`jsArgs: ${jsArgs}`);\n        console.log(`Count: ${count}`);\n        console.log(`runtimePtr: ${runtimePtr}`);\n        console.log(`valueToStringAddr: ${valueToStringAddr}`);\n\n        // Get the valueToString function address\n        let valueToString = new NativeFunction(valueToStringAddr, 'pointer', ['pointer', 'pointer']);\n\n        // Call the valueToString function with jsThis and runtimePtr\n        let resultPtr = valueToString(jsThis, runtimePtr);\n\n        // Convert the result pointer to a JavaScript string\n        let resultString = Memory.readUtf8String(resultPtr);\n\n        console.log(\"Value to String Result:\", resultString);\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Thwarakan",
+        "codeshare_slug": "hermes-engine-hook-react-native-function-calls",
+        "codeshare_fingerprint": "5d3e4e46dc18620cd5ec35353cab21ab8ab69d40fcaa48fd56223d0ac8a4023e",
+        "project_uuid": "8d71a1cf-25c3-408d-a75e-4bb4fa30b225",
+        "popularity": {
+          "page": 34,
+          "browse_title": "Hermes engine hook react native function calls",
+          "likes": 0,
+          "views": "6K"
+        },
+        "discovery_page": 34,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Thwarakan/hermes-engine-hook-react-native-function-calls",
+        "source_url": "https://codeshare.frida.re/@Thwarakan/hermes-engine-hook-react-native-function-calls/",
+        "source_hash": "5d3e4e46dc18620cd5ec35353cab21ab8ab69d40fcaa48fd56223d0ac8a4023e",
+        "normalized_hash": "a498b6121772b36220de5a141555ab16b4fa4ad96b2bad62d842fb032a1ae471",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "react-native"
+        ],
+        "scope": "app-specific",
+        "behaviors": [
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "NativeFunction"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

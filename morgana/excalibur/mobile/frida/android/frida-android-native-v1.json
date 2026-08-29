@@ -1,0 +1,182 @@
+{
+  "package_id": "frida-android-native-v1",
+  "package_name": "Frida - Android - Native",
+  "version": "1.0.0",
+  "summary": "1 Frida instrumentation procedures for android native mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 1 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 1}; compatibility: {'likely-compatible': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 1
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "native-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 1
+  },
+  "quality_distribution": {
+    "C": 1
+  },
+  "license_distribution": {
+    "unknown": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:Hyupai/xposed",
+      "name": "FRIDA - ANDROID - Native Hooking - Xposed [03fdb5e9]",
+      "description": "Bypass Xposed Detection",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function hookFindClassFromJNIEnv() {\n    Java.perform(function () {\n        const env = Java.vm.getEnv();\n        const FindClassIdx = 6;\n\n        const vtablePtr = Memory.readPointer(env.handle);\n        const FindClassPtr = Memory.readPointer(vtablePtr.add(FindClassIdx * Process.pointerSize));\n\n        console.log(\"[*] FindClass JNI real addr:\", FindClassPtr);\n\n        Interceptor.attach(FindClassPtr, {\n            onEnter: function (args) {\n                try {\n                    this.className = Memory.readUtf8String(args[1]);\n                    this.caller = this.returnAddress;\n\n                    const module = Process.findModuleByAddress(this.caller);\n                    const offset = ptr(this.caller).sub(module.base);\n\n                    console.log(`[FindClass] 📦 Classe procurada: ${this.className}`);\n                    console.log(`  ↪ Chamador: ${module.name} + 0x${offset.toString(16)}`);\n                    console.log(`  ↪ 📍 Base da ${module.name}: ${module.base}`);  // << ADICIONADO AQUI\n                } catch (e) {\n                    console.log(\"[FindClass] ⚠ Erro ao ler nome da classe ou chamador:\", e);\n                    this.className = null;\n                }\n            },\n            onLeave: function (retval) {\n                if (this.className) {\n                    const nameLower = this.className.toLowerCase();\n                    if (\n                        nameLower.includes(\"xposed\") ||\n                        nameLower.includes(\"sandhook\") ||\n                        nameLower.includes(\"epic\") ||\n                        nameLower.includes(\"riru\") ||\n                        nameLower.includes(\"andhook\")\n                    ) {\n                        console.warn(`[Bypass] 🚫 Bloqueando classe: ${this.className}`);\n                        retval.replace(ptr(0)); // Retorna NULL para bloquear\n                    }\n                }\n            }\n        });\n\n        console.log(\"[+] Hook instalado: JNIEnv->FindClass (com bypass + log de chamador)\");\n    });\n}\n\nfunction hookJNIMethodCall(index, name) {\n    Java.perform(function () {\n        const env = Java.vm.getEnv();\n        const vtablePtr = Memory.readPointer(env.handle);\n        const methodPtr = Memory.readPointer(vtablePtr.add(index * Process.pointerSize));\n\n        console.log(`[*] ${name} JNI real addr:`, methodPtr);\n\n        Interceptor.attach(methodPtr, {\n            onEnter: function (args) {\n                this.caller = this.returnAddress;\n\n                const module = Process.findModuleByAddress(this.caller);\n                const offset = module ? ptr(this.caller).sub(module.base) : \"desconhecido\";\n\n                console.log(`[JNI] 📞 ${name} chamado`);\n                console.log(`  ↪ Chamador: ${module ? module.name : \"desconhecido\"} + 0x${offset.toString(16)}`);\n\n                // Dependendo da chamada, a assinatura do método pode variar.\n                // Você pode também tentar ler a jclass ou jobject aqui, se quiser.\n            },\n            onLeave: function (retval) {\n                console.log(`  ↩ Retorno: ${retval}`);\n            }\n        });\n\n        console.log(`[+] Hook instalado: JNIEnv->${name}`);\n    });\n}\n\n// Índices comuns da vtable do JNIEnv para chamadas de métodos\nconst jniCalls = [\n    { index: 33, name: \"CallObjectMethod\" },\n    { index: 35, name: \"CallBooleanMethod\" },\n    { index: 39, name: \"CallIntMethod\" },\n    { index: 42, name: \"CallLongMethod\" },\n    { index: 46, name: \"CallVoidMethod\" },\n    { index: 109, name: \"CallStaticObjectMethod\" },\n    { index: 111, name: \"CallStaticBooleanMethod\" },\n    { index: 115, name: \"CallStaticIntMethod\" },\n    { index: 118, name: \"CallStaticLongMethod\" },\n    { index: 122, name: \"CallStaticVoidMethod\" }\n];\n\n\n// Executar hooks\nsetImmediate(() => {\n    console.log(\"*] Iniciando hooks avançados...\");\n    hookFindClassFromJNIEnv();\n     console.log(\"[*] Iniciando hooks avançados em métodos JNI...\");\n    jniCalls.forEach(entry => hookJNIMethodCall(entry.index, entry.name));\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Hyupai",
+        "codeshare_slug": "xposed",
+        "codeshare_fingerprint": "03fdb5e98455f87dab5bbe8c451a161bc7b61309b0e0b998d9182920909b9f44",
+        "project_uuid": "b2414bb1-8b62-4a04-9971-615c4d308be8",
+        "popularity": {
+          "page": 28,
+          "browse_title": "Xposed",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 28,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Hyupai/xposed",
+        "source_url": "https://codeshare.frida.re/@Hyupai/xposed/",
+        "source_hash": "03fdb5e98455f87dab5bbe8c451a161bc7b61309b0e0b998d9182920909b9f44",
+        "normalized_hash": "6d01dd17e4e34e4b65bd5bba233339f2c9efb41e2339f53fe63660031bbcce43",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "Java.perform",
+          "Interceptor.attach",
+          "Memory",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

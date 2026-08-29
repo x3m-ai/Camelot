@@ -1,0 +1,179 @@
+{
+  "package_id": "frida-ios-runtime-v1",
+  "package_name": "Frida - Ios - Runtime",
+  "version": "1.0.0",
+  "summary": "1 Frida instrumentation procedures for ios runtime mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 1 standalone Frida procedures from 1 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 1}; compatibility: {'likely-compatible': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 1
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "method-hooking"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 1
+  },
+  "quality_distribution": {
+    "C": 1
+  },
+  "license_distribution": {
+    "unknown": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:oleavr/youtube-ios-adblock",
+      "name": "FRIDA - IOS - Method Hooking - youtube-ios-adblock [a4af4772]",
+      "description": "AdBlock for YouTube's iOS app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\n\nModule.ensureInitialized('Module_Framework');\n\nvar isMonetized = ObjC.classes.YTIPlayerResponse['- isMonetized'];\nisMonetized.implementation = ObjC.implement(isMonetized, function () {\n  return false;\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "oleavr",
+        "codeshare_slug": "youtube-ios-adblock",
+        "codeshare_fingerprint": "a4af4772f81812f5da3b7700ed6e4cd3dc8fa54a765ea0cf67b9a94f6aecd7e1",
+        "project_uuid": "a33363c5-c0a8-4dc1-ab41-87253d51c415",
+        "popularity": {
+          "page": 5,
+          "browse_title": "youtube-ios-adblock",
+          "likes": 3,
+          "views": "8K"
+        },
+        "discovery_page": 5,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:oleavr/youtube-ios-adblock",
+        "source_url": "https://codeshare.frida.re/@oleavr/youtube-ios-adblock/",
+        "source_hash": "a4af4772f81812f5da3b7700ed6e4cd3dc8fa54a765ea0cf67b9a94f6aecd7e1",
+        "normalized_hash": "a4af4772f81812f5da3b7700ed6e4cd3dc8fa54a765ea0cf67b9a94f6aecd7e1",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "method-hooking"
+        ],
+        "primary_behavior": "method-hooking",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

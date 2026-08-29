@@ -1,0 +1,738 @@
+{
+  "package_id": "frida-android-storage-v1",
+  "package_name": "Frida - Android - Storage",
+  "version": "1.0.0",
+  "summary": "8 Frida instrumentation procedures for android storage mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 8 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 8}; compatibility: {'likely-compatible': 8}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1420"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 8
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "database",
+    "filesystem",
+    "method-hooking",
+    "runtime-tracing",
+    "screenshot"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 8
+  },
+  "quality_distribution": {
+    "C": 7,
+    "B": 1
+  },
+  "license_distribution": {
+    "unknown": 8
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 8
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:ahmsabryy/discover-exported-components",
+      "name": "FRIDA - ANDROID - Filesystem - discover-exported-components [9ce82724]",
+      "description": "discover exported components while the code is obufsecated or u can't read it",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function main() {\n    Java.perform(function() {\n        var ActivityThread = Java.use(\"android.app.ActivityThread\");\n        var PackageManager = Java.use(\"android.content.pm.PackageManager\");\n\n        // Get the current application context\n        var context = ActivityThread.currentApplication().getApplicationContext();\n        var packageName = context.getPackageName();\n        var packageInfo = context.getPackageManager().getPackageInfo(packageName,\n            PackageManager.GET_ACTIVITIES.value | PackageManager.GET_SERVICES.value | PackageManager.GET_RECEIVERS.value\n        );\n\n        console.log(\"\\n[+] Package Name: \" + packageName);\n\n        function logExportedComponents(componentInfoArray, componentType) {\n            if (componentInfoArray) {\n                for (var i = 0; i < componentInfoArray.length; i++) {\n                    var component = componentInfoArray[i];\n                    if (component.exported.value) {\n                        console.log(\"  [-] Exported \" + componentType + \" \" + packageName + \"/\" + component.name.value);\n                    }\n                }\n            }\n        }\n\n        console.log(\"\\n[+] Exported Activities:\");\n        logExportedComponents(packageInfo.activities.value, \"Activity: \");\n\n        console.log(\"\\n[+] Exported Services:\");\n        logExportedComponents(packageInfo.services.value, \"Service: \");\n\n        console.log(\"\\n[+] Exported Broadcast Receivers:\");\n        logExportedComponents(packageInfo.receivers.value, \"Broadcast Receiver: \");\n\n        console.log(\"\\n[+] Done.\");\n    });\n}\n\nsetTimeout(function() {\n    Java.scheduleOnMainThread(main);\n}, 50);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "ahmsabryy",
+        "codeshare_slug": "discover-exported-components",
+        "codeshare_fingerprint": "9ce82724971938d878e9e2e75d044f3eddd7b03201c2c902dd9afa83922d6fba",
+        "project_uuid": "ce82b9f2-2971-4b5b-be98-042455ab4087",
+        "popularity": {
+          "page": 38,
+          "browse_title": "discover-exported-components",
+          "likes": 0,
+          "views": "3K"
+        },
+        "discovery_page": 38,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ahmsabryy/discover-exported-components",
+        "source_url": "https://codeshare.frida.re/@ahmsabryy/discover-exported-components/",
+        "source_hash": "9ce82724971938d878e9e2e75d044f3eddd7b03201c2c902dd9afa83922d6fba",
+        "normalized_hash": "8f0dcdc8ec0b43a7ddc9d9da8006dc3baa3f555429998cbe862b9b5996de3e34",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dzonerzy/whereisnative",
+      "name": "FRIDA - ANDROID - Filesystem - whereisnative [13ff61e0]",
+      "description": "Check for native library calls and return a stacktrace",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n\n    var SystemDef = Java.use('java.lang.System');\n\n    var RuntimeDef = Java.use('java.lang.Runtime');\n\n    var exceptionClass = Java.use('java.lang.Exception');\n\n    var SystemLoad_1 = SystemDef.load.overload('java.lang.String');\n\n    var SystemLoad_2 = SystemDef.loadLibrary.overload('java.lang.String');\n\n    var RuntimeLoad_1 = RuntimeDef.load.overload('java.lang.String');\n\n    var RuntimeLoad_2 = RuntimeDef.loadLibrary.overload('java.lang.String');\n\n    var ThreadDef = Java.use('java.lang.Thread');\n\n    var ThreadObj = ThreadDef.$new();\n\n    SystemLoad_1.implementation = function(library) {\n        send(\"Loading dynamic library => \" + library);\n        stackTrace();\n        return SystemLoad_1.call(this, library);\n    }\n\n    SystemLoad_2.implementation = function(library) {\n        send(\"Loading dynamic library => \" + library);\n        stackTrace();\n        SystemLoad_2.call(this, library);\n        return;\n    }\n\n    RuntimeLoad_1.implementation = function(library) {\n        send(\"Loading dynamic library => \" + library);\n        stackTrace();\n        RuntimeLoad_1.call(this, library);\n        return;\n    }\n\n    RuntimeLoad_2.implementation = function(library) {\n        send(\"Loading dynamic library => \" + library);\n        stackTrace();\n        RuntimeLoad_2.call(this, library);\n        return;\n    }\n\n    function stackTrace() {\n        var stack = ThreadObj.currentThread().getStackTrace();\n        for (var i = 0; i < stack.length; i++) {\n            send(i + \" => \" + stack[i].toString());\n        }\n        send(\"--------------------------------------------------------------------------\");\n    }\n\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "dzonerzy",
+        "codeshare_slug": "whereisnative",
+        "codeshare_fingerprint": "13ff61e0f0f24af43ba40f531ba7c88ea8293637eeaa5b5a65047bf4bebf8506",
+        "project_uuid": "6d6ba328-70d9-4b83-b49d-d2eeb16d3a31",
+        "popularity": {
+          "page": 3,
+          "browse_title": "whereisnative",
+          "likes": 6,
+          "views": "13K"
+        },
+        "discovery_page": 3,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dzonerzy/whereisnative",
+        "source_url": "https://codeshare.frida.re/@dzonerzy/whereisnative/",
+        "source_hash": "13ff61e0f0f24af43ba40f531ba7c88ea8293637eeaa5b5a65047bf4bebf8506",
+        "normalized_hash": "13ff61e0f0f24af43ba40f531ba7c88ea8293637eeaa5b5a65047bf4bebf8506",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lorenzo.difuccia/flag-secure",
+      "name": "FRIDA - ANDROID - Filesystem - FLAG-SECURE [92f54900]",
+      "description": "Script to bypass Android's FLAG_SECURE which blocks screenshots. Hooks Window.setFlags/addFlags to strip the flag, and uses ActivityThread.mActivities to clear it on already running activities.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n* FLAG_SECURE Bypass for Android\n* Author: github.com/lorenzodifuccia\n* \n* Disables FLAG_SECURE to allow screenshots/screen recording.\n*/\n\nJava.perform(function () {\n    var FLAG_SECURE = 0x2000;\n\n    Java.scheduleOnMainThread(function () {\n        try {\n            var ActivityThread = Java.use(\"android.app.ActivityThread\");\n            var currentActivity = ActivityThread.currentActivityThread().mActivities.value;\n\n            var it = currentActivity.values().iterator();\n            while (it.hasNext()) {\n                var record = Java.cast(it.next(), Java.use(\"android.app.ActivityThread$ActivityClientRecord\"));\n                var activity = record.activity.value;\n                if (activity !== null) {\n                    var win = activity.getWindow();\n                    win.clearFlags(FLAG_SECURE);\n                    var params = win.getAttributes();\n                    params.flags.value &= ~FLAG_SECURE;\n                    win.setAttributes(params);\n                    console.log(\"[+] Cleared on: \" + activity.getClass().getName());\n                }\n            }\n        } catch (e) {\n            console.log(\"[-] Error: \" + e, e.stack);\n        }\n    });\n\n    // Hook Window.setFlags to prevent FLAG_SECURE from being set\n    var Window = Java.use(\"android.view.Window\");\n\n    Window.setFlags.implementation = function (flags, mask) {\n        console.log(\"[*] setFlags called with flags: \" + flags + \", mask: \" + mask);\n\n        if ((flags & FLAG_SECURE) != 0) {\n            console.log(\"[+] Removing FLAG_SECURE from setFlags\");\n            flags &= ~FLAG_SECURE;\n            mask &= ~FLAG_SECURE;\n        }\n\n        this.setFlags(flags, mask);\n    };\n\n    Window.addFlags.implementation = function (flags) {\n        console.log(\"[*] addFlags called with flags: \" + flags);\n\n        if ((flags & FLAG_SECURE) != 0) {\n            console.log(\"[+] Removing FLAG_SECURE from addFlags\");\n            flags &= ~FLAG_SECURE;\n        }\n\n        this.addFlags(flags);\n    };\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "lorenzo.difuccia",
+        "codeshare_slug": "flag-secure",
+        "codeshare_fingerprint": "92f54900e69cac8d607aa9d869b5556fb33a102b64cff964c0e8430bc4ffe2f9",
+        "project_uuid": "bc210e2a-a4d9-47bb-9480-7368c8855ef7",
+        "popularity": {
+          "page": 21,
+          "browse_title": "FLAG-SECURE",
+          "likes": 0,
+          "views": "744"
+        },
+        "discovery_page": 21,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lorenzo.difuccia/flag-secure",
+        "source_url": "https://codeshare.frida.re/@lorenzo.difuccia/flag-secure/",
+        "source_hash": "92f54900e69cac8d607aa9d869b5556fb33a102b64cff964c0e8430bc4ffe2f9",
+        "normalized_hash": "9aecf6cf502391bd8b1c05899e6d08a9fe4367cc709aff567cfbb932c294c5eb",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "runtime-tracing",
+          "screenshot"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Java.cast"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lorenzodifuccia/flag-secure",
+      "name": "FRIDA - ANDROID - Filesystem - FLAG-SECURE [e89ef05b]",
+      "description": "Script to bypass Android FLAG_SECURE which blocks screenshots. Hooks `Window.setFlags`/`addFlags` to strip the flag, and uses `ActivityThread.mActivities` to clear it on already running activities.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n* FLAG_SECURE Bypass for Android\n* Author: github.com/lorenzodifuccia\n* \n* Disables FLAG_SECURE to allow screenshots/screen recording.\n* Hooks `Window.setFlags`/`addFlags` to strip the flag, and uses `ActivityThread.mActivities` to clear it on already running activities via UI thread.\n*/\n\nJava.perform(function () {\n    var FLAG_SECURE = 0x2000;\n\n    Java.scheduleOnMainThread(function () {\n        try {\n            var ActivityThread = Java.use(\"android.app.ActivityThread\");\n            var currentActivity = ActivityThread.currentActivityThread().mActivities.value;\n\n            var it = currentActivity.values().iterator();\n            while (it.hasNext()) {\n                var record = Java.cast(it.next(), Java.use(\"android.app.ActivityThread$ActivityClientRecord\"));\n                var activity = record.activity.value;\n                if (activity !== null) {\n                    var win = activity.getWindow();\n                    win.clearFlags(FLAG_SECURE);\n                    var params = win.getAttributes();\n                    params.flags.value &= ~FLAG_SECURE;\n                    win.setAttributes(params);\n                    console.log(\"[+] Cleared on: \" + activity.getClass().getName());\n                }\n            }\n        } catch (e) {\n            console.log(\"[-] Error: \" + e, e.stack);\n        }\n    });\n\n    // Hook Window.setFlags to prevent FLAG_SECURE from being set\n    var Window = Java.use(\"android.view.Window\");\n\n    Window.setFlags.implementation = function (flags, mask) {\n        console.log(\"[*] setFlags called with flags: \" + flags + \", mask: \" + mask);\n\n        if ((flags & FLAG_SECURE) != 0) {\n            console.log(\"[+] Removing FLAG_SECURE from setFlags\");\n            flags &= ~FLAG_SECURE;\n            mask &= ~FLAG_SECURE;\n        }\n\n        this.setFlags(flags, mask);\n    };\n\n    Window.addFlags.implementation = function (flags) {\n        console.log(\"[*] addFlags called with flags: \" + flags);\n\n        if ((flags & FLAG_SECURE) != 0) {\n            console.log(\"[+] Removing FLAG_SECURE from addFlags\");\n            flags &= ~FLAG_SECURE;\n        }\n\n        this.addFlags(flags);\n    };\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "lorenzodifuccia",
+        "codeshare_slug": "flag-secure",
+        "codeshare_fingerprint": "e89ef05b80682777c5e21e4f3e4cd6e9700d4ce85a4e30253f8aae9b3865e86e",
+        "project_uuid": "94d7c472-88d3-4e1a-b2e3-9e4432e5affe",
+        "popularity": {
+          "page": 21,
+          "browse_title": "FLAG-SECURE",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 21,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lorenzodifuccia/flag-secure",
+        "source_url": "https://codeshare.frida.re/@lorenzodifuccia/flag-secure/",
+        "source_hash": "e89ef05b80682777c5e21e4f3e4cd6e9700d4ce85a4e30253f8aae9b3865e86e",
+        "normalized_hash": "11473a860eb500390701ecec5e30eef58221b6e0566d5e3d1c6dffa5e90f8ee5",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "runtime-tracing",
+          "screenshot"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Java.cast"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": "codeshare:lorenzo.difuccia/flag-secure",
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:marcohald/supportsqlitestatement",
+      "name": "FRIDA - ANDROID - Database - SupportSQLiteStatement [6a7cd4cc]",
+      "description": "SupportSQLiteStatement logger",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "let SupportSQLiteDatabase = Java.use(\"androidx.sqlite.db.SupportSQLiteDatabase\");\nSupportSQLiteDatabase[\"delete\"].implementation = function (str, str2, objArr) {\n    console.log(`SupportSQLiteDatabase.delete is called: str=${str}, str2=${str2}, objArr=${objArr}`);\n    let result = this[\"delete\"](str, str2, objArr);\n    console.log(`SupportSQLiteDatabase.delete result=${result}`);\n    return result;\n};\n\n\nSupportSQLiteDatabase[\"execSQL\"].overload('java.lang.String').implementation = function (str) {\n    console.log(`SupportSQLiteDatabase.execSQL is called: str=${str}`);\n    this[\"execSQL\"](str);\n};\n\n\nSupportSQLiteDatabase[\"execSQL\"].overload('java.lang.String', '[Ljava.lang.Object;').implementation = function (str, objArr) {\n    console.log(`SupportSQLiteDatabase.execSQL is called: str=${str}, objArr=${objArr}`);\n    this[\"execSQL\"](str, objArr);\n};\n\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "marcohald",
+        "codeshare_slug": "supportsqlitestatement",
+        "codeshare_fingerprint": "6a7cd4cc00c8db1fe6cb4ddaa08626e891ab4e0108d33cd26b7d9e7e4dc81685",
+        "project_uuid": "5ce19d55-59ed-40ea-926a-4ec879289595",
+        "popularity": {
+          "page": 29,
+          "browse_title": "SupportSQLiteStatement",
+          "likes": 0,
+          "views": "870"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:marcohald/supportsqlitestatement",
+        "source_url": "https://codeshare.frida.re/@marcohald/supportsqlitestatement/",
+        "source_hash": "6a7cd4cc00c8db1fe6cb4ddaa08626e891ab4e0108d33cd26b7d9e7e4dc81685",
+        "normalized_hash": "14cfeea0215414cc68dc20871a9a187b4907cec87e74fc80891495f9e4c47d23",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "method-hooking"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Neo-vortex/block-toast-with-stacktrace",
+      "name": "FRIDA - ANDROID - Filesystem - block-toast-with-stacktrace [0ef0064e]",
+      "description": "a simple code that tells you how called for a toast!",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    var Toast = Java.use(\"android.widget.Toast\");\n    var Thread = Java.use(\"java.lang.Thread\");\n    \n    var originalMakeText = Toast.makeText.overload('android.content.Context', 'java.lang.CharSequence', 'int');\n    \n    Toast.makeText.overload('android.content.Context', 'java.lang.CharSequence', 'int').implementation = function(context, text, duration) {\n        var toastText = text.toString();\n        \n        if (toastText.includes(\"امکان باز کردن\")) {\n            console.log(\"[!] TARGET TOAST CREATED - BLOCKING: \" + toastText);\n            var stackTrace = Thread.currentThread().getStackTrace();\n            console.log(\"=== CALL STACK ===\");\n            for (var i = 3; i < Math.min(stackTrace.length, 15); i++) {\n                var frame = stackTrace[i];\n                console.log(\"  -> \" + frame.getClassName() + \".\" + frame.getMethodName());\n            }\n            \n            var fakeToast = originalMakeText.call(this, context, text, duration);\n\n            fakeToast.show.implementation = function() {\n                console.log(\"[!] Blocked target toast from showing: \" + toastText);\n                return;\n            };\n            \n            return fakeToast;\n        }\n        \n        return originalMakeText.call(this, context, text, duration);\n    };\n    \n    console.log(\"[*] Targeted Toast blocker active for 'امکان باز کردن'\");\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Neo-vortex",
+        "codeshare_slug": "block-toast-with-stacktrace",
+        "codeshare_fingerprint": "0ef0064eb70490cd9521b2f30229ba61406e28d897fee01117a05dd1c3f12ffd",
+        "project_uuid": "d1976aa7-7260-4020-adf7-13ecb9a95e06",
+        "popularity": {
+          "page": 24,
+          "browse_title": "block-toast-with-stacktrace",
+          "likes": 0,
+          "views": "639"
+        },
+        "discovery_page": 24,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Neo-vortex/block-toast-with-stacktrace",
+        "source_url": "https://codeshare.frida.re/@Neo-vortex/block-toast-with-stacktrace/",
+        "source_hash": "0ef0064eb70490cd9521b2f30229ba61406e28d897fee01117a05dd1c3f12ffd",
+        "normalized_hash": "3fe948cb818ee82558670cdba6e1649992889c8883c12955d1c7c54b5d59b9ef",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:ninjadiary/sqlite-database",
+      "name": "FRIDA - ANDROID - Database - SQLite Database [68c65904]",
+      "description": "The secret diary on ninja frida SQLite database general hooks",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n\tAuthor: secretdiary.ninja\n\tLicense: (CC BY-SA 4.0) \n * */\n\nsetImmediate(function() {\n\tJava.perform(function() {\n\t\tvar sqliteDatabase = Java.use(\"android.database.sqlite.SQLiteDatabase\");\n\n\t\t// execSQL(String sql)\n\t\tsqliteDatabase.execSQL.overload('java.lang.String').implementation = function(var0) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.exeqSQL called with query: \" + var0 + \"\\n\");\n\t\t\tvar execSQLRes = this.execSQL(var0);\n\t\t\treturn execSQLRes;\n\t\t};\n\n\t\t// execSqL(String, sql, Obj[] bindArgs)\n\t\tsqliteDatabase.execSQL.overload('java.lang.String', '[Ljava.lang.Object;').implementation = function(var0, var1) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.exeqSQL called with query: \" + var0 +  \" and arguments: \" + var1 + \"\\n\");\n\t\t\tvar execSQLRes = this.execSQL(var0, var1);\n\t\t\treturn execSQLRes;\n\t\t};\n\n\t\t// query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)\n  \t\tsqliteDatabase.query.overload('boolean', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'java.lang.String').implementation = function(var0, var1, var2, var3, var4, var5, var6, var7, var8) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.query called.\";\n\t\t\tvar logVal = \"Table: \" + var1 + \", selection value: \" + var3 + \", selectionArgs: \" + var4 + \" distinct: \" + var0;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryRes = this.query(var0, var1, var2, var3, var4, var5, var6, var7, var8);\n\t\t\treturn queryRes;\n\t\t};\n\n\n  \t\t// query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)\n  \t\tsqliteDatabase.query.overload('java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'java.lang.String').implementation = function(var0, var1, var2, var3, var4, var5, var6, var7) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.query called.\";\n\t\t\tvar logVal = \"Table: \" + var0 + \", selection value: \" + var2 + \", selectionArgs: \" + var3;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryRes = this.query(var0, var1, var2, var3, var4, var5, var6, var7);\n\t\t\treturn queryRes;\n\t\t};\n\n   \t\t// query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal)\n   \t\tsqliteDatabase.query.overload('boolean', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'android.os.CancellationSignal').implementation = function(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.query called.\";\n\t\t\tvar logVal = \"Table: \" + var1 + \", selection value: \" + var3 + \", selectionArgs: \" + var4;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryRes = this.query(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9);\n\t\t\treturn queryRes;\n\t\t};\n\n   \t\t// query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy)\n  \t\tsqliteDatabase.query.overload('java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String').implementation = function(var0, var1, var2, var3, var4, var5, var6) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.query called.\";\n\t\t\tvar logVal = \"Table: \" + var0 + \", selection value: \" + var2 + \", selectionArgs: \" + var3;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryRes = this.query(var0, var1, var2, var3, var4, var5, var6);\n\t\t\treturn queryRes;\n\t\t};\n\n   \t\t// queryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal)\n  \t\tsqliteDatabase.queryWithFactory.overload('android.database.sqlite.SQLiteDatabase$CursorFactory', 'boolean', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'java.lang.String').implementation = function(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.queryWithFactory called.\";\n\t\t\tvar logVal = \"Table: \" + var2 + \", selection value: \" + var4 + \", selectionArgs: \" + var5 + \" distinct: \" + var1;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryWithFactoryRes = this.queryWithFactory(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9);\n\t\t\treturn queryWithFactoryRes;\n\t\t};   \t\t\n\n   \t\t// queryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)\n  \t\tsqliteDatabase.queryWithFactory.overload('android.database.sqlite.SQLiteDatabase$CursorFactory', 'boolean', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'java.lang.String', 'android.os.CancellationSignal').implementation = function(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9, var10) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.queryWithFactory called.\";\n\t\t\tvar logVal = \"Table: \" + var2 + \", selection value: \" + var4 + \", selectionArgs: \" + var5 + \" distinct: \" + var1;\n\t\t\tconsole.log(methodVal + \" \" + logVal + \"\\n\");\n\t\t\tvar queryWithFactoryRes = this.queryWithFactory(var0, var1, var2, var3, var4, var5, var6, var7, var8, var9, var10);\n\t\t\treturn queryWithFactoryRes;\n\t\t}; \n\n\t\t// rawQuery(String sql, String[] selectionArgs) \n\t\tsqliteDatabase.rawQuery.overload('java.lang.String', '[Ljava.lang.String;').implementation = function(var0, var1) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.rawQuery called with query: \" + var0 + \" and contentValues: \" + var1 +\"\\n\");\n\t\t\tvar rawQueryRes = this.rawQuery(var0, var1);\n\t\t\treturn rawQueryRes;\n\t\t};\n\n\t\t// rawQuery(String sql, String[] selectionArgs, CancellationSignal cancellationSignal)\n\t\tsqliteDatabase.rawQuery.overload('java.lang.String', '[Ljava.lang.String;', 'android.os.CancellationSignal').implementation = function(var0, var1, var2) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.rawQuery called with query: \" + var0 + \" and contentValues: \" + var1 +\"\\n\");\n\t\t\tvar rawQueryRes = this.rawQuery(var0, var1, var2);\n\t\t\treturn rawQueryRes;\n\t\t};\n\n\t\t// rawQueryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, String sql, String[] selectionArgs, String editTable, CancellationSignal cancellationSignal)\n   \t\tsqliteDatabase.rawQueryWithFactory.overload('android.database.sqlite.SQLiteDatabase$CursorFactory', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String', 'android.os.CancellationSignal').implementation = function(var0, var1, var2, var3, var4) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.rawQueryWithFactory called with query: \" + var1 + \" and contentValues: \" + var2 + \"\\n\");\n\t\t\tvar rawQueryWithFactoryRes = this.rawQueryWithFactory(var0, var1, var2, var3, var4);\n\t\t\treturn rawQueryWithFactoryRes;\n\t\t};\n\n   \t\t// rawQueryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, String sql, String[] selectionArgs, String editTable)\n   \t\tsqliteDatabase.rawQueryWithFactory.overload('android.database.sqlite.SQLiteDatabase$CursorFactory', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String').implementation = function(var0, var1, var2, var3) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.rawQueryWithFactory2 called with query: \" + var1 + \" and contentValues: \" + var2 +\"\\n\");\n\t\t\tvar rawQueryWithFactoryRes = this.rawQueryWithFactory(var0, var1, var2, var3);\n\t\t\treturn rawQueryWithFactoryRes;\n\t\t};\n\n\t\t// insert(String table, String nullColumnHack, ContentValues values)\n\t\tsqliteDatabase.insert.overload('java.lang.String', 'java.lang.String', 'android.content.ContentValues').implementation = function(var0, var1, var2) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.insert called. Adding new value: \" + var2 + \" to database: \" + var0 + \"\\n\");\n\t\t\tvar insertValueRes = this.insert(var0, var1, var2);\n\t\t\treturn insertValueRes;\n\t\t};\n\n\t\t// insertOrThrow(String table, String nullColumnHack, ContentValues values)\n\t\tsqliteDatabase.insertOrThrow.overload('java.lang.String', 'java.lang.String', 'android.content.ContentValues').implementation = function(var0, var1, var2) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.insertOrThrow called. Adding new value: \" + var2 + \" to database: \" + var0 + \"\\n\");\n\t\t\tvar insertValueRes = this.insertOrThrow(var0, var1, var2);\n\t\t\treturn insertValueRes;\n\t\t};\n\n\t\t// insertOrThrow(String table, String nullColumnHack, ContentValues values)\n\t\tsqliteDatabase.insertOrThrow.overload('java.lang.String', 'java.lang.String', 'android.content.ContentValues').implementation = function(var0, var1, var2) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.insertOrThrow called. Adding new value: \" + var2 + \" to database: \" + var0 + \"\\n\");\n\t\t\tvar insertValueRes = this.insertOrThrow(var0, var1, var2);\n\t\t\treturn insertValueRes;\n\t\t};\n\n\t\t// insertWithOnConflict(String table, String nullColumnHack, ContentValues initialValues, int conflictAlgorithm)\n\t\tsqliteDatabase.insertWithOnConflict.overload('java.lang.String', 'java.lang.String', 'android.content.ContentValues', 'int').implementation = function(var0, var1, var2, var3) {\n\t\t\tconsole.log(\"[*] SQLiteDatabase.insertWithOnConflict called. Adding new value: \" + var2 + \" to database: \" + var0 + \" and conflictAlgorithm: \" + var3 + \"\\n\");\n\t\t\tvar insertValueRes = this.insertWithOnConflict(var0, var1, var2, var3);\n\t\t\treturn insertValueRes;\n\t\t};\n\n\t\t// update(String table, ContentValues values, String whereClause, String[] whereArgs)\n\t\tsqliteDatabase.update.overload('java.lang.String', 'android.content.ContentValues', 'java.lang.String', '[Ljava.lang.String;').implementation = function(var0, var1, var2, var3) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.update called.\";\n\t\t\tvar logVal = \"Update table: \" + var0 + \" with where clause: \"  + var2 + \" whereArgs:\" + var3.toString() + \" and values to update: \" + var1.toString() +\"\\n\";\n\t\t\tconsole.log(methodVal, logVal);\n\t\t\t\n\t\t\tvar updateRes = this.update(var0, var1, var2, var3);\n\t\t\treturn updateRes;\n\t\t};\n\n\t\t// updateWithOnConflict(String table, ContentValues values, String whereClause, String[] whereArgs, int conflictAlgorithm) \n\t\tsqliteDatabase.updateWithOnConflict.overload('java.lang.String', 'android.content.ContentValues', 'java.lang.String', '[Ljava.lang.String;', 'int').implementation = function(var0, var1, var2, var3, var4) {\n\t\t\tvar methodVal = \"[*] SQLiteDatabase.updateWithOnConflict called.\";\n\t\t\tvar logVal = \"Update table: \" + var0 + \" with where clause: \"  + var2 + \" whereArgs:\" + var3 + \" values to update: \" + var1 + \" and conflictAlgorithm: \" + var4 +\"\\n\";\n\t\t\tconsole.log(methodVal, logVal);\n\t\t\t\n\t\t\tvar updateRes = this.updateWithOnConflict(var0, var1, var2, var3, var4);\n\t\t\treturn updateRes;\n\t\t};\n\n\t});\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "ninjadiary",
+        "codeshare_slug": "sqlite-database",
+        "codeshare_fingerprint": "68c65904c4787e4aeeae387a5b268df9f148ff58ce3c608336d6ab3e1140e1d0",
+        "project_uuid": "9f36e763-f088-4f97-89c0-5d55ed2fcc2e",
+        "popularity": {
+          "page": 5,
+          "browse_title": "SQLite Database",
+          "likes": 3,
+          "views": "11K"
+        },
+        "discovery_page": 5,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ninjadiary/sqlite-database",
+        "source_url": "https://codeshare.frida.re/@ninjadiary/sqlite-database/",
+        "source_hash": "68c65904c4787e4aeeae387a5b268df9f148ff58ce3c608336d6ab3e1140e1d0",
+        "normalized_hash": "48cfc394c2afb0b06d34cf0bf3ed616c666cae7833fffeffec6bf0db1418970a",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:SecFathy/sqlite-data-monitor",
+      "name": "FRIDA - ANDROID - Database - SQLite Data Monitor [5203448a]",
+      "description": "Monitor SQLite Database Activity in Custom Application and show a Insert and delete queries",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\r\n\tAuthor: Mohammed Fathy (Secfathy)\r\n * */\r\n\r\nJava.perform(function() {\r\n    var SQLiteDatabase = Java.use(\"android.database.sqlite.SQLiteDatabase\");\r\n    var SQLiteOpenHelper = Java.use(\"android.database.sqlite.SQLiteOpenHelper\");\r\n\r\n    var RESET_COLOR = \"\\x1b[0m\";\r\n    var RED_COLOR = \"\\x1b[31m\";\r\n    var GREEN_COLOR = \"\\x1b[32m\";\r\n    var YELLOW_COLOR = \"\\x1b[33m\";\r\n    var BLUE_COLOR = \"\\x1b[34m\";\r\n\r\n    SQLiteDatabase.openDatabase.overload('java.lang.String', 'android.database.sqlite.SQLiteDatabase$CursorFactory', 'int').implementation = function(path, factory, flags) {\r\n        console.log(BLUE_COLOR + \"Database opened: \" + path + RESET_COLOR);\r\n        return this.openDatabase(path, factory, flags);\r\n    };\r\n\r\n    SQLiteDatabase.insert.overload('java.lang.String', 'java.lang.String', 'android.content.ContentValues').implementation = function(table, nullColumnHack, values) {\r\n        console.log(GREEN_COLOR + \"Insert into table: \" + table + \" Values: \" + values + RESET_COLOR);\r\n        return this.insert(table, nullColumnHack, values);\r\n    };\r\n\r\n    SQLiteDatabase.execSQL.overload('java.lang.String').implementation = function(sql) {\r\n        console.log(RED_COLOR + \"SQL executed: \" + sql + RESET_COLOR);\r\n        this.execSQL(sql);\r\n    };\r\n\r\n    SQLiteDatabase.rawQuery.overload('java.lang.String', '[Ljava.lang.String;').implementation = function(sql, selectionArgs) {\r\n        console.log(YELLOW_COLOR + \"SQL Query: \" + sql + RESET_COLOR);\r\n        return this.rawQuery(sql, selectionArgs);\r\n    };\r\n\r\n\r\n    SQLiteOpenHelper.getWritableDatabase.implementation = function() {\r\n        var db = this.getWritableDatabase();\r\n        console.log(BLUE_COLOR + \"getWritableDatabase called: \" + db.getPath() + RESET_COLOR);\r\n        return db;\r\n    };\r\n\r\n    SQLiteOpenHelper.getReadableDatabase.implementation = function() {\r\n        var db = this.getReadableDatabase();\r\n        console.log(BLUE_COLOR + \"getReadableDatabase called: \" + db.getPath() + RESET_COLOR);\r\n        return db;\r\n    };\r\n\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "SecFathy",
+        "codeshare_slug": "sqlite-data-monitor",
+        "codeshare_fingerprint": "5203448ad39a4279dc0f1fe1cb1b45005f44bc1e1f5a317018aaecbf1edcceb3",
+        "project_uuid": "927562b8-f70f-4c65-a82c-721f672ccecf",
+        "popularity": {
+          "page": 12,
+          "browse_title": "SQLite Data Monitor",
+          "likes": 1,
+          "views": "4K"
+        },
+        "discovery_page": 12,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:SecFathy/sqlite-data-monitor",
+        "source_url": "https://codeshare.frida.re/@SecFathy/sqlite-data-monitor/",
+        "source_hash": "5203448ad39a4279dc0f1fe1cb1b45005f44bc1e1f5a317018aaecbf1edcceb3",
+        "normalized_hash": "339027f42dc8e43bc1586bd20cb4bcd202277e14537012897c2921b49d97226b",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

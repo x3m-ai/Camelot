@@ -1,0 +1,263 @@
+{
+  "package_id": "frida-universal-ipc-v1",
+  "package_name": "Frida - Universal - Ipc",
+  "version": "1.0.0",
+  "summary": "2 Frida instrumentation procedures for universal ipc mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 2 standalone Frida procedures from 2 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 2}; compatibility: {'likely-compatible': 1, 'legacy': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 2
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "ipc",
+    "method-hooking",
+    "native-hooking"
+  ],
+  "source_providers": [
+    "iddoeldor-frida-snippets",
+    "medusa"
+  ],
+  "scope_counts": {
+    "generic": 2
+  },
+  "quality_distribution": {
+    "A": 2
+  },
+  "license_distribution": {
+    "GPL-3.0": 1,
+    "unknown": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 1,
+    "legacy": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "frida:github:Ch0pin/medusa:snippets/redirect_intent.js",
+      "name": "FRIDA - UNIVERSAL - Ipc - redirect intent [47e214a8]",
+      "description": "Curated Frida source from Ch0pin/medusa: snippets/redirect_intent.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var activity_class_3203948 = Java.use('android.app.Activity');\n\nactivity_class_3203948.startActivity.overload('android.content.Intent', 'android.os.Bundle').implementation = function(intent, bundle){\n   colorLog('\\nA_Redireection'+this+' ====> startActivity(' + intent + ')', {c:Color.Purple});  \n   var component = intent.getComponent();\n   if (component !== null) {\n       var className = component.getClassName();\n       if (className === \"DESTINATION\") {\n           intent.setClassName(\"NEW_D_ESTINATION_PACKAGE\", \"NEW_DESTINAT_ION_ACTIVITY\");\n       }\n   }\n   console.log('Options:'+bundle)\n   dumpIntent(intent);   \n   colorLog('[^] -------------------------------------------------------------------------------- [^]',{c:Color.Purple});     \n   this.startActivity(intent, bundle);\n}          ",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/Ch0pin/medusa",
+        "source_commit": "8c62447d082f8612aeb9e07f8d8c20d8fa5f1fbb",
+        "source_commit_date": "2026-08-11",
+        "source_path": "snippets/redirect_intent.js",
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "medusa",
+        "source_id": "frida:github:Ch0pin/medusa:snippets/redirect_intent.js",
+        "source_url": "https://github.com/Ch0pin/medusa/blob/8c62447d082f8612aeb9e07f8d8c20d8fa5f1fbb/snippets/redirect_intent.js",
+        "source_hash": "47e214a861f06a0b2f8e45159d5de3fe9c00dd744cc6266149edbf64cc663fe6",
+        "normalized_hash": "488c71ea19980f197ae473e871f9deff534011d4d2628682bba56f3b17226871",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "method-hooking"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Binder transactions:js:10",
+      "name": "FRIDA - UNIVERSAL - Ipc - Binder transactions [ccaa1f5a]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Binder transactions:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var LAST_MSG = '';\nJava.perform(() => {\n  Interceptor.attach(Module.findExportByName('libbinder.so', 'ioctl'), {\n    onEnter: function(args) {\n      var binder_write_read_ptr = args[2];\n      if (args[1] == 0xC0306201) { // BINDER_WRITE_READ\n        var binder_write_read = {\n          // 'fd': args[0].toInt32(),\n          'write_size': binder_write_read_ptr.readU64(),\n          'write_consumed': binder_write_read_ptr.add(Process.pointerSize).readU64(),\n          'write_buffer': binder_write_read_ptr.add(Process.pointerSize * 2).readPointer(),\n        }\n        if (binder_write_read.write_size > 0) {\n          var ptr = binder_write_read.write_buffer.add(binder_write_read.write_consumed + 4);\n          switch (binder_write_read.write_buffer.readU32() & 0xff) {\n              case 0: // BC_TRANSACTION\n              case 1: // BC_REPLY\n                var binder_transaction_data = {\n                  'target': {\n                    'handle': ptr.readU32(),\n                    'ptr': ptr.readPointer()\n                  },\n                  'cookie': ptr.add(8).readPointer(),\n                  'code': ptr.add(16).readU32(),\n                  'flags': ptr.add(20).readU32(),\n                  'sender_pid': ptr.add(24).readS32(),\n                  'sender_euid': ptr.add(28).readU32(),\n                  'data_size': ptr.add(32).readU64(),\n                  'offsets_size': ptr.add(40).readU64(),\n                  'data': {\n                    'ptr': {\n                      'buffer': ptr.add(48).readPointer(),\n                      'offsets': ptr.add(56).readPointer()\n                    },\n                    'buf': ptr.add(48).readByteArray(8)\n                  }\n                }\n                var _log = hexdump(binder_transaction_data.data.ptr.buffer, { length: binder_transaction_data.data_size, ansi: true });\n                if (LAST_MSG.toString() != _log.toString()) {\n                  console.log(JSON.stringify(binder_transaction_data, null, 2));\n                  console.log(_log);\n                }\n                break;\n          }\n        }\n      }\n    }\n  });\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Binder transactions:js",
+        "readme_snippet_index": 10,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Binder transactions:js:10",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "ccaa1f5ad096f89edfbd1f37720341edf65b6ec3341eb6a8696bd945fdc8ef41",
+        "normalized_hash": "2513bb20a5256149a93e7745bbabc6a8109fbe9ebdab89ed1cbbd33573d13a45",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "native-hooking"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Process"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}
