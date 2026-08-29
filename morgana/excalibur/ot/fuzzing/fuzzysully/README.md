@@ -4,7 +4,7 @@
 **Source:** [ANSSI-FR/fuzzysully](https://github.com/ANSSI-FR/fuzzysully)  
 **Commit:** `50a0631178331d2cc39b6ed554b9b68050580f92`  
 **Version:** 0.1.1  
-**License:** LGPL-2.1  
+**License:** GPL-2.0  
 **Category:** OT / ICS Fuzzing / OPC UA  
 **Scripts:** 73  
 **Packages:** 4  

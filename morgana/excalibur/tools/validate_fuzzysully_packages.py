@@ -7,12 +7,16 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent / "ot" / "fuzzing" / "fuzzysully"
-PACKAGE_DIRS = ["server-none", "server-basic256sha256", "gds", "reverse"]
+PACKAGE_DIRS = ["server-none", "server-basic256sha256", "gds", "reverse",
+                "server-none-targeted", "server-basic256sha256-targeted", "reverse-targeted"]
 EXPECTED_COUNTS = {
     "server-none": 20,
     "server-basic256sha256": 34,
     "gds": 18,
     "reverse": 1,
+    "server-none-targeted": 4,
+    "server-basic256sha256-targeted": 1,
+    "reverse-targeted": 1,
 }
 REQUIRED_SCRIPT_FIELDS = ["id", "name", "command", "executor_config", "required_assets",
                            "required_tags", "source_metadata", "operational_risk"]
@@ -112,8 +116,8 @@ if catalog_path.exists():
     packs = catalog.get("packs", [])
     fs_entries = [e for e in packs if "fuzzysully" in e.get("package_id", "")]
     print(f"catalog_fuzzysully_entries={len(fs_entries)}")
-    if len(fs_entries) != 4:
-        errors.append(f"catalog: expected 4 FuzzySully entries, got {len(fs_entries)}")
+    if len(fs_entries) != 7:
+        errors.append(f"catalog: expected 7 FuzzySully entries, got {len(fs_entries)}")
 else:
     errors.append("catalog.json not found")
 
@@ -127,8 +131,15 @@ if bm_path.exists():
         errors.append("build-manifest: source_modified is not false")
     if not bm.get("source_commit"):
         errors.append("build-manifest: missing source_commit")
+    # License must be GPL-2.0
+    if bm.get("source_license") != "GPL-2.0":
+        errors.append(f"build-manifest: source_license should be GPL-2.0, got {bm.get('source_license')!r}")
+    if not bm.get("requirements_lock_sha256"):
+        errors.append("build-manifest: missing requirements_lock_sha256")
     print(f"build_manifest_commit={bm.get('source_commit')}")
     print(f"build_manifest_runner_sha256={bm.get('runner_sha256')}")
+    print(f"build_manifest_license={bm.get('source_license')}")
+    print(f"build_manifest_requirements_lock_sha256={bm.get('requirements_lock_sha256')}")
 else:
     errors.append("build-manifest.json not found")
 
