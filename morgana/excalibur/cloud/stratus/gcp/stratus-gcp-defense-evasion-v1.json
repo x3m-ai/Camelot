@@ -1,0 +1,526 @@
+{
+  "package_id": "stratus-gcp-defense-evasion-v1",
+  "package_name": "Stratus Red Team — GCP / Defense Evasion",
+  "version": "1.0.0",
+  "summary": "7 Stratus Red Team cloud adversary-emulation techniques for GCP Defense Evasion.",
+  "description": "Stratus Red Team cloud adversary-emulation techniques for GCP targeting the Defense Evasion tactic. Each script invokes the official Stratus binary using an isolated Morgana correlation ID for Detection Fabric correlation. Prerequisite cloud infrastructure is managed by Stratus warmup. Cleanup is performed via the separate cleanup_command using the same correlation ID.",
+  "purpose": "Validate GCP Defense Evasion detection rules, SIEM alerts, and SOC workflows in an authorized cloud sandbox.",
+  "capabilities": [
+    "7 Stratus Red Team techniques for GCP Defense Evasion.",
+    "Official Stratus binary execution — no custom attack code.",
+    "Morgana Test ID used as Stratus correlation ID for Detection Fabric correlation.",
+    "Separate detonate + cleanup lifecycle with state preservation."
+  ],
+  "use_cases": [
+    "Validate GCP Defense Evasion detection in an authorized cloud sandbox.",
+    "Exercise SIEM, CSPM, cloud-native detection, and SOC workflows with real cloud API activity.",
+    "Confirm detection rules fire on real technique execution before incident response exercises."
+  ],
+  "prerequisites": [
+    "GCP Application Default Credentials configured (gcloud auth application-default login).",
+    "GCP project with appropriate IAM permissions.",
+    "Authorized test GCP project — never run against production."
+  ],
+  "safety_notes": [
+    "Stratus Red Team is designed for authorized sandbox cloud environments only.",
+    "Never execute against production cloud accounts, subscriptions, or clusters.",
+    "Some techniques create real cloud resources that incur cost — always run cleanup after detonation.",
+    "Warmup may take 1–5 minutes for Terraform-based infrastructure setup.",
+    "Cleanup uses the same correlation ID; ensure MORGANA_TEST_ID matches the detonation Test."
+  ],
+  "author": "Datadog / Stratus Red Team",
+  "created": "2026-08-29",
+  "provider": "stratus-red-team",
+  "source": "stratus-red-team",
+  "source_repository": "https://github.com/DataDog/stratus-red-team",
+  "source_release": "v2.36.0",
+  "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://stratus-red-team.cloud/",
+  "mitre_domain": "enterprise-attack",
+  "source_attack_version": "v14",
+  "mitre_tactic": "Defense Evasion",
+  "mitre_tactics": [
+    "Defense Evasion"
+  ],
+  "mitre_tcodes": [],
+  "platform": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "category": "cloud/stratus/gcp",
+  "cloud_platform": "gcp",
+  "specialties": [
+    "cloud",
+    "cloud-adversary-emulation",
+    "gcp",
+    "detection-validation"
+  ],
+  "package_types": [
+    "atomic-tests"
+  ],
+  "execution_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "target_environments": [
+    "cloud",
+    "gcp"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "runtime_case_generator": false,
+  "auth_requirements": {
+    "note": "GCP — Application Default Credentials",
+    "secrets_embedded": false
+  },
+  "tag_categories": [
+    {
+      "category_id": "stratus_cloud",
+      "label": "Cloud Emulation — Stratus",
+      "description": "Cloud sandbox authentication context, region, and execution bounds for Stratus Red Team techniques.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "stratus_aws_profile",
+          "label": "AWS Profile",
+          "description": "AWS named profile from ~/.aws/credentials. Leave blank to use default credential chain.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_aws_region",
+          "label": "AWS Region",
+          "description": "AWS region for technique execution (e.g. us-east-1).",
+          "default": "us-east-1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_azure_subscription",
+          "label": "Azure Subscription ID",
+          "description": "Azure subscription ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_gcp_project",
+          "label": "GCP Project ID",
+          "description": "GCP project ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_kube_context",
+          "label": "Kubernetes Context",
+          "description": "kubectl context name for Kubernetes techniques. Leave blank for current context.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_force",
+          "label": "Force Detonate",
+          "description": "Pass --force to skip idempotency check (true/false).",
+          "default": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "stratus_linux_amd64",
+      "name": "stratus-linux-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_x86_64.tar.gz",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_x86_64.tar.gz",
+      "sha256": "66c1eeb7f61453ec8fc3d0ae67cdd8d4794887b2d27b950ccbe4b2030ff55757",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_linux_arm64",
+      "name": "stratus-linux-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_arm64.tar.gz",
+      "platform": "linux",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_arm64.tar.gz",
+      "sha256": "c7c8f19f8bef20d30b6653a5dea9be14f3f5f387c837b986c9eea91de1f5b97a",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_amd64",
+      "name": "stratus-windows-amd64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_x86_64.tar.gz",
+      "platform": "windows",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_x86_64.tar.gz",
+      "sha256": "c2863b6e58298ad86181fa6946635e798b282774b833bb10dfc4afa681444467",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_arm64",
+      "name": "stratus-windows-arm64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_arm64.tar.gz",
+      "platform": "windows",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_arm64.tar.gz",
+      "sha256": "24117655432e50888f26faf66fc04bb235662d71d01f9e9b8e79336fa4d745bf",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_amd64",
+      "name": "stratus-macos-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_x86_64.tar.gz",
+      "platform": "macos",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_x86_64.tar.gz",
+      "sha256": "7b149728ff5b4b9abe07ef6e1774128b476aeb02e1c26252ec4436d04df12032",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_arm64",
+      "name": "stratus-macos-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_arm64.tar.gz",
+      "platform": "macos",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_arm64.tar.gz",
+      "sha256": "937f0d457186fae56de4027bcaf2cbc26a84d93a39fef82a3809d7c00a1b70cd",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "stratus:gcp.defense-evasion.delete-dns-logs",
+      "name": "STRATUS - GCP - Delete a Cloud DNS Logging Policy",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nDelete a Cloud DNS Logging Policy\n\nDeletes a Cloud DNS policy that has query logging enabled. Cloud DNS policies with logging record all DNS queries from VMs in the associated networks to Cloud Logging, providing visibility into DNS-based communication. Warm-up: - Create a VPC network - Create a Cloud DNS policy with query logging enabled, attached to the VPC network Detonation: - Delete the Cloud DNS policy, stopping query logging for the associated network References: - https://cloud.google.com/dns/docs/monitoring - https://clo\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Delete a Cloud DNS Logging Policy\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.delete-dns-logs\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.delete-dns-logs\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.delete-dns-logs\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.delete-dns-logs\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.delete-dns-logs\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.delete-dns-logs\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.delete-dns-logs",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "Identify when a Cloud DNS policy is deleted by monitoring for dns.policies.delete events in GCP Admin Activity audit logs."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.delete-logging-sink",
+      "name": "STRATUS - GCP - Delete a GCP Log Sink",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nDelete a GCP Log Sink\n\nDeletes a Cloud Logging sink that exports audit logs to a storage destination. Simulates an attacker disrupting audit log export to impair forensic investigation and detection. Warm-up: - Create a GCS bucket - Create a log sink exporting audit logs (cloudaudit.googleapis.com) to the bucket Detonation: - Delete the log sink References: - https://cloud.google.com/logging/docs/export/configure_export_v2 - https://www.trendmicro.com/cloudoneconformity/knowledge-base/gcp/CloudLogging/logging-sink.htm\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Delete a GCP Log Sink\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.delete-logging-sink\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.delete-logging-sink\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.delete-logging-sink\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.delete-logging-sink\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.delete-logging-sink\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.delete-logging-sink\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.delete-logging-sink",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "Identify when a log sink is deleted using the GCP Admin Activity audit log event google.logging.v2.ConfigServiceV2.DeleteSink."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.disable-audit-logs",
+      "name": "STRATUS - GCP - Disable Data Access Audit Logs for a GCP Service",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nDisable Data Access Audit Logs for a GCP Service\n\nRemoves the Data Access audit log configuration for Cloud Storage from the project IAM policy. Data Access audit logs record data access operations such as reads and writes to GCS objects. Disabling them reduces an attacker's visibility footprint in Cloud Logging. Warm-up: - Snapshot the current project IAM policy (including any pre-existing audit config for storage.googleapis.com) so it can be restored on revert Detonation: - Set a DATA_READ and DATA_WRITE auditConfig entry for storage.googleap\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Disable Data Access Audit Logs for a GCP Service\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.disable-audit-logs\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.disable-audit-logs\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.disable-audit-logs\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.disable-audit-logs\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.disable-audit-logs\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.disable-audit-logs\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.disable-audit-logs",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when Data Access audit log configuration is removed from the project IAM policy by monitoring for SetIamPolicy events in GCP Admin Activity audit logs where the request removes or reduces auditConfigs entries."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.disable-logging-sink",
+      "name": "STRATUS - GCP - Disable a GCP Log Sink",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nDisable a GCP Log Sink\n\nDisables a Cloud Logging sink that exports audit logs to a storage destination. Simulates an attacker temporarily halting audit log export to impair detection, without permanently destroying the sink configuration. Warm-up: - Create a GCS bucket - Create a log sink exporting audit logs (cloudaudit.googleapis.com) to the bucket Detonation: - Disable the log sink by setting its disabled field to true Revert: - Re-enable the log sink by setting its disabled field back to false References: - https:/\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Disable a GCP Log Sink\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.disable-logging-sink\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.disable-logging-sink\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.disable-logging-sink\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.disable-logging-sink\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.disable-logging-sink\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.disable-logging-sink\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.disable-logging-sink",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when a log sink is updated using the GCP Admin Activity audit log event google.logging.v2.ConfigServiceV2.UpdateSink. Inspect the request to check whether the disabled field was set to true."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.reduce-sink-log-retention",
+      "name": "STRATUS - GCP - Reduce Log Retention Period on a Cloud Logging Sink Bucket",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nReduce Log Retention Period on a Cloud Logging Sink Bucket\n\nSets a 1-day object lifecycle rule on the GCS bucket used by a Cloud Logging sink, causing exported audit logs to be automatically deleted after one day. This is the GCP equivalent of the AWS CloudTrail lifecycle rule technique: rather than deleting the sink or disabling it (which raises an immediate alert), the attacker quietly shortens the retention window of the underlying storage bucket to minimize the forensic footprint of their activity. Warm-up: - Create a GCS bucket - Create a log sink e\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Reduce Log Retention Period on a Cloud Logging Sink Bucket\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.reduce-sink-log-retention\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.reduce-sink-log-retention\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.reduce-sink-log-retention\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.reduce-sink-log-retention\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.reduce-sink-log-retention\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.reduce-sink-log-retention\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.reduce-sink-log-retention",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when a lifecycle rule with a short expiration is applied to a GCS bucket used for Cloud Logging export. Monitor for storage.buckets.update events in GCP Data Access audit logs where the request sets a lifecycle rule with a short expiration on a bucket associated with a logging sink."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.remove-project-from-organization",
+      "name": "STRATUS - GCP - Attempt to Remove a GCP Project from its Organization",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nAttempt to Remove a GCP Project from its Organization\n\nAttempts to remove a GCP project from its parent organization by moving it to an attacker-controlled organization via the Cloud Resource Manager API. Removing a project from an organization would allow an attacker to operate outside of Organization Policy constraints, disable org-level audit log sinks, and evade security controls applied at the organization node. The API call generates an Admin Activity audit log event regardless of whether it succeeds. In most environments the calling identity \n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Attempt to Remove a GCP Project from its Organization\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.remove-project-from-organization\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.remove-project-from-organization\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.remove-project-from-organization\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.remove-project-from-organization\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.remove-project-from-organization\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.remove-project-from-organization\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.remove-project-from-organization",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": false,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "Identify calls to google.cloud.resourcemanager.v3.Projects.MoveProject (v3 API) or cloudresourcemanager.googleapis.com/projects.move (v1 API) in GCP Admin Activity audit logs, especially where the request attempts to change the project parent to a different organization. Unexpected move attempts on the project resource should be treated as high-severity events."
+      }
+    },
+    {
+      "id": "stratus:gcp.defense-evasion.remove-vpc-flow-logs",
+      "name": "STRATUS - GCP - Disable VPC Flow Logs on a Subnet",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nDisable VPC Flow Logs on a Subnet\n\nDisables VPC flow logging on a subnet by patching its log configuration. VPC flow logs record network traffic metadata for all VM instances in a subnet, providing visibility for network monitoring and forensic investigation. Warm-up: - Create a VPC network - Create a subnet with VPC flow logs enabled Detonation: - Disable VPC flow logs on the subnet by patching its logConfig.enable field to false Revert: - Re-enable VPC flow logs on the subnet References: - https://cloud.google.com/vpc/docs/usin\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Defense Evasion",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Disable VPC Flow Logs on a Subnet\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.defense-evasion.remove-vpc-flow-logs\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.defense-evasion.remove-vpc-flow-logs\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.defense-evasion.remove-vpc-flow-logs\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.defense-evasion.remove-vpc-flow-logs\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.defense-evasion.remove-vpc-flow-logs\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.defense-evasion.remove-vpc-flow-logs\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.defense-evasion.remove-vpc-flow-logs",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Defense Evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when VPC flow logging is disabled on a subnet by monitoring for v1.compute.subnetworks.patch events in GCP Admin Activity audit logs where the request sets logConfig.enable to false."
+      }
+    }
+  ],
+  "chains": []
+}

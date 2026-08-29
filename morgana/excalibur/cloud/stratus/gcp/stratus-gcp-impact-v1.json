@@ -1,0 +1,403 @@
+{
+  "package_id": "stratus-gcp-impact-v1",
+  "package_name": "Stratus Red Team — GCP / Impact",
+  "version": "1.0.0",
+  "summary": "4 Stratus Red Team cloud adversary-emulation techniques for GCP Impact.",
+  "description": "Stratus Red Team cloud adversary-emulation techniques for GCP targeting the Impact tactic. Each script invokes the official Stratus binary using an isolated Morgana correlation ID for Detection Fabric correlation. Prerequisite cloud infrastructure is managed by Stratus warmup. Cleanup is performed via the separate cleanup_command using the same correlation ID.",
+  "purpose": "Validate GCP Impact detection rules, SIEM alerts, and SOC workflows in an authorized cloud sandbox.",
+  "capabilities": [
+    "4 Stratus Red Team techniques for GCP Impact.",
+    "Official Stratus binary execution — no custom attack code.",
+    "Morgana Test ID used as Stratus correlation ID for Detection Fabric correlation.",
+    "Separate detonate + cleanup lifecycle with state preservation."
+  ],
+  "use_cases": [
+    "Validate GCP Impact detection in an authorized cloud sandbox.",
+    "Exercise SIEM, CSPM, cloud-native detection, and SOC workflows with real cloud API activity.",
+    "Confirm detection rules fire on real technique execution before incident response exercises."
+  ],
+  "prerequisites": [
+    "GCP Application Default Credentials configured (gcloud auth application-default login).",
+    "GCP project with appropriate IAM permissions.",
+    "Authorized test GCP project — never run against production."
+  ],
+  "safety_notes": [
+    "Stratus Red Team is designed for authorized sandbox cloud environments only.",
+    "Never execute against production cloud accounts, subscriptions, or clusters.",
+    "Some techniques create real cloud resources that incur cost — always run cleanup after detonation.",
+    "Warmup may take 1–5 minutes for Terraform-based infrastructure setup.",
+    "Cleanup uses the same correlation ID; ensure MORGANA_TEST_ID matches the detonation Test."
+  ],
+  "author": "Datadog / Stratus Red Team",
+  "created": "2026-08-29",
+  "provider": "stratus-red-team",
+  "source": "stratus-red-team",
+  "source_repository": "https://github.com/DataDog/stratus-red-team",
+  "source_release": "v2.36.0",
+  "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://stratus-red-team.cloud/",
+  "mitre_domain": "enterprise-attack",
+  "source_attack_version": "v14",
+  "mitre_tactic": "Impact",
+  "mitre_tactics": [
+    "Impact"
+  ],
+  "mitre_tcodes": [],
+  "platform": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "category": "cloud/stratus/gcp",
+  "cloud_platform": "gcp",
+  "specialties": [
+    "cloud",
+    "cloud-adversary-emulation",
+    "gcp",
+    "detection-validation"
+  ],
+  "package_types": [
+    "atomic-tests"
+  ],
+  "execution_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "target_environments": [
+    "cloud",
+    "gcp"
+  ],
+  "risk_badges": [
+    "disrupt"
+  ],
+  "runtime_case_generator": false,
+  "auth_requirements": {
+    "note": "GCP — Application Default Credentials",
+    "secrets_embedded": false
+  },
+  "tag_categories": [
+    {
+      "category_id": "stratus_cloud",
+      "label": "Cloud Emulation — Stratus",
+      "description": "Cloud sandbox authentication context, region, and execution bounds for Stratus Red Team techniques.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "stratus_aws_profile",
+          "label": "AWS Profile",
+          "description": "AWS named profile from ~/.aws/credentials. Leave blank to use default credential chain.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_aws_region",
+          "label": "AWS Region",
+          "description": "AWS region for technique execution (e.g. us-east-1).",
+          "default": "us-east-1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_azure_subscription",
+          "label": "Azure Subscription ID",
+          "description": "Azure subscription ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_gcp_project",
+          "label": "GCP Project ID",
+          "description": "GCP project ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_kube_context",
+          "label": "Kubernetes Context",
+          "description": "kubectl context name for Kubernetes techniques. Leave blank for current context.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_force",
+          "label": "Force Detonate",
+          "description": "Pass --force to skip idempotency check (true/false).",
+          "default": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "stratus_linux_amd64",
+      "name": "stratus-linux-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_x86_64.tar.gz",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_x86_64.tar.gz",
+      "sha256": "66c1eeb7f61453ec8fc3d0ae67cdd8d4794887b2d27b950ccbe4b2030ff55757",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_linux_arm64",
+      "name": "stratus-linux-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_arm64.tar.gz",
+      "platform": "linux",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_arm64.tar.gz",
+      "sha256": "c7c8f19f8bef20d30b6653a5dea9be14f3f5f387c837b986c9eea91de1f5b97a",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_amd64",
+      "name": "stratus-windows-amd64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_x86_64.tar.gz",
+      "platform": "windows",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_x86_64.tar.gz",
+      "sha256": "c2863b6e58298ad86181fa6946635e798b282774b833bb10dfc4afa681444467",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_arm64",
+      "name": "stratus-windows-arm64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_arm64.tar.gz",
+      "platform": "windows",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_arm64.tar.gz",
+      "sha256": "24117655432e50888f26faf66fc04bb235662d71d01f9e9b8e79336fa4d745bf",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_amd64",
+      "name": "stratus-macos-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_x86_64.tar.gz",
+      "platform": "macos",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_x86_64.tar.gz",
+      "sha256": "7b149728ff5b4b9abe07ef6e1774128b476aeb02e1c26252ec4436d04df12032",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_arm64",
+      "name": "stratus-macos-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_arm64.tar.gz",
+      "platform": "macos",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_arm64.tar.gz",
+      "sha256": "937f0d457186fae56de4027bcaf2cbc26a84d93a39fef82a3809d7c00a1b70cd",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "stratus:gcp.impact.create-gpu-vm",
+      "name": "STRATUS - GCP - Create a GCE GPU Virtual Machine",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nCreate a GCE GPU Virtual Machine\n\nCreates a GCE virtual machine instance with GPU accelerators, simulating an attacker creating GPU instances for cryptomining. Warm-up: - None Detonation: - Attempt to create a GCE instance with a GPU accelerator (\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create a GCE GPU Virtual Machine\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.impact.create-gpu-vm\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.impact.create-gpu-vm\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.impact.create-gpu-vm\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.impact.create-gpu-vm\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.impact.create-gpu-vm\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.impact.create-gpu-vm\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.impact.create-gpu-vm",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when GCE instances with GPU accelerators are created by monitoring for v1.compute.instances.insert or beta.compute.instances.insert events in GCP Admin Activity audit logs where the request includes guestAccelerators. Attackers frequently provision GPU-enabled VMs for cryptocurrency mining after compromising cloud credentials. GPU VMs are significantly more expensive than standard VMs and are rarely used in most environments. Detection criteria: Monitor compute.instances.insert events where the request contains guestAccelerators.acceleratorCount Alert on any instance creation with GPU accelerators, especially from unusual principals or outside of normal change windows Consider higher severity when the caller IP is associated with known anonymizing proxies or botnets"
+      }
+    },
+    {
+      "id": "stratus:gcp.impact.create-instances-in-multiple-zones",
+      "name": "STRATUS - GCP - Create GCE Instances in Multiple Zones",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nCreate GCE Instances in Multiple Zones\n\nCreates GCE instances across multiple zones, simulating an attacker hijacking compute resources for cryptomining across multiple availability zones. Warm-up: - None Detonation: - Create\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create GCE Instances in Multiple Zones\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.impact.create-instances-in-multiple-zones\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.impact.create-instances-in-multiple-zones\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.impact.create-instances-in-multiple-zones\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.impact.create-instances-in-multiple-zones\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.impact.create-instances-in-multiple-zones\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.impact.create-instances-in-multiple-zones\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.impact.create-instances-in-multiple-zones",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when GCE instances are created across an unusually high number of zones by monitoring for v1.compute.instances.insert or beta.compute.instances.insert events in GCP Admin Activity audit logs. An attacker performing resource hijacking (e.g., cryptomining) typically creates instances across many zones to maximize resource availability and evade per-zone quotas. Detection criteria: Monitor compute.instances.insert events grouped by caller identity Count the number of distinct zones in which instances are created within a short time window (e.g., 5 minutes) Alert when the number of distinct zones exceeds a threshold (e.g., more than 5 zones) Exclude legitimate automation such as Managed Instance Groups (user agent containing GCE Managed Instance Group)"
+      }
+    },
+    {
+      "id": "stratus:gcp.impact.gcs-ransomware-client-side-encryption",
+      "name": "STRATUS - GCP - GCS Ransomware through client-side encryption",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nGCS Ransomware through client-side encryption\n\nSimulates GCS ransomware activity that encrypts files in a Cloud Storage bucket with a static key, through GCS [Customer-Supplied Encryption Keys](https://cloud.google.com/storage/docs/encryption/customer-supplied-keys) (CSEK). Warm-up: - Create a Cloud Storage bucket - Create a number of objects in the bucket, with random content and extensions Detonation: - List all objects in the bucket - Rewrite every object in place with a customer-supplied AES-256 encryption key, using [objects.rewrite](ht\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — GCS Ransomware through client-side encryption\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.impact.gcs-ransomware-client-side-encryption\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.impact.gcs-ransomware-client-side-encryption\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.impact.gcs-ransomware-client-side-encryption\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.impact.gcs-ransomware-client-side-encryption\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.impact.gcs-ransomware-client-side-encryption\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.impact.gcs-ransomware-client-side-encryption\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.impact.gcs-ransomware-client-side-encryption",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of objects being rewritten in place. The GCS rewrite API (used to encrypt an object with a customer-supplied key without changing its name) is recorded in [Data Access audit logs](https://cloud.google.com/storage/docs/audit-logging) with methodName: storage.objects.create A rewrite-in-place can be distinguished from a regular upload by inspecting authorizationInfo: a rewrite checks both storage.objects.delete and storage.objects.create permissions on the same object, whereas a plain upload only checks storage.objects.create. Note that GCS Data Access logs are not enabled by default and must be [explicitly enabled](https://cloud.google.com/storage/docs/audit-logging#enabling) at the project or organization level. Sample audit log event for a rewrite-in-place, shortened for readability:"
+      }
+    },
+    {
+      "id": "stratus:gcp.impact.gcs-ransomware-individual-deletion",
+      "name": "STRATUS - GCP - GCS Ransomware through individual file deletion",
+      "description": "Stratus Red Team cloud adversary-emulation technique for GCP.\n\nGCS Ransomware through individual file deletion\n\nSimulates GCS ransomware activity that empties a Cloud Storage bucket through individual object deletion, then uploads a ransom note. Warm-up: - Create a Cloud Storage bucket, with object versioning enabled - Create a number of objects in the bucket, with random content and extensions Detonation: - List all available objects and their versions in the bucket - Delete all objects in the bucket one by one, including all noncurrent versions, using [objects.delete](https://cloud.google.com/storage/do\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — GCS Ransomware through individual file deletion\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_gcp_project}\" ]; then export GOOGLE_CLOUD_PROJECT=\"#{stratus_gcp_project}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=gcp.impact.gcs-ransomware-individual-deletion\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate gcp.impact.gcs-ransomware-individual-deletion\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=gcp.impact.gcs-ransomware-individual-deletion\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"gcp.impact.gcs-ransomware-individual-deletion\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup gcp.impact.gcs-ransomware-individual-deletion\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=gcp.impact.gcs-ransomware-individual-deletion\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "gcp.impact.gcs-ransomware-individual-deletion",
+        "cloud_platform": "gcp",
+        "platform_name": "GCP",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of objects being downloaded or deleted in the bucket. This can be done through GCS [Data Access audit logs](https://cloud.google.com/storage/docs/audit-logging) by monitoring for high volumes of storage.objects.delete events attributed to a single principal in a short time window. Note that GCS Data Access logs are not enabled by default and must be [explicitly enabled](https://cloud.google.com/storage/docs/audit-logging#enabling) at the project or organization level. Sample audit log event for storage.objects.delete, shortened for readability:"
+      }
+    }
+  ],
+  "chains": []
+}

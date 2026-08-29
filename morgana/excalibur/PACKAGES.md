@@ -6,6 +6,8 @@ Excalibur is the certified adversary emulation and security validation script li
 
 All packages are installed through the Morgana UI at **Scripts → Excalibur Packs → Refresh catalog → Install**. No runtime dependencies on the source repositories are required after installation.
 
+> **Numbers as of 2026-08-29.** Run **Refresh catalog** to see the current version.
+
 ---
 
 ## Catalog summary
@@ -23,7 +25,8 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [MITRE CALDERA OT](#8-mitre-caldera-ot) | 15 | 223 | 223 | ICS ATT&CK |
 | [ICS-SCADA-Fuzzer](#9-ics-scada-fuzzer) | 5 | 120 | 0 | ICS ATT&CK |
 | [ANSSI FuzzySully](#10-anssi-fuzzysully) | 7 | 79 | 0 | ICS ATT&CK |
-| **Total** | **224** | **26 323** | **2 121** | |
+| [Stratus Red Team](#11-stratus-red-team) | 30 | 93 | 0 | Enterprise ATT&CK |
+| **Total** | **254** | **26 416** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
 
@@ -359,6 +362,46 @@ Deep OPC UA protocol fuzzing engine based on [ANSSI-FR/fuzzysully](https://githu
 **Tags required:** `opcua_target_host`, `opcua_target_port`, `fuzz_max_cases`, `fuzz_max_duration`
 
 **Important:** OPC UA fuzzing can crash or hang real devices. Always use an isolated OT lab. GDS operations can invalidate PKI trust chains. See [ANSSI FuzzySully README](ot/fuzzing/fuzzysully/README.md).
+
+---
+
+## 11. Stratus Red Team
+
+Cloud adversary-emulation techniques from [DataDog/stratus-red-team](https://github.com/DataDog/stratus-red-team). Stratus is effectively **Atomic Red Team for cloud environments** — each technique is a granular self-contained cloud API operation mapped to MITRE ATT&CK.
+
+Morgana executes the official Stratus binary using an isolated `MORGANA_TEST_ID` correlation ID for Detection Fabric correlation. Stratus handles all prerequisite cloud infrastructure via Terraform warmup automatically.
+
+| Platform | Packages | Scripts | Tactics |
+|---|---|---|---|
+| AWS | 10 | 44 | Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Execution, Lateral Movement, Exfiltration, Impact, Initial Access |
+| Azure | 6 | 15 | Persistence, Privilege Escalation, Credential Access, Execution, Exfiltration, Impact |
+| GCP | 7 | 19 | Persistence, Privilege Escalation, Defense Evasion, Discovery, Execution, Exfiltration, Impact, Initial Access |
+| Entra ID | 1 | 7 | Persistence |
+| Kubernetes | 3 | 6 | Persistence, Privilege Escalation, Credential Access |
+| Amazon EKS | 2 | 2 | Persistence, Lateral Movement |
+
+**Source:** [DataDog/stratus-red-team](https://github.com/DataDog/stratus-red-team) @ v2.36.0 (`21c8fef`)  
+**License:** Apache-2.0  
+**ATT&CK Domain:** Enterprise ATT&CK  
+**Execution Platforms:** Windows, Linux, macOS  
+**Target Environments:** Cloud (AWS / Azure / GCP / Entra ID / Kubernetes / EKS)  
+
+**Prerequisites (per platform):**
+- **AWS:** AWS credentials (env vars, profile, or IAM instance profile)
+- **Azure:** `az login` or Managed Identity
+- **Entra ID:** `az login` with Entra ID permissions
+- **GCP:** Application Default Credentials (`gcloud auth application-default login`)
+- **Kubernetes:** kubectl kubeconfig with current context
+- **EKS:** AWS credentials + `aws eks update-kubeconfig` for the cluster
+
+**Lifecycle:** Each Script invokes `stratus detonate <technique-id>`. Cleanup via `cleanup_command` calls `stratus cleanup <technique-id>` using the same `MORGANA_TEST_ID` correlation ID.
+
+**Important:**
+- Always use an authorized sandbox/test cloud account — never target production workloads
+- Some techniques create real cloud resources that incur cost — always run cleanup
+- Warmup can take 1–5 minutes for Terraform-based infrastructure setup
+
+See the [Stratus README](cloud/stratus/README.md) for full details.
 
 ---
 

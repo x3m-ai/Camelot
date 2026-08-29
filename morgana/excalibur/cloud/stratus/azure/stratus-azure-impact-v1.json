@@ -1,0 +1,444 @@
+{
+  "package_id": "stratus-azure-impact-v1",
+  "package_name": "Stratus Red Team — Azure / Impact",
+  "version": "1.0.0",
+  "summary": "5 Stratus Red Team cloud adversary-emulation techniques for Azure Impact.",
+  "description": "Stratus Red Team cloud adversary-emulation techniques for Azure targeting the Impact tactic. Each script invokes the official Stratus binary using an isolated Morgana correlation ID for Detection Fabric correlation. Prerequisite cloud infrastructure is managed by Stratus warmup. Cleanup is performed via the separate cleanup_command using the same correlation ID.",
+  "purpose": "Validate Azure Impact detection rules, SIEM alerts, and SOC workflows in an authorized cloud sandbox.",
+  "capabilities": [
+    "5 Stratus Red Team techniques for Azure Impact.",
+    "Official Stratus binary execution — no custom attack code.",
+    "Morgana Test ID used as Stratus correlation ID for Detection Fabric correlation.",
+    "Separate detonate + cleanup lifecycle with state preservation."
+  ],
+  "use_cases": [
+    "Validate Azure Impact detection in an authorized cloud sandbox.",
+    "Exercise SIEM, CSPM, cloud-native detection, and SOC workflows with real cloud API activity.",
+    "Confirm detection rules fire on real technique execution before incident response exercises."
+  ],
+  "prerequisites": [
+    "Azure CLI authenticated on the Agent (az login or Managed Identity).",
+    "Azure subscription with appropriate permissions.",
+    "Authorized test subscription — never run against production."
+  ],
+  "safety_notes": [
+    "Stratus Red Team is designed for authorized sandbox cloud environments only.",
+    "Never execute against production cloud accounts, subscriptions, or clusters.",
+    "Some techniques create real cloud resources that incur cost — always run cleanup after detonation.",
+    "Warmup may take 1–5 minutes for Terraform-based infrastructure setup.",
+    "Cleanup uses the same correlation ID; ensure MORGANA_TEST_ID matches the detonation Test."
+  ],
+  "author": "Datadog / Stratus Red Team",
+  "created": "2026-08-29",
+  "provider": "stratus-red-team",
+  "source": "stratus-red-team",
+  "source_repository": "https://github.com/DataDog/stratus-red-team",
+  "source_release": "v2.36.0",
+  "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://stratus-red-team.cloud/",
+  "mitre_domain": "enterprise-attack",
+  "source_attack_version": "v14",
+  "mitre_tactic": "Impact",
+  "mitre_tactics": [
+    "Impact"
+  ],
+  "mitre_tcodes": [],
+  "platform": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "category": "cloud/stratus/azure",
+  "cloud_platform": "azure",
+  "specialties": [
+    "cloud",
+    "cloud-adversary-emulation",
+    "azure",
+    "detection-validation"
+  ],
+  "package_types": [
+    "atomic-tests"
+  ],
+  "execution_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "target_environments": [
+    "cloud",
+    "azure"
+  ],
+  "risk_badges": [
+    "disrupt"
+  ],
+  "runtime_case_generator": false,
+  "auth_requirements": {
+    "note": "Azure — az login or Managed Identity",
+    "secrets_embedded": false
+  },
+  "tag_categories": [
+    {
+      "category_id": "stratus_cloud",
+      "label": "Cloud Emulation — Stratus",
+      "description": "Cloud sandbox authentication context, region, and execution bounds for Stratus Red Team techniques.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "stratus_aws_profile",
+          "label": "AWS Profile",
+          "description": "AWS named profile from ~/.aws/credentials. Leave blank to use default credential chain.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_aws_region",
+          "label": "AWS Region",
+          "description": "AWS region for technique execution (e.g. us-east-1).",
+          "default": "us-east-1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_azure_subscription",
+          "label": "Azure Subscription ID",
+          "description": "Azure subscription ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_gcp_project",
+          "label": "GCP Project ID",
+          "description": "GCP project ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_kube_context",
+          "label": "Kubernetes Context",
+          "description": "kubectl context name for Kubernetes techniques. Leave blank for current context.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_force",
+          "label": "Force Detonate",
+          "description": "Pass --force to skip idempotency check (true/false).",
+          "default": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "stratus_linux_amd64",
+      "name": "stratus-linux-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_x86_64.tar.gz",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_x86_64.tar.gz",
+      "sha256": "66c1eeb7f61453ec8fc3d0ae67cdd8d4794887b2d27b950ccbe4b2030ff55757",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_linux_arm64",
+      "name": "stratus-linux-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_arm64.tar.gz",
+      "platform": "linux",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_arm64.tar.gz",
+      "sha256": "c7c8f19f8bef20d30b6653a5dea9be14f3f5f387c837b986c9eea91de1f5b97a",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_amd64",
+      "name": "stratus-windows-amd64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_x86_64.tar.gz",
+      "platform": "windows",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_x86_64.tar.gz",
+      "sha256": "c2863b6e58298ad86181fa6946635e798b282774b833bb10dfc4afa681444467",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_arm64",
+      "name": "stratus-windows-arm64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_arm64.tar.gz",
+      "platform": "windows",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_arm64.tar.gz",
+      "sha256": "24117655432e50888f26faf66fc04bb235662d71d01f9e9b8e79336fa4d745bf",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_amd64",
+      "name": "stratus-macos-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_x86_64.tar.gz",
+      "platform": "macos",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_x86_64.tar.gz",
+      "sha256": "7b149728ff5b4b9abe07ef6e1774128b476aeb02e1c26252ec4436d04df12032",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_arm64",
+      "name": "stratus-macos-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_arm64.tar.gz",
+      "platform": "macos",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_arm64.tar.gz",
+      "sha256": "937f0d457186fae56de4027bcaf2cbc26a84d93a39fef82a3809d7c00a1b70cd",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "stratus:azure.impact.blob-ransomware-client-encryption-scope",
+      "name": "STRATUS - AZURE - Azure Blob Storage ransomware through Encryption Scope using client-managed Key Vault key",
+      "description": "Stratus Red Team cloud adversary-emulation technique for Azure.\n\nAzure Blob Storage ransomware through Encryption Scope using client-managed Key Vault key\n\nSimulates Azure Blob Storage ransomware activity that encrypts files using an encryption scope backed by a customer-managed Key Vault key, then deletes the key to render the data inaccessible. Note that due to Azure's purge protection feature, it is impossible to hard-delete the key and the blobs remain recoverable. You will need to have the Key Vault Administrator role on your Azure subscription to correctly warmup the technique. Warm-up: - Create an Azure Storage Account with a system-assigned\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Azure Blob Storage ransomware through Encryption Scope using client-managed Key Vault key\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_azure_subscription}\" ]; then export AZURE_SUBSCRIPTION_ID=\"#{stratus_azure_subscription}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=azure.impact.blob-ransomware-client-encryption-scope\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate azure.impact.blob-ransomware-client-encryption-scope\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=azure.impact.blob-ransomware-client-encryption-scope\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"azure.impact.blob-ransomware-client-encryption-scope\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup azure.impact.blob-ransomware-client-encryption-scope\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=azure.impact.blob-ransomware-client-encryption-scope\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "azure.impact.blob-ransomware-client-encryption-scope",
+        "cloud_platform": "azure",
+        "platform_name": "Azure",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect this ransomware activity by monitoring for: 1. Encryption scope creation (MICROSOFT.STORAGE/STORAGEACCOUNTS/ENCRYPTIONSCOPES/WRITE) followed by the deletion of the key (KeyDelete) used for encryption. 2. High volumes of GetBlob followed by PutBlob operations. Sample Azure Activity log event for Key Vault creation:"
+      }
+    },
+    {
+      "id": "stratus:azure.impact.blob-ransomware-cpek",
+      "name": "STRATUS - AZURE - Azure Blob Storage ransomware through Customer-Provided Encryption Keys",
+      "description": "Stratus Red Team cloud adversary-emulation technique for Azure.\n\nAzure Blob Storage ransomware through Customer-Provided Encryption Keys\n\nSimulates Azure Blob Storage ransomware activity that encrypts files using Customer-Provided Encryption Keys (CPK). This is the Azure equivalent of the AWS SSE-C ransomware technique. The attacker downloads existing blobs and re-uploads them encrypted with a customer-provided AES-256 key that only they possess. Without the key, the blobs cannot be read. Warm-up: - Create an Azure Storage Account - Create multiple storage containers in the account - Create a number of blobs in the containers with\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Azure Blob Storage ransomware through Customer-Provided Encryption Keys\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_azure_subscription}\" ]; then export AZURE_SUBSCRIPTION_ID=\"#{stratus_azure_subscription}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=azure.impact.blob-ransomware-cpek\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate azure.impact.blob-ransomware-cpek\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=azure.impact.blob-ransomware-cpek\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"azure.impact.blob-ransomware-cpek\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup azure.impact.blob-ransomware-cpek\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=azure.impact.blob-ransomware-cpek\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "azure.impact.blob-ransomware-cpek",
+        "cloud_platform": "azure",
+        "platform_name": "Azure",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "You can detect this ransomware activity by monitoring for high volumes of GetBlob followed by PutBlob operations, especially when PutBlob requests include customer-provided encryption key headers (x-ms-encryption-algorithm: AES256). In Azure Storage diagnostic logs, look for: 1. Unusual volume of read (GetBlob) followed by write (PutBlob) operations on the same blobs. 2. PutBlob operations with the x-ms-encryption-algorithm request header set to AES256, indicating customer-provided key usage. Sample Azure Storage diagnostic log event for a PutBlob with customer-provided key:"
+      }
+    },
+    {
+      "id": "stratus:azure.impact.blob-ransomware-individual-file-deletion",
+      "name": "STRATUS - AZURE - Azure ransomware via Storage Account Blob deletion",
+      "description": "Stratus Red Team cloud adversary-emulation technique for Azure.\n\nAzure ransomware via Storage Account Blob deletion\n\nSimulates Azure Storage ransomware activity that empties a storage account through individual Blob deletion, then uploads a ransom note. Warm-up: - Create an Azure Storage Account, with versioning enabled - Create Storage Containers in the Storage Account, each with a large number blobs with random content and extensions Detonation: - List all available storage containers and their blobs and their versions in the bucket - Delete all blobs in each container one by one, using [DeleteBlob](https://\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Azure ransomware via Storage Account Blob deletion\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_azure_subscription}\" ]; then export AZURE_SUBSCRIPTION_ID=\"#{stratus_azure_subscription}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=azure.impact.blob-ransomware-individual-file-deletion\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate azure.impact.blob-ransomware-individual-file-deletion\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=azure.impact.blob-ransomware-individual-file-deletion\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"azure.impact.blob-ransomware-individual-file-deletion\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup azure.impact.blob-ransomware-individual-file-deletion\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=azure.impact.blob-ransomware-individual-file-deletion\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "azure.impact.blob-ransomware-individual-file-deletion",
+        "cloud_platform": "azure",
+        "platform_name": "Azure",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of blobs being downloaded or deleted in a storage account. In general, this can be done through [Blob storage events](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-event-overview). Blob storage events are resource logs, which require [configuring diagnostic settings to enable](https://learn.microsoft.com/en-us/azure/storage/blobs/monitor-blob-storage?tabs=azure-portal#azure-monitor-resource-logs). Sample Blob storage event DeleteBlob, shortened for readability:"
+      }
+    },
+    {
+      "id": "stratus:azure.impact.blob-ransomware-service-storage-cmk",
+      "name": "STRATUS - AZURE - Azure Blob Storage ransomware through Customer-Managed Key Vault key and vault deletion",
+      "description": "Stratus Red Team cloud adversary-emulation technique for Azure.\n\nAzure Blob Storage ransomware through Customer-Managed Key Vault key and vault deletion\n\nSimulates Azure Blob Storage ransomware activity that changes the storage account's server-side encryption to use a Customer-Managed Key (CMK) from a Key Vault that the attacker controls, then deletes the Key Vault to render all data in the storage account inaccessible. Unlike encryption scope-based ransomware, this technique operates at the storage account level — the attacker does not need to re-upload individual blobs. By rotating the storage account's encryption key to an attacker-controlled\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Azure Blob Storage ransomware through Customer-Managed Key Vault key and vault deletion\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_azure_subscription}\" ]; then export AZURE_SUBSCRIPTION_ID=\"#{stratus_azure_subscription}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=azure.impact.blob-ransomware-service-storage-cmk\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate azure.impact.blob-ransomware-service-storage-cmk\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=azure.impact.blob-ransomware-service-storage-cmk\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"azure.impact.blob-ransomware-service-storage-cmk\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup azure.impact.blob-ransomware-service-storage-cmk\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=azure.impact.blob-ransomware-service-storage-cmk\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "azure.impact.blob-ransomware-service-storage-cmk",
+        "cloud_platform": "azure",
+        "platform_name": "Azure",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect this ransomware activity by monitoring for: 1. Storage account encryption configuration changes (MICROSOFT.STORAGE/STORAGEACCOUNTS/WRITE) where properties.requestbody.properties.encryption.keySource == Microsoft.Keyvault. 2. Key Vault key creation followed by deletion (KeyCreate, KeyDelete). 3. Key Vault deletion (MICROSOFT.KEYVAULT/VAULTS/DELETE) after being linked to a storage account's encryption. Sample Azure Activity log event for storage account encryption update:"
+      }
+    },
+    {
+      "id": "stratus:azure.impact.resource-lock",
+      "name": "STRATUS - AZURE - Delete Azure resource lock",
+      "description": "Stratus Red Team cloud adversary-emulation technique for Azure.\n\nDelete Azure resource lock\n\nNOTE: Due to resource lock delays, the warmup and cleanup steps of this technique can take several minutes. Disable Azure resource locks to allow resource deletion. Resource locks can be applied to any Azure resource, resource group, or subscription. This technique uses a lock on a resource group containing an Azure storage account as an example. Warm-up: - Create a storage account - Set storage account as ReadOnly using an Azure resource lock at the resource group level Detonation: - Delete Azu\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Delete Azure resource lock\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_azure_subscription}\" ]; then export AZURE_SUBSCRIPTION_ID=\"#{stratus_azure_subscription}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=azure.impact.resource-lock\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate azure.impact.resource-lock\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=azure.impact.resource-lock\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"azure.impact.resource-lock\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup azure.impact.resource-lock\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=azure.impact.resource-lock\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "azure.impact.resource-lock",
+        "cloud_platform": "azure",
+        "platform_name": "Azure",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Monitor Azure Activity Logs for resource lock changes, specifically Microsoft.Authorization/locks/delete operations. Once an attacker has removed a resource lock, they are able to modify and delete resources that were protected by that lock. Sample Azure Activity Log event to monitor:"
+      }
+    }
+  ],
+  "chains": []
+}
