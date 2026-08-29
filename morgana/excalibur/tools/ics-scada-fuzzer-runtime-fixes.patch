@@ -1,0 +1,64 @@
+diff --git a/ics_fuzzer.c b/ics_fuzzer.c
+--- a/ics_fuzzer.c
++++ b/ics_fuzzer.c
+@@ -470,7 +470,8 @@ int send_fuzzed_packet_advanced(const char *ip, int port, float rate,
+                                 enum strategy strat, enum protocol prot,
+                                 int stateful, session_context_t *session,
+-                                int pcap_enabled) {
++                                int pcap_enabled, const uint8_t *seed_packet,
++                                size_t seed_length) {
+ 
+     int sock=socket(AF_INET,SOCK_STREAM,0);
+     if(sock<0){ atomic_fetch_add(&timeouts,1); return 1; }
+@@ -493,13 +494,19 @@ int send_fuzzed_packet_advanced(const char *ip, int port, float rate,
+ 
+     uint8_t pkt[BUF_SIZE];
+     size_t pkt_len;
+-    generate_protocol_packet(pkt,&pkt_len,prot,stateful);
+ 
+-    if(stateful && session){
+-        pkt[0]=(session->transaction_id>>8);
+-        pkt[1]=(session->transaction_id&0xFF);
+-        session->transaction_id++;
++    if(seed_packet && seed_length > 0) {
++        pkt_len = seed_length < BUF_SIZE ? seed_length : BUF_SIZE;
++        memcpy(pkt,seed_packet,pkt_len);
++    } else {
++        generate_protocol_packet(pkt,&pkt_len,prot,stateful);
++
++        if(stateful && session){
++            pkt[0]=(session->transaction_id>>8);
++            pkt[1]=(session->transaction_id&0xFF);
++            session->transaction_id++;
++        }
+     }
+ 
+     mutate_advanced(pkt,&pkt_len,rate,strat,prot);
+@@ -545,13 +552,14 @@ void *fuzzer_thread_advanced(void *arg) {
+ 
+         send_fuzzed_packet_advanced(args->ip, args->port,
+             args->rate, args->strat, args->prot, args->stateful,
+-            &sess, args->pcap_enable);
++            &sess, args->pcap_enable, NULL, 0);
+ 
+         int delay = args->delay;
+         if(atomic_load(&anomalies) > 10)
+             delay *= 2;
+ 
+-        usleep((rand()%delay)*1000);
++        if(delay > 0)
++            usleep((rand()%delay)*1000);
+ 
+         if(args->thread_id == 0 && i % 500 == 0) {
+             printf("[*] Progress: %d packets | %d anomalies | %d crashes | %d timeouts\n",
+@@ -696,9 +704,8 @@ int main(int argc, char **argv) {
+         size_t len;
+         while(!stop_flag && pcap_next_replay_packet(buf,&len)) {
+             session_context_t sess = { .transaction_id = 1 };
+-            mutate_advanced(buf,&len,mut_rate,strat,prot);
+             send_fuzzed_packet_advanced(target_ip,port,
+-                mut_rate,strat,prot,stateful,&sess,pcap_enabled);
++                mut_rate,strat,prot,stateful,&sess,pcap_enabled,buf,len);
+         }
+         pcap_close_replay();
+     } else {

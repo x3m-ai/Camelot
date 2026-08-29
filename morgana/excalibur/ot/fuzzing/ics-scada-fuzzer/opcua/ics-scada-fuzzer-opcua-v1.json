@@ -1,0 +1,1291 @@
+{
+  "package_id": "ics-scada-fuzzer-opcua-v1",
+  "package_name": "ICS-SCADA-Fuzzer - OPC-UA",
+  "version": "1.0.0",
+  "summary": "24 real OPC-UA fuzz profiles: eight upstream strategies in stateful/stateless generated modes plus replay.",
+  "description": "Protocol-aware OPC-UA mutation testing using the pinned ICS-SCADA-Fuzzer engine, verified Linux asset, structured result counters, and optional PCAP recording.",
+  "purpose": "Validate OPC-UA anomaly detection, OT IDS/NDR telemetry, SOC alerting, and authorized simulator/device resilience.",
+  "capabilities": [
+    "Eight real upstream CLI mutation strategies.",
+    "Sixteen generated profiles covering stateful and stateless execution plus eight verified PCAP replay profiles.",
+    "Runtime generation of configurable test-case volume with structured packet, anomaly, timeout, and crash-candidate results."
+  ],
+  "use_cases": [
+    "Validate OPC-UA protocol anomaly detection in an isolated OT lab.",
+    "Exercise SIEM, NDR, Suricata, Zeek, firewall, and SOC workflows using controlled mutation traffic."
+  ],
+  "prerequisites": [
+    "Linux amd64 Morgana Agent with network access to an explicitly authorized OT simulator/testbed.",
+    "The operator must configure target, runtime volume, timeout, and risk acknowledgement before execution.",
+    "Replay uses the package-provided deterministic seed PCAP; arbitrary input paths are not accepted."
+  ],
+  "safety_notes": [
+    "Fuzzing can disrupt physical processes. Never target production OT without explicit written authorization and change controls.",
+    "Overflow and sequence profiles are classified disrupt; other strategies retain reviewed interact/modify risk metadata.",
+    "Crashes are reported as crash candidates until independently verified."
+  ],
+  "author": "ridpath / X3M.AI integration",
+  "created": "2026-08-29",
+  "script_prefix": "ICS FUZZ",
+  "provider": "ics-scada-fuzzer",
+  "source": "ics-scada-fuzzer",
+  "source_repository": "https://github.com/ridpath/ics-scada-fuzzer",
+  "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+  "source_license": "MIT",
+  "documentation_url": "https://github.com/ridpath/ics-scada-fuzzer",
+  "mitre_domain": "ics-attack",
+  "source_attack_version": "ICS v13",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0813",
+    "T0828",
+    "T0831",
+    "T0837",
+    "T0843",
+    "T0858",
+    "T0861"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "risk_badges": [
+    "interact",
+    "modify",
+    "disrupt"
+  ],
+  "category": "ot/fuzzing/ics-scada-fuzzer",
+  "protocol": "opcua",
+  "strategies": [
+    "random",
+    "bitflip",
+    "overflow",
+    "dictionary",
+    "format",
+    "type",
+    "time",
+    "sequence"
+  ],
+  "modes": [
+    "generated",
+    "replay"
+  ],
+  "state_modes": [
+    "stateless",
+    "stateful"
+  ],
+  "runtime_case_generator": true,
+  "tag_categories": [
+    {
+      "category_id": "ot_fuzzing",
+      "label": "OT Fuzzing",
+      "description": "Reusable authorized target, scale, timing, timeout, and PCAP controls.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ot_fuzz_target",
+          "label": "Authorized OT Target",
+          "description": "Authorized lab hostname or IP address.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ot_fuzz_port",
+          "label": "Protocol Port",
+          "description": "Target TCP port, 1-65535.",
+          "default": "4840",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ot_fuzz_iterations",
+          "label": "Generated Test Cases",
+          "description": "Total generated fuzz iterations, greater than zero.",
+          "default": "1000",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_mutation_rate",
+          "label": "Mutation Rate",
+          "description": "Mutation probability from 0.0 through 1.0.",
+          "default": "0.05",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_threads",
+          "label": "Worker Threads",
+          "description": "Concurrent fuzzer threads, 1-64.",
+          "default": "4",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_delay_ms",
+          "label": "Packet Delay (ms)",
+          "description": "Non-negative delay between packets.",
+          "default": "50",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_timeout",
+          "label": "Session Timeout (seconds)",
+          "description": "Session timeout from 1 through 86400 seconds.",
+          "default": "600",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_record_pcap",
+          "label": "Record PCAP",
+          "description": "Use true or false to record generated traffic.",
+          "default": "false",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_pcap_input",
+          "label": "Replay PCAP Selection",
+          "description": "Controlled replay input selector; Phase 1 supports package-seed only.",
+          "default": "package-seed",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ot_fuzz_pcap_output",
+          "label": "PCAP Output Path",
+          "description": "Controlled output path under /tmp for optional PCAP evidence.",
+          "default": "/tmp/morgana-ics-fuzz.pcap",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "ics_scada_fuzzer_linux_amd64",
+      "name": "ics-fuzzer-linux-amd64",
+      "filename": "ics-fuzzer",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/fuzzing/ics-scada-fuzzer/assets/ics-fuzzer-linux-amd64",
+      "sha256": "db6a802ce7ee29e72c641d6247da0c7b2796fe6b9d2b1c74887b7b65f45e1bdc",
+      "size": 321824,
+      "executable": true,
+      "source": "ridpath/ics-scada-fuzzer",
+      "license": "MIT",
+      "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255"
+    },
+    {
+      "id": "ics_scada_fuzzer_opcua_seed_pcap",
+      "name": "opcua-seed.pcap",
+      "filename": "opcua-seed.pcap",
+      "platform": "linux",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/fuzzing/ics-scada-fuzzer/assets/opcua-seed.pcap",
+      "sha256": "d101fac7ebd158d6287c96817cf3ad4ba8ad55b7a189dff41944f504289894ed",
+      "size": 52,
+      "executable": false,
+      "source": "X3M.AI deterministic protocol seed",
+      "license": "MIT"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "ics-fuzz:opcua:random:stateless",
+      "name": "ICS FUZZ - OPCUA - RANDOM - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Random Mutation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"random\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"random\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "random",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Program Download"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:random:stateful",
+      "name": "ICS FUZZ - OPCUA - RANDOM - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Random Mutation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"random\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"random\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "random",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Program Download"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:random:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - RANDOM",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Random Mutation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"random\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"random\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "random",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Program Download",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:bitflip:stateless",
+      "name": "ICS FUZZ - OPCUA - BITFLIP - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Bit Flip in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"bitflip\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"bitflip\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "bitflip",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:bitflip:stateful",
+      "name": "ICS FUZZ - OPCUA - BITFLIP - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Bit Flip in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"bitflip\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"bitflip\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "bitflip",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:bitflip:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - BITFLIP",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Bit Flip.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"bitflip\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"bitflip\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "bitflip",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:overflow:stateless",
+      "name": "ICS FUZZ - OPCUA - OVERFLOW - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Overflow / Boundary Saturation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0828",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"overflow\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"overflow\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "overflow",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Productivity and Revenue"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:overflow:stateful",
+      "name": "ICS FUZZ - OPCUA - OVERFLOW - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Overflow / Boundary Saturation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0828",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"overflow\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"overflow\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "overflow",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Productivity and Revenue"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:overflow:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - OVERFLOW",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Overflow / Boundary Saturation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0828",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"overflow\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"overflow\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "overflow",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Productivity and Revenue",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:dictionary:stateless",
+      "name": "ICS FUZZ - OPCUA - DICTIONARY - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using OT Dictionary Mutation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"dictionary\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"dictionary\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "dictionary",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Manipulation of Control"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:dictionary:stateful",
+      "name": "ICS FUZZ - OPCUA - DICTIONARY - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using OT Dictionary Mutation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"dictionary\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"dictionary\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "dictionary",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Manipulation of Control"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:dictionary:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - DICTIONARY",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using OT Dictionary Mutation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"dictionary\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"dictionary\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "dictionary",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Manipulation of Control",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:format:stateless",
+      "name": "ICS FUZZ - OPCUA - FORMAT - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Format String Mutation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0861",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"format\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"format\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "format",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Point and Tag Identification"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:format:stateful",
+      "name": "ICS FUZZ - OPCUA - FORMAT - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Format String Mutation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0861",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"format\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"format\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "format",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Point and Tag Identification"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:format:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - FORMAT",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Format String Mutation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0861",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"format\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"format\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "format",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Point and Tag Identification",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:type:stateless",
+      "name": "ICS FUZZ - OPCUA - TYPE - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Type Confusion in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"type\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"type\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "type",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:type:stateful",
+      "name": "ICS FUZZ - OPCUA - TYPE - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Type Confusion in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"type\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"type\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "type",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:type:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - TYPE",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Type Confusion.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0837",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"type\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"type\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "type",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Loss of Protection",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:time:stateless",
+      "name": "ICS FUZZ - OPCUA - TIME - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Time-Based Mutation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0813",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"time\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"time\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "time",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Denial of Control"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:time:stateful",
+      "name": "ICS FUZZ - OPCUA - TIME - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Time-Based Mutation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0813",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"time\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"time\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "time",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Denial of Control"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:time:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - TIME",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Time-Based Mutation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0813",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"time\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"time\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "time",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Denial of Control",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:sequence:stateless",
+      "name": "ICS FUZZ - OPCUA - SEQUENCE - STATELESS",
+      "description": "Generate protocol-aware OPC-UA mutations using Sequence Violation in stateless mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"sequence\")\n:\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"sequence\",\"stateful\":false,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "sequence",
+        "stateful": false,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Change Operating Mode"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:sequence:stateful",
+      "name": "ICS FUZZ - OPCUA - SEQUENCE - STATEFUL",
+      "description": "Generate protocol-aware OPC-UA mutations using Sequence Violation in stateful mode.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n:\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"sequence\")\nargs+=(-S)\n:\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"sequence\",\"stateful\":true,\"mode\":\"generated\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "sequence",
+        "stateful": true,
+        "mode": "generated",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Change Operating Mode"
+      }
+    },
+    {
+      "id": "ics-fuzz:opcua:sequence:replay",
+      "name": "ICS FUZZ REPLAY - OPCUA - SEQUENCE",
+      "description": "Replay and mutate a verified OPC-UA seed PCAP using Sequence Violation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{ot_fuzz_timeout}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nbinary=\"{{asset:ics_scada_fuzzer_linux_amd64}}\"\ntarget='#{ot_fuzz_target}'\nport='#{ot_fuzz_port}'\niterations='#{ot_fuzz_iterations}'\nrate='#{ot_fuzz_mutation_rate}'\nthreads='#{ot_fuzz_threads}'\ndelay_ms='#{ot_fuzz_delay_ms}'\ntimeout_seconds='#{ot_fuzz_timeout}'\nrecord_pcap='#{ot_fuzz_record_pcap}'\npcap_input='#{ot_fuzz_pcap_input}'\npcap_output='#{ot_fuzz_pcap_output}'\ncase \"$target\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$iterations\" in ''|*[!0-9]*) echo '[ERROR] Iterations must be numeric' >&2; exit 2;; esac\n[ \"$iterations\" -gt 0 ] || { echo '[ERROR] Iterations must be greater than zero' >&2; exit 2; }\ncase \"$threads\" in ''|*[!0-9]*) echo '[ERROR] Threads must be numeric' >&2; exit 2;; esac\n[ \"$threads\" -ge 1 ] && [ \"$threads\" -le 64 ] || { echo '[ERROR] Threads must be 1-64' >&2; exit 2; }\ncase \"$delay_ms\" in ''|*[!0-9]*) echo '[ERROR] Delay must be non-negative' >&2; exit 2;; esac\ncase \"$timeout_seconds\" in ''|*[!0-9]*) echo '[ERROR] Timeout must be numeric' >&2; exit 2;; esac\n[ \"$timeout_seconds\" -ge 1 ] && [ \"$timeout_seconds\" -le 86400 ] || { echo '[ERROR] Timeout must be 1-86400' >&2; exit 2; }\nawk -v value=\"$rate\" 'BEGIN { exit !(value >= 0.0 && value <= 1.0) }' || { echo '[ERROR] Mutation rate must be 0.0-1.0' >&2; exit 2; }\ncase \"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\" in true|false|1|0|yes|no) ;; *) echo '[ERROR] Record PCAP must be true or false' >&2; exit 2;; esac\n[ \"$pcap_input\" = 'package-seed' ] || { echo '[ERROR] Replay input must be package-seed' >&2; exit 2; }\ncase \"$pcap_output\" in /tmp/*) ;; *) echo '[ERROR] PCAP output must be under /tmp' >&2; exit 2;; esac\noutput_log=\"/tmp/morgana-ics-fuzz-${MORGANA_TEST_ID:-manual}.log\"\nargs=(-t \"$target\" -P \"$port\" -i \"$iterations\" -m \"$rate\" -T \"$threads\" -d \"$delay_ms\" -p \"opcua\" -s \"sequence\")\n:\nargs+=(-r \"{{asset:ics_scada_fuzzer_opcua_seed_pcap}}\")\nrecord_normalized=\"$(printf '%s' \"$record_pcap\" | tr '[:upper:]' '[:lower:]')\"\ncase \"$record_normalized\" in true|1|yes) record_enabled=true;; *) record_enabled=false;; esac\nif [ \"$record_enabled\" = true ]; then\n  mkdir -p \"$(dirname \"$pcap_output\")\"\n    args+=(-R \"$pcap_output\")\nfi\nset +e\ntimeout --signal=INT --kill-after=10s \"${timeout_seconds}s\" \"$binary\" \"${args[@]}\" 2>&1 | tee \"$output_log\"\nstatus=${PIPESTATUS[0]}\nset -e\nsummary=\"$(grep -E 'Packets: [0-9]+ .* Anomalies: [0-9]+ .* Crashes: [0-9]+ .* Timeouts: [0-9]+' \"$output_log\" | tail -1 || true)\"\npackets=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Packets: ([0-9]+).*/\\1/p')\"; packets=\"${packets:-0}\"\nanomalies=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Anomalies: ([0-9]+).*/\\1/p')\"; anomalies=\"${anomalies:-0}\"\ncrashes=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Crashes: ([0-9]+).*/\\1/p')\"; crashes=\"${crashes:-0}\"\ntimeouts=\"$(printf '%s' \"$summary\" | sed -nE 's/.*Timeouts: ([0-9]+).*/\\1/p')\"; timeouts=\"${timeouts:-0}\"\npcap_size=0; [ -f \"$pcap_output\" ] && pcap_size=\"$(wc -c < \"$pcap_output\" | tr -d ' ')\"\nprintf 'MORGANA_RESULT_METADATA={\"generator_type\":\"protocol-fuzzer\",\"protocol\":\"opcua\",\"strategy\":\"sequence\",\"stateful\":false,\"mode\":\"replay\",\"packets_sent\":%s,\"anomalies\":%s,\"crash_candidates\":%s,\"timeouts\":%s,\"iterations_requested\":%s,\"pcap_recorded\":%s,\"pcap_path\":\"%s\",\"pcap_size\":%s}\\n' \"$packets\" \"$anomalies\" \"$crashes\" \"$timeouts\" \"$iterations\" \"$record_enabled\" \"$pcap_output\" \"$pcap_size\"\nrm -f \"$output_log\"\nexit \"${status}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ot_fuzz_target",
+        "ot_fuzz_port",
+        "ot_fuzz_iterations",
+        "ot_fuzz_mutation_rate",
+        "ot_fuzz_threads",
+        "ot_fuzz_delay_ms",
+        "ot_fuzz_timeout",
+        "ot_fuzz_record_pcap",
+        "ot_fuzz_pcap_input",
+        "ot_fuzz_pcap_output"
+      ],
+      "required_assets": [
+        "ics_scada_fuzzer_linux_amd64",
+        "ics_scada_fuzzer_opcua_seed_pcap"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "ics-scada-fuzzer",
+        "repository": "ridpath/ics-scada-fuzzer",
+        "source_commit": "09c328fb773a5e5f12e9f6e489a31913cea7f255",
+        "protocol": "opcua",
+        "strategy": "sequence",
+        "stateful": false,
+        "mode": "replay",
+        "generator_type": "protocol-fuzzer",
+        "source_modified": false,
+        "source_attack_version": "ICS v13",
+        "technique_name": "Change Operating Mode",
+        "pcap_input_policy": "Verified package seed asset only"
+      }
+    }
+  ],
+  "chains": []
+}
