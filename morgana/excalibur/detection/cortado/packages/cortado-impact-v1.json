@@ -1,0 +1,739 @@
+{
+  "package_id": "cortado-impact-v1",
+  "package_name": "Elastic Cortado — Impact",
+  "version": "1.0.0",
+  "summary": "11 Elastic Cortado RTAs for Impact.",
+  "description": "Elastic Cortado Red Team Automations for Impact. Each script executes an official Cortado CodeRTA behavior through the verified Elastic wheel to generate endpoint telemetry and validate Elastic Security detection rules. Source: elastic/cortado at dev-release-0.1.0+f1dd8bc1.",
+  "purpose": "Validate Elastic Security detection rules for Impact in an authorized test environment.",
+  "capabilities": [
+    "11 Elastic Cortado RTAs.",
+    "Official Elastic wheel execution — no custom behavior code.",
+    "Elastic Endpoint and SIEM rule mapping metadata included.",
+    "MORGANA_RESULT_METADATA output for Detection Fabric correlation."
+  ],
+  "use_cases": [
+    "Validate Elastic Security Impact detection rules in an authorized lab.",
+    "Confirm detection rules fire on real RTA behavior before incident response exercises."
+  ],
+  "prerequisites": [
+    "Python 3.12+ on the Morgana Agent.",
+    "Elastic Cortado wheel extracted to the Agent runtime path (cortado_runtime_path tag).",
+    "Use only in authorized, isolated test environments."
+  ],
+  "safety_notes": [
+    "Use only in isolated authorized test endpoints.",
+    "Cortado RTAs generate real endpoint behaviors that trigger security products.",
+    "Some RTAs require administrator/root privileges.",
+    "Referenced sample hashes (HashRta) may be malicious — never acquire from untrusted sources."
+  ],
+  "author": "Elastic / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "elastic-cortado",
+  "source": "elastic-cortado",
+  "source_repository": "https://github.com/elastic/cortado",
+  "source_release": "dev-release-0.1.0+f1dd8bc1",
+  "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+  "source_license": "Elastic License 2.0",
+  "documentation_url": "https://github.com/elastic/cortado",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Impact",
+  "mitre_tactics": [
+    "impact",
+    "initial-access"
+  ],
+  "mitre_tcodes": [
+    "T1047",
+    "T1112",
+    "T1485",
+    "T1486",
+    "T1490",
+    "T1491",
+    "T1491.001",
+    "T1565",
+    "T1566"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "category": "detection/cortado/impact",
+  "specialties": [
+    "endpoint",
+    "detection-validation",
+    "elastic-security"
+  ],
+  "package_types": [
+    "atomic-tests",
+    "detection-validation"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint"
+  ],
+  "risk_badges": [
+    "disrupt"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "cortado_runtime",
+      "label": "Cortado RTA Runtime",
+      "description": "Cortado runtime cache path for the extracted wheel on this Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "cortado_runtime_path",
+          "label": "Cortado Runtime Path",
+          "description": "Path to extracted Cortado wheel directory on the Agent (cortado/ package root).",
+          "default": "/tmp/morgana-cortado-runtime",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "elastic_cortado_wheel",
+      "name": "elastic-cortado-wheel",
+      "filename": "cortado-0.1.0+f1dd8bc1-py3-none-any.whl",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://github.com/elastic/cortado/releases/download/dev-release-0.1.0%2Bf1dd8bc1/cortado-0.1.0%2Bf1dd8bc1-py3-none-any.whl",
+      "sha256": "38fe8fce2f0af631be7df111ac19b872561e85bb57e634f6236a9fa2e3198836",
+      "size": 5089715,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "Elastic License 2.0",
+      "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+      "description": "Official Elastic Cortado Python wheel (py3-none-any). Extract to Agent cache and add to PYTHONPATH before running RTAs. No Poetry or pip required at runtime."
+    },
+    {
+      "id": "elastic_cortado_runner",
+      "name": "morgana-cortado-runner",
+      "filename": "morgana_cortado_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/detection/cortado/morgana_cortado_runner.py",
+      "sha256": "dc8ec31243d7666ac380c2f4590bc2bb128b45c507be1a1233e34d996450da99",
+      "size": 6079,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "MIT",
+      "description": "Morgana non-interactive runner for Elastic Cortado CodeRTAs. Requires cortado wheel extracted to Agent runtime path."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "cortado:c69a06f3-3873-4d5d-8584-035e0921b4a8",
+      "name": "CORTADO - Builtin Cmd File Delete",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nBuiltin Cmd File Delete\n\nExpected detections:\n  - Endpoint: Suspicious Recursive File Deletion via Built-In Utilities\n\nATT&CK: T1565, T1485\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1565",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Builtin Cmd File Delete\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: builtin_cmd_file_delete (module=cortado.rtas.builtin_cmd_file_delete)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.builtin_cmd_file_delete\" \\\n  --rta \"builtin_cmd_file_delete\" \\\n  --rta-id \"c69a06f3-3873-4d5d-8584-035e0921b4a8\" \\\n  --techniques \"T1565,T1485\" \\\n  --endpoint-rules '[{\"id\":\"15019d7c-42e6-4cf7-88b0-0c3a6963e6f5\",\"name\":\"Suspicious Recursive File Deletion via Built-In Utilities\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.builtin_cmd_file_delete",
+        "source_path": "builtin_cmd_file_delete.py",
+        "rta_id": "c69a06f3-3873-4d5d-8584-035e0921b4a8",
+        "rta_name": "builtin_cmd_file_delete",
+        "rta_type": "code",
+        "platforms": [
+          "macos",
+          "linux"
+        ],
+        "techniques": [
+          "T1565",
+          "T1485"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "15019d7c-42e6-4cf7-88b0-0c3a6963e6f5",
+            "name": "Suspicious Recursive File Deletion via Built-In Utilities"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:4843eb25-3579-473a-b309-76d02eda3085",
+      "name": "CORTADO - Darkradiation",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nDarkradiation\n\nExpected detections:\n  - Endpoint: DARKRADIATION Ransomware Infection\n\nATT&CK: T1486\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1486",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Darkradiation\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: darkradiation (module=cortado.rtas.darkradiation)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.darkradiation\" \\\n  --rta \"darkradiation\" \\\n  --rta-id \"4843eb25-3579-473a-b309-76d02eda3085\" \\\n  --techniques \"T1486\" \\\n  --endpoint-rules '[{\"id\":\"33309858-3154-47a6-b601-eda2de62557b\",\"name\":\"DARKRADIATION Ransomware Infection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.darkradiation",
+        "source_path": "darkradiation.py",
+        "rta_id": "4843eb25-3579-473a-b309-76d02eda3085",
+        "rta_name": "darkradiation",
+        "rta_type": "code",
+        "platforms": [
+          "macos",
+          "linux"
+        ],
+        "techniques": [
+          "T1486"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "33309858-3154-47a6-b601-eda2de62557b",
+            "name": "DARKRADIATION Ransomware Infection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "CORTADO - Internal Defacement Simulation",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nSimulates internal defacement techniques used by ransomware and\n\nATT&CK: T1491, T1491.001, T1112\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1491",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Defacement Internal\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: defacement_internal (module=cortado.rtas.defacement_internal)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.defacement_internal\" \\\n  --rta \"defacement_internal\" \\\n  --rta-id \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\" \\\n  --techniques \"T1491,T1491.001,T1112\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.defacement_internal",
+        "source_path": "defacement_internal.py",
+        "rta_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "rta_name": "defacement_internal",
+        "rta_type": "code",
+        "platforms": [
+          "windows",
+          "linux"
+        ],
+        "techniques": [
+          "T1491",
+          "T1491.001",
+          "T1112"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:eaf71384-2e38-4970-b170-9645ccde1d2b",
+      "name": "CORTADO - Boot Config Deletion With bcdedit",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nUses bcdedit.exe to backup the current boot configuration, and then to delete the current boot\n\nExpected detections:\n  - SIEM: Modification of Boot Configuration\n\nATT&CK: T1490\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Delete Bootconf\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: delete_bootconf (module=cortado.rtas.delete_bootconf)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.delete_bootconf\" \\\n  --rta \"delete_bootconf\" \\\n  --rta-id \"eaf71384-2e38-4970-b170-9645ccde1d2b\" \\\n  --techniques \"T1490\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"69c251fb-a5d6-4035-b5ec-40438bd829ff\",\"name\":\"Modification of Boot Configuration\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.delete_bootconf",
+        "source_path": "delete_bootconf.py",
+        "rta_id": "eaf71384-2e38-4970-b170-9645ccde1d2b",
+        "rta_name": "delete_bootconf",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "69c251fb-a5d6-4035-b5ec-40438bd829ff",
+            "name": "Modification of Boot Configuration"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:8ffd2053-c04a-435a-84b3-a8403a5395db",
+      "name": "CORTADO - Catalog Deletion with wbadmin.exe",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nUses wbadmin to delete the backup catalog.\n\nExpected detections:\n  - SIEM: Deleting Backup Catalogs with Wbadmin\n\nATT&CK: T1490\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Delete Catalogs\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: delete_catalogs (module=cortado.rtas.delete_catalogs)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.delete_catalogs\" \\\n  --rta \"delete_catalogs\" \\\n  --rta-id \"8ffd2053-c04a-435a-84b3-a8403a5395db\" \\\n  --techniques \"T1490\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"581add16-df76-42bb-af8e-c979bfb39a59\",\"name\":\"Deleting Backup Catalogs with Wbadmin\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.delete_catalogs",
+        "source_path": "delete_catalogs.py",
+        "rta_id": "8ffd2053-c04a-435a-84b3-a8403a5395db",
+        "rta_name": "delete_catalogs",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "581add16-df76-42bb-af8e-c979bfb39a59",
+            "name": "Deleting Backup Catalogs with Wbadmin"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ae6343cc-3b56-4f60-854f-7102db519ec4",
+      "name": "CORTADO - Volume Shadow Copy Deletion with vssadmin and wmic",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nUses both vssadmin.exe and wmic.exe to delete volume shadow copies.\n\nExpected detections:\n  - SIEM: Volume Shadow Copy Deletion via WMIC\n\nATT&CK: T1490\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Delete Volume Shadows\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: delete_volume_shadows (module=cortado.rtas.delete_volume_shadows)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.delete_volume_shadows\" \\\n  --rta \"delete_volume_shadows\" \\\n  --rta-id \"ae6343cc-3b56-4f60-854f-7102db519ec4\" \\\n  --techniques \"T1490\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"dc9c1f74-dac3-48e3-b47f-eb79db358f57\",\"name\":\"Volume Shadow Copy Deletion via WMIC\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.delete_volume_shadows",
+        "source_path": "delete_volume_shadows.py",
+        "rta_id": "ae6343cc-3b56-4f60-854f-7102db519ec4",
+        "rta_name": "delete_volume_shadows",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "dc9c1f74-dac3-48e3-b47f-eb79db358f57",
+            "name": "Volume Shadow Copy Deletion via WMIC"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a6c80b08-ca72-4c3e-93c7-ac3421e4235e",
+      "name": "CORTADO - File Delete Vbk",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nFile Delete Vbk\n\nExpected detections:\n  - SIEM: Third-party Backup Files Deleted via Unexpected Process\n\nATT&CK: T1490\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — File Delete Vbk\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: file_delete_vbk (module=cortado.rtas.file_delete_vbk)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.file_delete_vbk\" \\\n  --rta \"file_delete_vbk\" \\\n  --rta-id \"a6c80b08-ca72-4c3e-93c7-ac3421e4235e\" \\\n  --techniques \"T1490\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"11ea6bec-ebde-4d71-a8e9-784948f8e3e9\",\"name\":\"Third-party Backup Files Deleted via Unexpected Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.file_delete_vbk",
+        "source_path": "file_delete_vbk.py",
+        "rta_id": "a6c80b08-ca72-4c3e-93c7-ac3421e4235e",
+        "rta_name": "file_delete_vbk",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "11ea6bec-ebde-4d71-a8e9-784948f8e3e9",
+            "name": "Third-party Backup Files Deleted via Unexpected Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:43331e29-57ba-438f-8d61-99f5d6471aaa",
+      "name": "CORTADO - Inhibit System Recovery And Rename",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nInhibit System Recovery And Rename\n\nExpected detections:\n  - Endpoint: Inhibit System Recovery Followed by a Suspicious File Rename\n\nATT&CK: T1490, T1486\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Inhibit System Recovery And Rename\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: inhibit_system_recovery_and_rename (module=cortado.rtas.inhibit_system_recovery_and_rename)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.inhibit_system_recovery_and_rename\" \\\n  --rta \"inhibit_system_recovery_and_rename\" \\\n  --rta-id \"43331e29-57ba-438f-8d61-99f5d6471aaa\" \\\n  --techniques \"T1490,T1486\" \\\n  --endpoint-rules '[{\"id\":\"92f114fb-7113-4e82-b021-6c2c4ca0a507\",\"name\":\"Inhibit System Recovery Followed by a Suspicious File Rename\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.inhibit_system_recovery_and_rename",
+        "source_path": "inhibit_system_recovery_and_rename.py",
+        "rta_id": "43331e29-57ba-438f-8d61-99f5d6471aaa",
+        "rta_name": "inhibit_system_recovery_and_rename",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490",
+          "T1486"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "92f114fb-7113-4e82-b021-6c2c4ca0a507",
+            "name": "Inhibit System Recovery Followed by a Suspicious File Rename"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:aa05a870-7075-42f9-a009-49aa75ea99fa",
+      "name": "CORTADO - Inhibit System Recovery Office",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nInhibit System Recovery Office\n\nExpected detections:\n  - Endpoint: Inhibit System Recovery via Untrusted Parent Process\n  - Endpoint: Inhibit System Recovery via Microsoft Office Process\n\nATT&CK: T1490, T1047, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Inhibit System Recovery Office\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: inhibit_system_recovery_office (module=cortado.rtas.inhibit_system_recovery_office)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.inhibit_system_recovery_office\" \\\n  --rta \"inhibit_system_recovery_office\" \\\n  --rta-id \"aa05a870-7075-42f9-a009-49aa75ea99fa\" \\\n  --techniques \"T1490,T1047,T1566\" \\\n  --endpoint-rules '[{\"id\":\"d3588fad-43ae-4f2d-badd-15a27df72132\",\"name\":\"Inhibit System Recovery via Untrusted Parent Process\"},{\"id\":\"58a08390-e69d-4b32-9487-1d1ddb16ba09\",\"name\":\"Inhibit System Recovery via Microsoft Office Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.inhibit_system_recovery_office",
+        "source_path": "inhibit_system_recovery_office.py",
+        "rta_id": "aa05a870-7075-42f9-a009-49aa75ea99fa",
+        "rta_name": "inhibit_system_recovery_office",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490",
+          "T1047",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "impact",
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "d3588fad-43ae-4f2d-badd-15a27df72132",
+            "name": "Inhibit System Recovery via Untrusted Parent Process"
+          },
+          {
+            "id": "58a08390-e69d-4b32-9487-1d1ddb16ba09",
+            "name": "Inhibit System Recovery via Microsoft Office Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:463e513d-1b7e-447c-a019-a340445cea3f",
+      "name": "CORTADO - Powershell Delete Shadow Copy",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nPowershell Delete Shadow Copy\n\nExpected detections:\n  - SIEM: Volume Shadow Copy Deletion via PowerShell\n\nATT&CK: T1490\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1490",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Powershell Delete Shadow Copy\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: powershell_delete_shadow_copy (module=cortado.rtas.powershell_delete_shadow_copy)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.powershell_delete_shadow_copy\" \\\n  --rta \"powershell_delete_shadow_copy\" \\\n  --rta-id \"463e513d-1b7e-447c-a019-a340445cea3f\" \\\n  --techniques \"T1490\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"d99a037b-c8e2-47a5-97b9-170d076827c4\",\"name\":\"Volume Shadow Copy Deletion via PowerShell\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.powershell_delete_shadow_copy",
+        "source_path": "powershell_delete_shadow_copy.py",
+        "rta_id": "463e513d-1b7e-447c-a019-a340445cea3f",
+        "rta_name": "powershell_delete_shadow_copy",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1490"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "d99a037b-c8e2-47a5-97b9-170d076827c4",
+            "name": "Volume Shadow Copy Deletion via PowerShell"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:2ab87570-d9ad-40f4-9f52-d5a2942e11ac",
+      "name": "CORTADO - Ransomnote Delete Shadows",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nRansomnote Delete Shadows\n\nExpected detections:\n  - Endpoint: Potential Ransomware Note File\n\nATT&CK: T1485\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Impact",
+      "tcode": "T1485",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Ransomnote Delete Shadows\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: ransomnote_delete_shadows (module=cortado.rtas.ransomnote_delete_shadows)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.ransomnote_delete_shadows\" \\\n  --rta \"ransomnote_delete_shadows\" \\\n  --rta-id \"2ab87570-d9ad-40f4-9f52-d5a2942e11ac\" \\\n  --techniques \"T1485\" \\\n  --endpoint-rules '[{\"id\":\"5dba1130-72df-46f1-b581-18d9c866cb23\",\"name\":\"Potential Ransomware Note File\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.ransomnote_delete_shadows",
+        "source_path": "ransomnote_delete_shadows.py",
+        "rta_id": "2ab87570-d9ad-40f4-9f52-d5a2942e11ac",
+        "rta_name": "ransomnote_delete_shadows",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1485"
+        ],
+        "mitre_tactics": [
+          "impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "5dba1130-72df-46f1-b581-18d9c866cb23",
+            "name": "Potential Ransomware Note File"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}

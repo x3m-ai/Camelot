@@ -1,0 +1,3575 @@
+{
+  "package_id": "cortado-command-and-control-v1",
+  "package_name": "Elastic Cortado — Command and Control",
+  "version": "1.0.0",
+  "summary": "59 Elastic Cortado RTAs for Command and Control.",
+  "description": "Elastic Cortado Red Team Automations for Command and Control. Each script executes an official Cortado CodeRTA behavior through the verified Elastic wheel to generate endpoint telemetry and validate Elastic Security detection rules. Source: elastic/cortado at dev-release-0.1.0+f1dd8bc1.",
+  "purpose": "Validate Elastic Security detection rules for Command and Control in an authorized test environment.",
+  "capabilities": [
+    "59 Elastic Cortado RTAs.",
+    "Official Elastic wheel execution — no custom behavior code.",
+    "Elastic Endpoint and SIEM rule mapping metadata included.",
+    "MORGANA_RESULT_METADATA output for Detection Fabric correlation."
+  ],
+  "use_cases": [
+    "Validate Elastic Security Command and Control detection rules in an authorized lab.",
+    "Confirm detection rules fire on real RTA behavior before incident response exercises."
+  ],
+  "prerequisites": [
+    "Python 3.12+ on the Morgana Agent.",
+    "Elastic Cortado wheel extracted to the Agent runtime path (cortado_runtime_path tag).",
+    "Use only in authorized, isolated test environments."
+  ],
+  "safety_notes": [
+    "Use only in isolated authorized test endpoints.",
+    "Cortado RTAs generate real endpoint behaviors that trigger security products.",
+    "Some RTAs require administrator/root privileges.",
+    "Referenced sample hashes (HashRta) may be malicious — never acquire from untrusted sources."
+  ],
+  "author": "Elastic / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "elastic-cortado",
+  "source": "elastic-cortado",
+  "source_repository": "https://github.com/elastic/cortado",
+  "source_release": "dev-release-0.1.0+f1dd8bc1",
+  "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+  "source_license": "Elastic License 2.0",
+  "documentation_url": "https://github.com/elastic/cortado",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Command and Control",
+  "mitre_tactics": [
+    "command-and-control",
+    "defense-evasion",
+    "discovery",
+    "execution",
+    "initial-access",
+    "persistence",
+    "privilege-escalation"
+  ],
+  "mitre_tcodes": [
+    "T1016",
+    "T1027",
+    "T1033",
+    "T1036",
+    "T1037",
+    "T1053",
+    "T1055",
+    "T1059",
+    "T1059.001",
+    "T1059.005",
+    "T1059.007",
+    "T1071",
+    "T1071.004",
+    "T1082",
+    "T1102",
+    "T1105",
+    "T1132",
+    "T1195",
+    "T1204",
+    "T1218",
+    "T1218.008",
+    "T1219",
+    "T1505",
+    "T1543",
+    "T1546",
+    "T1547",
+    "T1559",
+    "T1559.001",
+    "T1564",
+    "T1566",
+    "T1566.001",
+    "T1569",
+    "T1574",
+    "T1574.001"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "category": "detection/cortado/command-and-control",
+  "specialties": [
+    "endpoint",
+    "detection-validation",
+    "elastic-security"
+  ],
+  "package_types": [
+    "atomic-tests",
+    "detection-validation"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "cortado_runtime",
+      "label": "Cortado RTA Runtime",
+      "description": "Cortado runtime cache path for the extracted wheel on this Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "cortado_runtime_path",
+          "label": "Cortado Runtime Path",
+          "description": "Path to extracted Cortado wheel directory on the Agent (cortado/ package root).",
+          "default": "/tmp/morgana-cortado-runtime",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "elastic_cortado_wheel",
+      "name": "elastic-cortado-wheel",
+      "filename": "cortado-0.1.0+f1dd8bc1-py3-none-any.whl",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://github.com/elastic/cortado/releases/download/dev-release-0.1.0%2Bf1dd8bc1/cortado-0.1.0%2Bf1dd8bc1-py3-none-any.whl",
+      "sha256": "38fe8fce2f0af631be7df111ac19b872561e85bb57e634f6236a9fa2e3198836",
+      "size": 5089715,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "Elastic License 2.0",
+      "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+      "description": "Official Elastic Cortado Python wheel (py3-none-any). Extract to Agent cache and add to PYTHONPATH before running RTAs. No Poetry or pip required at runtime."
+    },
+    {
+      "id": "elastic_cortado_runner",
+      "name": "morgana-cortado-runner",
+      "filename": "morgana_cortado_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/detection/cortado/morgana_cortado_runner.py",
+      "sha256": "dc8ec31243d7666ac380c2f4590bc2bb128b45c507be1a1233e34d996450da99",
+      "size": 6079,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "MIT",
+      "description": "Morgana non-interactive runner for Elastic Cortado CodeRTAs. Requires cortado wheel extracted to Agent runtime path."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "cortado:a1b2c3d4-e5f6-4789-a012-34fde48994b0",
+      "name": "CORTADO - Accepted Default Telnet Port Connection",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nCreates a network flow that is accepted with destination port 23 (default telnet port).\n\nExpected detections:\n  - SIEM: Accepted Default Telnet Port Connection\n\nATT&CK: T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Accepted Default Telnet Port Connection\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: accepted_default_telnet_port_connection (module=cortado.rtas.accepted_default_telnet_port_connection)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.accepted_default_telnet_port_connection\" \\\n  --rta \"accepted_default_telnet_port_connection\" \\\n  --rta-id \"a1b2c3d4-e5f6-4789-a012-34fde48994b0\" \\\n  --techniques \"T1071\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"34fde489-94b0-4500-a76f-b8a157cf9269\",\"name\":\"Accepted Default Telnet Port Connection\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.accepted_default_telnet_port_connection",
+        "source_path": "accepted_default_telnet_port_connection.py",
+        "rta_id": "a1b2c3d4-e5f6-4789-a012-34fde48994b0",
+        "rta_name": "accepted_default_telnet_port_connection",
+        "rta_type": "code",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "techniques": [
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "34fde489-94b0-4500-a76f-b8a157cf9269",
+            "name": "Accepted Default Telnet Port Connection"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ba802fb2-f183-420e-947m-da5ce0235d123",
+      "name": "CORTADO - C2 Dns From Iso",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nC2 Dns From Iso\n\nExpected detections:\n  - Endpoint: Suspicious DNS Query from Mounted Virtual Disk\n  - Endpoint: Suspicious DNS Query to Free SSL Certificate Domains\n  - Endpoint: DNS Query to Suspicious Top Level Domain\n\nATT&CK: T1071, T1204, T1071.004\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — C2 Dns From Iso\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: c2_dns_from_iso (module=cortado.rtas.c2_dns_from_iso)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.c2_dns_from_iso\" \\\n  --rta \"c2_dns_from_iso\" \\\n  --rta-id \"ba802fb2-f183-420e-947m-da5ce0235d123\" \\\n  --techniques \"T1071,T1204,T1071.004\" \\\n  --endpoint-rules '[{\"id\":\"3bc98de7-3349-43ac-869c-58357ae2aac0\",\"name\":\"Suspicious DNS Query from Mounted Virtual Disk\"},{\"id\":\"88f6c3d4-112e-4fad-b3ef-33095c954b63\",\"name\":\"Suspicious DNS Query to Free SSL Certificate Domains\"},{\"id\":\"d37ffe39-8e58-460f-938d-3bafbae60711\",\"name\":\"DNS Query to Suspicious Top Level Domain\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.c2_dns_from_iso",
+        "source_path": "c2_dns_from_iso.py",
+        "rta_id": "ba802fb2-f183-420e-947m-da5ce0235d123",
+        "rta_name": "c2_dns_from_iso",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1071",
+          "T1204",
+          "T1071.004"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "3bc98de7-3349-43ac-869c-58357ae2aac0",
+            "name": "Suspicious DNS Query from Mounted Virtual Disk"
+          },
+          {
+            "id": "88f6c3d4-112e-4fad-b3ef-33095c954b63",
+            "name": "Suspicious DNS Query to Free SSL Certificate Domains"
+          },
+          {
+            "id": "d37ffe39-8e58-460f-938d-3bafbae60711",
+            "name": "DNS Query to Suspicious Top Level Domain"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:10609a63-0013-4fd0-9322-66c86c1c9501",
+      "name": "CORTADO - Downloading Files With Certutil",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nUses certutil.exe to download a file.\n\nExpected detections:\n  - SIEM: Network Connection via Certutil\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Certutil Webrequest\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: certutil_webrequest (module=cortado.rtas.certutil_webrequest)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.certutil_webrequest\" \\\n  --rta \"certutil_webrequest\" \\\n  --rta-id \"10609a63-0013-4fd0-9322-66c86c1c9501\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"3838e0e3-1850-4850-a411-2e8c5ba40ba8\",\"name\":\"Network Connection via Certutil\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.certutil_webrequest",
+        "source_path": "certutil_webrequest.py",
+        "rta_id": "10609a63-0013-4fd0-9322-66c86c1c9501",
+        "rta_name": "certutil_webrequest",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "3838e0e3-1850-4850-a411-2e8c5ba40ba8",
+            "name": "Network Connection via Certutil"
+          }
+        ],
+        "ancillary_files": [
+          "MY_DLL"
+        ],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:bf7645b2-d0cf-428d-a158-b1479160e60c",
+      "name": "CORTADO - Curl Payload Download",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nCurl Payload Download\n\nExpected detections:\n  - Endpoint: Payload Downloaded by Process Running in Suspicious Directory\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Curl Payload Download\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: curl_payload_download (module=cortado.rtas.curl_payload_download)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.curl_payload_download\" \\\n  --rta \"curl_payload_download\" \\\n  --rta-id \"bf7645b2-d0cf-428d-a158-b1479160e60c\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[{\"id\":\"04d124d4-2be7-405e-b830-9494f927a51e\",\"name\":\"Payload Downloaded by Process Running in Suspicious Directory\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.curl_payload_download",
+        "source_path": "curl_payload_download.py",
+        "rta_id": "bf7645b2-d0cf-428d-a158-b1479160e60c",
+        "rta_name": "curl_payload_download",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "04d124d4-2be7-405e-b830-9494f927a51e",
+            "name": "Payload Downloaded by Process Running in Suspicious Directory"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:bf7645b2-d0cf-428d-a158-b1479160e60c-1",
+      "name": "CORTADO - Curl Sus Payload",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nCurl Sus Payload\n\nExpected detections:\n  - Endpoint: Payload Downloaded by Process Running in Suspicious Directory\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Curl Sus Payload\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: curl_sus_payload (module=cortado.rtas.curl_sus_payload)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.curl_sus_payload\" \\\n  --rta \"curl_sus_payload\" \\\n  --rta-id \"bf7645b2-d0cf-428d-a158-b1479160e60c\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[{\"id\":\"8c42c8bd-c282-44ca-b308-92e4267b6244\",\"name\":\"Payload Downloaded by Process Running in Suspicious Directory\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.curl_sus_payload",
+        "source_path": "curl_sus_payload.py",
+        "rta_id": "bf7645b2-d0cf-428d-a158-b1479160e60c",
+        "rta_name": "curl_sus_payload",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "8c42c8bd-c282-44ca-b308-92e4267b6244",
+            "name": "Payload Downloaded by Process Running in Suspicious Directory"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:95d34e55-789d-40bf-9988-dbb803c2d066",
+      "name": "CORTADO - Ddns Lolbas",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nDdns Lolbas\n\nExpected detections:\n  - Endpoint: Connection to Dynamic DNS Provider by a Signed Binary Proxy\n\nATT&CK: T1218, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1218",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Ddns Lolbas\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: ddns_lolbas (module=cortado.rtas.ddns_lolbas)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.ddns_lolbas\" \\\n  --rta \"ddns_lolbas\" \\\n  --rta-id \"95d34e55-789d-40bf-9988-dbb803c2d066\" \\\n  --techniques \"T1218,T1071\" \\\n  --endpoint-rules '[{\"id\":\"fb6939a2-1b54-428c-92a2-3a831585af2a\",\"name\":\"Connection to Dynamic DNS Provider by a Signed Binary Proxy\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.ddns_lolbas",
+        "source_path": "ddns_lolbas.py",
+        "rta_id": "95d34e55-789d-40bf-9988-dbb803c2d066",
+        "rta_name": "ddns_lolbas",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1218",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "fb6939a2-1b54-428c-92a2-3a831585af2a",
+            "name": "Connection to Dynamic DNS Provider by a Signed Binary Proxy"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:9e85eb9f-ee9e-4c73-8a83-14dd29a5aa80",
+      "name": "CORTADO - Ddns Unsigned",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nDdns Unsigned\n\nExpected detections:\n  - Endpoint: Connection to Dynamic DNS Provider by an Unsigned Binary\n\nATT&CK: T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Ddns Unsigned\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: ddns_unsigned (module=cortado.rtas.ddns_unsigned)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.ddns_unsigned\" \\\n  --rta \"ddns_unsigned\" \\\n  --rta-id \"9e85eb9f-ee9e-4c73-8a83-14dd29a5aa80\" \\\n  --techniques \"T1071\" \\\n  --endpoint-rules '[{\"id\":\"75b80e66-90d0-4ab6-9e6b-976f7d690906\",\"name\":\"Connection to Dynamic DNS Provider by an Unsigned Binary\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.ddns_unsigned",
+        "source_path": "ddns_unsigned.py",
+        "rta_id": "9e85eb9f-ee9e-4c73-8a83-14dd29a5aa80",
+        "rta_name": "ddns_unsigned",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "75b80e66-90d0-4ab6-9e6b-976f7d690906",
+            "name": "Connection to Dynamic DNS Provider by an Unsigned Binary"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:4d7ce5b3-f8e4-434c-9caa-c7e133146b27",
+      "name": "CORTADO - Empire Stager",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nEmpire Stager\n\nExpected detections:\n  - Endpoint: Empire Stager Execution\n\nATT&CK: T1132, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1132",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Empire Stager\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: empire_stager (module=cortado.rtas.empire_stager)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.empire_stager\" \\\n  --rta \"empire_stager\" \\\n  --rta-id \"4d7ce5b3-f8e4-434c-9caa-c7e133146b27\" \\\n  --techniques \"T1132,T1059\" \\\n  --endpoint-rules '[{\"id\":\"b7974ff6-82ff-4743-9e07-1c6901b1f0ea\",\"name\":\"Empire Stager Execution\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.empire_stager",
+        "source_path": "empire_stager.py",
+        "rta_id": "4d7ce5b3-f8e4-434c-9caa-c7e133146b27",
+        "rta_name": "empire_stager",
+        "rta_type": "code",
+        "platforms": [
+          "macos",
+          "linux"
+        ],
+        "techniques": [
+          "T1132",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "b7974ff6-82ff-4743-9e07-1c6901b1f0ea",
+            "name": "Empire Stager Execution"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:6e84852e-b8a2-4158-971e-c5148d969d2a",
+      "name": "CORTADO - Evasion Addinproc Certoc Odbc Gfxdwn",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nEvasion Addinproc Certoc Odbc Gfxdwn\n\nExpected detections:\n  - Endpoint: Suspicious Execution via DotNet Remoting\n  - Endpoint: Suspicious ImageLoad via Windows CertOC\n  - Endpoint: Suspicious ImageLoad via ODBC Driver Configuration Program\n  - Endpoint: Potential Evasion via Intel GfxDownloadWrapper\n\nATT&CK: T1218, T1218.008, T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1218",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Evasion Addinproc Certoc Odbc Gfxdwn\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: evasion_addinproc_certoc_odbc_gfxdwn (module=cortado.rtas.evasion_addinproc_certoc_odbc_gfxdwn)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.evasion_addinproc_certoc_odbc_gfxdwn\" \\\n  --rta \"evasion_addinproc_certoc_odbc_gfxdwn\" \\\n  --rta-id \"6e84852e-b8a2-4158-971e-c5148d969d2a\" \\\n  --techniques \"T1218,T1218.008,T1105\" \\\n  --endpoint-rules '[{\"id\":\"5bc7a8f8-4de8-4af4-bea4-cba538e54a5c\",\"name\":\"Suspicious Execution via DotNet Remoting\"},{\"id\":\"6fcbf73f-4413-4689-be33-61b0d6bd0ffc\",\"name\":\"Suspicious ImageLoad via Windows CertOC\"},{\"id\":\"1faebe83-38d7-4390-b6bd-9c6b851e47c4\",\"name\":\"Suspicious ImageLoad via ODBC Driver Configuration Program\"},{\"id\":\"aafe3c78-15d9-4853-a602-663b8fada5b5\",\"name\":\"Potential Evasion via Intel GfxDownloadWrapper\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.evasion_addinproc_certoc_odbc_gfxdwn",
+        "source_path": "evasion_addinproc_certoc_odbc_gfxdwn.py",
+        "rta_id": "6e84852e-b8a2-4158-971e-c5148d969d2a",
+        "rta_name": "evasion_addinproc_certoc_odbc_gfxdwn",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1218",
+          "T1218.008",
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "5bc7a8f8-4de8-4af4-bea4-cba538e54a5c",
+            "name": "Suspicious Execution via DotNet Remoting"
+          },
+          {
+            "id": "6fcbf73f-4413-4689-be33-61b0d6bd0ffc",
+            "name": "Suspicious ImageLoad via Windows CertOC"
+          },
+          {
+            "id": "1faebe83-38d7-4390-b6bd-9c6b851e47c4",
+            "name": "Suspicious ImageLoad via ODBC Driver Configuration Program"
+          },
+          {
+            "id": "aafe3c78-15d9-4853-a602-663b8fada5b5",
+            "name": "Potential Evasion via Intel GfxDownloadWrapper"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:219dee0a-48ad-4e17-ab59-783a619a7bd5",
+      "name": "CORTADO - Exec Cmd Mpcmdrun Download",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Cmd Mpcmdrun Download\n\nExpected detections:\n  - SIEM: Remote File Download via MpCmdRun\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Cmd Mpcmdrun Download\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_cmd_mpcmdrun_download (module=cortado.rtas.exec_cmd_mpcmdrun_download)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_cmd_mpcmdrun_download\" \\\n  --rta \"exec_cmd_mpcmdrun_download\" \\\n  --rta-id \"219dee0a-48ad-4e17-ab59-783a619a7bd5\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"c6453e73-90eb-4fe7-a98c-cde7bbfc504a\",\"name\":\"Remote File Download via MpCmdRun\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_cmd_mpcmdrun_download",
+        "source_path": "exec_cmd_mpcmdrun_download.py",
+        "rta_id": "219dee0a-48ad-4e17-ab59-783a619a7bd5",
+        "rta_name": "exec_cmd_mpcmdrun_download",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "c6453e73-90eb-4fe7-a98c-cde7bbfc504a",
+            "name": "Remote File Download via MpCmdRun"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:e7f3a729-e5ee-462b-ba1c-dd778468d24d",
+      "name": "CORTADO - Exec Gfxdownloadwrapper",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Gfxdownloadwrapper\n\nExpected detections:\n  - Endpoint: Potential Evasion via Intel GfxDownloadWrapper\n\nATT&CK: T1218, T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1218",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Gfxdownloadwrapper\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_gfxdownloadwrapper (module=cortado.rtas.exec_gfxdownloadwrapper)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_gfxdownloadwrapper\" \\\n  --rta \"exec_gfxdownloadwrapper\" \\\n  --rta-id \"e7f3a729-e5ee-462b-ba1c-dd778468d24d\" \\\n  --techniques \"T1218,T1105\" \\\n  --endpoint-rules '[{\"id\":\"aafe3c78-15d9-4853-a602-663b8fada5b5\",\"name\":\"Potential Evasion via Intel GfxDownloadWrapper\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_gfxdownloadwrapper",
+        "source_path": "exec_gfxdownloadwrapper.py",
+        "rta_id": "e7f3a729-e5ee-462b-ba1c-dd778468d24d",
+        "rta_name": "exec_gfxdownloadwrapper",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1218",
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "aafe3c78-15d9-4853-a602-663b8fada5b5",
+            "name": "Potential Evasion via Intel GfxDownloadWrapper"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:0c0febf3-1ac3-4198-a31a-ec80b1f5ebbe",
+      "name": "CORTADO - Exec Ingress Tool Posh",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Ingress Tool Posh\n\nExpected detections:\n  - Endpoint: Ingress Tool Transfer via PowerShell\n  - Endpoint: Binary Masquerading via Untrusted Path\n\nATT&CK: T1105, T1059, T1059.001\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Ingress Tool Posh\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_ingress_tool_posh (module=cortado.rtas.exec_ingress_tool_posh)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_ingress_tool_posh\" \\\n  --rta \"exec_ingress_tool_posh\" \\\n  --rta-id \"0c0febf3-1ac3-4198-a31a-ec80b1f5ebbe\" \\\n  --techniques \"T1105,T1059,T1059.001\" \\\n  --endpoint-rules '[{\"id\":\"5abd98fb-ffbe-4cd6-9592-3cda7b155ff5\",\"name\":\"Ingress Tool Transfer via PowerShell\"},{\"id\":\"35dedf0c-8db6-4d70-b2dc-a133b808211f\",\"name\":\"Binary Masquerading via Untrusted Path\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_ingress_tool_posh",
+        "source_path": "exec_ingress_tool_posh.py",
+        "rta_id": "0c0febf3-1ac3-4198-a31a-ec80b1f5ebbe",
+        "rta_name": "exec_ingress_tool_posh",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105",
+          "T1059",
+          "T1059.001"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "5abd98fb-ffbe-4cd6-9592-3cda7b155ff5",
+            "name": "Ingress Tool Transfer via PowerShell"
+          },
+          {
+            "id": "35dedf0c-8db6-4d70-b2dc-a133b808211f",
+            "name": "Binary Masquerading via Untrusted Path"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:e0db3577-879e-4ac2-bd58-691e1343afca",
+      "name": "CORTADO - Exec Java Revshell Linux",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Java Revshell Linux\n\nExpected detections:\n  - Endpoint: Potential Linux Reverse Shell via Java\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Java Revshell Linux\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_java_revshell_linux (module=cortado.rtas.exec_java_revshell_linux)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_java_revshell_linux\" \\\n  --rta \"exec_java_revshell_linux\" \\\n  --rta-id \"e0db3577-879e-4ac2-bd58-691e1343afca\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"e0db3577-879e-4ac2-bd58-691e1343afca\",\"name\":\"Potential Linux Reverse Shell via Java\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_java_revshell_linux",
+        "source_path": "exec_java_revshell_linux.py",
+        "rta_id": "e0db3577-879e-4ac2-bd58-691e1343afca",
+        "rta_name": "exec_java_revshell_linux",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "e0db3577-879e-4ac2-bd58-691e1343afca",
+            "name": "Potential Linux Reverse Shell via Java"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a4355bfc-aa15-43f6-a36d-523aa637127b",
+      "name": "CORTADO - Exec Persistence From Iso",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Persistence From Iso\n\nExpected detections:\n  - Endpoint: Persistence via a Process from a Removable or Mounted ISO Device\n  - Endpoint: Scheduled Task from a Removable or Mounted ISO Device\n\nATT&CK: T1071, T1204\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Persistence From Iso\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_persistence_from_iso (module=cortado.rtas.exec_persistence_from_iso)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_persistence_from_iso\" \\\n  --rta \"exec_persistence_from_iso\" \\\n  --rta-id \"a4355bfc-aa15-43f6-a36d-523aa637127b\" \\\n  --techniques \"T1071,T1204\" \\\n  --endpoint-rules '[{\"id\":\"0cdf1d24-b1c3-4952-a400-5ba3c1491087\",\"name\":\"Persistence via a Process from a Removable or Mounted ISO Device\"},{\"id\":\"3c12c648-e29f-4bff-9157-b07f2cbddf1a\",\"name\":\"Scheduled Task from a Removable or Mounted ISO Device\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_persistence_from_iso",
+        "source_path": "exec_persistence_from_iso.py",
+        "rta_id": "a4355bfc-aa15-43f6-a36d-523aa637127b",
+        "rta_name": "exec_persistence_from_iso",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1071",
+          "T1204"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "0cdf1d24-b1c3-4952-a400-5ba3c1491087",
+            "name": "Persistence via a Process from a Removable or Mounted ISO Device"
+          },
+          {
+            "id": "3c12c648-e29f-4bff-9157-b07f2cbddf1a",
+            "name": "Scheduled Task from a Removable or Mounted ISO Device"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:0da48a27-4a5e-4974-ba6a-63cce8f602df",
+      "name": "CORTADO - File Creation Teamviewer",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nFile Creation Teamviewer\n\nExpected detections:\n  - SIEM: Remote File Copy via TeamViewer\n\nATT&CK: T1105, T1219\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — File Creation Teamviewer\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: file_creation_teamviewer (module=cortado.rtas.file_creation_teamviewer)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.file_creation_teamviewer\" \\\n  --rta \"file_creation_teamviewer\" \\\n  --rta-id \"0da48a27-4a5e-4974-ba6a-63cce8f602df\" \\\n  --techniques \"T1105,T1219\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"b25a7df2-120a-4db2-bd3f-3e4b86b24bee\",\"name\":\"Remote File Copy via TeamViewer\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.file_creation_teamviewer",
+        "source_path": "file_creation_teamviewer.py",
+        "rta_id": "0da48a27-4a5e-4974-ba6a-63cce8f602df",
+        "rta_name": "file_creation_teamviewer",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105",
+          "T1219"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "b25a7df2-120a-4db2-bd3f-3e4b86b24bee",
+            "name": "Remote File Copy via TeamViewer"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ceab22a5-35d6-47e0-9658-d0405fea72fa",
+      "name": "CORTADO - Linux Command And Control Telegram Api Request",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Command And Control Telegram Api Request\n\nExpected detections:\n  - Endpoint: Linux Telegram API Request\n\nATT&CK: T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Command And Control Telegram Api Request\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_command_and_control_telegram_api_request (module=cortado.rtas.linux_command_and_control_telegram_api_request)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_command_and_control_telegram_api_request\" \\\n  --rta \"linux_command_and_control_telegram_api_request\" \\\n  --rta-id \"ceab22a5-35d6-47e0-9658-d0405fea72fa\" \\\n  --techniques \"T1071\" \\\n  --endpoint-rules '[{\"id\":\"87bee79f-cf0b-43a0-884a-a7a4ddbd4599\",\"name\":\"Linux Telegram API Request\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_command_and_control_telegram_api_request",
+        "source_path": "linux_command_and_control_telegram_api_request.py",
+        "rta_id": "ceab22a5-35d6-47e0-9658-d0405fea72fa",
+        "rta_name": "linux_command_and_control_telegram_api_request",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "87bee79f-cf0b-43a0-884a-a7a4ddbd4599",
+            "name": "Linux Telegram API Request"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:0a3d2e78-1860-48e9-b4c8-99dcc7dc0e87",
+      "name": "CORTADO - Linux Command Execution Via Env",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Command Execution Via Env\n\nExpected detections:\n  - Endpoint: Linux Command Execution via Env Binary\n\nATT&CK: T1059, T1033, T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Command Execution Via Env\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_command_execution_via_env (module=cortado.rtas.linux_command_execution_via_env)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_command_execution_via_env\" \\\n  --rta \"linux_command_execution_via_env\" \\\n  --rta-id \"0a3d2e78-1860-48e9-b4c8-99dcc7dc0e87\" \\\n  --techniques \"T1059,T1033,T1105\" \\\n  --endpoint-rules '[{\"id\":\"a393fff6-3735-440e-8536-82509d78bfdd\",\"name\":\"Linux Command Execution via Env Binary\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_command_execution_via_env",
+        "source_path": "linux_command_execution_via_env.py",
+        "rta_id": "0a3d2e78-1860-48e9-b4c8-99dcc7dc0e87",
+        "rta_name": "linux_command_execution_via_env",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1033",
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "discovery",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "a393fff6-3735-440e-8536-82509d78bfdd",
+            "name": "Linux Command Execution via Env Binary"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:bf3591fe-ea36-49e0-af0e-21e927ecfc88",
+      "name": "CORTADO - Linux Execution Bind Shell Via Nc Traditional",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Bind Shell Via Nc Traditional\n\nExpected detections:\n  - Endpoint: Bind Shell via Netcat Traditional\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Bind Shell Via Nc Traditional\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_bind_shell_via_nc_traditional (module=cortado.rtas.linux_execution_bind_shell_via_nc_traditional)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_bind_shell_via_nc_traditional\" \\\n  --rta \"linux_execution_bind_shell_via_nc_traditional\" \\\n  --rta-id \"bf3591fe-ea36-49e0-af0e-21e927ecfc88\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"0fb019ab-98a0-487e-aa37-fabe5b69ec8a\",\"name\":\"Bind Shell via Netcat Traditional\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_bind_shell_via_nc_traditional",
+        "source_path": "linux_execution_bind_shell_via_nc_traditional.py",
+        "rta_id": "bf3591fe-ea36-49e0-af0e-21e927ecfc88",
+        "rta_name": "linux_execution_bind_shell_via_nc_traditional",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "0fb019ab-98a0-487e-aa37-fabe5b69ec8a",
+            "name": "Bind Shell via Netcat Traditional"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:1ab728b4-1c06-4be4-a834-7893f1e9a26e",
+      "name": "CORTADO - Linux Execution Bind Shell Via Node",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Bind Shell Via Node\n\nExpected detections:\n  - Endpoint: Bind Shell via Node\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Bind Shell Via Node\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_bind_shell_via_node (module=cortado.rtas.linux_execution_bind_shell_via_node)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_bind_shell_via_node\" \\\n  --rta \"linux_execution_bind_shell_via_node\" \\\n  --rta-id \"1ab728b4-1c06-4be4-a834-7893f1e9a26e\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"08697d36-4c07-4f54-b177-a39e473705c0\",\"name\":\"Bind Shell via Node\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_bind_shell_via_node",
+        "source_path": "linux_execution_bind_shell_via_node.py",
+        "rta_id": "1ab728b4-1c06-4be4-a834-7893f1e9a26e",
+        "rta_name": "linux_execution_bind_shell_via_node",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "08697d36-4c07-4f54-b177-a39e473705c0",
+            "name": "Bind Shell via Node"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:793ae10f-c8a8-4385-8a95-1752f2281611",
+      "name": "CORTADO - Linux Execution Bind Shell Via Socket",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Bind Shell Via Socket\n\nExpected detections:\n  - Endpoint: Bind Shell via Socket\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Bind Shell Via Socket\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_bind_shell_via_socket (module=cortado.rtas.linux_execution_bind_shell_via_socket)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_bind_shell_via_socket\" \\\n  --rta \"linux_execution_bind_shell_via_socket\" \\\n  --rta-id \"793ae10f-c8a8-4385-8a95-1752f2281611\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"37f6659f-dff4-42bc-91ae-7ed7a9264529\",\"name\":\"Bind Shell via Socket\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_bind_shell_via_socket",
+        "source_path": "linux_execution_bind_shell_via_socket.py",
+        "rta_id": "793ae10f-c8a8-4385-8a95-1752f2281611",
+        "rta_name": "linux_execution_bind_shell_via_socket",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "37f6659f-dff4-42bc-91ae-7ed7a9264529",
+            "name": "Bind Shell via Socket"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:b6dde7bc-4408-4a29-9c23-3c72cab3548c",
+      "name": "CORTADO - Linux Execution Gsocket Activity",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Gsocket Activity\n\nExpected detections:\n  - Endpoint: Potential Gsocket Activity\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Gsocket Activity\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_gsocket_activity (module=cortado.rtas.linux_execution_gsocket_activity)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_gsocket_activity\" \\\n  --rta \"linux_execution_gsocket_activity\" \\\n  --rta-id \"b6dde7bc-4408-4a29-9c23-3c72cab3548c\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"9015e5ec-a68d-4539-923d-a96d2c6227d3\",\"name\":\"Potential Gsocket Activity\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_gsocket_activity",
+        "source_path": "linux_execution_gsocket_activity.py",
+        "rta_id": "b6dde7bc-4408-4a29-9c23-3c72cab3548c",
+        "rta_name": "linux_execution_gsocket_activity",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "9015e5ec-a68d-4539-923d-a96d2c6227d3",
+            "name": "Potential Gsocket Activity"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:50efd72e-147a-4f24-8c36-f8d1d69a9cfc",
+      "name": "CORTADO - Linux Execution Hidden Process Unusual Execution",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Hidden Process Unusual Execution\n\nExpected detections:\n  - Endpoint: Suspicious Execution via a Hidden Process\n\nATT&CK: T1059, T1564, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Hidden Process Unusual Execution\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_hidden_process_unusual_execution (module=cortado.rtas.linux_execution_hidden_process_unusual_execution)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_hidden_process_unusual_execution\" \\\n  --rta \"linux_execution_hidden_process_unusual_execution\" \\\n  --rta-id \"50efd72e-147a-4f24-8c36-f8d1d69a9cfc\" \\\n  --techniques \"T1059,T1564,T1071\" \\\n  --endpoint-rules '[{\"id\":\"c52891b5-8f83-4571-8e68-ea2601f46285\",\"name\":\"Suspicious Execution via a Hidden Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_hidden_process_unusual_execution",
+        "source_path": "linux_execution_hidden_process_unusual_execution.py",
+        "rta_id": "50efd72e-147a-4f24-8c36-f8d1d69a9cfc",
+        "rta_name": "linux_execution_hidden_process_unusual_execution",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1564",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "c52891b5-8f83-4571-8e68-ea2601f46285",
+            "name": "Suspicious Execution via a Hidden Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:8f5607f7-4c55-4458-b908-b2cb22c54cf4",
+      "name": "CORTADO - Linux Execution Reverse Or Bind Shell Via Utility",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Reverse Or Bind Shell Via Utility\n\nExpected detections:\n  - Endpoint: Reverse or Bind Shell via Suspicious Utility\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Reverse Or Bind Shell Via Utility\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_reverse_or_bind_shell_via_utility (module=cortado.rtas.linux_execution_reverse_or_bind_shell_via_utility)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_reverse_or_bind_shell_via_utility\" \\\n  --rta \"linux_execution_reverse_or_bind_shell_via_utility\" \\\n  --rta-id \"8f5607f7-4c55-4458-b908-b2cb22c54cf4\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"bb330560-0042-48a5-8232-7f2012d6e440\",\"name\":\"Reverse or Bind Shell via Suspicious Utility\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_reverse_or_bind_shell_via_utility",
+        "source_path": "linux_execution_reverse_or_bind_shell_via_utility.py",
+        "rta_id": "8f5607f7-4c55-4458-b908-b2cb22c54cf4",
+        "rta_name": "linux_execution_reverse_or_bind_shell_via_utility",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "bb330560-0042-48a5-8232-7f2012d6e440",
+            "name": "Reverse or Bind Shell via Suspicious Utility"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:2e476fe9-9c70-4276-a224-2f22ba149eea",
+      "name": "CORTADO - Linux Execution Reverse Shell Or Listener Via Socat",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Reverse Shell Or Listener Via Socat\n\nExpected detections:\n  - Endpoint: Socat Reverse Shell or Listener Activity\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Reverse Shell Or Listener Via Socat\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_reverse_shell_or_listener_via_socat (module=cortado.rtas.linux_execution_reverse_shell_or_listener_via_socat)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_reverse_shell_or_listener_via_socat\" \\\n  --rta \"linux_execution_reverse_shell_or_listener_via_socat\" \\\n  --rta-id \"2e476fe9-9c70-4276-a224-2f22ba149eea\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"613da93c-226e-4150-9125-3b476103c0b9\",\"name\":\"Socat Reverse Shell or Listener Activity\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_reverse_shell_or_listener_via_socat",
+        "source_path": "linux_execution_reverse_shell_or_listener_via_socat.py",
+        "rta_id": "2e476fe9-9c70-4276-a224-2f22ba149eea",
+        "rta_name": "linux_execution_reverse_shell_or_listener_via_socat",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "613da93c-226e-4150-9125-3b476103c0b9",
+            "name": "Socat Reverse Shell or Listener Activity"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:66ff975c-fa48-47c4-965a-8f363425369e",
+      "name": "CORTADO - Linux Execution Setsid Nohup Unusual Execution",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Execution Setsid Nohup Unusual Execution\n\nExpected detections:\n  - Endpoint: Suspicious Execution via setsid and nohup\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Execution Setsid Nohup Unusual Execution\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_execution_setsid_nohup_unusual_execution (module=cortado.rtas.linux_execution_setsid_nohup_unusual_execution)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_execution_setsid_nohup_unusual_execution\" \\\n  --rta \"linux_execution_setsid_nohup_unusual_execution\" \\\n  --rta-id \"66ff975c-fa48-47c4-965a-8f363425369e\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"18d82674-08d0-408e-801b-468e1b06298f\",\"name\":\"Suspicious Execution via setsid and nohup\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_execution_setsid_nohup_unusual_execution",
+        "source_path": "linux_execution_setsid_nohup_unusual_execution.py",
+        "rta_id": "66ff975c-fa48-47c4-965a-8f363425369e",
+        "rta_name": "linux_execution_setsid_nohup_unusual_execution",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "18d82674-08d0-408e-801b-468e1b06298f",
+            "name": "Suspicious Execution via setsid and nohup"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:da45a71e-fc97-492d-932f-703b11c08387",
+      "name": "CORTADO - Linux Hidden Executable Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Hidden Executable Netcon\n\nExpected detections:\n  - Endpoint: Hidden Process Execution followed by Network Connection\n\nATT&CK: T1105, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Hidden Executable Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_hidden_executable_netcon (module=cortado.rtas.linux_hidden_executable_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_hidden_executable_netcon\" \\\n  --rta \"linux_hidden_executable_netcon\" \\\n  --rta-id \"da45a71e-fc97-492d-932f-703b11c08387\" \\\n  --techniques \"T1105,T1071\" \\\n  --endpoint-rules '[{\"id\":\"04ec0ec4-86c4-47e3-8c7b-8dad5f97532c\",\"name\":\"Hidden Process Execution followed by Network Connection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_hidden_executable_netcon",
+        "source_path": "linux_hidden_executable_netcon.py",
+        "rta_id": "da45a71e-fc97-492d-932f-703b11c08387",
+        "rta_name": "linux_hidden_executable_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1105",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "04ec0ec4-86c4-47e3-8c7b-8dad5f97532c",
+            "name": "Hidden Process Execution followed by Network Connection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:6a3d9ca4-d010-42c7-b75a-7dc8ce347e59",
+      "name": "CORTADO - Linux Motd Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Motd Netcon\n\nExpected detections:\n  - Endpoint: Message of the Day Execution Followed by Network Connection\n\nATT&CK: T1037, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1037",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Motd Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_motd_netcon (module=cortado.rtas.linux_motd_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_motd_netcon\" \\\n  --rta \"linux_motd_netcon\" \\\n  --rta-id \"6a3d9ca4-d010-42c7-b75a-7dc8ce347e59\" \\\n  --techniques \"T1037,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"a18e57c9-5627-4535-b994-64febc67c1e8\",\"name\":\"Message of the Day Execution Followed by Network Connection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_motd_netcon",
+        "source_path": "linux_motd_netcon.py",
+        "rta_id": "6a3d9ca4-d010-42c7-b75a-7dc8ce347e59",
+        "rta_name": "linux_motd_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1037",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "a18e57c9-5627-4535-b994-64febc67c1e8",
+            "name": "Message of the Day Execution Followed by Network Connection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:3d387400-3fc4-457f-92cd-8ba77271b348",
+      "name": "CORTADO - Linux Persistence Dpkg Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Dpkg Netcon\n\nExpected detections:\n  - Endpoint: Egress Network Connection from Default DPKG Directory\n\nATT&CK: T1546, T1543, T1574, T1195, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1546",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Dpkg Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_dpkg_netcon (module=cortado.rtas.linux_persistence_dpkg_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_dpkg_netcon\" \\\n  --rta \"linux_persistence_dpkg_netcon\" \\\n  --rta-id \"3d387400-3fc4-457f-92cd-8ba77271b348\" \\\n  --techniques \"T1546,T1543,T1574,T1195,T1071\" \\\n  --endpoint-rules '[{\"id\":\"947b70bb-8e01-4f1b-994d-5af9488556bb\",\"name\":\"Egress Network Connection from Default DPKG Directory\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_dpkg_netcon",
+        "source_path": "linux_persistence_dpkg_netcon.py",
+        "rta_id": "3d387400-3fc4-457f-92cd-8ba77271b348",
+        "rta_name": "linux_persistence_dpkg_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1546",
+          "T1543",
+          "T1574",
+          "T1195",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "947b70bb-8e01-4f1b-994d-5af9488556bb",
+            "name": "Egress Network Connection from Default DPKG Directory"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ac1f9204-f612-4d50-9de0-6dabcd589816",
+      "name": "CORTADO - Linux Persistence Initd Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Initd Netcon\n\nExpected detections:\n  - Endpoint: System V Init (init.d) Egress Network Connection\n\nATT&CK: T1037, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1037",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Initd Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_initd_netcon (module=cortado.rtas.linux_persistence_initd_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_initd_netcon\" \\\n  --rta \"linux_persistence_initd_netcon\" \\\n  --rta-id \"ac1f9204-f612-4d50-9de0-6dabcd589816\" \\\n  --techniques \"T1037,T1071\" \\\n  --endpoint-rules '[{\"id\":\"b38eb534-230c-45f4-93ba-fc516ac51630\",\"name\":\"System V Init (init.d) Egress Network Connection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_initd_netcon",
+        "source_path": "linux_persistence_initd_netcon.py",
+        "rta_id": "ac1f9204-f612-4d50-9de0-6dabcd589816",
+        "rta_name": "linux_persistence_initd_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1037",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "b38eb534-230c-45f4-93ba-fc516ac51630",
+            "name": "System V Init (init.d) Egress Network Connection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a67ba2b1-cace-4cb9-9b7e-12c9ffe136cb",
+      "name": "CORTADO - Linux Persistence Motd Netcon Parent Child",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Motd Netcon Parent Child\n\nExpected detections:\n  - Endpoint: Egress Network Connection by MOTD Child\n\nATT&CK: T1037, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1037",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Motd Netcon Parent Child\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_motd_netcon_parent_child (module=cortado.rtas.linux_persistence_motd_netcon_parent_child)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_motd_netcon_parent_child\" \\\n  --rta \"linux_persistence_motd_netcon_parent_child\" \\\n  --rta-id \"a67ba2b1-cace-4cb9-9b7e-12c9ffe136cb\" \\\n  --techniques \"T1037,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"da02d81a-d432-4cfe-8aa4-fc1a31c29c98\",\"name\":\"Egress Network Connection by MOTD Child\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_motd_netcon_parent_child",
+        "source_path": "linux_persistence_motd_netcon_parent_child.py",
+        "rta_id": "a67ba2b1-cace-4cb9-9b7e-12c9ffe136cb",
+        "rta_name": "linux_persistence_motd_netcon_parent_child",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1037",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "da02d81a-d432-4cfe-8aa4-fc1a31c29c98",
+            "name": "Egress Network Connection by MOTD Child"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:535959a4-5bad-44d8-9ebd-003d7ed0733c",
+      "name": "CORTADO - Linux Persistence Rpm Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Rpm Netcon\n\nExpected detections:\n  - Endpoint: Egress Network Connection from RPM Package\n\nATT&CK: T1546, T1543, T1574, T1195, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1546",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Rpm Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_rpm_netcon (module=cortado.rtas.linux_persistence_rpm_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_rpm_netcon\" \\\n  --rta \"linux_persistence_rpm_netcon\" \\\n  --rta-id \"535959a4-5bad-44d8-9ebd-003d7ed0733c\" \\\n  --techniques \"T1546,T1543,T1574,T1195,T1071\" \\\n  --endpoint-rules '[{\"id\":\"d20cd4ba-ff65-4e1c-8012-4241d449b16b\",\"name\":\"Egress Network Connection from RPM Package\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_rpm_netcon",
+        "source_path": "linux_persistence_rpm_netcon.py",
+        "rta_id": "535959a4-5bad-44d8-9ebd-003d7ed0733c",
+        "rta_name": "linux_persistence_rpm_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1546",
+          "T1543",
+          "T1574",
+          "T1195",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "d20cd4ba-ff65-4e1c-8012-4241d449b16b",
+            "name": "Egress Network Connection from RPM Package"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:8b7461f9-d569-4558-a4cf-7e476210eae8",
+      "name": "CORTADO - Linux Persistence Webserver Curl Wget Download Ip Args",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Webserver Curl Wget Download Ip Args\n\nExpected detections:\n  - Endpoint: File Downloaded from Suspicious Source by Web Server\n\nATT&CK: T1505, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1505",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Webserver Curl Wget Download Ip Args\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_webserver_curl_wget_download_ip_args (module=cortado.rtas.linux_persistence_webserver_curl_wget_download_ip_args)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_webserver_curl_wget_download_ip_args\" \\\n  --rta \"linux_persistence_webserver_curl_wget_download_ip_args\" \\\n  --rta-id \"8b7461f9-d569-4558-a4cf-7e476210eae8\" \\\n  --techniques \"T1505,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"14f332f1-b20b-4628-b6de-14a4626fba79\",\"name\":\"File Downloaded from Suspicious Source by Web Server\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_webserver_curl_wget_download_ip_args",
+        "source_path": "linux_persistence_webserver_curl_wget_download_ip_args.py",
+        "rta_id": "8b7461f9-d569-4558-a4cf-7e476210eae8",
+        "rta_name": "linux_persistence_webserver_curl_wget_download_ip_args",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1505",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "14f332f1-b20b-4628-b6de-14a4626fba79",
+            "name": "File Downloaded from Suspicious Source by Web Server"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:6a25935b-be53-4447-a5b4-e413f1d2351a",
+      "name": "CORTADO - Linux Persistence Webserver Curl Wget Piped To Interpreter",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Webserver Curl Wget Piped To Interpreter\n\nExpected detections:\n  - Endpoint: File Downloaded and Piped to Interpreter by Web Server\n\nATT&CK: T1505, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1505",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Webserver Curl Wget Piped To Interpreter\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_webserver_curl_wget_piped_to_interpreter (module=cortado.rtas.linux_persistence_webserver_curl_wget_piped_to_interpreter)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_webserver_curl_wget_piped_to_interpreter\" \\\n  --rta \"linux_persistence_webserver_curl_wget_piped_to_interpreter\" \\\n  --rta-id \"6a25935b-be53-4447-a5b4-e413f1d2351a\" \\\n  --techniques \"T1505,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"2588a595-c6c7-4d8d-b287-57b9d1e3d7e6\",\"name\":\"File Downloaded and Piped to Interpreter by Web Server\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_webserver_curl_wget_piped_to_interpreter",
+        "source_path": "linux_persistence_webserver_curl_wget_piped_to_interpreter.py",
+        "rta_id": "6a25935b-be53-4447-a5b4-e413f1d2351a",
+        "rta_name": "linux_persistence_webserver_curl_wget_piped_to_interpreter",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1505",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "2588a595-c6c7-4d8d-b287-57b9d1e3d7e6",
+            "name": "File Downloaded and Piped to Interpreter by Web Server"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a153dec0-914a-4a03-8b6c-a24e55b6f16a",
+      "name": "CORTADO - Linux Persistence Webserver Curl Wget Suspicious Redirect",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Persistence Webserver Curl Wget Suspicious Redirect\n\nExpected detections:\n  - Endpoint: Suspicious Download and Redirect by Web Server\n\nATT&CK: T1505, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1505",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Persistence Webserver Curl Wget Suspicious Redirect\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_persistence_webserver_curl_wget_suspicious_redirect (module=cortado.rtas.linux_persistence_webserver_curl_wget_suspicious_redirect)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_persistence_webserver_curl_wget_suspicious_redirect\" \\\n  --rta \"linux_persistence_webserver_curl_wget_suspicious_redirect\" \\\n  --rta-id \"a153dec0-914a-4a03-8b6c-a24e55b6f16a\" \\\n  --techniques \"T1505,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"fa71e336-0177-4732-b58b-53eb4a87a286\",\"name\":\"Suspicious Download and Redirect by Web Server\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_persistence_webserver_curl_wget_suspicious_redirect",
+        "source_path": "linux_persistence_webserver_curl_wget_suspicious_redirect.py",
+        "rta_id": "a153dec0-914a-4a03-8b6c-a24e55b6f16a",
+        "rta_name": "linux_persistence_webserver_curl_wget_suspicious_redirect",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1505",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "fa71e336-0177-4732-b58b-53eb4a87a286",
+            "name": "Suspicious Download and Redirect by Web Server"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:d1ad870e-9b38-429b-bc9c-62b4b9ba2821",
+      "name": "CORTADO - Linux Python Netcon File Creation",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Python Netcon File Creation\n\nExpected detections:\n  - Endpoint: Python Network Connection Followed by File Creation\n\nATT&CK: T1071, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Python Netcon File Creation\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_python_netcon_file_creation (module=cortado.rtas.linux_python_netcon_file_creation)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_python_netcon_file_creation\" \\\n  --rta \"linux_python_netcon_file_creation\" \\\n  --rta-id \"d1ad870e-9b38-429b-bc9c-62b4b9ba2821\" \\\n  --techniques \"T1071,T1059\" \\\n  --endpoint-rules '[{\"id\":\"1a2596ff-a5e7-4562-af17-97dbaf9284d5\",\"name\":\"Python Network Connection Followed by File Creation\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_python_netcon_file_creation",
+        "source_path": "linux_python_netcon_file_creation.py",
+        "rta_id": "d1ad870e-9b38-429b-bc9c-62b4b9ba2821",
+        "rta_name": "linux_python_netcon_file_creation",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1071",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "1a2596ff-a5e7-4562-af17-97dbaf9284d5",
+            "name": "Python Network Connection Followed by File Creation"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a5603982-8b43-4ea9-b8de-112d9817e12d",
+      "name": "CORTADO - Linux Reverse Shell",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Reverse Shell\n\nExpected detections:\n  - Endpoint: Linux Reverse Shell\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Reverse Shell\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_reverse_shell (module=cortado.rtas.linux_reverse_shell)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_reverse_shell\" \\\n  --rta \"linux_reverse_shell\" \\\n  --rta-id \"a5603982-8b43-4ea9-b8de-112d9817e12d\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"52206861-4570-4b8b-a73e-4ef0ea379a4c\",\"name\":\"Linux Reverse Shell\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_reverse_shell",
+        "source_path": "linux_reverse_shell.py",
+        "rta_id": "a5603982-8b43-4ea9-b8de-112d9817e12d",
+        "rta_name": "linux_reverse_shell",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "52206861-4570-4b8b-a73e-4ef0ea379a4c",
+            "name": "Linux Reverse Shell"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ecb34b55-2947-48af-b746-3a472abfda43",
+      "name": "CORTADO - Linux Reverse Shell Via Netcat",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Reverse Shell Via Netcat\n\nExpected detections:\n  - Endpoint: Linux Reverse Shell via netcat\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Reverse Shell Via Netcat\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_reverse_shell_via_netcat (module=cortado.rtas.linux_reverse_shell_via_netcat)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_reverse_shell_via_netcat\" \\\n  --rta \"linux_reverse_shell_via_netcat\" \\\n  --rta-id \"ecb34b55-2947-48af-b746-3a472abfda43\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"c0ca8114-254d-46ba-88c6-db57de6efe2d\",\"name\":\"Linux Reverse Shell via netcat\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_reverse_shell_via_netcat",
+        "source_path": "linux_reverse_shell_via_netcat.py",
+        "rta_id": "ecb34b55-2947-48af-b746-3a472abfda43",
+        "rta_name": "linux_reverse_shell_via_netcat",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "c0ca8114-254d-46ba-88c6-db57de6efe2d",
+            "name": "Linux Reverse Shell via netcat"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:d768af98-4e0b-451a-bc29-04b0be110ee5",
+      "name": "CORTADO - Linux Reverse Shell Via Utility",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Reverse Shell Via Utility\n\nExpected detections:\n  - Endpoint: Linux Reverse Shell via Suspicious Utility\n\nATT&CK: T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1059",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Reverse Shell Via Utility\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_reverse_shell_via_utility (module=cortado.rtas.linux_reverse_shell_via_utility)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_reverse_shell_via_utility\" \\\n  --rta \"linux_reverse_shell_via_utility\" \\\n  --rta-id \"d768af98-4e0b-451a-bc29-04b0be110ee5\" \\\n  --techniques \"T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"c71b9783-ca42-4532-8eb3-e8f2fe32ff39\",\"name\":\"Linux Reverse Shell via Suspicious Utility\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_reverse_shell_via_utility",
+        "source_path": "linux_reverse_shell_via_utility.py",
+        "rta_id": "d768af98-4e0b-451a-bc29-04b0be110ee5",
+        "rta_name": "linux_reverse_shell_via_utility",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "c71b9783-ca42-4532-8eb3-e8f2fe32ff39",
+            "name": "Linux Reverse Shell via Suspicious Utility"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:1b24ddc7-c01c-4d24-a00e-0738a40b6dd6",
+      "name": "CORTADO - Linux Sus Netcon Command Exec",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Sus Netcon Command Exec\n\nExpected detections:\n  - Endpoint: Network Connection Followed by Command Execution\n\nATT&CK: T1071, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Sus Netcon Command Exec\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_sus_netcon_command_exec (module=cortado.rtas.linux_sus_netcon_command_exec)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_sus_netcon_command_exec\" \\\n  --rta \"linux_sus_netcon_command_exec\" \\\n  --rta-id \"1b24ddc7-c01c-4d24-a00e-0738a40b6dd6\" \\\n  --techniques \"T1071,T1059\" \\\n  --endpoint-rules '[{\"id\":\"8c2977dd-07ce-4a8e-8ccd-5e4183138675\",\"name\":\"Network Connection Followed by Command Execution\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_sus_netcon_command_exec",
+        "source_path": "linux_sus_netcon_command_exec.py",
+        "rta_id": "1b24ddc7-c01c-4d24-a00e-0738a40b6dd6",
+        "rta_name": "linux_sus_netcon_command_exec",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1071",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "8c2977dd-07ce-4a8e-8ccd-5e4183138675",
+            "name": "Network Connection Followed by Command Execution"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:41d3cdaf-a72e-49bb-b92f-99bfe21e0854",
+      "name": "CORTADO - Linux Sus Netcon File Creation",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Sus Netcon File Creation\n\nExpected detections:\n  - Endpoint: Network Connection Followed by File Creation\n\nATT&CK: T1071, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Sus Netcon File Creation\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_sus_netcon_file_creation (module=cortado.rtas.linux_sus_netcon_file_creation)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_sus_netcon_file_creation\" \\\n  --rta \"linux_sus_netcon_file_creation\" \\\n  --rta-id \"41d3cdaf-a72e-49bb-b92f-99bfe21e0854\" \\\n  --techniques \"T1071,T1059\" \\\n  --endpoint-rules '[{\"id\":\"08ad673a-7f99-417e-8b93-a79d4faeeed3\",\"name\":\"Network Connection Followed by File Creation\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_sus_netcon_file_creation",
+        "source_path": "linux_sus_netcon_file_creation.py",
+        "rta_id": "41d3cdaf-a72e-49bb-b92f-99bfe21e0854",
+        "rta_name": "linux_sus_netcon_file_creation",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1071",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "08ad673a-7f99-417e-8b93-a79d4faeeed3",
+            "name": "Network Connection Followed by File Creation"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:517a466b-f11f-4469-8e5a-a39f4edf333a",
+      "name": "CORTADO - Linux Systemd Netcon",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Systemd Netcon\n\nExpected detections:\n  - Endpoint: Systemd Execution Followed by Network Connection\n\nATT&CK: T1543, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1543",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Systemd Netcon\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_systemd_netcon (module=cortado.rtas.linux_systemd_netcon)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_systemd_netcon\" \\\n  --rta \"linux_systemd_netcon\" \\\n  --rta-id \"517a466b-f11f-4469-8e5a-a39f4edf333a\" \\\n  --techniques \"T1543,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"6644d936-36a2-4d21-95f3-4826e6b61b9b\",\"name\":\"Systemd Execution Followed by Network Connection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_systemd_netcon",
+        "source_path": "linux_systemd_netcon.py",
+        "rta_id": "517a466b-f11f-4469-8e5a-a39f4edf333a",
+        "rta_name": "linux_systemd_netcon",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1543",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "6644d936-36a2-4d21-95f3-4826e6b61b9b",
+            "name": "Systemd Execution Followed by Network Connection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:0c55d2bd-924b-44a0-8f75-8fb6fc2427bf",
+      "name": "CORTADO - Linux Unusual Scheduled Task Command Exection",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nLinux Unusual Scheduled Task Command Exection\n\nExpected detections:\n  - Endpoint: Scheduled Task Unusual Command Execution\n\nATT&CK: T1053, T1543, T1059, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1053",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Linux Unusual Scheduled Task Command Exection\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: linux_unusual_scheduled_task_command_exection (module=cortado.rtas.linux_unusual_scheduled_task_command_exection)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.linux_unusual_scheduled_task_command_exection\" \\\n  --rta \"linux_unusual_scheduled_task_command_exection\" \\\n  --rta-id \"0c55d2bd-924b-44a0-8f75-8fb6fc2427bf\" \\\n  --techniques \"T1053,T1543,T1059,T1071\" \\\n  --endpoint-rules '[{\"id\":\"46b142a6-3d54-45e7-ad8a-7a4bc9bfe01c\",\"name\":\"Scheduled Task Unusual Command Execution\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.linux_unusual_scheduled_task_command_exection",
+        "source_path": "linux_unusual_scheduled_task_command_exection.py",
+        "rta_id": "0c55d2bd-924b-44a0-8f75-8fb6fc2427bf",
+        "rta_name": "linux_unusual_scheduled_task_command_exection",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1053",
+          "T1543",
+          "T1059",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "46b142a6-3d54-45e7-ad8a-7a4bc9bfe01c",
+            "name": "Scheduled Task Unusual Command Execution"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:34040af5-1231-4e97-8189-a26d6622b2e5",
+      "name": "CORTADO - Macos Installer Curl",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMacos Installer Curl\n\nExpected detections:\n  - Endpoint: Initial Access via macOS Installer Package\n\nATT&CK: T1105, T1543, T1082, T1566, T1204, T1547, T1569, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Macos Installer Curl\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: macos_installer_curl (module=cortado.rtas.macos_installer_curl)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.macos_installer_curl\" \\\n  --rta \"macos_installer_curl\" \\\n  --rta-id \"34040af5-1231-4e97-8189-a26d6622b2e5\" \\\n  --techniques \"T1105,T1543,T1082,T1566,T1204,T1547,T1569,T1059\" \\\n  --endpoint-rules '[{\"id\":\"d40ffcba-b83e-4d0a-8d6d-84385def8e18\",\"name\":\"Initial Access via macOS Installer Package\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.macos_installer_curl",
+        "source_path": "macos_installer_curl.py",
+        "rta_id": "34040af5-1231-4e97-8189-a26d6622b2e5",
+        "rta_name": "macos_installer_curl",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105",
+          "T1543",
+          "T1082",
+          "T1566",
+          "T1204",
+          "T1547",
+          "T1569",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "discovery",
+          "execution",
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "d40ffcba-b83e-4d0a-8d6d-84385def8e18",
+            "name": "Initial Access via macOS Installer Package"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:c80653a4-26fa-4a9e-b06c-12d12680c4e7",
+      "name": "CORTADO - Msoffice File Dll Sideload",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice File Dll Sideload\n\nExpected detections:\n  - Endpoint: DLL Side Loading of a file dropped by Microsoft Office\n  - Endpoint: Suspicious Executable File Creation\n\nATT&CK: T1574, T1574.001, T1566, T1566.001, T1105, T1059, T1059.005, T1059.007\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1574",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice File Dll Sideload\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_file_dll_sideload (module=cortado.rtas.msoffice_file_dll_sideload)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_file_dll_sideload\" \\\n  --rta \"msoffice_file_dll_sideload\" \\\n  --rta-id \"c80653a4-26fa-4a9e-b06c-12d12680c4e7\" \\\n  --techniques \"T1574,T1574.001,T1566,T1566.001,T1105,T1059,T1059.005,T1059.007\" \\\n  --endpoint-rules '[{\"id\":\"68218637-3940-42cb-b2b7-0610fc1dde56\",\"name\":\"DLL Side Loading of a file dropped by Microsoft Office\"},{\"id\":\"37c54ca7-e96d-4fd5-92d3-08cab38516b7\",\"name\":\"Suspicious Executable File Creation\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_file_dll_sideload",
+        "source_path": "msoffice_file_dll_sideload.py",
+        "rta_id": "c80653a4-26fa-4a9e-b06c-12d12680c4e7",
+        "rta_name": "msoffice_file_dll_sideload",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1574",
+          "T1574.001",
+          "T1566",
+          "T1566.001",
+          "T1105",
+          "T1059",
+          "T1059.005",
+          "T1059.007"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "execution",
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "68218637-3940-42cb-b2b7-0610fc1dde56",
+            "name": "DLL Side Loading of a file dropped by Microsoft Office"
+          },
+          {
+            "id": "37c54ca7-e96d-4fd5-92d3-08cab38516b7",
+            "name": "Suspicious Executable File Creation"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:b2603bac-ba1c-4e6e-a041-ed8772fded75",
+      "name": "CORTADO - Multiarch File Drops",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMultiarch File Drops\n\nExpected detections:\n  - Endpoint: Potential Multi Architecture File Downloads\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Multiarch File Drops\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: multiarch_file_drops (module=cortado.rtas.multiarch_file_drops)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.multiarch_file_drops\" \\\n  --rta \"multiarch_file_drops\" \\\n  --rta-id \"b2603bac-ba1c-4e6e-a041-ed8772fded75\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[{\"id\":\"276a5df0-7e20-4218-ade1-3f3ed711d4cb\",\"name\":\"Potential Multi Architecture File Downloads\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.multiarch_file_drops",
+        "source_path": "multiarch_file_drops.py",
+        "rta_id": "b2603bac-ba1c-4e6e-a041-ed8772fded75",
+        "rta_name": "multiarch_file_drops",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "276a5df0-7e20-4218-ade1-3f3ed711d4cb",
+            "name": "Potential Multi Architecture File Downloads"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:127f1e70-a491-4da4-a24f-ac6bf6e5b756",
+      "name": "CORTADO - Network Connection Desktopimgdownldr",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nNetwork Connection Desktopimgdownldr\n\nExpected detections:\n  - SIEM: Remote File Download via Desktopimgdownldr Utility\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Network Connection Desktopimgdownldr\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: network_connection_desktopimgdownldr (module=cortado.rtas.network_connection_desktopimgdownldr)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.network_connection_desktopimgdownldr\" \\\n  --rta \"network_connection_desktopimgdownldr\" \\\n  --rta-id \"127f1e70-a491-4da4-a24f-ac6bf6e5b756\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"15c0b7a7-9c34-4869-b25b-fa6518414899\",\"name\":\"Remote File Download via Desktopimgdownldr Utility\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.network_connection_desktopimgdownldr",
+        "source_path": "network_connection_desktopimgdownldr.py",
+        "rta_id": "127f1e70-a491-4da4-a24f-ac6bf6e5b756",
+        "rta_name": "network_connection_desktopimgdownldr",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "15c0b7a7-9c34-4869-b25b-fa6518414899",
+            "name": "Remote File Download via Desktopimgdownldr Utility"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:4b85db7b-b7e7-45d1-94de-210587e6d947",
+      "name": "CORTADO - Network Connection Download Powershell",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nNetwork Connection Download Powershell\n\nExpected detections:\n  - SIEM: Remote File Download via PowerShell\n\nATT&CK: T1105, T1059, T1059.001\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Network Connection Download Powershell\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: network_connection_download_powershell (module=cortado.rtas.network_connection_download_powershell)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.network_connection_download_powershell\" \\\n  --rta \"network_connection_download_powershell\" \\\n  --rta-id \"4b85db7b-b7e7-45d1-94de-210587e6d947\" \\\n  --techniques \"T1105,T1059,T1059.001\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"33f306e8-417c-411b-965c-c2812d6d3f4d\",\"name\":\"Remote File Download via PowerShell\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.network_connection_download_powershell",
+        "source_path": "network_connection_download_powershell.py",
+        "rta_id": "4b85db7b-b7e7-45d1-94de-210587e6d947",
+        "rta_name": "network_connection_download_powershell",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105",
+          "T1059",
+          "T1059.001"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "33f306e8-417c-411b-965c-c2812d6d3f4d",
+            "name": "Remote File Download via PowerShell"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:7253d78c-8a68-4073-b20a-fbab9d4daf23",
+      "name": "CORTADO - Network Connection Download Script Interpreter",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nNetwork Connection Download Script Interpreter\n\nExpected detections:\n  - SIEM: Remote File Download via Script Interpreter\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Network Connection Download Script Interpreter\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: network_connection_download_script_interpreter (module=cortado.rtas.network_connection_download_script_interpreter)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.network_connection_download_script_interpreter\" \\\n  --rta \"network_connection_download_script_interpreter\" \\\n  --rta-id \"7253d78c-8a68-4073-b20a-fbab9d4daf23\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"1d276579-3380-4095-ad38-e596a01bc64f\",\"name\":\"Remote File Download via Script Interpreter\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.network_connection_download_script_interpreter",
+        "source_path": "network_connection_download_script_interpreter.py",
+        "rta_id": "7253d78c-8a68-4073-b20a-fbab9d4daf23",
+        "rta_name": "network_connection_download_script_interpreter",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "1d276579-3380-4095-ad38-e596a01bc64f",
+            "name": "Remote File Download via Script Interpreter"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:9182299f-cebf-4d8b-97a8-15ec5e11fe14",
+      "name": "CORTADO - Network Connection Iexplore Rundll32",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nNetwork Connection Iexplore Rundll32\n\nExpected detections:\n  - SIEM: Potential Command and Control via Internet Explorer\n\nATT&CK: T1071, T1559, T1559.001\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Network Connection Iexplore Rundll32\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: network_connection_iexplore_rundll32 (module=cortado.rtas.network_connection_iexplore_rundll32)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.network_connection_iexplore_rundll32\" \\\n  --rta \"network_connection_iexplore_rundll32\" \\\n  --rta-id \"9182299f-cebf-4d8b-97a8-15ec5e11fe14\" \\\n  --techniques \"T1071,T1559,T1559.001\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"acd611f3-2b93-47b3-a0a3-7723bcc46f6d\",\"name\":\"Potential Command and Control via Internet Explorer\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.network_connection_iexplore_rundll32",
+        "source_path": "network_connection_iexplore_rundll32.py",
+        "rta_id": "9182299f-cebf-4d8b-97a8-15ec5e11fe14",
+        "rta_name": "network_connection_iexplore_rundll32",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1071",
+          "T1559",
+          "T1559.001"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "acd611f3-2b93-47b3-a0a3-7723bcc46f6d",
+            "name": "Potential Command and Control via Internet Explorer"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:d6c94638-5c8a-40e9-9ad8-86a8f97cc043",
+      "name": "CORTADO - Network Connection Nslookup",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nNetwork Connection Nslookup\n\nExpected detections:\n  - SIEM: Potential DNS Tunneling via NsLookup\n\nATT&CK: T1071, T1071.004\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Network Connection Nslookup\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: network_connection_nslookup (module=cortado.rtas.network_connection_nslookup)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.network_connection_nslookup\" \\\n  --rta \"network_connection_nslookup\" \\\n  --rta-id \"d6c94638-5c8a-40e9-9ad8-86a8f97cc043\" \\\n  --techniques \"T1071,T1071.004\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"3a59fc81-99d3-47ea-8cd6-d48d561fca20\",\"name\":\"Potential DNS Tunneling via NsLookup\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.network_connection_nslookup",
+        "source_path": "network_connection_nslookup.py",
+        "rta_id": "d6c94638-5c8a-40e9-9ad8-86a8f97cc043",
+        "rta_name": "network_connection_nslookup",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1071",
+          "T1071.004"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "3a59fc81-99d3-47ea-8cd6-d48d561fca20",
+            "name": "Potential DNS Tunneling via NsLookup"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:1a483c55-443d-4d01-a9de-e2c69df744f3",
+      "name": "CORTADO - Office App Execution",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nOffice App Execution\n\nExpected detections:\n  - Endpoint: Initial Access or Execution via Microsoft Office Application\n\nATT&CK: T1105, T1027, T1059.001, T1566, T1547, T1204, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Office App Execution\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: office_app_execution (module=cortado.rtas.office_app_execution)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.office_app_execution\" \\\n  --rta \"office_app_execution\" \\\n  --rta-id \"1a483c55-443d-4d01-a9de-e2c69df744f3\" \\\n  --techniques \"T1105,T1027,T1059.001,T1566,T1547,T1204,T1059\" \\\n  --endpoint-rules '[{\"id\":\"64021ef9-19d3-4797-ac3c-79e38d5e5a5a\",\"name\":\"Initial Access or Execution via Microsoft Office Application\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.office_app_execution",
+        "source_path": "office_app_execution.py",
+        "rta_id": "1a483c55-443d-4d01-a9de-e2c69df744f3",
+        "rta_name": "office_app_execution",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105",
+          "T1027",
+          "T1059.001",
+          "T1566",
+          "T1547",
+          "T1204",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "execution",
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "64021ef9-19d3-4797-ac3c-79e38d5e5a5a",
+            "name": "Initial Access or Execution via Microsoft Office Application"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:66407efa-a32e-4f4d-b339-def48e23e810",
+      "name": "CORTADO - Osascript Net Conn",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nOsascript Net Conn\n\nExpected detections:\n  - SIEM: Apple Script Execution followed by Network Connection\n\nATT&CK: T1105, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Osascript Net Conn\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: osascript_net_conn (module=cortado.rtas.osascript_net_conn)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.osascript_net_conn\" \\\n  --rta \"osascript_net_conn\" \\\n  --rta-id \"66407efa-a32e-4f4d-b339-def48e23e810\" \\\n  --techniques \"T1105,T1059\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"47f76567-d58a-4fed-b32b-21f571e28910\",\"name\":\"Apple Script Execution followed by Network Connection\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.osascript_net_conn",
+        "source_path": "osascript_net_conn.py",
+        "rta_id": "66407efa-a32e-4f4d-b339-def48e23e810",
+        "rta_name": "osascript_net_conn",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "47f76567-d58a-4fed-b32b-21f571e28910",
+            "name": "Apple Script Execution followed by Network Connection"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:af8d27bb-1673-463f-8631-a5b30278cf33",
+      "name": "CORTADO - Osascript Suspicious Cmdline",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nOsascript Suspicious Cmdline\n\nExpected detections:\n  - Endpoint: Suspicious Apple Script Execution\n\nATT&CK: T1105, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Osascript Suspicious Cmdline\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: osascript_suspicious_cmdline (module=cortado.rtas.osascript_suspicious_cmdline)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.osascript_suspicious_cmdline\" \\\n  --rta \"osascript_suspicious_cmdline\" \\\n  --rta-id \"af8d27bb-1673-463f-8631-a5b30278cf33\" \\\n  --techniques \"T1105,T1059\" \\\n  --endpoint-rules '[{\"id\":\"7b9d544a-5b2a-4f0d-984a-cdc89a7fad25\",\"name\":\"Suspicious Apple Script Execution\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.osascript_suspicious_cmdline",
+        "source_path": "osascript_suspicious_cmdline.py",
+        "rta_id": "af8d27bb-1673-463f-8631-a5b30278cf33",
+        "rta_name": "osascript_suspicious_cmdline",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "7b9d544a-5b2a-4f0d-984a-cdc89a7fad25",
+            "name": "Suspicious Apple Script Execution"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:83b04be5-ed0f-4efd-a7fd-d5db2b8ab62f",
+      "name": "CORTADO - Reverse Shell",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nReverse Shell\n\nExpected detections:\n  - Endpoint: Potential Reverse Shell Activity via Terminal\n\nATT&CK: T1071, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Reverse Shell\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: reverse_shell (module=cortado.rtas.reverse_shell)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.reverse_shell\" \\\n  --rta \"reverse_shell\" \\\n  --rta-id \"83b04be5-ed0f-4efd-a7fd-d5db2b8ab62f\" \\\n  --techniques \"T1071,T1059\" \\\n  --endpoint-rules '[{\"id\":\"d0e45f6c-1f83-4d97-a8d9-c8f9eb61c15c\",\"name\":\"Potential Reverse Shell Activity via Terminal\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.reverse_shell",
+        "source_path": "reverse_shell.py",
+        "rta_id": "83b04be5-ed0f-4efd-a7fd-d5db2b8ab62f",
+        "rta_name": "reverse_shell",
+        "rta_type": "code",
+        "platforms": [
+          "macos",
+          "linux"
+        ],
+        "techniques": [
+          "T1071",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "execution"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "d0e45f6c-1f83-4d97-a8d9-c8f9eb61c15c",
+            "name": "Potential Reverse Shell Activity via Terminal"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:c0f3618b-a7d9-403c-8b42-572da0b20f47",
+      "name": "CORTADO - Shlayer Payload",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nShlayer Payload\n\nExpected detections:\n  - Endpoint: Shlayer Malware Infection\n\nATT&CK: T1105\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1105",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Shlayer Payload\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: shlayer_payload (module=cortado.rtas.shlayer_payload)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.shlayer_payload\" \\\n  --rta \"shlayer_payload\" \\\n  --rta-id \"c0f3618b-a7d9-403c-8b42-572da0b20f47\" \\\n  --techniques \"T1105\" \\\n  --endpoint-rules '[{\"id\":\"3dda1ac2-86ef-41f5-ad3b-d9396383e104\",\"name\":\"Shlayer Malware Infection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.shlayer_payload",
+        "source_path": "shlayer_payload.py",
+        "rta_id": "c0f3618b-a7d9-403c-8b42-572da0b20f47",
+        "rta_name": "shlayer_payload",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1105"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "3dda1ac2-86ef-41f5-ad3b-d9396383e104",
+            "name": "Shlayer Malware Infection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:cbed76ce-a373-4bc5-b1b3-f5330de18cc7",
+      "name": "CORTADO - Signed Proxy File Written Exec",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nSigned Proxy File Written Exec\n\nExpected detections:\n  - Endpoint: Execution from Unusual Directory\n  - Endpoint: Binary Masquerading via Untrusted Path\n  - Endpoint: Execution of a File Written by a Signed Binary Proxy\n  - Endpoint: Script Execution via Microsoft HTML Application\n  - Endpoint: Suspicious Windows Script Interpreter Child Process\n\nATT&CK: T1218, T1036, T1055, T1105, T1059\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1218",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Signed Proxy File Written Exec\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: signed_proxy_file_written_exec (module=cortado.rtas.signed_proxy_file_written_exec)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.signed_proxy_file_written_exec\" \\\n  --rta \"signed_proxy_file_written_exec\" \\\n  --rta-id \"cbed76ce-a373-4bc5-b1b3-f5330de18cc7\" \\\n  --techniques \"T1218,T1036,T1055,T1105,T1059\" \\\n  --endpoint-rules '[{\"id\":\"16c84e67-e5e7-44ff-aefa-4d771bcafc0c\",\"name\":\"Execution from Unusual Directory\"},{\"id\":\"35dedf0c-8db6-4d70-b2dc-a133b808211f\",\"name\":\"Binary Masquerading via Untrusted Path\"},{\"id\":\"ccbc4a79-3bae-4623-aaef-e28a96bf538b\",\"name\":\"Execution of a File Written by a Signed Binary Proxy\"},{\"id\":\"f0630213-c4c4-4898-9514-746395eb9962\",\"name\":\"Script Execution via Microsoft HTML Application\"},{\"id\":\"83da4fac-563a-4af8-8f32-5a3797a9068e\",\"name\":\"Suspicious Windows Script Interpreter Child Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.signed_proxy_file_written_exec",
+        "source_path": "signed_proxy_file_written_exec.py",
+        "rta_id": "cbed76ce-a373-4bc5-b1b3-f5330de18cc7",
+        "rta_name": "signed_proxy_file_written_exec",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1218",
+          "T1036",
+          "T1055",
+          "T1105",
+          "T1059"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "execution",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "16c84e67-e5e7-44ff-aefa-4d771bcafc0c",
+            "name": "Execution from Unusual Directory"
+          },
+          {
+            "id": "35dedf0c-8db6-4d70-b2dc-a133b808211f",
+            "name": "Binary Masquerading via Untrusted Path"
+          },
+          {
+            "id": "ccbc4a79-3bae-4623-aaef-e28a96bf538b",
+            "name": "Execution of a File Written by a Signed Binary Proxy"
+          },
+          {
+            "id": "f0630213-c4c4-4898-9514-746395eb9962",
+            "name": "Script Execution via Microsoft HTML Application"
+          },
+          {
+            "id": "83da4fac-563a-4af8-8f32-5a3797a9068e",
+            "name": "Suspicious Windows Script Interpreter Child Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:900e2180-6eea-47cb-9960-fcd2156d54bd",
+      "name": "CORTADO - Vsingle Malware",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nVsingle Malware\n\nExpected detections:\n  - Endpoint: Potential VSingle Malware Infection\n\nATT&CK: T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1071",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Vsingle Malware\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: vsingle_malware (module=cortado.rtas.vsingle_malware)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.vsingle_malware\" \\\n  --rta \"vsingle_malware\" \\\n  --rta-id \"900e2180-6eea-47cb-9960-fcd2156d54bd\" \\\n  --techniques \"T1071\" \\\n  --endpoint-rules '[{\"id\":\"fa59e598-8adc-4798-af82-9f878934d975\",\"name\":\"Potential VSingle Malware Infection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.vsingle_malware",
+        "source_path": "vsingle_malware.py",
+        "rta_id": "900e2180-6eea-47cb-9960-fcd2156d54bd",
+        "rta_name": "vsingle_malware",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "fa59e598-8adc-4798-af82-9f878934d975",
+            "name": "Potential VSingle Malware Infection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:b7a7d246-b1ef-4d08-85ce-92e1cfc18520",
+      "name": "CORTADO - Webservice Lolbas",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nWebservice Lolbas\n\nExpected detections:\n  - Endpoint: External IP Address Discovery via a Trusted Program\n  - Endpoint: Connection to WebService by a Signed Binary Proxy\n\nATT&CK: T1102, T1218, T1016, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1102",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Webservice Lolbas\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: webservice_lolbas (module=cortado.rtas.webservice_lolbas)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.webservice_lolbas\" \\\n  --rta \"webservice_lolbas\" \\\n  --rta-id \"b7a7d246-b1ef-4d08-85ce-92e1cfc18520\" \\\n  --techniques \"T1102,T1218,T1016,T1071\" \\\n  --endpoint-rules '[{\"id\":\"51894221-7657-4b56-9406-e080e19ad159\",\"name\":\"External IP Address Discovery via a Trusted Program\"},{\"id\":\"c567240c-445b-4000-9612-b5531e21e050\",\"name\":\"Connection to WebService by a Signed Binary Proxy\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.webservice_lolbas",
+        "source_path": "webservice_lolbas.py",
+        "rta_id": "b7a7d246-b1ef-4d08-85ce-92e1cfc18520",
+        "rta_name": "webservice_lolbas",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1102",
+          "T1218",
+          "T1016",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control",
+          "defense-evasion",
+          "discovery"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "51894221-7657-4b56-9406-e080e19ad159",
+            "name": "External IP Address Discovery via a Trusted Program"
+          },
+          {
+            "id": "c567240c-445b-4000-9612-b5531e21e050",
+            "name": "Connection to WebService by a Signed Binary Proxy"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:049f1e5e-99a9-4a0f-afac-b7b41b96ed12",
+      "name": "CORTADO - Webservice Unsigned",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nWebservice Unsigned\n\nExpected detections:\n  - Endpoint: Connection to WebService by an Unsigned Binary\n\nATT&CK: T1102, T1071\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Command and Control",
+      "tcode": "T1102",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Webservice Unsigned\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: webservice_unsigned (module=cortado.rtas.webservice_unsigned)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.webservice_unsigned\" \\\n  --rta \"webservice_unsigned\" \\\n  --rta-id \"049f1e5e-99a9-4a0f-afac-b7b41b96ed12\" \\\n  --techniques \"T1102,T1071\" \\\n  --endpoint-rules '[{\"id\":\"2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4\",\"name\":\"Connection to WebService by an Unsigned Binary\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.webservice_unsigned",
+        "source_path": "webservice_unsigned.py",
+        "rta_id": "049f1e5e-99a9-4a0f-afac-b7b41b96ed12",
+        "rta_name": "webservice_unsigned",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1102",
+          "T1071"
+        ],
+        "mitre_tactics": [
+          "command-and-control"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4",
+            "name": "Connection to WebService by an Unsigned Binary"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}

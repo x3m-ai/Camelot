@@ -26,7 +26,8 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [ICS-SCADA-Fuzzer](#9-ics-scada-fuzzer) | 5 | 120 | 0 | ICS ATT&CK |
 | [ANSSI FuzzySully](#10-anssi-fuzzysully) | 7 | 79 | 0 | ICS ATT&CK |
 | [Stratus Red Team](#11-stratus-red-team) | 30 | 93 | 0 | Enterprise ATT&CK |
-| **Total** | **254** | **26 416** | **2 121** | |
+| [Elastic Cortado](#12-elastic-cortado) | 13 | 698 | 0 | Enterprise ATT&CK |
+| **Total** | **267** | **27 114** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
 
@@ -402,6 +403,41 @@ Morgana executes the official Stratus binary using an isolated `MORGANA_TEST_ID`
 - Warmup can take 1–5 minutes for Terraform-based infrastructure setup
 
 See the [Stratus README](cloud/stratus/README.md) for full details.
+
+---
+
+## 12. Elastic Cortado
+
+Red Team Automations (RTA) from [elastic/cortado](https://github.com/elastic/cortado) — the centralized Elastic detection validation library. Each RTA generates controlled suspicious behavior designed to trigger specific Elastic Endpoint and SIEM detection rules.
+
+| Package | ATT&CK Tactic | Scripts |
+|---|---|---|
+| `cortado-defense-evasion-v1` | Defense Evasion | 210 |
+| `cortado-unmapped-v1` | Unmapped / Detection-specific | 124 |
+| `cortado-persistence-v1` | Persistence | 61 |
+| `cortado-command-and-control-v1` | Command and Control | 59 |
+| `cortado-execution-v1` | Execution | 55 |
+| `cortado-credential-access-v1` | Credential Access | 41 |
+| `cortado-initial-access-v1` | Initial Access | 25 |
+| `cortado-lateral-movement-v1` | Lateral Movement | 16 |
+| `cortado-discovery-v1` | Discovery | 13 |
+| `cortado-impact-v1` | Impact | 11 |
+| `cortado-exfiltration-v1` | Exfiltration | 2 |
+| `cortado-collection-v1` | Collection | 1 |
+| `cortado-sample-backed-v1` | Sample-backed RTAs (HashRTA) | 80 |
+
+**CodeRTA (618 scripts):** Executable Python behaviors. Require Python 3.12+ and the Cortado wheel on the Agent.  
+**HashRTA (80 scripts):** Sample-backed records. Reference external sample hashes; preserved as manual records.
+
+**Source:** [elastic/cortado](https://github.com/elastic/cortado) @ `dev-release-0.1.0+f1dd8bc1` (`f1dd8bc`)  
+**License:** Elastic License 2.0  
+**ATT&CK Domain:** Enterprise ATT&CK  
+**Execution Platforms:** Windows, Linux, macOS  
+**Prerequisite:** Python 3.12+, Cortado wheel asset on Agent (no manual `pip install`)
+
+**Detection metadata:** Every script carries `expected_endpoint_rules` and `expected_siem_rules` — exact Elastic rule names and UUIDs for Detection Fabric correlation.
+
+See the [Cortado README](detection/cortado/README.md) for full details.
 
 ---
 

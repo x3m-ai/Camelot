@@ -25,7 +25,8 @@ Excalibur packages are professionally crafted attack script collections covering
 | [ICS-SCADA-Fuzzer](ot/fuzzing/ics-scada-fuzzer/) | 5 | 120 | 0 |
 | [ANSSI FuzzySully](ot/fuzzing/fuzzysully/) | 7 | 79 | 0 |
 | [Stratus Red Team](cloud/stratus/) | 30 | 93 | 0 |
-| **Total** | **254** | **26 416** | **2 121** |
+| [Elastic Cortado](detection/cortado/) | 13 | 698 | 0 |
+| **Total** | **267** | **27 114** | **2 121** |
 
 Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 
