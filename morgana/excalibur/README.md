@@ -4,17 +4,27 @@ Excalibur is the certified adversary emulation script library for the **Morgana 
 
 Excalibur packages are professionally crafted attack script collections covering real-world MITRE ATT&CK tactics and techniques. Each package targets a specific platform, identity domain, or detection surface and is designed for authorised Purple Team and Red Team exercises — including adversary emulation, kill chain execution, and detection validation against enterprise security controls (Microsoft Sentinel, Defender for Endpoint, and others).
 
+> **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 224 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
+
 > **Access notice:** Excalibur packages run inside Morgana, which is a controlled-distribution platform. To use Excalibur packs for Red Team or Purple Team operations, you must have authorised access to Morgana. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
 
 ---
 
 ## Available Packages
 
-| Category | Source | Purpose |
-|---|---|---|
-| Excalibur | X3M.AI | Curated Morgana-native adversary emulation packs |
-| [Atomic Red Team](art/) | Red Canary | Atomic tests converted to Morgana pack JSON |
-| [MITRE CALDERA Stockpile](stockpile/) | MITRE | Command-based Stockpile abilities converted to Morgana pack JSON |
+| Provider | Packages | Scripts | Chains |
+|---|---|---|---|
+| X3M.AI Excalibur | 2 | 26 | 24 |
+| [Red Canary — Atomic Red Team](art/) | 13 | 1 603 | 1 616 |
+| [MITRE CALDERA Stockpile](stockpile/) | 11 | 221 | 231 |
+| [MITRE CTID](ctid/) | 24 | 398 | 27 |
+| [LOLBAS & GTFOBins](lotl/) | 49 | 4 057 | 0 |
+| [LOLDrivers](loldrivers/) | 58 | 18 766 | 0 |
+| [Frida Mobile](mobile/frida/) | 40 | 830 | 0 |
+| [MITRE CALDERA OT](ot/) | 15 | 223 | 223 |
+| [ICS-SCADA-Fuzzer](ot/fuzzing/ics-scada-fuzzer/) | 5 | 120 | 0 |
+| [ANSSI FuzzySully](ot/fuzzing/fuzzysully/) | 7 | 79 | 0 |
+| **Total** | **224** | **26 323** | **2 121** |
 
 Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 
@@ -60,29 +70,6 @@ Once the package is imported in Morgana, open Merlino in Excel:
 - **Test environment only** — never run against production identity infrastructure
 - Global Administrator or equivalent test role required
 
-### Detection Rules Covered
+### Detection Coverage
 
-All 22 chains map 1:1 to Microsoft Sentinel Entra ID analytics rules (`ACN-ST-EntraID-*`):
-
-- ACN-ST-EntraID-Attempts to sign in to disabled accounts
-- ACN-ST-EntraID-Brute force attack against Azure Portal
-- ACN-ST-EntraID-Bulk changes to privileged account permissions
-- ACN-ST-EntraID-Credential added to Service Principal
-- ACN-ST-EntraID-Distributed Password cracking attempts in AzureAD
-- ACN-ST-EntraID-ExplicitMFADeny
-- ACN-ST-EntraID-FailedLogonToAzurePortal
-- ACN-ST-EntraID-GuestAccountInvite
-- ACN-ST-EntraID-Impossible travel activity
-- ACN-ST-EntraID-Mail.Read Permissions Granted to Application
-- ACN-ST-EntraID-MaliciousOAuthApp
-- ACN-ST-EntraID-Multi-Factor Authentication Disabled
-- ACN-ST-EntraID-Multiple admin membership removals from newly created admin
-- ACN-ST-EntraID-NRT PIM Elevation Request Rejected
-- ACN-ST-EntraID-New access credential added to Application or Service Principal
-- ACN-ST-EntraID-New Admin account activity seen which was never seen before
-- ACN-ST-EntraID-Password spray attack against Azure AD application
-- ACN-ST-EntraID-Privileged Role Assigned Outside PIM
-- ACN-ST-EntraID-Sign-ins from IPs that attempt sign-ins to disabled accounts
-- ACN-ST-EntraID-Suspicious application consent similar to O365 Attack Toolkit
-- ACN-ST-EntraID-Suspicious application consent similar to PwnAuth
-- ACN-ST-EntraID-Suspicious granting of permissions to an account
+All 22 chains map 1:1 to Microsoft Sentinel Entra ID analytics rules. Chains are named with the `Excalibur-EntraID-*` prefix to match their corresponding detection rule names.

@@ -724,6 +724,8 @@ Excalibur is Morgana's native Script library and package format. Morgana does no
 
 The public catalog also contains community packs converted from Red Canary Atomic Red Team and MITRE CALDERA Stockpile source material. They appear in separate **Atomic Red Team (Red Canary)** and **MITRE CALDERA Stockpile** categories, but Morgana installs and runs both through the same source-agnostic Excalibur package importer. CALDERA and Atomic Red Team are not runtime dependencies. Treat community content as unverified until reviewed in your lab.
 
+> **Full package reference:** [Excalibur Packages](https://github.com/x3m-ai/Camelot/blob/main/morgana/excalibur/PACKAGES.md) — complete catalog of all 224 packages including providers, script/chain counts, prerequisites, ATT&CK coverage, execution platforms, target environments, and source references.
+
 ### 10.1 Refresh the catalog
 
 1. Open **Scripts**.
