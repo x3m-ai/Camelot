@@ -1,0 +1,444 @@
+{
+  "package_id": "stratus-aws-impact-v1",
+  "package_name": "Stratus Red Team — AWS / Impact",
+  "version": "1.0.0",
+  "summary": "5 Stratus Red Team cloud adversary-emulation techniques for AWS Impact.",
+  "description": "Stratus Red Team cloud adversary-emulation techniques for AWS targeting the Impact tactic. Each script invokes the official Stratus binary using an isolated Morgana correlation ID for Detection Fabric correlation. Prerequisite cloud infrastructure is managed by Stratus warmup. Cleanup is performed via the separate cleanup_command using the same correlation ID.",
+  "purpose": "Validate AWS Impact detection rules, SIEM alerts, and SOC workflows in an authorized cloud sandbox.",
+  "capabilities": [
+    "5 Stratus Red Team techniques for AWS Impact.",
+    "Official Stratus binary execution — no custom attack code.",
+    "Morgana Test ID used as Stratus correlation ID for Detection Fabric correlation.",
+    "Separate detonate + cleanup lifecycle with state preservation."
+  ],
+  "use_cases": [
+    "Validate AWS Impact detection in an authorized cloud sandbox.",
+    "Exercise SIEM, CSPM, cloud-native detection, and SOC workflows with real cloud API activity.",
+    "Confirm detection rules fire on real technique execution before incident response exercises."
+  ],
+  "prerequisites": [
+    "AWS credentials configured on the Agent (AWS_ACCESS_KEY_ID/SECRET, AWS_PROFILE, or IAM instance profile).",
+    "IAM permissions appropriate for the techniques being tested.",
+    "Authorized test AWS account — never run against production workloads."
+  ],
+  "safety_notes": [
+    "Stratus Red Team is designed for authorized sandbox cloud environments only.",
+    "Never execute against production cloud accounts, subscriptions, or clusters.",
+    "Some techniques create real cloud resources that incur cost — always run cleanup after detonation.",
+    "Warmup may take 1–5 minutes for Terraform-based infrastructure setup.",
+    "Cleanup uses the same correlation ID; ensure MORGANA_TEST_ID matches the detonation Test."
+  ],
+  "author": "Datadog / Stratus Red Team",
+  "created": "2026-08-29",
+  "provider": "stratus-red-team",
+  "source": "stratus-red-team",
+  "source_repository": "https://github.com/DataDog/stratus-red-team",
+  "source_release": "v2.36.0",
+  "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://stratus-red-team.cloud/",
+  "mitre_domain": "enterprise-attack",
+  "source_attack_version": "v14",
+  "mitre_tactic": "Impact",
+  "mitre_tactics": [
+    "Impact"
+  ],
+  "mitre_tcodes": [],
+  "platform": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "category": "cloud/stratus/aws",
+  "cloud_platform": "aws",
+  "specialties": [
+    "cloud",
+    "cloud-adversary-emulation",
+    "aws",
+    "detection-validation"
+  ],
+  "package_types": [
+    "atomic-tests"
+  ],
+  "execution_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "target_environments": [
+    "cloud",
+    "aws"
+  ],
+  "risk_badges": [
+    "disrupt"
+  ],
+  "runtime_case_generator": false,
+  "auth_requirements": {
+    "note": "AWS — credential chain (env vars, profile, or IAM role)",
+    "secrets_embedded": false
+  },
+  "tag_categories": [
+    {
+      "category_id": "stratus_cloud",
+      "label": "Cloud Emulation — Stratus",
+      "description": "Cloud sandbox authentication context, region, and execution bounds for Stratus Red Team techniques.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "stratus_aws_profile",
+          "label": "AWS Profile",
+          "description": "AWS named profile from ~/.aws/credentials. Leave blank to use default credential chain.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_aws_region",
+          "label": "AWS Region",
+          "description": "AWS region for technique execution (e.g. us-east-1).",
+          "default": "us-east-1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_azure_subscription",
+          "label": "Azure Subscription ID",
+          "description": "Azure subscription ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_gcp_project",
+          "label": "GCP Project ID",
+          "description": "GCP project ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_kube_context",
+          "label": "Kubernetes Context",
+          "description": "kubectl context name for Kubernetes techniques. Leave blank for current context.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_force",
+          "label": "Force Detonate",
+          "description": "Pass --force to skip idempotency check (true/false).",
+          "default": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "stratus_linux_amd64",
+      "name": "stratus-linux-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_x86_64.tar.gz",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_x86_64.tar.gz",
+      "sha256": "66c1eeb7f61453ec8fc3d0ae67cdd8d4794887b2d27b950ccbe4b2030ff55757",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_linux_arm64",
+      "name": "stratus-linux-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_arm64.tar.gz",
+      "platform": "linux",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_arm64.tar.gz",
+      "sha256": "c7c8f19f8bef20d30b6653a5dea9be14f3f5f387c837b986c9eea91de1f5b97a",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_amd64",
+      "name": "stratus-windows-amd64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_x86_64.tar.gz",
+      "platform": "windows",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_x86_64.tar.gz",
+      "sha256": "c2863b6e58298ad86181fa6946635e798b282774b833bb10dfc4afa681444467",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_arm64",
+      "name": "stratus-windows-arm64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_arm64.tar.gz",
+      "platform": "windows",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_arm64.tar.gz",
+      "sha256": "24117655432e50888f26faf66fc04bb235662d71d01f9e9b8e79336fa4d745bf",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_amd64",
+      "name": "stratus-macos-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_x86_64.tar.gz",
+      "platform": "macos",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_x86_64.tar.gz",
+      "sha256": "7b149728ff5b4b9abe07ef6e1774128b476aeb02e1c26252ec4436d04df12032",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_arm64",
+      "name": "stratus-macos-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_arm64.tar.gz",
+      "platform": "macos",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_arm64.tar.gz",
+      "sha256": "937f0d457186fae56de4027bcaf2cbc26a84d93a39fef82a3809d7c00a1b70cd",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "stratus:aws.impact.bedrock-invoke-model",
+      "name": "STRATUS - AWS - Invoke Bedrock Model",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nInvoke Bedrock Model\n\nSimulates an attacker enumerating Bedrock models and then invoking the\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Invoke Bedrock Model\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.impact.bedrock-invoke-model\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.impact.bedrock-invoke-model\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.impact.bedrock-invoke-model\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.impact.bedrock-invoke-model\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.impact.bedrock-invoke-model\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.impact.bedrock-invoke-model\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.impact.bedrock-invoke-model",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": false,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": ""
+      }
+    },
+    {
+      "id": "stratus:aws.impact.ec2-deregister-ami",
+      "name": "STRATUS - AWS - Deregister an Amazon EC2 AMI",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nDeregister an Amazon EC2 AMI\n\nDeregisters an EBS-backed AMI. Once deregistered, the AMI can no longer be used to launch new EC2 instances, disrupting recovery, deployment, autoscaling or replacement workflows that depend on it. Warm-up: - Create an EBS volume - Create a snapshot from the volume - Register an EBS-backed AMI from the snapshot Detonation: - Call DeregisterImage on the AMI References: - https://aws.amazon.com/blogs/security/what-the-march-2026-threat-technique-catalog-update-means-for-your-aws-environment/ - htt\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Deregister an Amazon EC2 AMI\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.impact.ec2-deregister-ami\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.impact.ec2-deregister-ami\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.impact.ec2-deregister-ami\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.impact.ec2-deregister-ami\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.impact.ec2-deregister-ami\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.impact.ec2-deregister-ami\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.impact.ec2-deregister-ami",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's DeregisterImage event, when an AMI is deregistered: \"eventSource\": \"ec2.amazonaws.com\", \"eventName\": \"DeregisterImage\", \"requestParameters\": { \"imageId\": \"ami-0b87ea1d007078d18\", \"deleteAssociatedSnapshots\": false }"
+      }
+    },
+    {
+      "id": "stratus:aws.impact.s3-ransomware-batch-deletion",
+      "name": "STRATUS - AWS - S3 Ransomware through batch file deletion",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nS3 Ransomware through batch file deletion\n\nSimulates S3 ransomware activity that empties a bucket through batch deletion, then uploads a ransom note. Warm-up: - Create an S3 bucket, with versioning enabled - Create a number of files in the bucket, with random content and extensions Detonation: - List all available objects and their versions in the bucket - Delete all objects in the bucket in one request, using [DeleteObjects](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html) - Upload a ransom note to the bucket Note\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — S3 Ransomware through batch file deletion\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.impact.s3-ransomware-batch-deletion\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.impact.s3-ransomware-batch-deletion\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.impact.s3-ransomware-batch-deletion\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.impact.s3-ransomware-batch-deletion\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.impact.s3-ransomware-batch-deletion\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.impact.s3-ransomware-batch-deletion\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.impact.s3-ransomware-batch-deletion",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of objects being downloaded or deleted in the bucket. In general, this can be done through [CloudTrail S3 data events](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html#cloudtrail-object-level-tracking) (DeleteObject, DeleteObjects, GetObject), [CloudWatch metrics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html#s3-request-cloudwatch-metrics) (NumberOfObjects), or [GuardDuty findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html) ([Exfiltration:S3/AnomalousBehavior](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#exfiltration-s3-anomalousbehavior), [Impact:S3/AnomalousBehavior.Delete](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#impact-s3-anomalousbehavior-delete)). Sample DeleteObjects event, shortened for readability:"
+      }
+    },
+    {
+      "id": "stratus:aws.impact.s3-ransomware-client-side-encryption",
+      "name": "STRATUS - AWS - S3 Ransomware through client-side encryption",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nS3 Ransomware through client-side encryption\n\nSimulates S3 ransomware activity that encrypts files in a bucket with a static key, through S3 [client-side encryption](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html) feature. Warm-up: - Create an S3 bucket - Create a number of files in the bucket, with random content and extensions Detonation: - List all objects in the bucket - Overwrite every file in the bucket with an encrypted version, using [S3 client-side encryption](https://docs.aws.amazon.com/Amazon\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — S3 Ransomware through client-side encryption\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.impact.s3-ransomware-client-side-encryption\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.impact.s3-ransomware-client-side-encryption\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.impact.s3-ransomware-client-side-encryption\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.impact.s3-ransomware-client-side-encryption\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.impact.s3-ransomware-client-side-encryption\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.impact.s3-ransomware-client-side-encryption\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.impact.s3-ransomware-client-side-encryption",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of objects being downloaded or deleted in the bucket. In general, this can be done through [CloudTrail S3 data events](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html#cloudtrail-object-level-tracking) (DeleteObject, DeleteObjects, GetObject, CopyObject), [CloudWatch metrics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html#s3-request-cloudwatch-metrics) (NumberOfObjects), or [GuardDuty findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html) ([Exfiltration:S3/AnomalousBehavior](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#exfiltration-s3-anomalousbehavior), [Impact:S3/AnomalousBehavior.Delete](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#impact-s3-anomalousbehavior-delete)). Sample CloudTrail event CopyObject, when a file is encrypted with a client-side key:"
+      }
+    },
+    {
+      "id": "stratus:aws.impact.s3-ransomware-individual-deletion",
+      "name": "STRATUS - AWS - S3 Ransomware through individual file deletion",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nS3 Ransomware through individual file deletion\n\nSimulates S3 ransomware activity that empties a bucket through individual file deletion, then uploads a ransom note. Warm-up: - Create an S3 bucket, with versioning enabled - Create a number of files in the bucket, with random content and extensions Detonation: - List all available objects and their versions in the bucket - Delete all objects in the bucket one by one, using [DeleteObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html) - Upload a ransom note to the bucket \n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Impact",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — S3 Ransomware through individual file deletion\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.impact.s3-ransomware-individual-deletion\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.impact.s3-ransomware-individual-deletion\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.impact.s3-ransomware-individual-deletion\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.impact.s3-ransomware-individual-deletion\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.impact.s3-ransomware-individual-deletion\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.impact.s3-ransomware-individual-deletion\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.impact.s3-ransomware-individual-deletion",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Impact"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "You can detect ransomware activity by identifying abnormal patterns of objects being downloaded or deleted in the bucket. In general, this can be done through [CloudTrail S3 data events](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html#cloudtrail-object-level-tracking) (DeleteObject, DeleteObjects, GetObject), [CloudWatch metrics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html#s3-request-cloudwatch-metrics) (NumberOfObjects), or [GuardDuty findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html) ([Exfiltration:S3/AnomalousBehavior](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#exfiltration-s3-anomalousbehavior), [Impact:S3/AnomalousBehavior.Delete](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-s3.html#impact-s3-anomalousbehavior-delete)). Sample CloudTrail event DeleteObject, shortened for readability:"
+      }
+    }
+  ],
+  "chains": []
+}

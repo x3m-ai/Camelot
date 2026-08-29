@@ -1,0 +1,655 @@
+{
+  "package_id": "stratus-aws-persistence-v1",
+  "package_name": "Stratus Red Team — AWS / Persistence",
+  "version": "1.0.0",
+  "summary": "10 Stratus Red Team cloud adversary-emulation techniques for AWS Persistence.",
+  "description": "Stratus Red Team cloud adversary-emulation techniques for AWS targeting the Persistence tactic. Each script invokes the official Stratus binary using an isolated Morgana correlation ID for Detection Fabric correlation. Prerequisite cloud infrastructure is managed by Stratus warmup. Cleanup is performed via the separate cleanup_command using the same correlation ID.",
+  "purpose": "Validate AWS Persistence detection rules, SIEM alerts, and SOC workflows in an authorized cloud sandbox.",
+  "capabilities": [
+    "10 Stratus Red Team techniques for AWS Persistence.",
+    "Official Stratus binary execution — no custom attack code.",
+    "Morgana Test ID used as Stratus correlation ID for Detection Fabric correlation.",
+    "Separate detonate + cleanup lifecycle with state preservation."
+  ],
+  "use_cases": [
+    "Validate AWS Persistence detection in an authorized cloud sandbox.",
+    "Exercise SIEM, CSPM, cloud-native detection, and SOC workflows with real cloud API activity.",
+    "Confirm detection rules fire on real technique execution before incident response exercises."
+  ],
+  "prerequisites": [
+    "AWS credentials configured on the Agent (AWS_ACCESS_KEY_ID/SECRET, AWS_PROFILE, or IAM instance profile).",
+    "IAM permissions appropriate for the techniques being tested.",
+    "Authorized test AWS account — never run against production workloads."
+  ],
+  "safety_notes": [
+    "Stratus Red Team is designed for authorized sandbox cloud environments only.",
+    "Never execute against production cloud accounts, subscriptions, or clusters.",
+    "Some techniques create real cloud resources that incur cost — always run cleanup after detonation.",
+    "Warmup may take 1–5 minutes for Terraform-based infrastructure setup.",
+    "Cleanup uses the same correlation ID; ensure MORGANA_TEST_ID matches the detonation Test."
+  ],
+  "author": "Datadog / Stratus Red Team",
+  "created": "2026-08-29",
+  "provider": "stratus-red-team",
+  "source": "stratus-red-team",
+  "source_repository": "https://github.com/DataDog/stratus-red-team",
+  "source_release": "v2.36.0",
+  "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+  "source_license": "Apache-2.0",
+  "documentation_url": "https://stratus-red-team.cloud/",
+  "mitre_domain": "enterprise-attack",
+  "source_attack_version": "v14",
+  "mitre_tactic": "Persistence",
+  "mitre_tactics": [
+    "Persistence",
+    "Privilege Escalation"
+  ],
+  "mitre_tcodes": [],
+  "platform": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "category": "cloud/stratus/aws",
+  "cloud_platform": "aws",
+  "specialties": [
+    "cloud",
+    "cloud-adversary-emulation",
+    "aws",
+    "detection-validation"
+  ],
+  "package_types": [
+    "atomic-tests"
+  ],
+  "execution_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "target_environments": [
+    "cloud",
+    "aws"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "runtime_case_generator": false,
+  "auth_requirements": {
+    "note": "AWS — credential chain (env vars, profile, or IAM role)",
+    "secrets_embedded": false
+  },
+  "tag_categories": [
+    {
+      "category_id": "stratus_cloud",
+      "label": "Cloud Emulation — Stratus",
+      "description": "Cloud sandbox authentication context, region, and execution bounds for Stratus Red Team techniques.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "stratus_aws_profile",
+          "label": "AWS Profile",
+          "description": "AWS named profile from ~/.aws/credentials. Leave blank to use default credential chain.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_aws_region",
+          "label": "AWS Region",
+          "description": "AWS region for technique execution (e.g. us-east-1).",
+          "default": "us-east-1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_azure_subscription",
+          "label": "Azure Subscription ID",
+          "description": "Azure subscription ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_gcp_project",
+          "label": "GCP Project ID",
+          "description": "GCP project ID for technique execution.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_kube_context",
+          "label": "Kubernetes Context",
+          "description": "kubectl context name for Kubernetes techniques. Leave blank for current context.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "stratus_force",
+          "label": "Force Detonate",
+          "description": "Pass --force to skip idempotency check (true/false).",
+          "default": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "stratus_linux_amd64",
+      "name": "stratus-linux-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_x86_64.tar.gz",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_x86_64.tar.gz",
+      "sha256": "66c1eeb7f61453ec8fc3d0ae67cdd8d4794887b2d27b950ccbe4b2030ff55757",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_linux_arm64",
+      "name": "stratus-linux-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Linux_arm64.tar.gz",
+      "platform": "linux",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Linux_arm64.tar.gz",
+      "sha256": "c7c8f19f8bef20d30b6653a5dea9be14f3f5f387c837b986c9eea91de1f5b97a",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_amd64",
+      "name": "stratus-windows-amd64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_x86_64.tar.gz",
+      "platform": "windows",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_x86_64.tar.gz",
+      "sha256": "c2863b6e58298ad86181fa6946635e798b282774b833bb10dfc4afa681444467",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_windows_arm64",
+      "name": "stratus-windows-arm64",
+      "filename": "stratus.exe",
+      "archive": "stratus-red-team_Windows_arm64.tar.gz",
+      "platform": "windows",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Windows_arm64.tar.gz",
+      "sha256": "24117655432e50888f26faf66fc04bb235662d71d01f9e9b8e79336fa4d745bf",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_amd64",
+      "name": "stratus-macos-amd64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_x86_64.tar.gz",
+      "platform": "macos",
+      "architecture": "amd64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_x86_64.tar.gz",
+      "sha256": "7b149728ff5b4b9abe07ef6e1774128b476aeb02e1c26252ec4436d04df12032",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    },
+    {
+      "id": "stratus_macos_arm64",
+      "name": "stratus-macos-arm64",
+      "filename": "stratus",
+      "archive": "stratus-red-team_Darwin_arm64.tar.gz",
+      "platform": "macos",
+      "architecture": "arm64",
+      "url": "https://github.com/DataDog/stratus-red-team/releases/download/v2.36.0/stratus-red-team_Darwin_arm64.tar.gz",
+      "sha256": "937f0d457186fae56de4027bcaf2cbc26a84d93a39fef82a3809d7c00a1b70cd",
+      "executable": true,
+      "source": "DataDog/stratus-red-team",
+      "release": "v2.36.0",
+      "license": "Apache-2.0",
+      "source_commit": "21c8fef54e8ce35dfb467992d3cd488802c29a65"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "stratus:aws.persistence.iam-backdoor-role",
+      "name": "STRATUS - AWS - Backdoor an IAM Role",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nBackdoor an IAM Role\n\nEstablishes persistence by backdooring an existing IAM role, allowing it to be assumed from an external AWS account. Warm-up: - Create an IAM role Detonation: - Update the assume role policy of the IAM role to backdoor it, making it accessible from an external, fictitious AWS account:\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Backdoor an IAM Role\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.iam-backdoor-role\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.iam-backdoor-role\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.iam-backdoor-role\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.iam-backdoor-role\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.iam-backdoor-role\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.iam-backdoor-role\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.iam-backdoor-role",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "- Using CloudTrail's UpdateAssumeRolePolicy event - Through [IAM Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html#access-analyzer-iam-role), which generates a finding when a role can be assumed from a new AWS account or publicly."
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.iam-backdoor-user",
+      "name": "STRATUS - AWS - Create an Access Key on an IAM User",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nCreate an Access Key on an IAM User\n\nEstablishes persistence by creating an access key on an existing IAM user. Warm-up: - Create an IAM user Detonation: - Create an IAM access key on the user References: - https://sysdig.com/blog/scarleteel-2-0/ - https://permiso.io/blog/lucr-3-scattered-spider-getting-saas-y-in-the-cloud\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create an Access Key on an IAM User\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.iam-backdoor-user\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.iam-backdoor-user\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.iam-backdoor-user\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.iam-backdoor-user\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.iam-backdoor-user\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.iam-backdoor-user\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.iam-backdoor-user",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's CreateAccessKey event. This event can hardly be considered suspicious by itself, unless correlated with other indicators. '"
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.iam-create-admin-user",
+      "name": "STRATUS - AWS - Create an administrative IAM User",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nCreate an administrative IAM User\n\nEstablishes persistence by creating a new IAM user with administrative permissions. Warm-up: None. Detonation: - Create the IAM user and attach the 'AdministratorAccess' managed IAM policy to it References: - https://permiso.io/blog/s/approach-to-detection-androxgh0st-greenbot-persistence/ - https://permiso.io/blog/s/unmasking-guivil-new-cloud-threat-actor/ - https://blog.darklab.hk/2021/07/06/trouble-in-paradise/ - https://expel.com/blog/incident-report-from-cli-to-console-chasing-an-attacker-i\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create an administrative IAM User\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.iam-create-admin-user\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.iam-create-admin-user\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.iam-create-admin-user\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.iam-create-admin-user\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.iam-create-admin-user\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.iam-create-admin-user\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.iam-create-admin-user",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": false,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's CreateUser, AttachUserPolicy and CreateAccessKey events. While matching on these events may be impractical and prone to false positives in most environments, the following can help to craft more precise detections: - Identify a call to CreateUser closely followed by AttachUserPolicy with an administrator policy - Identify a call to CreateUser resulting in an access denied error"
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.iam-create-backdoor-role",
+      "name": "STRATUS - AWS - Create a backdoored IAM Role",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nCreate a backdoored IAM Role\n\nEstablishes persistence by creating a new backdoor role with a trust policy allowing it to be assumed from an external, fictitious attack AWS account. Warm-up: None. Detonation: - Create a new IAM role with the following trust policy:\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create a backdoored IAM Role\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.iam-create-backdoor-role\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.iam-create-backdoor-role\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.iam-create-backdoor-role\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.iam-create-backdoor-role\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.iam-create-backdoor-role\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.iam-create-backdoor-role\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.iam-create-backdoor-role",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": false,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "- Through [IAM Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html#access-analyzer-iam-role), which generates a finding when a role can be assumed from a new AWS account or publicly. - Identify a call to CreateRole closely followed by AttachRolePolicy with an administrator policy - Identify a call to CreateRole that contains an assumeRolePolicyDocument in the requestParameters that allows access from an external AWS account. Sample event:"
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.iam-create-user-login-profile",
+      "name": "STRATUS - AWS - Create a Login Profile on an IAM User",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nCreate a Login Profile on an IAM User\n\nEstablishes persistence by creating a Login Profile on an existing IAM user. This allows an attacker to access an IAM user intended to be used programmatically through the AWS console usual login process. Warm-up: - Create an IAM user Detonation: - Create an IAM Login Profile on the user References: - https://securitylabs.datadoghq.com/articles/tales-from-the-cloud-trenches-ecs-crypto-mining/ - https://permiso.io/blog/s/approach-to-detection-androxgh0st-greenbot-persistence/ - https://permiso.io\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create a Login Profile on an IAM User\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.iam-create-user-login-profile\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.iam-create-user-login-profile\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.iam-create-user-login-profile\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.iam-create-user-login-profile\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.iam-create-user-login-profile\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.iam-create-user-login-profile\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.iam-create-user-login-profile",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's CreateLoginProfile or UpdateLoginProfile events. In particular, it's suspicious when these events occur on IAM users intended to be used programmatically."
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.lambda-backdoor-function",
+      "name": "STRATUS - AWS - Backdoor Lambda Function Through Resource-Based Policy",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nBackdoor Lambda Function Through Resource-Based Policy\n\nEstablishes persistence by backdooring a lambda function to allow its invocation from an external AWS account. Warm-up: - Create a Lambda function Detonation: - Modify the Lambda function resource-base policy to allow lambda:InvokeFunction from an external, fictitious AWS account References: - https://unit42.paloaltonetworks.com/large-scale-cloud-extortion-operation/\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Backdoor Lambda Function Through Resource-Based Policy\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.lambda-backdoor-function\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.lambda-backdoor-function\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.lambda-backdoor-function\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.lambda-backdoor-function\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.lambda-backdoor-function\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.lambda-backdoor-function\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.lambda-backdoor-function",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "- Using CloudTrail's AddPermission20150331 and AddPermission20150331v2 events - Through [IAM Access Analyzer](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html#access-analyzer-lambda), which triggers a finding when permissions are added to a Lambda function making it public or accessible from another account."
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.lambda-layer-extension",
+      "name": "STRATUS - AWS - Add a Malicious Lambda Extension",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nAdd a Malicious Lambda Extension\n\nEstablishes persistence by adding a malicious lambda extension. Warm-up: - Create a Lambda function and a lambda extension (layer) Detonation: - Add the extension as a layer to the Lambda function References: - https://www.clearvector.com/blog/lambda-spy/\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Add a Malicious Lambda Extension\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.lambda-layer-extension\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.lambda-layer-extension\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.lambda-layer-extension\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.lambda-layer-extension\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.lambda-layer-extension\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.lambda-layer-extension\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.lambda-layer-extension",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's UpdateFunctionConfiguration20150331v2 event. While matching this event may be impractical and prone to false positives in most environments, the following can help to craft more precise detections: - Identify calls to UpdateFunctionConfiguration20150331v2 where the responseElements field contains layer, indicating that the function's layers were modified - Identify calls to UpdateFunctionConfiguration20150331v2 where responseElements.layers includes a layer that's from a different AWS account.'"
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.lambda-overwrite-code",
+      "name": "STRATUS - AWS - Overwrite Lambda Function Code",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nOverwrite Lambda Function Code\n\nEstablishes persistence by overwriting a Lambda function's code. A further, more advanced, use-case could be updating the code to exfiltrate the data processed by the Lambda function at runtime. Warm-up: - Create a Lambda function Detonation: - Update the Lambda function code References: - https://research.splunk.com/cloud/aws_lambda_updatefunctioncode/ - Expel's AWS security mindmap\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Overwrite Lambda Function Code\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.lambda-overwrite-code\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.lambda-overwrite-code\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.lambda-overwrite-code\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.lambda-overwrite-code\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.lambda-overwrite-code\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.lambda-overwrite-code\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.lambda-overwrite-code",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's UpdateFunctionCode* event, e.g. UpdateFunctionCode20150331v2."
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.rolesanywhere-create-trust-anchor",
+      "name": "STRATUS - AWS - Create an IAM Roles Anywhere trust anchor",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nCreate an IAM Roles Anywhere trust anchor\n\nEstablishes persistence by creating an IAM Roles Anywhere trust anchor. The IAM Roles Anywhere service allows workloads that do not run in AWS to assume roles by presenting a client-side X.509 certificate signed by a trusted certificate authority, called a \"trust anchor\". Assuming IAM Roles Anywhere is in use (i.e., that some of the IAM roles in the account have a [trust policy](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#trust-policy) trusting the IAM Roles Anywh\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Create an IAM Roles Anywhere trust anchor\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.rolesanywhere-create-trust-anchor\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.rolesanywhere-create-trust-anchor\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.rolesanywhere-create-trust-anchor\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.rolesanywhere-create-trust-anchor\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.rolesanywhere-create-trust-anchor\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.rolesanywhere-create-trust-anchor\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.rolesanywhere-create-trust-anchor",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": false,
+        "has_warmup": true,
+        "has_revert": true,
+        "correlation_supported": true,
+        "detection": "Identify when a trust anchor is created, through CloudTrail's CreateTrustAnchor event."
+      }
+    },
+    {
+      "id": "stratus:aws.persistence.sts-federation-token",
+      "name": "STRATUS - AWS - Generate temporary AWS credentials using GetFederationToken",
+      "description": "Stratus Red Team cloud adversary-emulation technique for AWS.\n\nGenerate temporary AWS credentials using GetFederationToken\n\nEstablishes persistence by generating new AWS temporary credentials through sts:GetFederationToken. The resulting credentials remain functional even if the original access keys are disabled. Warm-up: - Create an IAM user and generate a pair of access keys Detonation: - Use the access keys from the IAM user to request temporary security credentials via sts:GetFederationToken - Call sts:GetCallerIdentity using these new credentials References: - https://docs.aws.amazon.com/STS/latest/APIReference/\n\nMorgana executes the official Stratus technique using an isolated MORGANA_TEST_ID correlation ID. Prerequisite infrastructure is handled by Stratus warmup. Cleanup uses the same correlation ID.",
+      "tactic": "Persistence",
+      "tcode": "",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 900,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Stratus Red Team — Generate temporary AWS credentials using GetFederationToken\n# Correlation ID = Morgana Test ID for Detection Fabric correlation\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo manual)}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif [ -n \"#{stratus_aws_profile}\" ]; then export AWS_PROFILE=\"#{stratus_aws_profile}\"; fi\nif [ -n \"#{stratus_aws_region}\" ]; then export AWS_DEFAULT_REGION=\"#{stratus_aws_region}\"; fi\n\n# Select Stratus binary for this Agent OS\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\n  chmod +x \"$STRATUS_BIN\" 2>/dev/null || true\nfi\n\necho \"[INFO] Stratus Red Team: technique=aws.persistence.sts-federation-token\"\necho \"[INFO] Correlation ID: $STRATUS_RED_TEAM_CORRELATION_ID\"\n\n# Warmup + Detonate\n\"$STRATUS_BIN\" detonate aws.persistence.sts-federation-token\nEXIT_CODE=$?\n\necho \"[INFO] Detonation complete: exit=$EXIT_CODE technique=aws.persistence.sts-federation-token\"\n# Emit structured result\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"stratus-red-team\\\",\\\"technique_id\\\":\\\"aws.persistence.sts-federation-token\\\",\\\"correlation_id\\\":\\\"$STRATUS_RED_TEAM_CORRELATION_ID\\\",\\\"exit_code\\\":$EXIT_CODE}\"\nexit $EXIT_CODE",
+      "cleanup_command": "# Stratus Red Team cleanup — uses SAME correlation ID as detonation\n# MORGANA_TEST_ID must match the value used during detonate\nSTRATUS_RED_TEAM_CORRELATION_ID=\"${MORGANA_TEST_ID:-manual}\"\nexport STRATUS_RED_TEAM_CORRELATION_ID\n\nif command -v stratus >/dev/null 2>&1; then\n  STRATUS_BIN=stratus\nelse\n  STRATUS_BIN=\"{{asset:stratus_linux_amd64}}\"\nfi\n\n\"$STRATUS_BIN\" cleanup aws.persistence.sts-federation-token\nCLEANUP_EXIT=$?\necho \"[INFO] Cleanup complete: exit=$CLEANUP_EXIT technique=aws.persistence.sts-federation-token\"\nexit $CLEANUP_EXIT",
+      "required_tags": [],
+      "required_assets": [
+        "stratus_linux_amd64",
+        "stratus_windows_amd64",
+        "stratus_macos_amd64"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "stratus-red-team",
+        "source_org": "Datadog",
+        "source_repository": "DataDog/stratus-red-team",
+        "source_release": "v2.36.0",
+        "source_commit": "21c8fefa7cca862b38908090f85b403ed418400c",
+        "source_technique_id": "aws.persistence.sts-federation-token",
+        "cloud_platform": "aws",
+        "platform_name": "AWS",
+        "mitre_tactics": [
+          "Persistence"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "is_idempotent": true,
+        "has_warmup": true,
+        "has_revert": false,
+        "correlation_supported": true,
+        "detection": "Through CloudTrail's GetFederationToken event."
+      }
+    }
+  ],
+  "chains": []
+}
