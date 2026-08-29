@@ -1,0 +1,883 @@
+{
+  "package_id": "controlthings-modbus-read-v1",
+  "package_name": "ControlThings — Modbus Read & Discovery",
+  "version": "1.0.0",
+  "summary": "17 ControlThings Modbus Read & Discovery profiles.",
+  "description": "ControlThings ctmodbus read and discovery operations for authorized Modbus (TCP/UDP/RTU/ASCII) assessment.",
+  "purpose": "Enumerate Modbus devices, read registers, coils and device identification in authorized OT/ICS labs.",
+  "capabilities": [
+    "17 ControlThings operation profiles.",
+    "Source-faithful execution via pinned ctmodbus/ctserial."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment.",
+    "Detection validation for industrial protocol operations."
+  ],
+  "prerequisites": [
+    "Linux Morgana Agent with Python 3.8+.",
+    "ctmodbus/ctserial installed (pip install ctmodbus ctserial).",
+    "Authorized OT/ICS test target or simulator.",
+    "Never use against production systems."
+  ],
+  "safety_notes": [
+    "All write/modify operations alter device state. Use only against authorized test targets.",
+    "Never target production OT/ICS systems without written authorization and change controls."
+  ],
+  "author": "Justin Searle / ControlThings / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "controlthings",
+  "source": "controlthings",
+  "source_repository": "https://github.com/ControlThings-io",
+  "source_commit": "multi-repo",
+  "source_license": "LGPL-3.0-or-later",
+  "documentation_url": "https://www.controlthings.io/",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0843",
+    "T0831"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "category": "ot/controlthings/modbus-read",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "modbus",
+    "serial",
+    "embedded",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint",
+    "modbus",
+    "ot-ics"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "controlthings_modbus",
+      "label": "ControlThings Modbus",
+      "description": "Modbus target, transport, and operation parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ct_modbus_target",
+          "label": "Modbus Target",
+          "description": "IP/hostname or serial device path.",
+          "default": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ct_modbus_port",
+          "label": "Modbus TCP/UDP Port",
+          "description": "TCP/UDP port (default 502).",
+          "default": "502",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ct_modbus_unit_id",
+          "label": "Unit/Slave ID",
+          "description": "Modbus unit/slave ID (1-247).",
+          "default": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_registers",
+          "label": "Address Range (CSR)",
+          "description": "Comma-separated ranges, e.g. 0-9,50.",
+          "default": "0-9",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_timeout",
+          "label": "Timeout (seconds)",
+          "description": "Connection timeout.",
+          "default": "3",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_baud",
+          "label": "Baud Rate (RTU/ASCII)",
+          "description": "Serial baud rate for RTU/ASCII.",
+          "default": "9600",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_parity",
+          "label": "Parity (RTU/ASCII)",
+          "description": "Serial parity: none/even/odd.",
+          "default": "none",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "controlthings_modbus_runner",
+      "name": "controlthings-modbus-runner",
+      "filename": "morgana_ctmodbus_runner.py",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/controlthings/morgana_ctmodbus_runner.py",
+      "sha256": "711c9a324e14900d180f4d32e9f18dfc2d5cab84af189cf00cb8f3e4daee9798",
+      "executable": false,
+      "source": "ControlThings-io",
+      "license": "LGPL-3.0-or-later",
+      "description": "Morgana non-interactive wrapper for ctmodbus operations. Requires ctmodbus Python package."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "controlthings:ctmodbus:read-device-id",
+      "name": "CONTROLTHINGS - MODBUS - Read Device Identification",
+      "description": "ControlThings ctmodbus: Read Device Identification. Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC43 Read Device ID (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus # unknown operation: read-device-id\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-device-id\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-device-id",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC43 Read Device ID",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-coils-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Read Coils (TCP)",
+      "description": "ControlThings ctmodbus: Read Coils (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC01 Read Coils (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_coils #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-coils-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-coils-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC01 Read Coils",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-coils-udp",
+      "name": "CONTROLTHINGS - MODBUS - Read Coils (UDP)",
+      "description": "ControlThings ctmodbus: Read Coils (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC01 Read Coils (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_coils #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-coils-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-coils-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC01 Read Coils",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-coils-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Read Coils (RTU)",
+      "description": "ControlThings ctmodbus: Read Coils (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC01 Read Coils (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_coils #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-coils-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-coils-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC01 Read Coils",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-coils-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Read Coils (ASCII)",
+      "description": "ControlThings ctmodbus: Read Coils (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC01 Read Coils (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_coils #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-coils-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-coils-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC01 Read Coils",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-discrete-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Read Discrete Inputs (TCP)",
+      "description": "ControlThings ctmodbus: Read Discrete Inputs (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC02 Read Discrete Inputs (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_discreteInputs #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-discrete-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-discrete-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC02 Read Discrete Inputs",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-discrete-udp",
+      "name": "CONTROLTHINGS - MODBUS - Read Discrete Inputs (UDP)",
+      "description": "ControlThings ctmodbus: Read Discrete Inputs (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC02 Read Discrete Inputs (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_discreteInputs #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-discrete-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-discrete-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC02 Read Discrete Inputs",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-discrete-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Read Discrete Inputs (RTU)",
+      "description": "ControlThings ctmodbus: Read Discrete Inputs (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC02 Read Discrete Inputs (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_discreteInputs #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-discrete-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-discrete-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC02 Read Discrete Inputs",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-discrete-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Read Discrete Inputs (ASCII)",
+      "description": "ControlThings ctmodbus: Read Discrete Inputs (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC02 Read Discrete Inputs (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_discreteInputs #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-discrete-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-discrete-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC02 Read Discrete Inputs",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-inputreg-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Read Input Registers (TCP)",
+      "description": "ControlThings ctmodbus: Read Input Registers (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC04 Read Input Registers (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_inputRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-inputreg-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-inputreg-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC04 Read Input Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-inputreg-udp",
+      "name": "CONTROLTHINGS - MODBUS - Read Input Registers (UDP)",
+      "description": "ControlThings ctmodbus: Read Input Registers (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC04 Read Input Registers (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_inputRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-inputreg-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-inputreg-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC04 Read Input Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-inputreg-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Read Input Registers (RTU)",
+      "description": "ControlThings ctmodbus: Read Input Registers (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC04 Read Input Registers (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_inputRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-inputreg-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-inputreg-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC04 Read Input Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-inputreg-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Read Input Registers (ASCII)",
+      "description": "ControlThings ctmodbus: Read Input Registers (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC04 Read Input Registers (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_inputRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-inputreg-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-inputreg-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC04 Read Input Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-holdingreg-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Read Holding Registers (TCP)",
+      "description": "ControlThings ctmodbus: Read Holding Registers (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC03 Read Holding Registers (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_holdingRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-holdingreg-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-holdingreg-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC03 Read Holding Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-holdingreg-udp",
+      "name": "CONTROLTHINGS - MODBUS - Read Holding Registers (UDP)",
+      "description": "ControlThings ctmodbus: Read Holding Registers (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC03 Read Holding Registers (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_holdingRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-holdingreg-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-holdingreg-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC03 Read Holding Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-holdingreg-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Read Holding Registers (RTU)",
+      "description": "ControlThings ctmodbus: Read Holding Registers (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC03 Read Holding Registers (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_holdingRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-holdingreg-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-holdingreg-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC03 Read Holding Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:read-holdingreg-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Read Holding Registers (ASCII)",
+      "description": "ControlThings ctmodbus: Read Holding Registers (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC03 Read Holding Registers (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus read_holdingRegisters #{ct_modbus_registers}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"read-holdingreg-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "read-holdingreg-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC03 Read Holding Registers",
+        "is_write": false,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}
