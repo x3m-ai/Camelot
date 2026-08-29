@@ -1,0 +1,1526 @@
+{
+  "package_id": "cortado-initial-access-v1",
+  "package_name": "Elastic Cortado — Initial Access",
+  "version": "1.0.0",
+  "summary": "25 Elastic Cortado RTAs for Initial Access.",
+  "description": "Elastic Cortado Red Team Automations for Initial Access. Each script executes an official Cortado CodeRTA behavior through the verified Elastic wheel to generate endpoint telemetry and validate Elastic Security detection rules. Source: elastic/cortado at dev-release-0.1.0+f1dd8bc1.",
+  "purpose": "Validate Elastic Security detection rules for Initial Access in an authorized test environment.",
+  "capabilities": [
+    "25 Elastic Cortado RTAs.",
+    "Official Elastic wheel execution — no custom behavior code.",
+    "Elastic Endpoint and SIEM rule mapping metadata included.",
+    "MORGANA_RESULT_METADATA output for Detection Fabric correlation."
+  ],
+  "use_cases": [
+    "Validate Elastic Security Initial Access detection rules in an authorized lab.",
+    "Confirm detection rules fire on real RTA behavior before incident response exercises."
+  ],
+  "prerequisites": [
+    "Python 3.12+ on the Morgana Agent.",
+    "Elastic Cortado wheel extracted to the Agent runtime path (cortado_runtime_path tag).",
+    "Use only in authorized, isolated test environments."
+  ],
+  "safety_notes": [
+    "Use only in isolated authorized test endpoints.",
+    "Cortado RTAs generate real endpoint behaviors that trigger security products.",
+    "Some RTAs require administrator/root privileges.",
+    "Referenced sample hashes (HashRta) may be malicious — never acquire from untrusted sources."
+  ],
+  "author": "Elastic / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "elastic-cortado",
+  "source": "elastic-cortado",
+  "source_repository": "https://github.com/elastic/cortado",
+  "source_release": "dev-release-0.1.0+f1dd8bc1",
+  "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+  "source_license": "Elastic License 2.0",
+  "documentation_url": "https://github.com/elastic/cortado",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Initial Access",
+  "mitre_tactics": [
+    "initial-access",
+    "persistence",
+    "privilege-escalation"
+  ],
+  "mitre_tcodes": [
+    "T1047",
+    "T1112",
+    "T1137",
+    "T1190",
+    "T1203",
+    "T1547",
+    "T1566",
+    "T1566.001",
+    "T1566.002"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "category": "detection/cortado/initial-access",
+  "specialties": [
+    "endpoint",
+    "detection-validation",
+    "elastic-security"
+  ],
+  "package_types": [
+    "atomic-tests",
+    "detection-validation"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "cortado_runtime",
+      "label": "Cortado RTA Runtime",
+      "description": "Cortado runtime cache path for the extracted wheel on this Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "cortado_runtime_path",
+          "label": "Cortado Runtime Path",
+          "description": "Path to extracted Cortado wheel directory on the Agent (cortado/ package root).",
+          "default": "/tmp/morgana-cortado-runtime",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "elastic_cortado_wheel",
+      "name": "elastic-cortado-wheel",
+      "filename": "cortado-0.1.0+f1dd8bc1-py3-none-any.whl",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://github.com/elastic/cortado/releases/download/dev-release-0.1.0%2Bf1dd8bc1/cortado-0.1.0%2Bf1dd8bc1-py3-none-any.whl",
+      "sha256": "38fe8fce2f0af631be7df111ac19b872561e85bb57e634f6236a9fa2e3198836",
+      "size": 5089715,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "Elastic License 2.0",
+      "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+      "description": "Official Elastic Cortado Python wheel (py3-none-any). Extract to Agent cache and add to PYTHONPATH before running RTAs. No Poetry or pip required at runtime."
+    },
+    {
+      "id": "elastic_cortado_runner",
+      "name": "morgana-cortado-runner",
+      "filename": "morgana_cortado_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/detection/cortado/morgana_cortado_runner.py",
+      "sha256": "dc8ec31243d7666ac380c2f4590bc2bb128b45c507be1a1233e34d996450da99",
+      "size": 6079,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "MIT",
+      "description": "Morgana non-interactive runner for Elastic Cortado CodeRTAs. Requires cortado wheel extracted to Agent runtime path."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "cortado:aee48793-01ec-428f-9890-c5db9df07830",
+      "name": "CORTADO - Suspicious BitsAdmin Download File",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nRuns BitsAdmin to download file via command line.\n\nExpected detections:\n  - SIEM: Suspicious MS Office Child Process\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Bitsadmin Download\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: bitsadmin_download (module=cortado.rtas.bitsadmin_download)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.bitsadmin_download\" \\\n  --rta \"bitsadmin_download\" \\\n  --rta-id \"aee48793-01ec-428f-9890-c5db9df07830\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"a624863f-a70d-417f-a7d2-7a404638d47f\",\"name\":\"Suspicious MS Office Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.bitsadmin_download",
+        "source_path": "bitsadmin_download.py",
+        "rta_id": "aee48793-01ec-428f-9890-c5db9df07830",
+        "rta_name": "bitsadmin_download",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "a624863f-a70d-417f-a7d2-7a404638d47f",
+            "name": "Suspicious MS Office Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:65c661e6-7a15-45c0-97ad-0635eda560ba",
+      "name": "CORTADO - Exec Winword Susp Parent",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Winword Susp Parent\n\nExpected detections:\n  - Endpoint: Suspicious Execution via Microsoft Office Add-Ins\n\nATT&CK: T1137, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1137",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Winword Susp Parent\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_winword_susp_parent (module=cortado.rtas.exec_winword_susp_parent)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_winword_susp_parent\" \\\n  --rta \"exec_winword_susp_parent\" \\\n  --rta-id \"65c661e6-7a15-45c0-97ad-0635eda560ba\" \\\n  --techniques \"T1137,T1566\" \\\n  --endpoint-rules '[{\"id\":\"9efd977a-6d4a-4cc8-8ab3-355587b0ef69\",\"name\":\"Suspicious Execution via Microsoft Office Add-Ins\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_winword_susp_parent",
+        "source_path": "exec_winword_susp_parent.py",
+        "rta_id": "65c661e6-7a15-45c0-97ad-0635eda560ba",
+        "rta_name": "exec_winword_susp_parent",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1137",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "9efd977a-6d4a-4cc8-8ab3-355587b0ef69",
+            "name": "Suspicious Execution via Microsoft Office Add-Ins"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:29eb99a6-14cc-4d37-81dd-c2e78cda8c74",
+      "name": "CORTADO - File Create Exchange Um",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nFile Create Exchange Um\n\nExpected detections:\n  - SIEM: Microsoft Exchange Server UM Writing Suspicious Files\n\nATT&CK: T1190\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1190",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — File Create Exchange Um\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: file_create_exchange_um (module=cortado.rtas.file_create_exchange_um)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.file_create_exchange_um\" \\\n  --rta \"file_create_exchange_um\" \\\n  --rta-id \"29eb99a6-14cc-4d37-81dd-c2e78cda8c74\" \\\n  --techniques \"T1190\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"6cd1779c-560f-4b68-a8f1-11009b27fe63\",\"name\":\"Microsoft Exchange Server UM Writing Suspicious Files\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.file_create_exchange_um",
+        "source_path": "file_create_exchange_um.py",
+        "rta_id": "29eb99a6-14cc-4d37-81dd-c2e78cda8c74",
+        "rta_name": "file_create_exchange_um",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1190"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "6cd1779c-560f-4b68-a8f1-11009b27fe63",
+            "name": "Microsoft Exchange Server UM Writing Suspicious Files"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:571e229f-fb92-48cf-b0fb-dd9630b1580f",
+      "name": "CORTADO - File Create Exec Pdf Reader",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nFile Create Exec Pdf Reader\n\nExpected detections:\n  - SIEM: Execution of File Written or Modified by PDF Reader\n\nATT&CK: T1566, T1566.001, T1566.002\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — File Create Exec Pdf Reader\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: file_create_exec_pdf_reader (module=cortado.rtas.file_create_exec_pdf_reader)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.file_create_exec_pdf_reader\" \\\n  --rta \"file_create_exec_pdf_reader\" \\\n  --rta-id \"571e229f-fb92-48cf-b0fb-dd9630b1580f\" \\\n  --techniques \"T1566,T1566.001,T1566.002\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"1defdd62-cd8d-426e-a246-81a37751bb2b\",\"name\":\"Execution of File Written or Modified by PDF Reader\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.file_create_exec_pdf_reader",
+        "source_path": "file_create_exec_pdf_reader.py",
+        "rta_id": "571e229f-fb92-48cf-b0fb-dd9630b1580f",
+        "rta_name": "file_create_exec_pdf_reader",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566",
+          "T1566.001",
+          "T1566.002"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "1defdd62-cd8d-426e-a246-81a37751bb2b",
+            "name": "Execution of File Written or Modified by PDF Reader"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:2cd02bee-6774-4b93-a632-995462440371",
+      "name": "CORTADO - Image Load Script Interpreter Wmiutils",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nImage Load Script Interpreter Wmiutils\n\nExpected detections:\n  - SIEM: Windows Script Interpreter Executing Process via WMI\n\nATT&CK: T1566, T1566.001\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Image Load Script Interpreter Wmiutils\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: image_load_script_interpreter_wmiutils (module=cortado.rtas.image_load_script_interpreter_wmiutils)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.image_load_script_interpreter_wmiutils\" \\\n  --rta \"image_load_script_interpreter_wmiutils\" \\\n  --rta-id \"2cd02bee-6774-4b93-a632-995462440371\" \\\n  --techniques \"T1566,T1566.001\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"b64b183e-1a76-422d-9179-7b389513e74d\",\"name\":\"Windows Script Interpreter Executing Process via WMI\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.image_load_script_interpreter_wmiutils",
+        "source_path": "image_load_script_interpreter_wmiutils.py",
+        "rta_id": "2cd02bee-6774-4b93-a632-995462440371",
+        "rta_name": "image_load_script_interpreter_wmiutils",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566",
+          "T1566.001"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "b64b183e-1a76-422d-9179-7b389513e74d",
+            "name": "Windows Script Interpreter Executing Process via WMI"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ce85674f-fb6c-44d5-b880-4ce9062e1028",
+      "name": "CORTADO - Emulate MS Office Dropping an executable file to disk",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMS Office writes executable file and it is run.\n\nExpected detections:\n  - SIEM: Execution of File Written or Modified by Microsoft Office\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Ms Office Drop Exe\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: ms_office_drop_exe (module=cortado.rtas.ms_office_drop_exe)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.ms_office_drop_exe\" \\\n  --rta \"ms_office_drop_exe\" \\\n  --rta-id \"ce85674f-fb6c-44d5-b880-4ce9062e1028\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"0d8ad79f-9025-45d8-80c1-4f0cd3c5e8e5\",\"name\":\"Execution of File Written or Modified by Microsoft Office\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.ms_office_drop_exe",
+        "source_path": "ms_office_drop_exe.py",
+        "rta_id": "ce85674f-fb6c-44d5-b880-4ce9062e1028",
+        "rta_name": "ms_office_drop_exe",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "0d8ad79f-9025-45d8-80c1-4f0cd3c5e8e5",
+            "name": "Execution of File Written or Modified by Microsoft Office"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a0b7435a-1f48-4fae-b3dc-c596dc70490d",
+      "name": "CORTADO - Msequationeditor File Written Exec",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsequationeditor File Written Exec\n\nExpected detections:\n  - Endpoint: Execution of File Written or Modified by Microsoft Equation Editor\n  - Endpoint: Microsoft Equation Editor Child Process\n\nATT&CK: T1203, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1203",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msequationeditor File Written Exec\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msequationeditor_file_written_exec (module=cortado.rtas.msequationeditor_file_written_exec)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msequationeditor_file_written_exec\" \\\n  --rta \"msequationeditor_file_written_exec\" \\\n  --rta-id \"a0b7435a-1f48-4fae-b3dc-c596dc70490d\" \\\n  --techniques \"T1203,T1566\" \\\n  --endpoint-rules '[{\"id\":\"8bc4f22c-9bb1-4c76-a7b6-195bee3579db\",\"name\":\"Execution of File Written or Modified by Microsoft Equation Editor\"},{\"id\":\"60eb5960-b26e-494a-8cf2-35ab5939f6c1\",\"name\":\"Microsoft Equation Editor Child Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msequationeditor_file_written_exec",
+        "source_path": "msequationeditor_file_written_exec.py",
+        "rta_id": "a0b7435a-1f48-4fae-b3dc-c596dc70490d",
+        "rta_name": "msequationeditor_file_written_exec",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1203",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "8bc4f22c-9bb1-4c76-a7b6-195bee3579db",
+            "name": "Execution of File Written or Modified by Microsoft Equation Editor"
+          },
+          {
+            "id": "60eb5960-b26e-494a-8cf2-35ab5939f6c1",
+            "name": "Microsoft Equation Editor Child Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:75167553-4886-44ba-b5d6-b4c341b33709",
+      "name": "CORTADO - Msequationeditor Net Conn",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsequationeditor Net Conn\n\nExpected detections:\n  - Endpoint: Suspicious Network Connection from Microsoft Equation Editor\n\nATT&CK: T1203, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1203",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msequationeditor Net Conn\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msequationeditor_net_conn (module=cortado.rtas.msequationeditor_net_conn)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msequationeditor_net_conn\" \\\n  --rta \"msequationeditor_net_conn\" \\\n  --rta-id \"75167553-4886-44ba-b5d6-b4c341b33709\" \\\n  --techniques \"T1203,T1566\" \\\n  --endpoint-rules '[{\"id\":\"365571bb-2b93-4ae8-8c39-0558f8a6c4cc\",\"name\":\"Suspicious Network Connection from Microsoft Equation Editor\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msequationeditor_net_conn",
+        "source_path": "msequationeditor_net_conn.py",
+        "rta_id": "75167553-4886-44ba-b5d6-b4c341b33709",
+        "rta_name": "msequationeditor_net_conn",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1203",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "365571bb-2b93-4ae8-8c39-0558f8a6c4cc",
+            "name": "Suspicious Network Connection from Microsoft Equation Editor"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:456ec321-41c8-4a41-8f6f-40b8e3d1c295",
+      "name": "CORTADO - Msoffice Dcom Accessvbom",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Dcom Accessvbom\n\nExpected detections:\n  - Endpoint: Suspicious MS Office Execution via DCOM\n\nATT&CK: T1112, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1112",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Dcom Accessvbom\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_dcom_accessvbom (module=cortado.rtas.msoffice_dcom_accessvbom)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_dcom_accessvbom\" \\\n  --rta \"msoffice_dcom_accessvbom\" \\\n  --rta-id \"456ec321-41c8-4a41-8f6f-40b8e3d1c295\" \\\n  --techniques \"T1112,T1566\" \\\n  --endpoint-rules '[{\"id\":\"6a714747-2671-4523-b233-744f119949b6\",\"name\":\"Suspicious MS Office Execution via DCOM\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_dcom_accessvbom",
+        "source_path": "msoffice_dcom_accessvbom.py",
+        "rta_id": "456ec321-41c8-4a41-8f6f-40b8e3d1c295",
+        "rta_name": "msoffice_dcom_accessvbom",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1112",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "6a714747-2671-4523-b233-744f119949b6",
+            "name": "Suspicious MS Office Execution via DCOM"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:8fc20141-a73e-4c5e-9c9b-70acb69ab1dd",
+      "name": "CORTADO - Msoffice Descendant Reg Mod Persistence",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Descendant Reg Mod Persistence\n\nExpected detections:\n  - Endpoint: Registry Persistence via Microsoft Office Descendant Process\n\nATT&CK: T1547, T1112, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1547",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Descendant Reg Mod Persistence\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_descendant_reg_mod_persistence (module=cortado.rtas.msoffice_descendant_reg_mod_persistence)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_descendant_reg_mod_persistence\" \\\n  --rta \"msoffice_descendant_reg_mod_persistence\" \\\n  --rta-id \"8fc20141-a73e-4c5e-9c9b-70acb69ab1dd\" \\\n  --techniques \"T1547,T1112,T1566\" \\\n  --endpoint-rules '[{\"id\":\"999e7a9a-334f-4b74-834f-a652f91531f2\",\"name\":\"Registry Persistence via Microsoft Office Descendant Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_descendant_reg_mod_persistence",
+        "source_path": "msoffice_descendant_reg_mod_persistence.py",
+        "rta_id": "8fc20141-a73e-4c5e-9c9b-70acb69ab1dd",
+        "rta_name": "msoffice_descendant_reg_mod_persistence",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1547",
+          "T1112",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "999e7a9a-334f-4b74-834f-a652f91531f2",
+            "name": "Registry Persistence via Microsoft Office Descendant Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:4ad6b308-f457-4805-89b9-43b99e32b24f",
+      "name": "CORTADO - Msoffice Dll Image Load",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Dll Image Load\n\nExpected detections:\n  - Endpoint: Microsoft Office Loaded a Dropped Executable File\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Dll Image Load\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_dll_image_load (module=cortado.rtas.msoffice_dll_image_load)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_dll_image_load\" \\\n  --rta \"msoffice_dll_image_load\" \\\n  --rta-id \"4ad6b308-f457-4805-89b9-43b99e32b24f\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[{\"id\":\"a0a82ad6-98ed-4426-abd8-52e7b052e297\",\"name\":\"Microsoft Office Loaded a Dropped Executable File\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_dll_image_load",
+        "source_path": "msoffice_dll_image_load.py",
+        "rta_id": "4ad6b308-f457-4805-89b9-43b99e32b24f",
+        "rta_name": "msoffice_dll_image_load",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "a0a82ad6-98ed-4426-abd8-52e7b052e297",
+            "name": "Microsoft Office Loaded a Dropped Executable File"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ca0cc06d-6a8f-4d9b-a9c2-9315c62f924a",
+      "name": "CORTADO - Msoffice File Drop Exec Wmi",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice File Drop Exec Wmi\n\nExpected detections:\n  - Endpoint: Suspicious Execution via Windows Management Instrumentation\n  - Endpoint: Microsoft Office File Execution via WMI\n\nATT&CK: T1047, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1047",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice File Drop Exec Wmi\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_file_drop_exec_wmi (module=cortado.rtas.msoffice_file_drop_exec_wmi)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_file_drop_exec_wmi\" \\\n  --rta \"msoffice_file_drop_exec_wmi\" \\\n  --rta-id \"ca0cc06d-6a8f-4d9b-a9c2-9315c62f924a\" \\\n  --techniques \"T1047,T1566\" \\\n  --endpoint-rules '[{\"id\":\"7e554c18-6435-41ce-b57b-d0ac3b73817f\",\"name\":\"Suspicious Execution via Windows Management Instrumentation\"},{\"id\":\"792411bd-59ef-4ac0-89be-786d52d1a5c8\",\"name\":\"Microsoft Office File Execution via WMI\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_file_drop_exec_wmi",
+        "source_path": "msoffice_file_drop_exec_wmi.py",
+        "rta_id": "ca0cc06d-6a8f-4d9b-a9c2-9315c62f924a",
+        "rta_name": "msoffice_file_drop_exec_wmi",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1047",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "7e554c18-6435-41ce-b57b-d0ac3b73817f",
+            "name": "Suspicious Execution via Windows Management Instrumentation"
+          },
+          {
+            "id": "792411bd-59ef-4ac0-89be-786d52d1a5c8",
+            "name": "Microsoft Office File Execution via WMI"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:3206f2b2-c731-479f-a258-d486dac8a055",
+      "name": "CORTADO - Msoffice File Exec Script Interpreter",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice File Exec Script Interpreter\n\nExpected detections:\n  - Endpoint: Microsoft Office File Execution via Script Interpreter\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice File Exec Script Interpreter\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_file_exec_script_interpreter (module=cortado.rtas.msoffice_file_exec_script_interpreter)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_file_exec_script_interpreter\" \\\n  --rta \"msoffice_file_exec_script_interpreter\" \\\n  --rta-id \"3206f2b2-c731-479f-a258-d486dac8a055\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[{\"id\":\"54aabea0-3687-4ef1-b70c-015ca588e563\",\"name\":\"Microsoft Office File Execution via Script Interpreter\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_file_exec_script_interpreter",
+        "source_path": "msoffice_file_exec_script_interpreter.py",
+        "rta_id": "3206f2b2-c731-479f-a258-d486dac8a055",
+        "rta_name": "msoffice_file_exec_script_interpreter",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "54aabea0-3687-4ef1-b70c-015ca588e563",
+            "name": "Microsoft Office File Execution via Script Interpreter"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:61abdbb3-bcab-4c57-8b5d-2a5c9226e580",
+      "name": "CORTADO - Msoffice Reg Mod",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Reg Mod\n\nExpected detections:\n  - Endpoint: Registry Modification via Microsoft Office\n\nATT&CK: T1547, T1112, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1547",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Reg Mod\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_reg_mod (module=cortado.rtas.msoffice_reg_mod)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_reg_mod\" \\\n  --rta \"msoffice_reg_mod\" \\\n  --rta-id \"61abdbb3-bcab-4c57-8b5d-2a5c9226e580\" \\\n  --techniques \"T1547,T1112,T1566\" \\\n  --endpoint-rules '[{\"id\":\"926b6cd1-c0c7-46d4-82d6-9deb6ae431d6\",\"name\":\"Registry Modification via Microsoft Office\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_reg_mod",
+        "source_path": "msoffice_reg_mod.py",
+        "rta_id": "61abdbb3-bcab-4c57-8b5d-2a5c9226e580",
+        "rta_name": "msoffice_reg_mod",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1547",
+          "T1112",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "926b6cd1-c0c7-46d4-82d6-9deb6ae431d6",
+            "name": "Registry Modification via Microsoft Office"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:ea9a54fe-62ed-4825-b302-0ebbee22233f",
+      "name": "CORTADO - Msoffice Startup Persistence",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Startup Persistence\n\nExpected detections:\n  - Endpoint: Microsoft Office Process Setting Persistence via Startup\n\nATT&CK: T1547, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1547",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Startup Persistence\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_startup_persistence (module=cortado.rtas.msoffice_startup_persistence)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_startup_persistence\" \\\n  --rta \"msoffice_startup_persistence\" \\\n  --rta-id \"ea9a54fe-62ed-4825-b302-0ebbee22233f\" \\\n  --techniques \"T1547,T1566\" \\\n  --endpoint-rules '[{\"id\":\"2b8ea430-897d-486c-85a8-add9d7072ff3\",\"name\":\"Microsoft Office Process Setting Persistence via Startup\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_startup_persistence",
+        "source_path": "msoffice_startup_persistence.py",
+        "rta_id": "ea9a54fe-62ed-4825-b302-0ebbee22233f",
+        "rta_name": "msoffice_startup_persistence",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1547",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access",
+          "persistence",
+          "privilege-escalation"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "2b8ea430-897d-486c-85a8-add9d7072ff3",
+            "name": "Microsoft Office Process Setting Persistence via Startup"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:d2671cc5-87d0-4612-9e3c-0862b137d242",
+      "name": "CORTADO - Msoffice Wmi Imageload",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nMsoffice Wmi Imageload\n\nExpected detections:\n  - Endpoint: WMI Image Load via Microsoft Office\n\nATT&CK: T1047, T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1047",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Msoffice Wmi Imageload\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: msoffice_wmi_imageload (module=cortado.rtas.msoffice_wmi_imageload)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.msoffice_wmi_imageload\" \\\n  --rta \"msoffice_wmi_imageload\" \\\n  --rta-id \"d2671cc5-87d0-4612-9e3c-0862b137d242\" \\\n  --techniques \"T1047,T1566\" \\\n  --endpoint-rules '[{\"id\":\"46952f58-6741-4280-8e74-fa43f63c9604\",\"name\":\"WMI Image Load via Microsoft Office\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.msoffice_wmi_imageload",
+        "source_path": "msoffice_wmi_imageload.py",
+        "rta_id": "d2671cc5-87d0-4612-9e3c-0862b137d242",
+        "rta_name": "msoffice_wmi_imageload",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1047",
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "46952f58-6741-4280-8e74-fa43f63c9604",
+            "name": "WMI Image Load via Microsoft Office"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:65ae1bcd-0b1c-4992-97c3-f40b0f92deb1",
+      "name": "CORTADO - Office Child Process",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nOffice Child Process\n\nExpected detections:\n  - SIEM: Suspicious macOS MS Office Child Process\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Office Child Process\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: office_child_process (module=cortado.rtas.office_child_process)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.office_child_process\" \\\n  --rta \"office_child_process\" \\\n  --rta-id \"65ae1bcd-0b1c-4992-97c3-f40b0f92deb1\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"66da12b1-ac83-40eb-814c-07ed1d82b7b9\",\"name\":\"Suspicious macOS MS Office Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.office_child_process",
+        "source_path": "office_child_process.py",
+        "rta_id": "65ae1bcd-0b1c-4992-97c3-f40b0f92deb1",
+        "rta_name": "office_child_process",
+        "rta_type": "code",
+        "platforms": [
+          "macos"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "66da12b1-ac83-40eb-814c-07ed1d82b7b9",
+            "name": "Suspicious macOS MS Office Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:b48a9dd2-8fe7-41e1-9af2-65f609a54237",
+      "name": "CORTADO - Ojnl Injection",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nOjnl Injection\n\nExpected detections:\n  - Endpoint: Remote Code Execution via Confluence OGNL Injection\n\nATT&CK: T1190\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1190",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Ojnl Injection\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: ojnl_injection (module=cortado.rtas.ojnl_injection)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.ojnl_injection\" \\\n  --rta \"ojnl_injection\" \\\n  --rta-id \"b48a9dd2-8fe7-41e1-9af2-65f609a54237\" \\\n  --techniques \"T1190\" \\\n  --endpoint-rules '[{\"id\":\"8fff17c6-f0ba-4996-bcc3-342a9ebd0ef3\",\"name\":\"Remote Code Execution via Confluence OGNL Injection\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.ojnl_injection",
+        "source_path": "ojnl_injection.py",
+        "rta_id": "b48a9dd2-8fe7-41e1-9af2-65f609a54237",
+        "rta_name": "ojnl_injection",
+        "rta_type": "code",
+        "platforms": [
+          "linux"
+        ],
+        "techniques": [
+          "T1190"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "8fff17c6-f0ba-4996-bcc3-342a9ebd0ef3",
+            "name": "Remote Code Execution via Confluence OGNL Injection"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:161c5972-6bfe-47b5-92bd-e0399e025dec",
+      "name": "CORTADO - PowerShell Launched from Script",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nCreates a javascript file that will launch powershell.\n\nExpected detections:\n  - SIEM: Windows Script Executing PowerShell\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Powershell From Script\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: powershell_from_script (module=cortado.rtas.powershell_from_script)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.powershell_from_script\" \\\n  --rta \"powershell_from_script\" \\\n  --rta-id \"161c5972-6bfe-47b5-92bd-e0399e025dec\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"f545ff26-3c94-4fd0-bd33-3c7f95a3a0fc\",\"name\":\"Windows Script Executing PowerShell\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.powershell_from_script",
+        "source_path": "powershell_from_script.py",
+        "rta_id": "161c5972-6bfe-47b5-92bd-e0399e025dec",
+        "rta_name": "powershell_from_script",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "f545ff26-3c94-4fd0-bd33-3c7f95a3a0fc",
+            "name": "Windows Script Executing PowerShell"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:9f58f9e7-a0f5-48e6-a924-d437fd626195-1",
+      "name": "CORTADO - Suspicious Child Exchange Um",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nSuspicious Child Exchange Um\n\nExpected detections:\n  - SIEM: Microsoft Exchange Server UM Spawning Suspicious Processes\n\nATT&CK: T1190\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1190",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Child Exchange Um\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_child_exchange_um (module=cortado.rtas.suspicious_child_exchange_um)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_child_exchange_um\" \\\n  --rta \"suspicious_child_exchange_um\" \\\n  --rta-id \"9f58f9e7-a0f5-48e6-a924-d437fd626195\" \\\n  --techniques \"T1190\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"483c4daf-b0c6-49e0-adf3-0bfa93231d6b\",\"name\":\"Microsoft Exchange Server UM Spawning Suspicious Processes\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_child_exchange_um",
+        "source_path": "suspicious_child_exchange_um.py",
+        "rta_id": "9f58f9e7-a0f5-48e6-a924-d437fd626195",
+        "rta_name": "suspicious_child_exchange_um",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1190"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "483c4daf-b0c6-49e0-adf3-0bfa93231d6b",
+            "name": "Microsoft Exchange Server UM Spawning Suspicious Processes"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:bc837b89-713a-4d21-a086-8649e8411f11",
+      "name": "CORTADO - Suspicious Child Explorer",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nSuspicious Child Explorer\n\nExpected detections:\n  - SIEM: Suspicious Explorer Child Process\n\nATT&CK: T1566, T1566.001, T1566.002\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Child Explorer\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_child_explorer (module=cortado.rtas.suspicious_child_explorer)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_child_explorer\" \\\n  --rta \"suspicious_child_explorer\" \\\n  --rta-id \"bc837b89-713a-4d21-a086-8649e8411f11\" \\\n  --techniques \"T1566,T1566.001,T1566.002\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"9a5b4e31-6cde-4295-9ff7-6be1b8567e1b\",\"name\":\"Suspicious Explorer Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_child_explorer",
+        "source_path": "suspicious_child_explorer.py",
+        "rta_id": "bc837b89-713a-4d21-a086-8649e8411f11",
+        "rta_name": "suspicious_child_explorer",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566",
+          "T1566.001",
+          "T1566.002"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "9a5b4e31-6cde-4295-9ff7-6be1b8567e1b",
+            "name": "Suspicious Explorer Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:c798f63a-f8be-459a-bb75-407e97f55faa",
+      "name": "CORTADO - Suspicious Office Child",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nSuspicious Office Child\n\nExpected detections:\n  - Endpoint: Suspicious Microsoft Office Child Process\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Office Child\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_office_child (module=cortado.rtas.suspicious_office_child)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_office_child\" \\\n  --rta \"suspicious_office_child\" \\\n  --rta-id \"c798f63a-f8be-459a-bb75-407e97f55faa\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[{\"id\":\"c34a9dca-66cf-4283-944d-1800b28ae690\",\"name\":\"Suspicious Microsoft Office Child Process\"}]' \\\n  --siem-rules '[]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_office_child",
+        "source_path": "suspicious_office_child.py",
+        "rta_id": "c798f63a-f8be-459a-bb75-407e97f55faa",
+        "rta_name": "suspicious_office_child",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [
+          {
+            "id": "c34a9dca-66cf-4283-944d-1800b28ae690",
+            "name": "Suspicious Microsoft Office Child Process"
+          }
+        ],
+        "siem_rules": [],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:cd8e06c0-fc62-4932-8ef7-b767570e88eb",
+      "name": "CORTADO - Emulate Suspect MS Office Child Processes",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nGenerates network traffic various children processes from emulated Office processes.\n\nExpected detections:\n  - SIEM: Suspicious MS Office Child Process\n  - SIEM: Suspicious MS Outlook Child Process\n\nATT&CK: T1566, T1566.001\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Office Children\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_office_children (module=cortado.rtas.suspicious_office_children)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_office_children\" \\\n  --rta \"suspicious_office_children\" \\\n  --rta-id \"cd8e06c0-fc62-4932-8ef7-b767570e88eb\" \\\n  --techniques \"T1566,T1566.001\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"a624863f-a70d-417f-a7d2-7a404638d47f\",\"name\":\"Suspicious MS Office Child Process\"},{\"id\":\"32f4675e-6c49-4ace-80f9-97c9259dca2e\",\"name\":\"Suspicious MS Outlook Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_office_children",
+        "source_path": "suspicious_office_children.py",
+        "rta_id": "cd8e06c0-fc62-4932-8ef7-b767570e88eb",
+        "rta_name": "suspicious_office_children",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566",
+          "T1566.001"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "a624863f-a70d-417f-a7d2-7a404638d47f",
+            "name": "Suspicious MS Office Child Process"
+          },
+          {
+            "id": "32f4675e-6c49-4ace-80f9-97c9259dca2e",
+            "name": "Suspicious MS Outlook Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:e6d124ee-27d3-48a6-8c59-354072ec9e00",
+      "name": "CORTADO - Emulate Suspect MS Office Child Processes",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nGenerates various children processes from emulated Office processes.\n\nExpected detections:\n  - SIEM: Suspicious MS Office Child Process\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Office Descendant Fp\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_office_descendant_fp (module=cortado.rtas.suspicious_office_descendant_fp)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_office_descendant_fp\" \\\n  --rta \"suspicious_office_descendant_fp\" \\\n  --rta-id \"e6d124ee-27d3-48a6-8c59-354072ec9e00\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"a624863f-a70d-417f-a7d2-7a404638d47f\",\"name\":\"Suspicious MS Office Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_office_descendant_fp",
+        "source_path": "suspicious_office_descendant_fp.py",
+        "rta_id": "e6d124ee-27d3-48a6-8c59-354072ec9e00",
+        "rta_name": "suspicious_office_descendant_fp",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "a624863f-a70d-417f-a7d2-7a404638d47f",
+            "name": "Suspicious MS Office Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    },
+    {
+      "id": "cortado:a3cdd478-b817-4513-bb3d-897a5f92c836",
+      "name": "CORTADO - Suspicious WScript parent",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nWScript run with suspicious parent processes\n\nExpected detections:\n  - SIEM: Suspicious MS Outlook Child Process\n  - SIEM: Suspicious MS Office Child Process\n\nATT&CK: T1566\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Initial Access",
+      "tcode": "T1566",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Suspicious Wscript Parent\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: suspicious_wscript_parent (module=cortado.rtas.suspicious_wscript_parent)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.suspicious_wscript_parent\" \\\n  --rta \"suspicious_wscript_parent\" \\\n  --rta-id \"a3cdd478-b817-4513-bb3d-897a5f92c836\" \\\n  --techniques \"T1566\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"32f4675e-6c49-4ace-80f9-97c9259dca2e\",\"name\":\"Suspicious MS Outlook Child Process\"},{\"id\":\"a624863f-a70d-417f-a7d2-7a404638d47f\",\"name\":\"Suspicious MS Office Child Process\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.suspicious_wscript_parent",
+        "source_path": "suspicious_wscript_parent.py",
+        "rta_id": "a3cdd478-b817-4513-bb3d-897a5f92c836",
+        "rta_name": "suspicious_wscript_parent",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1566"
+        ],
+        "mitre_tactics": [
+          "initial-access"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "32f4675e-6c49-4ace-80f9-97c9259dca2e",
+            "name": "Suspicious MS Outlook Child Process"
+          },
+          {
+            "id": "a624863f-a70d-417f-a7d2-7a404638d47f",
+            "name": "Suspicious MS Office Child Process"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}

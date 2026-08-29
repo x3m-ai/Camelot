@@ -1,0 +1,181 @@
+{
+  "package_id": "cortado-collection-v1",
+  "package_name": "Elastic Cortado — Collection",
+  "version": "1.0.0",
+  "summary": "1 Elastic Cortado RTA for Collection.",
+  "description": "Elastic Cortado Red Team Automations for Collection. Each script executes an official Cortado CodeRTA behavior through the verified Elastic wheel to generate endpoint telemetry and validate Elastic Security detection rules. Source: elastic/cortado at dev-release-0.1.0+f1dd8bc1.",
+  "purpose": "Validate Elastic Security detection rules for Collection in an authorized test environment.",
+  "capabilities": [
+    "1 Elastic Cortado RTA.",
+    "Official Elastic wheel execution — no custom behavior code.",
+    "Elastic Endpoint and SIEM rule mapping metadata included.",
+    "MORGANA_RESULT_METADATA output for Detection Fabric correlation."
+  ],
+  "use_cases": [
+    "Validate Elastic Security Collection detection rules in an authorized lab.",
+    "Confirm detection rules fire on real RTA behavior before incident response exercises."
+  ],
+  "prerequisites": [
+    "Python 3.12+ on the Morgana Agent.",
+    "Elastic Cortado wheel extracted to the Agent runtime path (cortado_runtime_path tag).",
+    "Use only in authorized, isolated test environments."
+  ],
+  "safety_notes": [
+    "Use only in isolated authorized test endpoints.",
+    "Cortado RTAs generate real endpoint behaviors that trigger security products.",
+    "Some RTAs require administrator/root privileges.",
+    "Referenced sample hashes (HashRta) may be malicious — never acquire from untrusted sources."
+  ],
+  "author": "Elastic / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "elastic-cortado",
+  "source": "elastic-cortado",
+  "source_repository": "https://github.com/elastic/cortado",
+  "source_release": "dev-release-0.1.0+f1dd8bc1",
+  "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+  "source_license": "Elastic License 2.0",
+  "documentation_url": "https://github.com/elastic/cortado",
+  "mitre_domain": "enterprise-attack",
+  "mitre_tactic": "Collection",
+  "mitre_tactics": [
+    "collection"
+  ],
+  "mitre_tcodes": [
+    "T1005",
+    "T1114",
+    "T1114.002"
+  ],
+  "platform": [
+    "windows"
+  ],
+  "category": "detection/cortado/collection",
+  "specialties": [
+    "endpoint",
+    "detection-validation",
+    "elastic-security"
+  ],
+  "package_types": [
+    "atomic-tests",
+    "detection-validation"
+  ],
+  "execution_platforms": [
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "cortado_runtime",
+      "label": "Cortado RTA Runtime",
+      "description": "Cortado runtime cache path for the extracted wheel on this Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "cortado_runtime_path",
+          "label": "Cortado Runtime Path",
+          "description": "Path to extracted Cortado wheel directory on the Agent (cortado/ package root).",
+          "default": "/tmp/morgana-cortado-runtime",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "elastic_cortado_wheel",
+      "name": "elastic-cortado-wheel",
+      "filename": "cortado-0.1.0+f1dd8bc1-py3-none-any.whl",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://github.com/elastic/cortado/releases/download/dev-release-0.1.0%2Bf1dd8bc1/cortado-0.1.0%2Bf1dd8bc1-py3-none-any.whl",
+      "sha256": "38fe8fce2f0af631be7df111ac19b872561e85bb57e634f6236a9fa2e3198836",
+      "size": 5089715,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "Elastic License 2.0",
+      "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+      "description": "Official Elastic Cortado Python wheel (py3-none-any). Extract to Agent cache and add to PYTHONPATH before running RTAs. No Poetry or pip required at runtime."
+    },
+    {
+      "id": "elastic_cortado_runner",
+      "name": "morgana-cortado-runner",
+      "filename": "morgana_cortado_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/detection/cortado/morgana_cortado_runner.py",
+      "sha256": "dc8ec31243d7666ac380c2f4590bc2bb128b45c507be1a1233e34d996450da99",
+      "size": 6079,
+      "executable": false,
+      "source": "elastic/cortado",
+      "release": "dev-release-0.1.0+f1dd8bc1",
+      "license": "MIT",
+      "description": "Morgana non-interactive runner for Elastic Cortado CodeRTAs. Requires cortado wheel extracted to Agent runtime path."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "cortado:b6b65c6a-830a-4e1c-ace7-3c98362f998b",
+      "name": "CORTADO - Exec Cmd Posh Mailbox",
+      "description": "Elastic Cortado Red Team Automation for detection validation.\n\nExec Cmd Posh Mailbox\n\nExpected detections:\n  - SIEM: Exporting Exchange Mailbox via PowerShell\n\nATT&CK: T1005, T1114, T1114.002\n\nRuns the official Cortado RTA from the pinned Elastic wheel. Detection results depend on Elastic Security configuration.",
+      "tactic": "Collection",
+      "tcode": "T1005",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 120,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# Elastic Cortado RTA — Exec Cmd Posh Mailbox\n# Requires Python 3.12+ and extracted Cortado wheel on Agent\n\n# Setup: extract wheel to runtime path if not already done\nCORTADO_WHEEL=\"{{asset:elastic_cortado_wheel}}\"\nRUNTIME_DIR=\"#{cortado_runtime_path}\"\nif [ ! -d \"$RUNTIME_DIR/cortado\" ]; then\n  mkdir -p \"$RUNTIME_DIR\"\n  python3 -c \"import zipfile; zipfile.ZipFile('$CORTADO_WHEEL').extractall('$RUNTIME_DIR')\"\nfi\n\necho \"[INFO] Cortado RTA: exec_cmd_posh_mailbox (module=cortado.rtas.exec_cmd_posh_mailbox)\"\npython3 \"{{asset:elastic_cortado_runner}}\" \\\n  --runtime \"$RUNTIME_DIR\" \\\n  --module \"cortado.rtas.exec_cmd_posh_mailbox\" \\\n  --rta \"exec_cmd_posh_mailbox\" \\\n  --rta-id \"b6b65c6a-830a-4e1c-ace7-3c98362f998b\" \\\n  --techniques \"T1005,T1114,T1114.002\" \\\n  --endpoint-rules '[]' \\\n  --siem-rules '[{\"id\":\"6aace640-e631-4870-ba8e-5fdda09325db\",\"name\":\"Exporting Exchange Mailbox via PowerShell\"}]'",
+      "cleanup_command": null,
+      "required_tags": [
+        "cortado_runtime_path"
+      ],
+      "required_assets": [
+        "elastic_cortado_wheel",
+        "elastic_cortado_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "elastic-cortado",
+        "source_repository": "elastic/cortado",
+        "source_release": "dev-release-0.1.0+f1dd8bc1",
+        "source_commit": "f1dd8bc1883a399c4990f2f4a63d7a3d26cdd89e",
+        "source_module": "cortado.rtas.exec_cmd_posh_mailbox",
+        "source_path": "exec_cmd_posh_mailbox.py",
+        "rta_id": "b6b65c6a-830a-4e1c-ace7-3c98362f998b",
+        "rta_name": "exec_cmd_posh_mailbox",
+        "rta_type": "code",
+        "platforms": [
+          "windows"
+        ],
+        "techniques": [
+          "T1005",
+          "T1114",
+          "T1114.002"
+        ],
+        "mitre_tactics": [
+          "collection"
+        ],
+        "mitre_domain": "enterprise-attack",
+        "endpoint_rules": [],
+        "siem_rules": [
+          {
+            "id": "6aace640-e631-4870-ba8e-5fdda09325db",
+            "name": "Exporting Exchange Mailbox via PowerShell"
+          }
+        ],
+        "ancillary_files": [],
+        "sample_hash": null,
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}
