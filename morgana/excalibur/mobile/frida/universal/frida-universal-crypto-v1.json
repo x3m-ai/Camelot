@@ -1,0 +1,431 @@
+{
+  "package_id": "frida-universal-crypto-v1",
+  "package_name": "Frida - Universal - Crypto",
+  "version": "1.0.0",
+  "summary": "4 Frida instrumentation procedures for universal crypto mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 4 standalone Frida procedures from 2 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 4}; compatibility: {'likely-compatible': 3, 'legacy': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact",
+    "modify"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 4
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "biometrics",
+    "crypto-observation",
+    "enumeration",
+    "integrity-control-testing",
+    "keystore-keychain",
+    "method-hooking",
+    "native-hooking",
+    "network-observation",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare",
+    "interference-frida-scripts"
+  ],
+  "scope_counts": {
+    "generic": 4
+  },
+  "quality_distribution": {
+    "C": 3,
+    "A": 1
+  },
+  "license_distribution": {
+    "unknown": 4
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 3,
+    "legacy": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:fhaag95/bcryptdll-bcryptdecrypt",
+      "name": "FRIDA - UNIVERSAL - Crypto Observation - bcryptdll-bcryptdecrypt [32a5f138]",
+      "description": "Hook the BCryptDecrypt() function of the windows bcrypt.dll in order to extract decrypted contents during runtime of the hooked program.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "//Details on the function available here: https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptdecrypt\nvar bcryptdecrypt = Module.getExportByName(\"bcrypt.dll\", \"BCryptDecrypt\");\nInterceptor.attach(bcryptdecrypt, {\n    onEnter: function(args) {\n        this.plaintextPointer = args[6];\n        this.plaintextSizeVal = args[7];\n        if (this.plaintextPointer.isNull()) {\n            this.abort = true;\n            return;\n        }\n\n        try {\n            this.plaintextSize = this.plaintextSizeVal.readU64();\n        } catch (err) {\n            //Enable for Debugging purposes\n            //console.log('Error in onEnter: ' + err);\n        }\n    },\n    onLeave: function(retval) {\n        if (this.abort || this.plaintextSize == 0) {\n            return;\n        }\n\n        try {\n            let plaintext = this.plaintextPointer.readCString(this.plaintextSize);\n            if (plaintext != null) {\n                console.log('Obtained cleartext is: ' + plaintext);\n            }\n        } catch (err) {\n            //Enable for Debugging purposes\n            //console.log('Error in onLeave: ' + err);\n        }\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "fhaag95",
+        "codeshare_slug": "bcryptdll-bcryptdecrypt",
+        "codeshare_fingerprint": "32a5f13891dbeb504b8a5850fdefc2148869098cbfe283b2d87d6f263d2fc3da",
+        "project_uuid": "d7820e33-ea15-4a63-bfdd-4445c0228961",
+        "popularity": {
+          "page": 35,
+          "browse_title": "bcryptdll-bcryptdecrypt",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 35,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:fhaag95/bcryptdll-bcryptdecrypt",
+        "source_url": "https://codeshare.frida.re/@fhaag95/bcryptdll-bcryptdecrypt/",
+        "source_hash": "32a5f13891dbeb504b8a5850fdefc2148869098cbfe283b2d87d6f263d2fc3da",
+        "normalized_hash": "5796e580690f43a83eba44da1f7b4f237485181b1d0aaf7e123488335be209a9",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:InvictusNinja/enumerate-library",
+      "name": "FRIDA - UNIVERSAL - Crypto Observation - Enumerate Library [8c1a33f4]",
+      "description": "Enumerating Native library",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Module.enumerateExports(\"libhwui.so\", {\n    onMatch: function(e) {\n        if (e.type == 'function') {\n            console.log(\"name of function = \" + e.name);\n\n            if (e.name == \"Java_example_decrypt\") {\n                console.log(\"Function Decrypt recognized by name\");\n                Interceptor.attach(e.address, {\n                    onEnter: function(args) {\n                        console.log(\"Interceptor attached onEnter...\");\n                    },\n                    onLeave: function(retval) {\n                        console.log(\"Interceptor attached onLeave...\");\n                    }\n                });\n            }\n        }\n    },\n    onComplete: function() {}\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "InvictusNinja",
+        "codeshare_slug": "enumerate-library",
+        "codeshare_fingerprint": "8c1a33f41fe8b2678291b7bc89b2b6a11bb2bba2dc0b6d291256eb87352ba338",
+        "project_uuid": "31453de4-4e00-4c66-a9b9-c10f9375e122",
+        "popularity": {
+          "page": 15,
+          "browse_title": "Enumerate Library",
+          "likes": 1,
+          "views": "7K"
+        },
+        "discovery_page": 15,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:InvictusNinja/enumerate-library",
+        "source_url": "https://codeshare.frida.re/@InvictusNinja/enumerate-library/",
+        "source_hash": "8c1a33f41fe8b2678291b7bc89b2b6a11bb2bba2dc0b6d291256eb87352ba338",
+        "normalized_hash": "8c1a33f41fe8b2678291b7bc89b2b6a11bb2bba2dc0b6d291256eb87352ba338",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "enumeration",
+          "native-hooking"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.enumerateExports"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:realkerberos1/akamai-bmp-rsa-aes",
+      "name": "FRIDA - UNIVERSAL - Crypto Observation - Akamai BMP RSA-AES [b5990d20]",
+      "description": "Akamai BMP RSA-AES",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function processJniOnLoad(libraryName) {\n    const library = Process.getModuleByName(libraryName);\n\n    let exports = library.enumerateExports();\n    let actualRsaEncryptAddress = null;\n    let actualAesEncryptAddress = null;\n    for (let i = 0; i < exports.length; i++) {\n        const element = exports[i];\n        if (element.name.includes(\"RSAEncrypt\")) {\n            actualRsaEncryptAddress = element.address;\n        } else if (element.name.includes(\"AESEncrypt\")) {\n            actualAesEncryptAddress = element.address;\n        }\n    }\n\n    if (actualRsaEncryptAddress == null) {\n        throw (\"No RSAEncrypt found. Try adjusting your filter.\");\n    }\n    if (actualAesEncryptAddress == null) {\n        throw (\"No AESEncrypt found. Try adjusting your filter.\");\n    }\n\n    console.log(\"[+] Actual RSA Encrypt Address \" + actualRsaEncryptAddress);\n\n    Interceptor.attach(actualRsaEncryptAddress, {\n        onEnter: function(args) {\n            console.log(\"Hooked RSAEncrypt\");\n            const rsaPublicKey = Memory.readUtf8String(args[0]); //public key is the first arg, and is type uchar *\n            console.log(rsaPublicKey);\n        },\n        onLeave: function(retval) {\n            console.log(\"Leaving RSAEncrypt\");\n        }\n    });\n\n\n    //AESEncrypt Hook (encrypts the sensor)\n    console.log(\"[+] Actual AESEncrypt Address \" + actualAesEncryptAddress);\n\n    Interceptor.attach(actualAesEncryptAddress, {\n        onEnter: function(args) {\n            console.log(\"Hooked AESEncrypt\");\n            const plainSensor = Memory.readUtf8String(args[0]); //sensor is the first arg, and is type uchar *\n            console.log(plainSensor);\n        },\n        onLeave: function(retval) {\n            console.log(\"Leaving AESEncrypt\");\n        }\n    });\n}\n\nfunction waitForLibLoading(libraryName) {\n    var isLibLoaded = false;\n\n    Interceptor.attach(Module.findExportByName(null, \"android_dlopen_ext\"), {\n        onEnter: function(args) {\n            var libraryPath = Memory.readCString(args[0]);\n            if (libraryPath.includes(libraryName)) {\n                console.log(\"[+] Loading library \" + libraryPath + \"...\");\n                isLibLoaded = true;\n            }\n        },\n        onLeave: function(args) {\n            if (isLibLoaded) {\n                processJniOnLoad(libraryName);\n                isLibLoaded = false;\n            }\n        }\n    });\n}\n\nwaitForLibLoading(\"libakamaibmp.so\");",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "realkerberos1",
+        "codeshare_slug": "akamai-bmp-rsa-aes",
+        "codeshare_fingerprint": "b5990d20f34f2cbbb9ab1a90400e60366d523ed653b0c34cc57ab03005817486",
+        "project_uuid": "25d404e0-f7cd-4142-84a9-85997e3d7344",
+        "popularity": {
+          "page": 22,
+          "browse_title": "Akamai BMP RSA-AES",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 22,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:realkerberos1/akamai-bmp-rsa-aes",
+        "source_url": "https://codeshare.frida.re/@realkerberos1/akamai-bmp-rsa-aes/",
+        "source_hash": "b5990d20f34f2cbbb9ab1a90400e60366d523ed653b0c34cc57ab03005817486",
+        "normalized_hash": "bd6a5473c0ff6ab7a5c0a13bda3b898d7e20ddde148824d8c221eb796bc9d007",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "Process"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:interference-security/frida-scripts:security-testing/fingerprint-bypass.js",
+      "name": "FRIDA - UNIVERSAL - Crypto Observation - fingerprint bypass [a6822618]",
+      "description": "Curated Frida source from interference-security/frida-scripts: security-testing/fingerprint-bypass.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "//Credit: https://github.com/FSecureLABS/android-keystore-audit\n/*\n    Bypass fingerprint authentication if the app accept NULL cryptoObject in onAuthenticationSucceeded(...).\n    This script should automatically bypass fingerprint when authenticate(...) method will be called.\n*/\n\nconsole.log(\"Fingerprint hooks loaded!\");\n\nJava.perform(function () {\n    //Call in try catch as Biometric prompt is supported since api 28 (Android 9)\n    try { hookBiometricPrompt_authenticate(); }\n    catch (error) { console.log(\"hookBiometricPrompt_authenticate not supported on this android version\") }\n    try { hookBiometricPrompt_authenticate2(); }\n    catch (error) { console.log(\"hookBiometricPrompt_authenticate not supported on this android version\") }\n    try { hookFingerprintManagerCompat_authenticate(); }\n    catch (error) { console.log(\"hookFingerprintManagerCompat_authenticate failed\"); }\n    try { hookFingerprintManager_authenticate(); }\n    catch (error) { console.log(\"hookFingerprintManager_authenticate failed\"); }\n});\n\n\n\nvar cipherList = [];\nvar StringCls = null;\nJava.perform(function () {\n    StringCls = Java.use('java.lang.String');\n\n\n});\n\nfunction getAuthResult(resultObj, cryptoInst) {\n    try {\n        var authenticationResultInst = resultObj.$new(cryptoInst, null, 0);\n    } catch (error) {\n        try {\n            var authenticationResultInst = resultObj.$new(cryptoInst, null);\n        }\n        catch (error) {\n            var authenticationResultInst = resultObj.$new(cryptoInst);\n        }\n    }\n    console.log(\"cryptoInst:, \" + cryptoInst + \" class: \" + cryptoInst.$className);\n    return authenticationResultInst;\n}\n\nfunction getBiometricPromptAuthResult() {\n    var sweet_cipher = null;\n    var cryptoObj = Java.use('android.hardware.biometrics.BiometricPrompt$CryptoObject');\n    var cryptoInst = cryptoObj.$new(sweet_cipher);\n    var authenticationResultObj = Java.use('android.hardware.biometrics.BiometricPrompt$AuthenticationResult');\n    var authenticationResultInst = getAuthResult(authenticationResultObj, cryptoInst);\n    return authenticationResultInst\n}\n\nfunction hookBiometricPrompt_authenticate() {\n    var biometricPrompt = Java.use('android.hardware.biometrics.BiometricPrompt')['authenticate'].overload('android.os.CancellationSignal', 'java.util.concurrent.Executor', 'android.hardware.biometrics.BiometricPrompt$AuthenticationCallback');\n    console.log(\"Hooking BiometricPrompt.authenticate()...\");\n    biometricPrompt.implementation = function (cancellationSignal, executor, callback) {\n        console.log(\"[BiometricPrompt.BiometricPrompt()]: cancellationSignal: \" + cancellationSignal + \", executor: \" + \", callback: \" + callback);\n        var authenticationResultInst = getBiometricPromptAuthResult();\n        callback.onAuthenticationSucceeded(authenticationResultInst);\n    }\n}\n\nfunction hookBiometricPrompt_authenticate2() {\n    var biometricPrompt = Java.use('android.hardware.biometrics.BiometricPrompt')['authenticate'].overload('android.hardware.biometrics.BiometricPrompt$CryptoObject', 'android.os.CancellationSignal', 'java.util.concurrent.Executor', 'android.hardware.biometrics.BiometricPrompt$AuthenticationCallback');\n    console.log(\"Hooking BiometricPrompt.authenticate2()...\");\n    biometricPrompt.implementation = function (crypto, cancellationSignal, executor, callback) {\n        console.log(\"[BiometricPrompt.BiometricPrompt2()]: crypto:\" + crypto + \", cancellationSignal: \" + cancellationSignal + \", executor: \" + \", callback: \" + callback);\n        var authenticationResultInst = getBiometricPromptAuthResult();\n        callback.onAuthenticationSucceeded(authenticationResultInst);\n    }\n}\n\nfunction hookFingerprintManagerCompat_authenticate() {\n    /*\n    void authenticate (FingerprintManagerCompat.CryptoObject crypto, \n                    int flags, \n                    CancellationSignal cancel, \n                    FingerprintManagerCompat.AuthenticationCallback callback, \n                    Handler handler)\n    */\n    var fingerprintManagerCompat = null;\n    var cryptoObj = null;\n    var authenticationResultObj = null;\n    try {\n        fingerprintManagerCompat = Java.use('android.support.v4.hardware.fingerprint.FingerprintManagerCompat');\n        cryptoObj = Java.use('android.support.v4.hardware.fingerprint.FingerprintManagerCompat$CryptoObject');\n        authenticationResultObj = Java.use('android.support.v4.hardware.fingerprint.FingerprintManagerCompat$AuthenticationResult');\n    } catch (error) {\n        try {\n            fingerprintManagerCompat = Java.use('androidx.core.hardware.fingerprint.FingerprintManagerCompat');\n            cryptoObj = Java.use('androidx.core.hardware.fingerprint.FingerprintManagerCompat$CryptoObject');\n            authenticationResultObj = Java.use('androidx.core.hardware.fingerprint.FingerprintManagerCompat$AuthenticationResult');\n        }\n        catch (error) {\n            console.log(\"FingerprintManagerCompat class not found!\");\n            return\n        }\n    }\n    console.log(\"Hooking FingerprintManagerCompat.authenticate()...\");\n    var fingerprintManagerCompat_authenticate = fingerprintManagerCompat['authenticate'];\n    fingerprintManagerCompat_authenticate.implementation = function (crypto, flags, cancel, callback, handler) {\n        console.log(\"[FingerprintManagerCompat.authenticate()]: crypto: \" + crypto + \", flags: \" + flags + \", cancel:\" + cancel + \", callback: \" + callback + \", handler: \" + handler);\n        //console.log(enumMethods(callback.$className));\n        callback['onAuthenticationFailed'].implementation = function () {\n            console.log(\"[onAuthenticationFailed()]:\");\n            var sweet_cipher = null;\n            var cryptoInst = cryptoObj.$new(sweet_cipher);\n            var authenticationResultInst = getAuthResult(authenticationResultObj, cryptoInst);\n            callback.onAuthenticationSucceeded(authenticationResultInst);\n        }\n        return this.authenticate(crypto, flags, cancel, callback, handler);\n    }\n}\n\nfunction hookFingerprintManager_authenticate() {\n    /*\n    public void authenticate (FingerprintManager.CryptoObject crypto, \n                    CancellationSignal cancel, \n                    int flags, \n                    FingerprintManager.AuthenticationCallback callback, \n                    Handler handler)\nError: authenticate(): has more than one overload, use .overload(<signature>) to choose from:\n    .overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler')\n    .overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler', 'int')\n\n\n    */\n    var fingerprintManager = null;\n    var cryptoObj = null;\n    var authenticationResultObj = null;\n    try {\n        fingerprintManager = Java.use('android.hardware.fingerprint.FingerprintManager');\n        cryptoObj = Java.use('android.hardware.fingerprint.FingerprintManager$CryptoObject');\n        authenticationResultObj = Java.use('android.hardware.fingerprint.FingerprintManager$AuthenticationResult');\n    } catch (error) {\n        try {\n            fingerprintManager = Java.use('androidx.core.hardware.fingerprint.FingerprintManager');\n            cryptoObj = Java.use('androidx.core.hardware.fingerprint.FingerprintManager$CryptoObject');\n            authenticationResultObj = Java.use('androidx.core.hardware.fingerprint.FingerprintManager$AuthenticationResult');\n        }\n        catch (error) {\n            console.log(\"FingerprintManager class not found!\");\n            return\n        }\n    }\n    console.log(\"Hooking FingerprintManager.authenticate()...\");\n\n    var fingerprintManager_authenticate = fingerprintManager['authenticate'].overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler');\n    fingerprintManager_authenticate.implementation = function (crypto, cancel, flags, callback, handler) {\n        console.log(\"[FingerprintManager.authenticate()]: crypto: \" + crypto + \", flags: \" + flags + \", cancel:\" + cancel + \", callback: \" + callback + \", handler: \" + handler);\n        var sweet_cipher = null;\n        var cryptoInst = cryptoObj.$new(sweet_cipher);\n        var authenticationResultInst = getAuthResult(authenticationResultObj, cryptoInst);\n        callback.onAuthenticationSucceeded(authenticationResultInst);\n        return this.authenticate(crypto, cancel, flags, callback, handler);\n    }\n}\n\n\nfunction enumMethods(targetClass) {\n    var hook = Java.use(targetClass);\n    var ownMethods = hook.class.getDeclaredMethods();\n\n    return ownMethods;\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "repository": "https://github.com/interference-security/frida-scripts",
+        "source_commit": "5fb5f078535296a2f1c9b99bee663f1ea9d7011b",
+        "source_commit_date": "2022-09-26",
+        "source_path": "security-testing/fingerprint-bypass.js",
+        "platform_hint": [
+          "android",
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "interference-frida-scripts",
+        "source_id": "frida:github:interference-security/frida-scripts:security-testing/fingerprint-bypass.js",
+        "source_url": "https://github.com/interference-security/frida-scripts/blob/5fb5f078535296a2f1c9b99bee663f1ea9d7011b/security-testing/fingerprint-bypass.js",
+        "source_hash": "a6822618c8f69211a0a11eb011337ffa239e57ea25b7790bdf1b8329e3775c14",
+        "normalized_hash": "2cdfcbf7caf0e891d15f9571c1f082417533a1ca7854799236f9fda3c51bc754",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "biometrics",
+          "crypto-observation",
+          "enumeration",
+          "integrity-control-testing",
+          "keystore-keychain",
+          "method-hooking",
+          "network-observation",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "crypto-observation",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

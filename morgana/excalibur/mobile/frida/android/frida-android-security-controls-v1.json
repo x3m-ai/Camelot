@@ -1,0 +1,1376 @@
+{
+  "package_id": "frida-android-security-controls-v1",
+  "package_name": "Frida - Android - Security Controls",
+  "version": "1.0.0",
+  "summary": "16 Frida instrumentation procedures for android security controls mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 16 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: cordova, native-java.",
+    "Scope mix: {'generic': 15, 'framework-specific': 1}; compatibility: {'likely-compatible': 12, 'legacy': 4}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "modify",
+    "disrupt"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 16
+  },
+  "frameworks": [
+    "cordova",
+    "native-java"
+  ],
+  "behavior_categories": [
+    "crypto-observation",
+    "database",
+    "debugger-detection-testing",
+    "emulator-detection-testing",
+    "enumeration",
+    "filesystem",
+    "instrumentation-detection-testing",
+    "integrity-control-testing",
+    "ipc",
+    "jailbreak-state-testing",
+    "method-hooking",
+    "native-hooking",
+    "network-observation",
+    "root-state-testing",
+    "runtime-tracing",
+    "webview"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 15,
+    "framework-specific": 1
+  },
+  "quality_distribution": {
+    "C": 15,
+    "B": 1
+  },
+  "license_distribution": {
+    "unknown": 16
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 12,
+    "legacy": 4
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:0xshdax/bypass-root-plugins-cyberkatze-iroot",
+      "name": "FRIDA - ANDROID - Root State Testing - Bypass Root Plugins cyberkatze iRoot [827730ed]",
+      "description": "Bypass root detection android for plugins cyberkatze iroot",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Author: 0xshdax\n\nJava.perform(function() {\n    let IRoot = Java.use(\"de.cyberkatze.iroot.IRoot\");\n    IRoot[\"execute\"].implementation = function(str, jSONArray, callbackContext) {\n        this[\"execute\"](str, jSONArray, callbackContext);\n        console.log(`Bypass Root [!]`);\n        return false;\n    };\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "0xshdax",
+        "codeshare_slug": "bypass-root-plugins-cyberkatze-iroot",
+        "codeshare_fingerprint": "827730ed2ec97c2b9fc2883abb9e9c51b876842420c7e96ca2ac55e5f2adaafb",
+        "project_uuid": "a13a018f-bce9-406e-84ca-379603dfc84b",
+        "popularity": {
+          "page": 37,
+          "browse_title": "Bypass Root Plugins cyberkatze iRoot",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 37,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:0xshdax/bypass-root-plugins-cyberkatze-iroot",
+        "source_url": "https://codeshare.frida.re/@0xshdax/bypass-root-plugins-cyberkatze-iroot/",
+        "source_hash": "827730ed2ec97c2b9fc2883abb9e9c51b876842420c7e96ca2ac55e5f2adaafb",
+        "normalized_hash": "fb91cb10b2c87de0c3e653726b65612c5616c0a50e29d5e14d185e494736b25e",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:abrahem/scottyab-root-bypass",
+      "name": "FRIDA - ANDROID - Root State Testing - Scottyab Root bypass [e4709a99]",
+      "description": "Latest Scottyab Root bypass",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function () {\r\n    setTimeout(function () {\r\n        // List all loaded modules\r\n        var modules = Process.enumerateModules();\r\n        modules.forEach(function(module) {\r\n            console.log(\"Loaded module:\", module.name);\r\n        });\r\n\r\n        // Find the base address of the target module\r\n        var targetModule = Process.getModuleByName(\"libtoolChecker.so\");\r\n        if (targetModule) {\r\n            console.log(\"Found libtoolChecker.so at:\", targetModule.base);\r\n        } else {\r\n            console.log(\"Failed to find libtoolChecker.so.\");\r\n        }\r\n    }, 2000); // Wait for 2 seconds before trying to access the modules\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "abrahem",
+        "codeshare_slug": "scottyab-root-bypass",
+        "codeshare_fingerprint": "e4709a99649c36b5cfd94f0b8fca8cd8de2e423f43a11cd509c9130eda4d6b02",
+        "project_uuid": "ee453811-faf9-4d2a-994b-cfb053cdad4b",
+        "popularity": {
+          "page": 27,
+          "browse_title": "Scottyab Root bypass",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 27,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:abrahem/scottyab-root-bypass",
+        "source_url": "https://codeshare.frida.re/@abrahem/scottyab-root-bypass/",
+        "source_hash": "e4709a99649c36b5cfd94f0b8fca8cd8de2e423f43a11cd509c9130eda4d6b02",
+        "normalized_hash": "692809a86364ad0c757259b5dd6403a04c0c49187c712f7a0f98b4fc18dabef0",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:damaidec/root-detection-bypass-for-cordova-plugin-devicecompile",
+      "name": "FRIDA - ANDROID - Root State Testing - Root detection bypass for cordova plugin devicecompile [a291fb20]",
+      "description": "This script hooks into a function called IsDrived() which contains several private function.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function(){\r\n    try {\r\n        var Root = Java.use(\"cordova.plugin.devicecompile.devicecompile\");\r\n        \r\n        if (Root) {\r\n            console.log(\"cordova.plugin.devicecompile detected\");\r\n            Root.IsDrived.overload().implementation = function(){\r\n                return false;\r\n            };\r\n        } else {\r\n            console.log(\"cordova.plugin.devicecompile Not detected\");\r\n        }\r\n    } catch (error) {\r\n        console.error(\"An error occurred:\", error);\r\n    }\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "damaidec",
+        "codeshare_slug": "root-detection-bypass-for-cordova-plugin-devicecompile",
+        "codeshare_fingerprint": "a291fb203f57fde0a4185f6bbe7e08f30b8fe425aa1d6e35ce0f58eaf4e7f54d",
+        "project_uuid": "9cd443bb-1d44-4629-a08d-3e1a44464656",
+        "popularity": {
+          "page": 32,
+          "browse_title": "Root detection bypass for cordova plugin devicecompile",
+          "likes": 0,
+          "views": "2K"
+        },
+        "discovery_page": 32,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:damaidec/root-detection-bypass-for-cordova-plugin-devicecompile",
+        "source_url": "https://codeshare.frida.re/@damaidec/root-detection-bypass-for-cordova-plugin-devicecompile/",
+        "source_hash": "a291fb203f57fde0a4185f6bbe7e08f30b8fe425aa1d6e35ce0f58eaf4e7f54d",
+        "normalized_hash": "e59fd8606061c814d635037348e6dd07dd2f18a9a5c08c4956808205a1ba66ab",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "cordova"
+        ],
+        "scope": "framework-specific",
+        "behaviors": [
+          "method-hooking",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "framework_prerequisite",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dodal-omkar/no-exit-please-android",
+      "name": "FRIDA - ANDROID - Root State Testing - no-exit-please Android [57b6f45d]",
+      "description": "A universal Frida script to bypass application self-termination at both Java and native levels on Android. This effectively bypasses termination-based security mechanisms commonly used in root detection, emulator detection, tamper detection, and instrumentation checks. Designed for penetration testing, ethical hacking, reverse engineering, and security research on Android applications that intentionally shut themselves down when defensive checks are triggered.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\r\n═══════════════════════════════════════════════════════════════\r\n   no_exit_please.js\r\n   Universal Frida No-Exit Harness (Java + Native)\r\n\r\n   Purpose : Block application termination to enable\r\n             reverse engineering and security analysis\r\n   Author  : Slayer\r\n   Version : 1.3.0\r\n═══════════════════════════════════════════════════════════════\r\n*/\r\n\r\n'use strict';\r\n\r\n/* =========================\r\n * Java-level hooks\r\n * ========================= */\r\n\r\nfunction installJavaHooks() {\r\n  if (!Java.available) {\r\n    console.log('[-] Java VM not available');\r\n    return;\r\n  }\r\n\r\n  Java.perform(function () {\r\n    const Log = Java.use('android.util.Log');\r\n    const Exception = Java.use('java.lang.Exception');\r\n\r\n    function logStack(tag) {\r\n      try {\r\n        const ex = Exception.$new('stack');\r\n        const st = ex.getStackTrace();\r\n        let out = [];\r\n        for (let i = 0; i < Math.min(st.length, 25); i++) {\r\n          out.push(st[i].toString());\r\n        }\r\n        Log.i(tag, 'Java stack:\\n' + out.join('\\n'));\r\n      } catch (_) {}\r\n    }\r\n\r\n    // System.exit\r\n    try {\r\n      Java.use('java.lang.System')\r\n        .exit.overload('int')\r\n        .implementation = function (code) {\r\n          Log.w('frida.noexit', '[BLOCKED][Slayer] System.exit(' + code + ')');\r\n          logStack('frida.noexit');\r\n        };\r\n      console.log('[+] Hooked System.exit');\r\n    } catch (_) {}\r\n\r\n    // Runtime.exit\r\n    try {\r\n      Java.use('java.lang.Runtime')\r\n        .exit.overload('int')\r\n        .implementation = function (code) {\r\n          Log.w('frida.noexit', '[BLOCKED][Slayer] Runtime.exit(' + code + ')');\r\n          logStack('frida.noexit');\r\n        };\r\n      console.log('[+] Hooked Runtime.exit');\r\n    } catch (_) {}\r\n\r\n    // Process\r\n    try {\r\n      const Process = Java.use('android.os.Process');\r\n\r\n      Process.killProcess.overload('int').implementation = function (pid) {\r\n        Log.w('frida.noexit', '[BLOCKED][Slayer] killProcess(' + pid + ')');\r\n        logStack('frida.noexit');\r\n      };\r\n\r\n      if (Process.sendSignal) {\r\n        Process.sendSignal.overload('int', 'int').implementation = function (pid, sig) {\r\n          Log.w('frida.noexit', '[BLOCKED][Slayer] sendSignal(' + pid + ',' + sig + ')');\r\n          logStack('frida.noexit');\r\n        };\r\n      }\r\n\r\n      console.log('[+] Hooked android.os.Process');\r\n    } catch (_) {}\r\n\r\n    // Activity\r\n    try {\r\n      const Activity = Java.use('android.app.Activity');\r\n\r\n      Activity.finish.implementation = function () {\r\n        Log.w('frida.noexit', '[BLOCKED][Slayer] Activity.finish()');\r\n        logStack('frida.noexit');\r\n      };\r\n\r\n      if (Activity.finishAffinity) {\r\n        Activity.finishAffinity.implementation = function () {\r\n          Log.w('frida.noexit', '[BLOCKED][Slayer] finishAffinity()');\r\n          logStack('frida.noexit');\r\n        };\r\n      }\r\n\r\n      console.log('[+] Hooked Activity exits');\r\n    } catch (_) {}\r\n\r\n    console.log('[*] Java no-exit hooks installed (Slayer)');\r\n  });\r\n}\r\n\r\n/* =========================\r\n * Native-level hooks\r\n * ========================= */\r\n\r\nfunction installNativeHooks() {\r\n  function safeReplace(symbol, ret, args, impl) {\r\n    const addr = Module.findExportByName('libc.so', symbol);\r\n    if (!addr) {\r\n      console.log('[i] Native symbol not found:', symbol);\r\n      return;\r\n    }\r\n\r\n    Interceptor.replace(addr, new NativeCallback(impl, ret, args));\r\n    console.log('[+] Replaced native', symbol);\r\n  }\r\n\r\n  try {\r\n    safeReplace('exit', 'void', ['int'], function (code) {\r\n      console.log('[BLOCKED][Slayer] exit(' + code + ')');\r\n    });\r\n\r\n    safeReplace('_exit', 'void', ['int'], function (code) {\r\n      console.log('[BLOCKED][Slayer] _exit(' + code + ')');\r\n    });\r\n\r\n    safeReplace('abort', 'void', [], function () {\r\n      console.log('[BLOCKED][Slayer] abort()');\r\n    });\r\n\r\n    safeReplace('kill', 'int', ['int', 'int'], function (pid, sig) {\r\n      console.log('[BLOCKED][Slayer] kill(' + pid + ',' + sig + ')');\r\n      return 0;\r\n    });\r\n\r\n  } catch (e) {\r\n    console.log('[-] Native hook error:', e);\r\n  }\r\n}\r\n\r\n/* =========================\r\n * Deferred install (CRITICAL)\r\n * ========================= */\r\n\r\nsetImmediate(function () {\r\n  if (typeof NativeCallback === 'function') {\r\n    installNativeHooks();\r\n  } else {\r\n    console.log('[i] NativeCallback not ready, skipping native hooks');\r\n  }\r\n\r\n  installJavaHooks();\r\n  console.log('[*] no_exit_please.js fully loaded — Slayer');\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "codeshare_author": "dodal-omkar",
+        "codeshare_slug": "no-exit-please-android",
+        "codeshare_fingerprint": "57b6f45dc2b271b9bb8e61531b842ebf1314bc4abac20b0b2ff7fef189c425d8",
+        "project_uuid": "c888a4ff-83a3-4084-beea-4930510d5e2b",
+        "popularity": {
+          "page": 18,
+          "browse_title": "no-exit-please Android",
+          "likes": 0,
+          "views": "350"
+        },
+        "discovery_page": 18,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dodal-omkar/no-exit-please-android",
+        "source_url": "https://codeshare.frida.re/@dodal-omkar/no-exit-please-android/",
+        "source_hash": "57b6f45dc2b271b9bb8e61531b842ebf1314bc4abac20b0b2ff7fef189c425d8",
+        "normalized_hash": "767d9d6c2cc0ec995aa1167f0467bacfeb65bf0f5fad6441a7c64b619c7f8862",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "emulator-detection-testing",
+          "integrity-control-testing",
+          "ipc",
+          "method-hooking",
+          "native-hooking",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "Process",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dzulfiqois/uncrackable-l1-passcode-extractor",
+      "name": "FRIDA - ANDROID - Root State Testing - Uncrackable-L1-Passcode-Extractor [9f34dd67]",
+      "description": "Only for Uncrackable L1.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function bin2string(array) {\r\n  var result = \"\";\r\n  for (var index = 0; index < array.length; index++) {\r\n    result += String.fromCharCode(array[index]);\r\n  }\r\n  return result;\r\n}\r\n\r\nJava.perform(function () {\r\n  //hooking root detection class on MainActivity for root bypassing\r\n  var rootBypassing = Java.use(\"sg.vantagepoint.uncrackable1.MainActivity\");\r\n  rootBypassing.a.implementation = function () {\r\n    console.log(\"Root Bypassed\");\r\n\r\n    //hooking class that handling secret passcode encryption\r\n    var passcode = Java.use(\"sg.vantagepoint.a.a\");\r\n    passcode.a.implementation = function (x1, x2) {\r\n      var passcodeFunctionCall = [];\r\n      passcodeFunctionCall = this.a(x1, x2);\r\n      var output = bin2string(passcodeFunctionCall);\r\n      console.log(\"Passcode : \" + output);\r\n      return passcodeFunctionCall;\r\n    };\r\n  };\r\n});\r\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "dzulfiqois",
+        "codeshare_slug": "uncrackable-l1-passcode-extractor",
+        "codeshare_fingerprint": "9f34dd67cb4a96355d05b4d37ebf6959ad53505b6e9524a766034c4e574ca01f",
+        "project_uuid": "d7881d4b-9175-4c2a-bdeb-97447628420a",
+        "popularity": {
+          "page": 31,
+          "browse_title": "Uncrackable-L1-Passcode-Extractor",
+          "likes": 0,
+          "views": "895"
+        },
+        "discovery_page": 31,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dzulfiqois/uncrackable-l1-passcode-extractor",
+        "source_url": "https://codeshare.frida.re/@dzulfiqois/uncrackable-l1-passcode-extractor/",
+        "source_hash": "9f34dd67cb4a96355d05b4d37ebf6959ad53505b6e9524a766034c4e574ca01f",
+        "normalized_hash": "c709b81161cf57c77b944d7b08b2af403ecf05cc050d46ce4da32d28f0f4802b",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "crypto-observation",
+          "method-hooking",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Hyupai/teste1234",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - Teste1234 [9af29718]",
+      "description": "Teste1234",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Função que valida instruções e retorna syscall number\r\nfunction attachSyscall(address, arch, base) {\r\n    Interceptor.attach(address, {\r\n        onEnter: function(args) {\r\n            var offset = ptr(address).sub(base);\r\n            if (arch === \"x86\") {\r\n                console.log(`[->] Syscall x86 executada @ ${address} | offset: ${offset}`);\r\n                console.log(\"    EAX (syscall number): \" + this.context.eax);\r\n                console.log(\"    EBX, ECX, EDX, ESI, EDI: \" +\r\n                    this.context.ebx + \", \" + this.context.ecx + \", \" + \r\n                    this.context.edx + \", \" + this.context.esi + \", \" + this.context.edi);\r\n            } else {\r\n                console.log(`[->] Syscall x86_64 executada @ ${address} | offset: ${offset}`);\r\n                console.log(\"    RAX (syscall number): \" + this.context.rax);\r\n                console.log(\"    RDI, RSI, RDX, R10, R8, R9: \" +\r\n                    this.context.rdi + \", \" + this.context.rsi + \", \" + \r\n                    this.context.rdx + \", \" + this.context.r10 + \", \" +\r\n                    this.context.r8 + \", \" + this.context.r9);\r\n            }\r\n        },\r\n        onLeave: function(retval) {\r\n            console.log(\"[<-] Syscall retornou: \" + retval);\r\n        }\r\n    });\r\n}\r\n\r\n// Scan de syscalls dentro da lib\r\nfunction scanSyscalls() {\r\n    var lib = Process.findModuleByName('l201a582c.so');\r\n    lib.enumerateRanges('--x').forEach(function(range) {\r\n        // Scan x86 (int 0x80)\r\n        Memory.scan(range.base, range.size, \"CD 80\", {\r\n            onMatch: function(address, size) {\r\n                try {\r\n                    var insn = Instruction.parse(address);\r\n                    if (insn.mnemonic === \"int\" && insn.opStr === \"0x80\") {\r\n                        console.log(\"[!] Syscall x86 encontrada em: \" + address);\r\n                        attachSyscall(address, \"x86\", lib.base);\r\n                    }\r\n                } catch(e) {}\r\n            },\r\n            onComplete: function() {}\r\n        });\r\n\r\n        // Scan x86_64 (syscall)\r\n        Memory.scan(range.base, range.size, \"0F 05\", {\r\n            onMatch: function(address, size) {\r\n                try {\r\n                    var insn = Instruction.parse(address);\r\n                    if (insn.mnemonic === \"syscall\") {\r\n                        console.log(\"[!] Syscall x86_64 encontrada em: \" + address);\r\n                        attachSyscall(address, \"x86_64\", lib.base);\r\n                    }\r\n                } catch(e) {}\r\n            },\r\n            onComplete: function() {}\r\n        });\r\n    });\r\n\r\n    console.log(\"[*] Scan de syscalls iniciado nas regiões executáveis da lib!\");\r\n}\r\n\r\n\r\n// Salva a função original do dlopen\r\nvar dlopenPtr = Module.findExportByName(null, 'dlopen');\r\nvar originalDlopen = new NativeFunction(dlopenPtr, 'pointer', ['pointer', 'int']);\r\n\r\nInterceptor.replace(dlopenPtr, new NativeCallback(function(pathPtr, mode) {\r\n    var path = Memory.readUtf8String(pathPtr);\r\n    console.log(\"dlopen(path=\\\"\" + path + \"\\\", mode=\" + mode + \")\");\r\n\r\n    // Chama a função original\r\n    var handle = originalDlopen(pathPtr, mode);\r\n\r\n    // Verifica se é a lib alvo\r\n    if (path.indexOf('l201a582c.so') >= 0) {\r\n        console.log(\"[*] l201a582c.so loaded | handle/base: \" + handle);\r\n        \r\n        if (1) {\r\n    console.log(\"✅ Loading Full Tinder Debug Logger\");\r\n\r\n    // Hook and log sysctl()\r\n    var sysctl = Module.findExportByName(null, \"sysctl\");\r\n    if (sysctl) {\r\n        Interceptor.attach(sysctl, {\r\n            onEnter: function(args) {\r\n                console.log(\"🔥 sysctl() called\");\r\n            },\r\n            onLeave: function(retval) {\r\n               \r\n            }\r\n        });\r\n    }\r\n\r\n    // Hook and log csops()\r\n    var csops = Module.findExportByName(null, \"csops\");\r\n    if (csops) {\r\n        Interceptor.attach(csops, {\r\n            onEnter: function(args) {\r\n                console.log(\"🔥 csops() called\");\r\n            },\r\n            onLeave: function(retval) {\r\n              \r\n            }\r\n        });\r\n    }\r\n\r\n    // Hook and log task_info()\r\n    var task_info = Module.findExportByName(null, \"task_info\");\r\n    if (task_info) {\r\n        Interceptor.attach(task_info, {\r\n            onEnter: function(args) {\r\n                console.log(\"🔥 task_info() called\");\r\n            },\r\n            onLeave: function(retval) {\r\n              \r\n            }\r\n        });\r\n    }\r\n\r\n    // Hook and log syscall()\r\n    var syscall = Module.findExportByName(null, \"syscall\");\r\n    if (syscall) {\r\n        Interceptor.attach(syscall, {\r\n            onEnter: function(args) {\r\n                var syscall_number = args[0].toInt32();\r\n                console.log(\"🔥 syscall() detected: \" + syscall_number);\r\n            },\r\n            onLeave: function(retval) {\r\n                \r\n            }\r\n        });\r\n    }\r\n\r\n    // Hook and log mmap() (used for memory checks)\r\n    var mmap = Module.findExportByName(null, \"mmap\");\r\n    if (mmap) {\r\n        Interceptor.attach(mmap, {\r\n            onEnter: function(args) {\r\n                console.log(\"🔥 mmap() called\");\r\n            },\r\n            onLeave: function(retval) {\r\n               \r\n            }\r\n        });\r\n    }\r\n\r\n    // Hook and log ptrace() (used for anti-debugging)\r\n    var ptrace = Module.findExportByName(null, \"ptrace\");\r\n    if (ptrace) {\r\n        Interceptor.attach(ptrace, {\r\n            onEnter: function(args) {\r\n                console.log(\"🔥 ptrace() called (possible anti-debugging)\");\r\n            },\r\n            onLeave: function(retval) {\r\n               \r\n            }\r\n        });\r\n    }\r\n\r\n    console.log(\"✅ Full Tinder Debug Logger Loaded\");\r\n}\r\n\r\n        try {\r\n            // Hook JNI_OnLoad usando endereço do IDA\r\n            var mod = Process.findModuleByName('l201a582c.so');\r\n            if (mod) {\r\n             \r\n                  scanSyscalls();\r\n\r\n                var jniOnLoad_offset = 0x1B1C0; // offset do IDA\r\n                var jniOnLoad_addr = mod.base.add(jniOnLoad_offset);\r\n                console.log(\"[*] Hookando JNI_OnLoad em \" + jniOnLoad_addr);\r\n\r\n                Interceptor.attach(jniOnLoad_addr, {\r\n                    onEnter: function(args) {\r\n                        console.log(\"[->] JNI_OnLoad chamado -> JavaVM*: \" + args[0] + \", reserved: \" + args[1]);\r\n                    },\r\n                    onLeave: function(retval) {\r\n                        console.log(\"[<-] JNI_OnLoad retornou: \" + retval);\r\n                    }\r\n                });\r\n                \r\n                // 2️⃣ Hook .init_proc\r\n                var init_proc_offset = 0x49440;\r\n                var init_proc_addr = mod.base.add(init_proc_offset);\r\n                console.log(\"[*] Hookando .init_proc em \" + init_proc_addr);\r\n                Interceptor.attach(init_proc_addr, {\r\n                    onEnter: function(args) {\r\n                        console.log(\"[->] .init_proc chamado\");\r\n                    },\r\n                    onLeave: function(retval) {\r\n                        console.log(\"[<-] .init_proc retornou | retval: \" + retval);\r\n                    }\r\n                });\r\n\r\n                // 3️⃣ Hook sub_C90C0 (não exportada)\r\n                var sub_C90C0_offset = 0xC90C0;\r\n                var sub_C90C0_addr = mod.base.add(sub_C90C0_offset);\r\n                console.log(\"[*] Hookando sub_C90C0 em \" + sub_C90C0_addr);\r\n                Interceptor.attach(sub_C90C0_addr, {\r\n                    onEnter: function(args) {\r\n                        // args[0] = a1@<ecx>, args[1] = a2@<ebx> (approximated)\r\n                        console.log(\"[->] sub_C90C0 chamado -> a1: \" + args[0] + \", a2: \" + args[1]);\r\n                    },\r\n                    onLeave: function(retval) {\r\n                        console.log(\"[<-] sub_C90C0 retornou | retval: \" + retval);\r\n                    }\r\n                });\r\n                \r\n            }\r\n        } catch(e) {\r\n            console.log(\"[!] Erro hookando JNI_OnLoad: \" + e);\r\n        }\r\n    }\r\n\r\n    return handle; // retorna handle original\r\n}, 'pointer', ['pointer', 'int']));\r\n\r\n// Lista de funções de tempo na libc\r\nvar timeFuncs = [\"time\", \"gettimeofday\", \"clock_gettime\", \"_time\", \"__time\", \"_gettimeofday\", \"__openat\"];\r\n\r\ntimeFuncs.forEach(function(fnName) {\r\n    var ptr = Module.findExportByName(\"libc.so\", fnName);\r\n    if (ptr) {\r\n        Interceptor.attach(ptr, {\r\n            onEnter: function(args) {\r\n                console.log(\"[->] \" + fnName + \" chamado\");\r\n                // args[0], args[1] dependendo da função\r\n            },\r\n            onLeave: function(retval) {\r\n                console.log(\"[<-] \" + fnName + \" retornou: \" + retval);\r\n            }\r\n        });\r\n        console.log(\"[*] Hook instalado: \" + fnName + \" @ \" + ptr);\r\n    }\r\n});\r\n\r\n// ===== Hook de dlsym =====\r\nvar dlsymPtr = Module.findExportByName(null, 'dlsym');\r\nif (dlsymPtr) {\r\n    Interceptor.attach(dlsymPtr, {\r\n        onEnter: function(args) {\r\n            this.handle = args[0];\r\n            this.symbol = Memory.readUtf8String(args[1]);\r\n            console.log(\"[*] dlsym chamado: handle=\" + this.handle + \", symbol=\" + this.symbol);\r\n        },\r\n        onLeave: function(retval) {\r\n            console.log(\"[*] dlsym retornou: \" + retval);\r\n        }\r\n    });\r\n}\r\n\r\n// ===== Hook de __openat =====\r\nvar openatPtr = Module.findExportByName(null, '__openat');\r\nif (openatPtr) {\r\n    Interceptor.attach(openatPtr, {\r\n        onEnter: function(args) {\r\n            try {\r\n                var pathname = Memory.readUtf8String(args[1]);\r\n                console.log(\"[*] __openat chamado: dirfd=\" + args[0] + \", path=\" + pathname + \", flags=\" + args[2]);\r\n            } catch(e) {}\r\n        },\r\n        onLeave: function(retval) {\r\n            console.log(\"[*] __openat retornou: \" + retval);\r\n        }\r\n    });\r\n}\r\n\r\n\r\n\r\n// Hook JNI System.currentTimeMillis()\r\nJava.perform(function(){\r\n    var System = Java.use(\"java.lang.System\");\r\n    System.currentTimeMillis.implementation = function(){\r\n        var now = this.currentTimeMillis();\r\n        console.log(\"[->] System.currentTimeMillis() chamado -> \" + now);\r\n        return now; // pode alterar\r\n    };\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Hyupai",
+        "codeshare_slug": "teste1234",
+        "codeshare_fingerprint": "9af29718764068276fed152aa3a9ec8d982bf4f6f8182e2d2ed46f61251bed5b",
+        "project_uuid": "66ec9296-3ca1-4f0e-bf4b-1889e414b315",
+        "popularity": {
+          "page": 26,
+          "browse_title": "Teste1234",
+          "likes": 0,
+          "views": "809"
+        },
+        "discovery_page": 26,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Hyupai/teste1234",
+        "source_url": "https://codeshare.frida.re/@Hyupai/teste1234/",
+        "source_hash": "9af29718764068276fed152aa3a9ec8d982bf4f6f8182e2d2ed46f61251bed5b",
+        "normalized_hash": "d126c384a4baea52b85d85c14bd4715d89d575f36684aa058af3115fee93b367",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "filesystem",
+          "method-hooking",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "Interceptor.attach",
+          "Interceptor.replace",
+          "Module.findExportByName",
+          "Memory",
+          "Process",
+          "NativeFunction",
+          "NativeCallback"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/k",
+      "name": "FRIDA - ANDROID - Jailbreak State Testing - k [21d8362f]",
+      "description": "s",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Updated Frida script to bypass new jailbreak detection in Tinder 16.2.2\n// Hooks additional detection methods found in latest version\n\nJava.perform(function () {\n    var jailbreakPaths = [\n        \"/Applications/Cydia.app\",\n        \"/Applications/Sileo.app\",\n        \"/Applications/Zebra.app\",\n        \"/Applications/blackra1n.app\",\n        \"/private/var/lib/cydia\",\n        \"/usr/bin/ssh\",\n        \"/etc/apt\"\n    ];\n\n    // Hook file existence checks\n    var fopen = Module.findExportByName(\"libsystem_kernel.dylib\", \"open\");\n    if (fopen) {\n        Interceptor.attach(fopen, {\n            onEnter: function (args) {\n                var path = Memory.readUtf8String(args[0]);\n                if (jailbreakPaths.includes(path)) {\n                    console.log(\"Blocked jailbreak path check: \" + path);\n                    args[0] = Memory.allocUtf8String(\"/fakepath\");\n                }\n            }\n        });\n    }\n\n    // Hook sysctl calls to prevent jailbreak detection\n    var sysctl = Module.findExportByName(\"libsystem_kernel.dylib\", \"sysctl\");\n    if (sysctl) {\n        Interceptor.attach(sysctl, {\n            onEnter: function (args) {\n                console.log(\"Blocked sysctl call (possible jailbreak check)\");\n                this.shouldBlock = true;\n            },\n            onLeave: function (retval) {\n                if (this.shouldBlock) retval.replace(0);\n            }\n        });\n    }\n\n    // Hook getenv to block environment variable checks\n    var getenv = Module.findExportByName(\"libc.dylib\", \"getenv\");\n    if (getenv) {\n        Interceptor.attach(getenv, {\n            onEnter: function (args) {\n                var varName = Memory.readUtf8String(args[0]);\n                if (varName.indexOf(\"DYLD_INSERT_LIBRARIES\") !== -1) {\n                    console.log(\"Blocked getenv DYLD_INSERT_LIBRARIES check\");\n                    args[0] = Memory.allocUtf8String(\"FAKE_ENV_VAR\");\n                }\n            }\n        });\n    }\n    \n    // Hook new jailbreak detection functions in 16.2.2\n    var newJailbreakFunctions = [\"ptrace\", \"csops\", \"sysctlbyname\", \"get_task_allow\"];\n    newJailbreakFunctions.forEach(function (func) {\n        var target = Module.findExportByName(\"libsystem_kernel.dylib\", func);\n        if (target) {\n            Interceptor.attach(target, {\n                onEnter: function (args) {\n                    console.log(\"Blocked new jailbreak detection: \" + func);\n                    this.shouldBlock = true;\n                },\n                onLeave: function (retval) {\n                    if (this.shouldBlock) retval.replace(0);\n                }\n            });\n        }\n    });\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "k",
+        "codeshare_fingerprint": "21d8362f5ebf653258bd3afe4a451da0d6d4b2137c54641a10a4aec2e154f328",
+        "project_uuid": "9019d4da-3c4d-4f31-b0cf-d75a502f9aae",
+        "popularity": {
+          "page": 29,
+          "browse_title": "k",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/k",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/k/",
+        "source_hash": "21d8362f5ebf653258bd3afe4a451da0d6d4b2137c54641a10a4aec2e154f328",
+        "normalized_hash": "644ac4b6c7ed996de49740cb2066b337f8d0de8ba63e108b5b626bda3d5a7de0",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "enumeration",
+          "jailbreak-state-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "jailbreak-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:komoosdosk/pdf",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - pdf [b39aa8a7]",
+      "description": "sdf",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Stealth Frida Injection for Tinder\n// This script bypasses Tinder's Frida detection by hiding the Frida process\n\nJava.perform(function () {\n    console.log(\"[+] Stealth Frida Hook Loaded\");\n\n    // Hook sysctl to prevent Frida detection\n    var sysctl = Module.findExportByName(null, \"sysctl\");\n    if (sysctl) {\n        Interceptor.attach(sysctl, {\n            onEnter: function (args) {\n                console.log(\"[Blocked] sysctl call detected\");\n                this.skip = true;\n            },\n            onLeave: function (retval) {\n                if (this.skip) retval.replace(-1);\n            }\n        });\n    }\n\n    // Hook ptrace to prevent anti-debugging\n    var ptrace = Module.findExportByName(null, \"ptrace\");\n    if (ptrace) {\n        Interceptor.attach(ptrace, {\n            onEnter: function (args) {\n                console.log(\"[Blocked] ptrace anti-debugging\");\n                args[0] = 31; // Prevents PTRACE_TRACEME\n            }\n        });\n    }\n\n    console.log(\"[+] Frida Hooks Applied - Tinder Should Now Be Accessible\");\n});\n\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "komoosdosk",
+        "codeshare_slug": "pdf",
+        "codeshare_fingerprint": "b39aa8a7474f4906cf7d2fd49db04c54cceacfb6c4689571c9cf625ccc942f9a",
+        "project_uuid": "eac9fd02-848e-4d02-ab97-4056636982fd",
+        "popularity": {
+          "page": 29,
+          "browse_title": "pdf",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 29,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komoosdosk/pdf",
+        "source_url": "https://codeshare.frida.re/@komoosdosk/pdf/",
+        "source_hash": "b39aa8a7474f4906cf7d2fd49db04c54cceacfb6c4689571c9cf625ccc942f9a",
+        "normalized_hash": "5a81faab7b9b0e133519d7f1d7560a373cbb35a41171b5255a300b666b33d7df",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "instrumentation-detection-testing",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:kushjasrapuria/anti-debug-bypass",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - Anti Debug Bypass [75dc8dcd]",
+      "description": "Bypass USB Debugging checks",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Github: https://github.com/kushjasrapuria\n\nJava.perform(function() {\n    var Debug = Java.use('android.os.Debug');\n    \n    console.log(\"\\n\");\n    \n    Debug.isDebuggerConnected.implementation = function() {\n        return false;\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "kushjasrapuria",
+        "codeshare_slug": "anti-debug-bypass",
+        "codeshare_fingerprint": "75dc8dcd79df11b571d26c7ec208350932f311eaaf5925129684116e106465a5",
+        "project_uuid": "2e18cd6b-c4dd-418b-b957-70650d9d4796",
+        "popularity": {
+          "page": 11,
+          "browse_title": "Anti Debug Bypass",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 11,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:kushjasrapuria/anti-debug-bypass",
+        "source_url": "https://codeshare.frida.re/@kushjasrapuria/anti-debug-bypass/",
+        "source_hash": "75dc8dcd79df11b571d26c7ec208350932f311eaaf5925129684116e106465a5",
+        "normalized_hash": "97ad874763487589582714feedba36cb1817bf8e1c6db633504f85d34901fb6c",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "method-hooking",
+          "network-observation"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Legal1337228/test",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - test [a9d1b98c]",
+      "description": "test",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// bypass_debug.js\nJava.perform(function () {\n    var Debug = Java.use('android.os.Debug');\n    Debug.isDebuggerConnected.implementation = function() {\n        console.log(\"Bypassing Debug.isDebuggerConnected()\");\n        return false;\n    };\n\n    var DebugFlags = Java.use('android.os.Debug$DebugFlags');\n    DebugFlags.DEBUG_ENABLE_DEBUGGER = 0;\n    \n    var System = Java.use('java.lang.System');\n    System.getenv.overload('java.lang.String').implementation = function(name) {\n        console.log(\"Bypassing System.getenv(\" + name + \")\");\n        if (name === 'debug') {\n            return null;\n        }\n        return this.getenv(name);\n    };\n\n    var ActivityThread = Java.use('android.app.ActivityThread');\n    ActivityThread.currentApplication().getApplicationContext().getApplicationInfo().flags.value = 0;\n    \n    console.log(\"Bypassing complete\");\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Legal1337228",
+        "codeshare_slug": "test",
+        "codeshare_fingerprint": "a9d1b98c67370084245405f238a2e51c1bce98ac6b1335b476166bb9708c66c9",
+        "project_uuid": "a7e58ca6-0661-4af5-a769-2f578ea0b680",
+        "popularity": {
+          "page": 33,
+          "browse_title": "test",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 33,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Legal1337228/test",
+        "source_url": "https://codeshare.frida.re/@Legal1337228/test/",
+        "source_hash": "a9d1b98c67370084245405f238a2e51c1bce98ac6b1335b476166bb9708c66c9",
+        "normalized_hash": "fce7fd38a00f0389414fac43cb0b4d86e421be67f587dc4826f0a301f749d24e",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "method-hooking"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:leolashkevych/android-query-provider",
+      "name": "FRIDA - ANDROID - Root State Testing - Android Query Provider [c49a591f]",
+      "description": "Script for interacting with content providers",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Android Query Content Provider\n *\n * Usage: frida -U --codeshare leolashkevych/android-query-provider -f com.android.systemui\n *     queryProvider(URI);\n *     queryProvider(URI, selection);\n *\n * To query a provider that is not exported, launch the script within a target application.\n *\n * frida -U --codeshare leolashkevych/android-query-provider -f com.targetapp\n *      queryProvider('content://com.targetapp.ProviderAuthoruty/path/', 'login=\\'root\\' OR id=1');\n */\n\nfunction queryProvider(contentUri, sel) {\n    Java.perform(function() {\n        var Uri = Java.use(\"android.net.Uri\");\n        var Cursor = Java.use(\"android.database.Cursor\");\n        var DbUtils = Java.use(\"android.database.DatabaseUtils\");\n\n        var uri = Uri.parse(contentUri);\n        var cxt = getContext();\n        if (cxt) {\n            var resolver = cxt.getContentResolver();\n            var query = resolver.query.overload('android.net.Uri', '[Ljava.lang.String;', 'java.lang.String', '[Ljava.lang.String;', 'java.lang.String');\n            if (typeof sel !== 'undefined') {\n                var cursor = query.call(resolver, uri, null, sel, null, null);\n\n            } else {\n                var cursor = query.call(resolver, uri, null, null, null, null);\n            }\n            console.log(DbUtils.dumpCursorToString(cursor));\n        }\n\n    });\n}\n\nfunction getContext() {\n    return Java.use('android.app.ActivityThread').currentApplication().getApplicationContext();\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "leolashkevych",
+        "codeshare_slug": "android-query-provider",
+        "codeshare_fingerprint": "c49a591f72fd93eb57e648c6d5370625cd274e026cce22279e182e496c9fd40f",
+        "project_uuid": "e7dd37e6-43d4-42e8-ba73-778cf6f78ca7",
+        "popularity": {
+          "page": 4,
+          "browse_title": "Android Query Provider",
+          "likes": 4,
+          "views": "5K"
+        },
+        "discovery_page": 4,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:leolashkevych/android-query-provider",
+        "source_url": "https://codeshare.frida.re/@leolashkevych/android-query-provider/",
+        "source_hash": "c49a591f72fd93eb57e648c6d5370625cd274e026cce22279e182e496c9fd40f",
+        "normalized_hash": "c49a591f72fd93eb57e648c6d5370625cd274e026cce22279e182e496c9fd40f",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lolicon/conscrypt-ca",
+      "name": "FRIDA - ANDROID - Root State Testing - conscrypt-ca [cd786fe0]",
+      "description": "change upsidedown cake cert root",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(() => {\n  const Log = Java.use('android.util.Log')\n  const Exception = Java.use('java.lang.Exception')\n  Java.use(\n    'com.android.org.conscrypt.ConscryptEngineSocket$2'\n  ).checkServerTrusted.overloads.forEach((overload) => {\n    overload.implementation = function (...args) {\n      console.log(...args)\n    }\n  })\n})\n\nconsole.log(`ready to go`)\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "lolicon",
+        "codeshare_slug": "conscrypt-ca",
+        "codeshare_fingerprint": "cd786fe04d9b20453d6118ed7b6db04352d3012607e8e871a9f720f7bc4add6f",
+        "project_uuid": "0cd71e0a-5bef-4cfa-9d54-8b8363518976",
+        "popularity": {
+          "page": 37,
+          "browse_title": "conscrypt-ca",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 37,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lolicon/conscrypt-ca",
+        "source_url": "https://codeshare.frida.re/@lolicon/conscrypt-ca/",
+        "source_hash": "cd786fe04d9b20453d6118ed7b6db04352d3012607e8e871a9f720f7bc4add6f",
+        "normalized_hash": "9d650e17726dbf506bb54a0b92ffb6b1811cabc1923219edb542438df7420d6e",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "network-observation",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Neo-vortex/block-root-check",
+      "name": "FRIDA - ANDROID - Root State Testing - block-root-check [2f9ef73a]",
+      "description": "a simple code to block root checking function",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function () {\n    var cls = Java.use(\"o.applyHelperParams$cancelAll\");\n    var overload = cls['_$$a'].overload('android.content.Context', 'long', 'long');\n    var orig = overload.implementation;\n\n    // replace with our hook\n    overload.implementation = function (context, j1, j2) {\n        console.log(\"[HOOK] _$$a called - context:\", context, \"j1:\", j1, \"j2:\", j2);\n\n        //return orig.apply(this, arguments);\n    };\n\n    console.log(\"[+] Hook installed for _$$a\");\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Neo-vortex",
+        "codeshare_slug": "block-root-check",
+        "codeshare_fingerprint": "2f9ef73a387df9e38e2fb581c61d1164959088fe7416f07f16ee653a07be99a8",
+        "project_uuid": "ee0bb898-a12a-420d-bc1b-6d4cc92b25da",
+        "popularity": {
+          "page": 24,
+          "browse_title": "block-root-check",
+          "likes": 0,
+          "views": "673"
+        },
+        "discovery_page": 24,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Neo-vortex/block-root-check",
+        "source_url": "https://codeshare.frida.re/@Neo-vortex/block-root-check/",
+        "source_hash": "2f9ef73a387df9e38e2fb581c61d1164959088fe7416f07f16ee653a07be99a8",
+        "normalized_hash": "a118a1442faf5b55a9542fa22f460af7cc8e62ce353e1db3748cbc6b6b0208dd",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "root-state-testing",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Raphkitue/android-debug-mode-bypass",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - Android Debug mode bypass [6bf9c1fd]",
+      "description": "Bypasses debugging mode checks when USB Debugging mode is activated",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "setTimeout(function() {\n    Java.perform(function() {\n        console.log(\"\");\n        console.log(\"[.] Debug check bypass\");\n\n        var Debug = Java.use('android.os.Debug');\n        Debug.isDebuggerConnected.implementation = function() {\n            //console.log('isDebuggerConnected Bypassed !');\n            return false;\n        }\n\n\n    });\n}, 0);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "Raphkitue",
+        "codeshare_slug": "android-debug-mode-bypass",
+        "codeshare_fingerprint": "6bf9c1fdfc1e5f109989b8f04cadeaafbd9d5a88b3592e2bbc0c05450fc2da0d",
+        "project_uuid": "8b67aa8e-d669-437e-8430-67fd8cd2b1ae",
+        "popularity": {
+          "page": 2,
+          "browse_title": "Android Debug mode bypass",
+          "likes": 7,
+          "views": "25K"
+        },
+        "discovery_page": 2,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Raphkitue/android-debug-mode-bypass",
+        "source_url": "https://codeshare.frida.re/@Raphkitue/android-debug-mode-bypass/",
+        "source_hash": "6bf9c1fdfc1e5f109989b8f04cadeaafbd9d5a88b3592e2bbc0c05450fc2da0d",
+        "normalized_hash": "4d8bb8b0db42df06d12ee9535ec99348861432d94f0596151a15ea55cf2cc126",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "method-hooking"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sosacrazy126/uncrackable1-solution",
+      "name": "FRIDA - ANDROID - Root State Testing - uncrackable1 solution [ecaf02f0]",
+      "description": "rootbypass to uncrackable1 apk",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// frida -U -f sg.vantagepoint.uncrackable1 --no-pause -l your_script.js\r\n\r\nJava.perform(function() {\r\n    var MainActivity = Java.use('sg.vantagepoint.uncrackable1.MainActivity');\r\n\r\n    // Disable root detection\r\n    MainActivity.a.implementation = function(str) {\r\n        console.log('[Root Bypass] Root detection bypassed.');\r\n        return;\r\n    };\r\n\r\n    // Disable debuggable check\r\n    MainActivity.onCreate.overload('android.os.Bundle').implementation = function(bundle) {\r\n        console.log('[Debuggable Bypass] Debuggable check bypassed.');\r\n        this.onCreate(bundle);\r\n        return;\r\n    };\r\n\r\n    // Disable exit on button click\r\n    MainActivity.verify.overload('android.view.View').implementation = function(view) {\r\n        console.log('[Exit Bypass] Exit on button click bypassed.');\r\n        this.verify(view);\r\n        return;\r\n    };\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "sosacrazy126",
+        "codeshare_slug": "uncrackable1-solution",
+        "codeshare_fingerprint": "ecaf02f06c51837469b97b90d60060a5e01eab67c60f684edebe62fd3612cae0",
+        "project_uuid": "da00ead0-5293-450e-bf82-321399c6e883",
+        "popularity": {
+          "page": 36,
+          "browse_title": "uncrackable1 solution",
+          "likes": 0,
+          "views": "3K"
+        },
+        "discovery_page": 36,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sosacrazy126/uncrackable1-solution",
+        "source_url": "https://codeshare.frida.re/@sosacrazy126/uncrackable1-solution/",
+        "source_hash": "ecaf02f06c51837469b97b90d60060a5e01eab67c60f684edebe62fd3612cae0",
+        "normalized_hash": "f84e0525366dd2e76eab196a6af3bc8526a335fb3faccf55913bead6cddfc957",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "root-state-testing"
+        ],
+        "primary_behavior": "root-state-testing",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:unexpectedBy/webviewinspect",
+      "name": "FRIDA - ANDROID - Debugger Detection Testing - WebViewInspect [15d9fba6]",
+      "description": "expose all WebView input fields",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\n@author linkedin@isdebuggerpresent\n*/\n\n// Attach to the target process\nconst targetApp = \"my.bank.demo\";\nconst session = Device.attach(targetApp);\n\n// Define the script to be injected\nconst script =\n    `Interceptor.attach(Java.use(\"android.webkit.WebView\").loadUrl.overload(\"java.lang.String\").implementation, {\n    onLeave: function(retval) {\n        const WebViewClient = Java.use(\"android.webkit.WebViewClient\");\n        const webViewClient = WebViewClient.$new();\n\n        webViewClient.onPageFinished.implementation = function(view, url) {\n            const inputFields = view.$$('input[type=\"text\"], input[type=\"password\"], input[type=\"email\"], input[type=\"tel\"], textarea');\n            inputFields.forEach(function(inputField) {\n                console.log('Input field value:', inputField.value);\n            });\n        }\n        view.setWebViewClient(webViewClient);\n    }\n});`\n\n// Load and run the script\nconst scriptId = session.createScript(script);\nsession.enableDebugger();\nscriptId.load();",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "codeshare_author": "unexpectedBy",
+        "codeshare_slug": "webviewinspect",
+        "codeshare_fingerprint": "15d9fba6f12eb5eca5f54bc19d649f8dad7cc465763c1dcf42989fd2775021c2",
+        "project_uuid": "26558ab9-d4d7-4900-849a-0a6c30482746",
+        "popularity": {
+          "page": 13,
+          "browse_title": "WebViewInspect",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 13,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:unexpectedBy/webviewinspect",
+        "source_url": "https://codeshare.frida.re/@unexpectedBy/webviewinspect/",
+        "source_hash": "15d9fba6f12eb5eca5f54bc19d649f8dad7cc465763c1dcf42989fd2775021c2",
+        "normalized_hash": "ba41c779bc309569a39f471c1bc688d563d44d7b28bfecf838e6b7a8fc2c5b95",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "debugger-detection-testing",
+          "method-hooking",
+          "native-hooking",
+          "webview"
+        ],
+        "primary_behavior": "debugger-detection-testing",
+        "frida_apis": [
+          "Java.use",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

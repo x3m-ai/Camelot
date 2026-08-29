@@ -1,0 +1,839 @@
+{
+  "package_id": "frida-ios-storage-v1",
+  "package_name": "Frida - Ios - Storage",
+  "version": "1.0.0",
+  "summary": "9 Frida instrumentation procedures for ios storage mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 9 standalone Frida procedures from 2 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 9}; compatibility: {'likely-compatible': 7, 'legacy': 2}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1420",
+    "T1636.002"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 9
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "database",
+    "enumeration",
+    "filesystem",
+    "keystore-keychain",
+    "location",
+    "native-hooking",
+    "network-observation",
+    "runtime-tracing",
+    "screenshot"
+  ],
+  "source_providers": [
+    "as0ler-frida-scripts",
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 9
+  },
+  "quality_distribution": {
+    "B": 1,
+    "C": 3,
+    "A": 5
+  },
+  "license_distribution": {
+    "unknown": 4,
+    "GPL-3.0": 5
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 7,
+    "legacy": 2
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:ay-kay/ios-dataprotection",
+      "name": "FRIDA - IOS - Filesystem - iOS DataProtection [e2032074]",
+      "description": "List iOS file data protection classes (NSFileProtectionKey) of an app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * iOS Data Protection\n *\n * getDataProtectionKeysForAllPaths() - List iOS file data protection classes (NSFileProtectionKey) of an app\n *\n */\nfunction listDirectoryContentsAtPath(path) {\n    var fileManager = ObjC.classes.NSFileManager.defaultManager();\n    var enumerator = fileManager.enumeratorAtPath_(path);\n    var file;\n    var paths = [];\n\n    while ((file = enumerator.nextObject()) !== null) {\n        paths.push(path + '/' + file);\n    }\n\n    return paths;\n}\n\nfunction listHomeDirectoryContents() {\n    var homePath = ObjC.classes.NSProcessInfo.processInfo().environment().objectForKey_(\"HOME\").toString();\n    var paths = listDirectoryContentsAtPath(homePath);\n    return paths;\n}\n\nfunction getDataProtectionKeyForPath(path) {\n    var fileManager = ObjC.classes.NSFileManager.defaultManager();\n    var urlPath = ObjC.classes.NSURL.fileURLWithPath_(path);\n    var fileProtectionKey = ObjC.Object(ptr(fileManager.attributesOfItemAtPath_error_(urlPath.path(), NULL)));\n    return fileProtectionKey.valueForKey_(\"NSFileProtectionKey\").UTF8String();\n}\n\nfunction getDataProtectionKeysForAllPaths() {\n    var fileManager = ObjC.classes.NSFileManager.defaultManager();\n    var dict = [];\n    var paths = listHomeDirectoryContents();\n\n    var isDir = Memory.alloc(Process.pointerSize);\n    Memory.writePointer(isDir, NULL);\n\n    for (var i = 0; i < paths.length; i++) {\n\n        fileManager.fileExistsAtPath_isDirectory_(paths[i], isDir);\n\n        if (Memory.readPointer(isDir) == 0) {\n            dict.push({\n                path: paths[i],\n                fileProtectionKey: getDataProtectionKeyForPath(paths[i])\n            });\n        }\n    }\n    return dict;\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "ay-kay",
+        "codeshare_slug": "ios-dataprotection",
+        "codeshare_fingerprint": "e20320740b1d83135453541ddda834347599973d9075addcebeb38a56a4215ec",
+        "project_uuid": "981db884-29f9-4eb8-84e5-d919c6c2fe7a",
+        "popularity": {
+          "page": 1,
+          "browse_title": "iOS DataProtection",
+          "likes": 12,
+          "views": "21K"
+        },
+        "discovery_page": 1,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ay-kay/ios-dataprotection",
+        "source_url": "https://codeshare.frida.re/@ay-kay/ios-dataprotection/",
+        "source_hash": "e20320740b1d83135453541ddda834347599973d9075addcebeb38a56a4215ec",
+        "normalized_hash": "e20320740b1d83135453541ddda834347599973d9075addcebeb38a56a4215ec",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.classes",
+          "Memory",
+          "Process"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:karim-moftah/ios-sqlite3",
+      "name": "FRIDA - IOS - Database - iOS sqlite3 [fe446e49]",
+      "description": "Hooks sqlite3_prepare, sqlite3_prepare_v2, sqlite3_prepare_v3, sqlite3_prepare16, sqlite3_prepare16_v2, sqlite3_prepare16_v3",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// frida-sqlite-prepare-all.js\r\n// Hooks sqlite3_prepare, sqlite3_prepare_v2, sqlite3_prepare_v3,\r\n// sqlite3_prepare16, sqlite3_prepare16_v2, sqlite3_prepare16_v3\r\n// plus helpful surrounding SQLite functions to make output useful.\r\n//\r\n// Usage:\r\n//   frida -U -f <bundle/id> -l frida-sqlite-prepare-all.js\r\n// or attach:\r\n//   frida -U -n <process> -l frida-sqlite-prepare-all.js\r\n\r\n'use strict';\r\n\r\nconst stmts = {}; // map stmtPtr -> { sql: \"...\", binds: { idx: val } }\r\n\r\nfunction p(ptr) {\r\n    return ptr ? ptr.toString() : \"0x0\";\r\n}\r\n\r\nfunction safeReadUtf8(ptr) {\r\n    try {\r\n        if (!ptr || ptr.isNull()) return null;\r\n        return Memory.readUtf8String(ptr);\r\n    } catch (e) {\r\n        return null;\r\n    }\r\n}\r\n\r\nfunction safeReadUtf16(ptr) {\r\n    try {\r\n        if (!ptr || ptr.isNull()) return null;\r\n        return Memory.readUtf16String(ptr);\r\n    } catch (e) {\r\n        return null;\r\n    }\r\n}\r\n\r\nfunction backtrace(context) {\r\n    try {\r\n        return Thread.backtrace(context, Backtracer.ACCURATE)\r\n            .map(DebugSymbol.fromAddress)\r\n            .slice(0, 12)\r\n            .join(\"\\n\");\r\n    } catch (e) {\r\n        return \"(backtrace unavailable)\";\r\n    }\r\n}\r\n\r\n// utility to store SQL for a statement\r\nfunction storeStmt(stmtPtr, sql) {\r\n    try {\r\n        const key = p(stmtPtr);\r\n        if (!stmts[key]) stmts[key] = {\r\n            sql: sql,\r\n            binds: {}\r\n        };\r\n    } catch (e) {}\r\n}\r\n\r\n// Handler generator for prepare variants\r\nfunction attachPrepare(symName, opts) {\r\n    // opts: { sqlArgIndex: int, isUtf16: bool, ppStmtIndex: int }\r\n    const ptr = Module.findExportByName(null, symName);\r\n    if (!ptr) {\r\n        // console.log(symName + \" not found\");\r\n        return;\r\n    }\r\n    Interceptor.attach(ptr, {\r\n        onEnter: function(args) {\r\n            this.sym = symName;\r\n            this.isUtf16 = !!opts.isUtf16;\r\n            this.sqlArg = args[opts.sqlArgIndex];\r\n            this.ppStmt = args[opts.ppStmtIndex];\r\n            this.bt = backtrace(this.context);\r\n            if (this.isUtf16) {\r\n                this.sql = safeReadUtf16(this.sqlArg) || null;\r\n            } else {\r\n                this.sql = safeReadUtf8(this.sqlArg) || null;\r\n            }\r\n        },\r\n        onLeave: function(retval) {\r\n            try {\r\n                const sql = this.sql || \"(null)\";\r\n                if (!this.ppStmt.isNull()) {\r\n                    const stmtPtr = Memory.readPointer(this.ppStmt);\r\n                    if (!stmtPtr.isNull()) {\r\n                        storeStmt(stmtPtr, sql);\r\n                        console.log(\"\\n== \" + this.sym + \" ==\");\r\n                        console.log(\"STMT: \" + p(stmtPtr));\r\n                        console.log(\"SQL: \" + sql);\r\n                        console.log(\"Return code: \" + retval.toInt32());\r\n\r\n                        return;\r\n                    }\r\n                }\r\n                // sometimes prepare variants do not return a stmt (NULL) but still worth logging\r\n                console.log(\"\\n== \" + this.sym + \" (no stmt) ==\");\r\n                console.log(\"SQL: \" + sql);\r\n                console.log(\"Return code: \" + retval.toInt32());\r\n\r\n            } catch (e) {\r\n                console.log(this.sym + \".onLeave error: \" + e);\r\n            }\r\n        }\r\n    });\r\n}\r\n\r\n// Attach all prepare functions you requested\r\nconst prepares = [{\r\n        name: \"sqlite3_prepare\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: false,\r\n            ppStmtIndex: 3\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_prepare_v2\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: false,\r\n            ppStmtIndex: 3\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_prepare_v3\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: false,\r\n            ppStmtIndex: 3\r\n        }\r\n    },\r\n\r\n    // 16-bit (UTF-16) variants usually have wchar_t* as sql arg\r\n    {\r\n        name: \"sqlite3_prepare16\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: true,\r\n            ppStmtIndex: 3\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_prepare16_v2\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: true,\r\n            ppStmtIndex: 3\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_prepare16_v3\",\r\n        opts: {\r\n            sqlArgIndex: 1,\r\n            isUtf16: true,\r\n            ppStmtIndex: 3\r\n        }\r\n    }\r\n];\r\n\r\nprepares.forEach(function(pf) {\r\n    attachPrepare(pf.name, pf.opts);\r\n});\r\n\r\n// Also hook sqlite3_exec (convenient for statements executed directly via exec)\r\nconst execPtr = Module.findExportByName(null, \"sqlite3_exec\");\r\nif (execPtr) {\r\n    Interceptor.attach(execPtr, {\r\n        onEnter: function(args) {\r\n            this.db = args[0];\r\n            this.sqlPtr = args[1];\r\n            // try utf8 then utf16 fallback\r\n            this.sql = safeReadUtf8(this.sqlPtr) || safeReadUtf16(this.sqlPtr) || null;\r\n            this.bt = backtrace(this.context);\r\n            console.log(\"\\n== sqlite3_exec ==\");\r\n            console.log(\"DB: \" + p(this.db));\r\n            console.log(\"SQL: \" + (this.sql || \"(null)\"));\r\n\r\n        }\r\n    });\r\n}\r\n\r\n// sqlite3_step: print bound params and associated SQL if we tracked it\r\nconst stepPtr = Module.findExportByName(null, \"sqlite3_step\");\r\nif (stepPtr) {\r\n    Interceptor.attach(stepPtr, {\r\n        onEnter: function(args) {\r\n            try {\r\n                this.stmt = args[0];\r\n                const key = p(this.stmt);\r\n                const rec = stmts[key];\r\n                if (rec) {\r\n                    this.bt = backtrace(this.context);\r\n                    console.log(\"\\n== sqlite3_step ==\");\r\n                    console.log(\"STMT: \" + key);\r\n                    console.log(\"SQL: \" + rec.sql);\r\n                    if (rec.binds && Object.keys(rec.binds).length > 0) {\r\n                        console.log(\"Bound params:\");\r\n                        for (let i in rec.binds) console.log(\"  [\" + i + \"] = \" + rec.binds[i]);\r\n                    } else {\r\n                        console.log(\"Bound params: (none)\");\r\n                    }\r\n\r\n                }\r\n            } catch (e) {}\r\n        }\r\n    });\r\n}\r\n\r\n// Bind functions: record values for tracked statements\r\nconst bindFns = [{\r\n        name: \"sqlite3_bind_text\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const txt = safeReadUtf8(args[2]) || safeReadUtf16(args[2]) || null;\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = txt === null ? \"NULL\" : '\"' + txt + '\"';\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_text16\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const txt = safeReadUtf16(args[2]) || null;\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = txt === null ? \"NULL\" : '\"' + txt + '\"';\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_int\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const v = args[2].toInt32();\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = v;\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_int64\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const v = args[2].toInt64();\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = v.toString();\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_double\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            // read double safely\r\n            let v = null;\r\n            try {\r\n                v = args[2].readDouble();\r\n            } catch (e) {\r\n                try {\r\n                    v = args[2].toDouble();\r\n                } catch (e2) {\r\n                    v = \"(double?)\";\r\n                }\r\n            }\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = v;\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_null\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = \"NULL\";\r\n        }\r\n    },\r\n    {\r\n        name: \"sqlite3_bind_blob\",\r\n        handler: function(args) {\r\n            const stmt = args[0];\r\n            const idx = args[1].toInt32();\r\n            const n = args[3].toInt32();\r\n            const key = p(stmt);\r\n            if (stmts[key]) stmts[key].binds[idx] = \"<blob, \" + n + \" bytes>\";\r\n        }\r\n    }\r\n];\r\n\r\nbindFns.forEach(function(item) {\r\n    const ptr = Module.findExportByName(null, item.name);\r\n    if (!ptr) return;\r\n    Interceptor.attach(ptr, {\r\n        onEnter: function(args) {\r\n            try {\r\n                item.handler(args);\r\n            } catch (e) {}\r\n        }\r\n    });\r\n});\r\n\r\n// finalize: print final bound params and cleanup\r\nconst finalizePtr = Module.findExportByName(null, \"sqlite3_finalize\");\r\nif (finalizePtr) {\r\n    Interceptor.attach(finalizePtr, {\r\n        onEnter: function(args) {\r\n            try {\r\n                const stmt = args[0];\r\n                const key = p(stmt);\r\n                const rec = stmts[key];\r\n                if (rec) {\r\n                    console.log(\"\\n== sqlite3_finalize ==\");\r\n                    console.log(\"STMT: \" + key);\r\n                    console.log(\"SQL: \" + rec.sql);\r\n                    if (rec.binds && Object.keys(rec.binds).length > 0) {\r\n                        console.log(\"Bound params (final):\");\r\n                        for (let i in rec.binds) console.log(\"  [\" + i + \"] = \" + rec.binds[i]);\r\n                    } else {\r\n                        console.log(\"Bound params: (none)\");\r\n                    }\r\n                    delete stmts[key];\r\n                }\r\n            } catch (e) {}\r\n        }\r\n    });\r\n}\r\n\r\n// reset: clear binds (statements may be reused)\r\nconst resetPtr = Module.findExportByName(null, \"sqlite3_reset\");\r\nif (resetPtr) {\r\n    Interceptor.attach(resetPtr, {\r\n        onEnter: function(args) {\r\n            try {\r\n                const key = p(args[0]);\r\n                if (stmts[key]) stmts[key].binds = {};\r\n            } catch (e) {}\r\n        }\r\n    });\r\n}\r\n\r\n// defensive log to show script loaded\r\nconsole.log(\"[frida] sqlite3 prepare hooks installed for: sqlite3_prepare, sqlite3_prepare_v2, sqlite3_prepare_v3, sqlite3_prepare16, sqlite3_prepare16_v2, sqlite3_prepare16_v3 (plus exec/step/bind/finalize/reset).\");",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "karim-moftah",
+        "codeshare_slug": "ios-sqlite3",
+        "codeshare_fingerprint": "fe446e498eb056f7f448ece2fc24fd05138bbd7de4f1541ebd8537ceec0e4b1c",
+        "project_uuid": "ba5b2b70-a257-424a-9529-a121fc99feae",
+        "popularity": {
+          "page": 25,
+          "browse_title": "iOS sqlite3",
+          "likes": 0,
+          "views": "946"
+        },
+        "discovery_page": 25,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:karim-moftah/ios-sqlite3",
+        "source_url": "https://codeshare.frida.re/@karim-moftah/ios-sqlite3/",
+        "source_hash": "fe446e498eb056f7f448ece2fc24fd05138bbd7de4f1541ebd8537ceec0e4b1c",
+        "normalized_hash": "e1c78317a11aeaa4dd6bf7b45fa339349a1103d1924c5784ed4bf99eb70622ec",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "Thread.backtrace",
+          "DebugSymbol",
+          "Backtracer"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Shapa7276/ios-keychain-update",
+      "name": "FRIDA - IOS - Keystore Keychain - iOS Keychain Update [f7b7dcc4]",
+      "description": "Frida script to modify the iOS Keychain values which are getting updated on runtime",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1636.002",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\r\nFrida script to update the keychain  on runtime\r\n\r\n * As per the Apple Documentation https://developer.apple.com/documentation/security/1393617-secitemupdate\r\n * SecItemUpdate Have two argument as  \r\n *  0)  _ query: CFDictionary,\r\n    1)  _ attributesToUpdate: CFDictionary\r\n \r\n Second argument hold the value which getting updated in Keychain   \r\n    \r\n    Below  script to modifies  the second argument with \"Test Data\" or binary Asci[0x54, 0x65, 0x73, 0x74, 0x20, 0x44, 0x61, 0x74, 0x61] in Keychain (replace the data as per your need)\r\n    \r\n    \r\n    frida -l iOS_Keychain_Update.js  'DVIA-v2'  -U\r\n    \r\n    Before directly using this script I recommend to use below script to monitor the format of data sent over to keychain \r\n   https://github.com/seemoo-lab/apple-continuity-tools/blob/565f2a95d8c3a958ffb430a5022a2df923eb5c1b/keychain_access/frida_scripts/hook_SecItemCopyMatching.js#L146\r\n   \r\n   Steps on Github with Screenshot\r\n   https://github.com/Shapa7276/iOS_Keychain_Update.js\r\n   \r\n */\r\n\r\nvar className = \"Security\";\r\nvar methodName = \"SecItemUpdate\"\r\n\r\nvar returnPtr = null;\r\nModule.enumerateExports(className, {\r\n    onMatch: function(fun) {\r\n\r\n        if (fun.type == \"function\" && fun.name == methodName) {\r\n            console.log(\"Found target method : \" + methodName);\r\n\r\n            try {\r\n                Interceptor.attach(ptr(fun.address), {\r\n                    onEnter: function(args) {\r\n\r\n                        var params = ObjC.Object(args[1]); // CFDictionaryRef => NSDictionary\r\n                        console.log(\"Query of  keychain items to update\", ObjC.Object(args[0]))\r\n                        // Convert the NSDictionary to an NSMutableDictionary to allow modification\r\n                        params = ObjC.classes.NSMutableDictionary.dictionaryWithDictionary_(params);\r\n                        var v = params.objectForKey_(\"v_Data\");\r\n                        var string = ObjC.classes.NSString.alloc();\r\n                        v = string.initWithData_encoding_(v, 4).toString();\r\n                        console.log(\"Original Value 'svce' v_Data:\", v)\r\n                        // Change the value for the key \"v_Data\" to \"Test Data\" ([0x54, 0x65, 0x73, 0x74, 0x20, 0x44, 0x61, 0x74, 0x61])\r\n                        //To update with new value  change the value with number of bytes in memory allocation \r\n                        var newV = ObjC.classes.NSData.dataWithBytes_length_(Memory.alloc(9).writeByteArray([0x54, 0x65, 0x73, 0x74, 0x20, 0x44, 0x61, 0x74, 0x61]), 9);\r\n\r\n                        // Set the updated value in the NSMutableDictionary\r\n\r\n                        params.setObject_forKey_(newV, \"v_Data\");\r\n                        var string = ObjC.classes.NSString.alloc();\r\n                        var newvalue = string.initWithData_encoding_(newV, 4).toString();\r\n                        console.log(\"Updated the above 'svce' v_Data:\", newvalue);\r\n\r\n                        // Assign the updated dictionary back to the original argument\r\n                        args[1] = params;\r\n\r\n                    },\r\n                    onLeave: function() {\r\n\r\n                    },\r\n                });\r\n            } catch (error) {\r\n                console.log(\"Ignoring \" + fun.name + \": \" + error.message);\r\n            }\r\n        }\r\n\r\n    },\r\n    onComplete: function(e) {\r\n\r\n\r\n    }\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Shapa7276",
+        "codeshare_slug": "ios-keychain-update",
+        "codeshare_fingerprint": "f7b7dcc4d6a621443dbcdb0193d021e146277c92951f6b835103b9365ac70674",
+        "project_uuid": "dfb2e8ea-0d8a-4744-9dce-670f29df748d",
+        "popularity": {
+          "page": 13,
+          "browse_title": "iOS Keychain Update",
+          "likes": 1,
+          "views": "3K"
+        },
+        "discovery_page": 13,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Shapa7276/ios-keychain-update",
+        "source_url": "https://codeshare.frida.re/@Shapa7276/ios-keychain-update/",
+        "source_hash": "f7b7dcc4d6a621443dbcdb0193d021e146277c92951f6b835103b9365ac70674",
+        "normalized_hash": "858429a2a7ec7db2fb278e1df0228908189e4032f883ed14b4652b31e1246420",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "keystore-keychain",
+          "location",
+          "native-hooking",
+          "network-observation",
+          "runtime-tracing",
+          "screenshot"
+        ],
+        "primary_behavior": "keystore-keychain",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.enumerateExports",
+          "Memory"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1636.002"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:xperylab/ios-sqlite3",
+      "name": "FRIDA - IOS - Database - iOS sqlite3 [81d2352f]",
+      "description": "dump SQL queries on iOS",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var func_sqlite3_prepare_v2 = Module.findExportByName('libsqlite3.dylib', 'sqlite3_prepare_v2');\n\nInterceptor.attach(func_sqlite3_prepare_v2, {\n    onEnter: function(args) {\n        var sqlite3_stmt = args[1];\n        console.log('SQL: ' + sqlite3_stmt.readCString());\n    },\n\n    onLeave: function(retval) {}\n\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "xperylab",
+        "codeshare_slug": "ios-sqlite3",
+        "codeshare_fingerprint": "81d2352f71d838ff7b219c98a86423f3510c513e291b7a39ac66350de53df57c",
+        "project_uuid": "098856d6-1cf5-4ee0-aeae-c1bcfa42c36b",
+        "popularity": {
+          "page": 7,
+          "browse_title": "iOS sqlite3",
+          "likes": 2,
+          "views": "4K"
+        },
+        "discovery_page": 7,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:xperylab/ios-sqlite3",
+        "source_url": "https://codeshare.frida.re/@xperylab/ios-sqlite3/",
+        "source_hash": "81d2352f71d838ff7b219c98a86423f3510c513e291b7a39ac66350de53df57c",
+        "normalized_hash": "81d2352f71d838ff7b219c98a86423f3510c513e291b7a39ac66350de53df57c",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "native-hooking"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.findExportByName"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSFileManager.js",
+      "name": "FRIDA - IOS - Filesystem - NSFileManager [a2c3c2ed]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/filesystem/NSFileManager.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if(ObjC.available) {\n\tfor(var className in ObjC.classes) {\n\t    if (ObjC.classes.hasOwnProperty(className)) {\n\t\tif(className == \"NSFileManager\") {\n\t\t    \tsend(\"Found target class : \" + className);\n\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- createFileAtPath:contents:attributes:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\tsend(\"[+][NSFileManager] create File at: \" + obj.toString());\n\n\t\t\t\tvar obj = ObjC.Object(args[3]);\n\t\t\t\tvar string = ObjC.classes.NSString.alloc();\n\t\t\t\tsend(\"\\t- Content : \" + string.initWithData_encoding_(obj,4));\n\n\t\t\t\tvar obj = ObjC.Object(args[4]);\n\t\t\t\tsend(\"\\t- Attributes : \" + obj.toString());\n\t\t\t    }\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- copyItemAtPath:toPath:error:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\tsend(\"[+][NSFileManager] copy File at: \" + obj.toString());\n\n\t\t\t\tvar obj = ObjC.Object(args[3]);\n\t\t\t\tsend(\"\\t- To Path : \" + obj.toString());\n\t\t\t    }\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- moveItemAtPath:toPath:error:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\tsend(\"[+][NSFileManager] move File at: \" + obj.toString());\n\n\t\t\t\tvar obj = ObjC.Object(args[3]);\n\t\t\t\tsend(\"\\t- To Path : \" + obj.toString());\n\t\t\t    }\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- fileExistsAtPath:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"[+][NSFileManager] File Exists at Path: \" + obj.toString());\n\t\t\t\t\t}\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- isReadableFileAtPath:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"[+][NSFileManager] File Path: \" + obj.toString());\n\t\t\t\t\t},\n\t\t\t\tonExit: function(retval) {\n\t\t\t\t\t\tsend(\"- isReadable? \" + retval.toString());\n\t\t\t\t\t}\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- isWritableFileAtPath:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"[+][NSFileManager] File Path: \" + obj.toString());\n\t\t\t\t\t},\n\t\t\t\tonExit: function(retval) {\n\t\t\t\t\t\tsend(\"- isWritable? \" + retval.toString());\n\t\t\t\t\t}\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- isExecutableFileAtPath:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"[+][NSFileManager] File Path: \" + obj.toString());\n\t\t\t\t\t},\n\t\t\t\tonExit: function(retval) {\n\t\t\t\t\t\tsend(\"- isExecutable? \" + retval.toString());\n\t\t\t\t\t}\n\t\t\t});\n\t\t\tvar hook = ObjC.classes.NSFileManager[\"- isDeletableFileAtPath:\"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"[+][NSFileManager] File Path: \" + obj.toString());\n\t\t\t\t\t},\n\t\t\t\tonExit: function(retval) {\n\t\t\t\t\t\tsend(\"- isDeletable? \" + retval.toString());\n\t\t\t\t\t}\n\t\t\t});\n\t\t}\n\t    }\n\t}\n} else {\nconsole.log(\"Objective-C Runtime is not available!\");\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/filesystem/NSFileManager.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSFileManager.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/filesystem/NSFileManager.js",
+        "source_hash": "a2c3c2edd1521e0459378a9b9dfdc05cfbf6f5fc0f599a667792415d32e86c2a",
+        "normalized_hash": "f8e3ff7c68fa0adc82a50d1129afa606c30e53056b5bb86c9d45646d57eeeb9c",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSString.js",
+      "name": "FRIDA - IOS - Filesystem - NSString [94395fb8]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/filesystem/NSString.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if(ObjC.available) {\n\tfor(var className in ObjC.classes) {\n\t    if (ObjC.classes.hasOwnProperty(className)) {\n\t\tif(className == \"NSString\") {\n\t\t    \tsend(\"Found target class : \" + className);\n\n\t\t\tvar hook = ObjC.classes.NSString[\"- \"];\n\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t    onEnter: function(args) {\n\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\tsend(\"[+][NSFileManager] create File at: \" + obj.toString());\n\n\t\t\t\tvar obj = ObjC.Object(args[3]);\n\t\t\t\tvar string = ObjC.classes.NSString.alloc();\n\t\t\t\tsend(\"\\t- Content : \" + string.initWithData_encoding_(obj,4));\n\n\t\t\t\tvar obj = ObjC.Object(args[4]);\n\t\t\t\tsend(\"\\t- Attributes : \" + obj.toString());\n\t\t\t    }\n\t\t\t});\n\t\t}\n\t    }\n\t}\n} else {\nconsole.log(\"Objective-C Runtime is not available!\");\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/filesystem/NSString.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSString.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/filesystem/NSString.js",
+        "source_hash": "94395fb861af720b929670ee9dfab71d28b3274b27b855e4e6c2369f1341e22d",
+        "normalized_hash": "8983d10ff29520b65ca04f3c5d311cf696f230b8bc6e6ec7e46a8ad24973449b",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSUserDefaults.js",
+      "name": "FRIDA - IOS - Filesystem - NSUserDefaults [52f6ead7]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/filesystem/NSUserDefaults.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1420",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var className = \"NSUserDefaults\";\nvar hookMethods = [\"- setObject:forKey:\", \"- setURL:forKey:\", \"- setInteger:forKey:\", \"- setFloat:forKey:\", \"- setDouble:forKey:\"];\n\nif(ObjC.available) {\n\tfor(var c in ObjC.classes) {\n\t    if (ObjC.classes.hasOwnProperty(c)) {\n\t\tif (c == className) {\n\t\t    \tsend(\"Found target class : \" + className);\n\n\t\t\tvar methods = ObjC.classes.NSUserDefaults.$methods;\n\t\t\thookMethods.forEach(function(m) {\n\t\t\t\tvar hook = ObjC.classes.NSUserDefaults[m];\t\n\t\t\t\tInterceptor.attach(hook.implementation, {\n\t\t\t\t\tonEnter: function(args) {\n\t\t\t\t\t\tsend(\"[+][\" + className + \"][\" + m + \"]\");\n\n\t\t\t\t\t\tvar obj = ObjC.Object(args[3]);\n\t\t\t\t\t\tsend(\"\\t- Default Name: \" + obj.toString());\n\n\t\t\t\t\t\tvar obj = ObjC.Object(args[2]);\n\t\t\t\t\t\tsend(\"\\t- Value: \" + obj.toString());\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t});\n\t\t}\n\t    }\n\t}\n} else {\n\tconsole.log(\"Objective-C Runtime is not available!\");\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/filesystem/NSUserDefaults.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/filesystem/NSUserDefaults.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/filesystem/NSUserDefaults.js",
+        "source_hash": "52f6ead7b48e3627839264c4ee924fbbc06ab19e185ea0941622a53f1c4aadbb",
+        "normalized_hash": "4248d460b9511d7a48e421c1dd258002cd62237f931144211543bea17b77a536",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "filesystem",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "filesystem",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1420"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/keychain/SecItem_monitor.js",
+      "name": "FRIDA - IOS - Keystore Keychain - SecItem monitor [abdb3cd8]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/keychain/SecItem_monitor.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1636.002",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var className = \"Security\";\nvar hookMethods = [\"SecItemAdd\", \"SecItemUpdate\", \"SecItemDelete\"];\n\nfor (index = 0; index < hookMethods.length; index++) {\n\tvar methodName = hookMethods[index];\n\tvar ptr = null;\n\tModule.enumerateExports(className, {\n\t\tonMatch: function(imp) {\n\t\t\tif (imp.type == \"function\" && imp.name == methodName) {\n\t\t\t\tsend(\"Found target method : \" + methodName);\n\n\t\t\t\ttry {\n\t\t\t\t\tInterceptor.attach(ptr(imp.address), {\n\t\t\t\t\t\tonEnter: function(args) {\n\t\t\t\t\t\t\tsend(\"[+] Keychain operation: \" + imp.name);\n\t\t\t\t\t\t\tvar params = ObjC.Object(args[0]); // CFDictionaryRef => NSDictionary\n\t\t\t\t\t\t\tvar keys = params.allKeys();\n\t\t\t\t\t\t\tfor (index = 0; index < keys.count(); index++) {\n\t\t\t\t\t\t\t\tvar k = keys.objectAtIndex_(index);\n\t\t\t\t\t\t\t\tvar v = params.objectForKey_(k);\n\t\t\t\t\t\t\t\tif (k == \"v_Data\") {\n\t\t\t\t\t\t\t\t\tvar string = ObjC.classes.NSString.alloc();\n\t\t\t\t\t\t\t\t\tv = string.initWithData_encoding_(v,4).toString();\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\tif (k == \"pdmn\") {\n\t\t\t\t\t\t\t\t\tif (v == \"ak\") {\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleWhenUnlocked\";\n\t\t\t\t\t\t\t\t\t} else if (v == \"ck\") {\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleAfterFirstUnlock\";\n\t\t\t\t\t\t\t\t\t} else if (v == \"dk\") {\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleAlways\";\n\t\t\t\t\t\t\t\t\t} else if (v == \"aku\") {\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleWhenUnlockedThisDeviceOnly\"\n\t\t\t\t\t\t\t\t\t} else if (v == \"cku\") {\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly\";\n\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\t// v == dku\n\t\t\t\t\t\t\t\t\t\tv = \"kSecAttrAccessibleAlwaysThisDeviceOnly\";\n\t\t\t\t\t\t\t\t\t} \n\t\t\t\t\t\t\t\t} \n\t\t\t\t\t\t\t\tsend(\"\\t-   \" + k + \"=\" + v);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t} catch (error) {\n\t\t\t\t\tconsole.log(\"Ignoring \" + imp.name + \": \" + error.message);\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\tonComplete: function (e) {\n\t\t\t\tsend(\"All methods loaded\");\n\t\t}\n\t});\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/keychain/SecItem_monitor.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/keychain/SecItem_monitor.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/keychain/SecItem_monitor.js",
+        "source_hash": "abdb3cd827b867f2b8657634850e182bb0a283094289d3f39e273e36e440a1e2",
+        "normalized_hash": "720dfb3f54a376fd4ec9846dcb403d1268efaeb358423fcfef8c1b66c3cc26aa",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "keystore-keychain",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "keystore-keychain",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.enumerateExports",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1636.002"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/sqlite/libsqlite3_monitor.js",
+      "name": "FRIDA - IOS - Database - libsqlite3 monitor [08333cc9]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/sqlite/libsqlite3_monitor.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var libraries = Process.enumerateModulesSync();\nfor(var i in libraries) {\n\tif (libraries[i].name == 'libsqlite3.dylib' ) {\n\t\tsend(\"Using library : \" + libraries[i].name);\n\t\tvar functions = Module.enumerateExportsSync(\"libsqlite3.dylib\");\n\t\tfor (var j in functions) {\n\t\t\tif (functions[j].name == 'sqlite3_open' \n\t\t\t|| functions[j].name == 'sqlite3_open16' \n\t\t\t|| functions[j].name == 'sqlite3_open_v2') {\n\t\t\t\tsend(\"Found target method : \" + functions[j].name);\n\t\t\t\tInterceptor.attach(functions[j].address, {\n\t\t\t\t\tOnEnter: function(args) { \n\t\t\t\t\t\tsend(\"[+][libsqlite3.dylib] Database open at: \" + args[0].toString());\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t\tif (functions[j].name == 'sqlite3_prepare' \n\t\t\t|| functions[j].name == 'sqlite3_prepare_v2' \n\t\t\t|| functions[j].name == 'sqlite3_prepare16_v2' \n\t\t\t|| functions[j].name == 'sqlite3_prepare16') {\n\t\t\t\tsend(\"Found target method : \" + functions[j].name);\n\t\t\t\tInterceptor.attach(functions[j].address, {\n\t\t\t\t\tOnEnter: function(args) { \n\t\t\t\t\t\tsend(\"[+][libsqlite3.dylib] Database SQL At: \" + args[0].toString());\n\t\t\t\t\t\tsend(\"\\t - SQL: \" + args[1].toString());\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}\n}\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/sqlite/libsqlite3_monitor.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/sqlite/libsqlite3_monitor.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/sqlite/libsqlite3_monitor.js",
+        "source_hash": "08333cc9de1cf1cddf4a38e8b229de3630407b57e65056c87c92fb22676d3429",
+        "normalized_hash": "675331b3f34245d2863676dd2be3021630610c92b6bd68aceedbb80ec5218191",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "database",
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "database",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Module.enumerateExports",
+          "Process",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

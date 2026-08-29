@@ -1,0 +1,577 @@
+{
+  "package_id": "frida-ios-native-v1",
+  "package_name": "Frida - Ios - Native",
+  "version": "1.0.0",
+  "summary": "6 Frida instrumentation procedures for ios native mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 6 standalone Frida procedures from 1 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 6}; compatibility: {'likely-compatible': 5, 'legacy': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 6
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "method-hooking",
+    "native-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 6
+  },
+  "quality_distribution": {
+    "C": 5,
+    "B": 1
+  },
+  "license_distribution": {
+    "unknown": 6
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 5,
+    "legacy": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:alfinsyahruddin/ios-yt-adblocker",
+      "name": "FRIDA - IOS - Native Hooking - ios-yt-adblocker [cddc5f33]",
+      "description": "Block Ads in Youtube app for iOS.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\n    var targetClass = \"YTIPlayerResponse\";\n    var targetMethod = \"- isMonetized\";\n\n    if (ObjC.classes[targetClass] === undefined) {\n        console.log(\"Class \" + targetClass + \" not found!\");\n    } else {\n        if (ObjC.classes[targetClass][targetMethod] === undefined) {\n            console.log(\"Method \" + targetMethod + \" not found in \" + targetClass);\n        } else {\n            var hook = ObjC.classes[targetClass][targetMethod];\n            console.log(\"Hooking \" + targetClass + \" \" + targetMethod);\n\n            Interceptor.attach(hook.implementation, {\n                onEnter: function(args) {\n                    console.log(\"[*] \" + targetClass + \" \" + targetMethod + \" called\");\n                },\n                onLeave: function(retval) {\n                    console.log(\"[*] \" + targetClass + \" \" + targetMethod + \" originally returned: \" + retval);\n                    retval.replace(0);\n                    console.log(\"[*] Modified return value to: \" + retval);\n                }\n            });\n        }\n    }\n} else {\n    console.log(\"Objective-C runtime is not available!\");\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "alfinsyahruddin",
+        "codeshare_slug": "ios-yt-adblocker",
+        "codeshare_fingerprint": "cddc5f339453cc580e8785a5a7534aec48739e5e42c065e2fa902f26a0047ba7",
+        "project_uuid": "1c8f9d6c-f328-4e78-96e2-afc79d6dc3a0",
+        "popularity": {
+          "page": 10,
+          "browse_title": "ios-yt-adblocker",
+          "likes": 1,
+          "views": "581"
+        },
+        "discovery_page": 10,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:alfinsyahruddin/ios-yt-adblocker",
+        "source_url": "https://codeshare.frida.re/@alfinsyahruddin/ios-yt-adblocker/",
+        "source_hash": "cddc5f339453cc580e8785a5a7534aec48739e5e42c065e2fa902f26a0047ba7",
+        "normalized_hash": "cddc5f339453cc580e8785a5a7534aec48739e5e42c065e2fa902f26a0047ba7",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:chepaika/ios-clicklog",
+      "name": "FRIDA - IOS - Native Hooking - ios-clicklog [49868bf6]",
+      "description": "Simple frida script that Intercept all calbacks of iOS's UIControls, like button click and write to console which of them will be called when user will interact with UIControl.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function interceptActionWithTarget(actionSelector, target) {\n    console.log(\"\\tSet hook on: \" + target.$className + \".\" + actionSelector.readUtf8String() + \"()\")\n    var impl = target.methodForSelector_(actionSelector)\n    Interceptor.attach(impl, {\n        onEnter: function(a) {\n            this.log = Array()\n            this.log.push(\"(\" + a[0] + \") \" + target.$className + \".\" + actionSelector.readUtf8String() + \"()\")\n        },\n        onLeave: function(r) {\n            console.log(this.log.join('\\n') + '\\n')\n        }})\n}\n\nfunction interceptActionWithoutTarget(actionSelector, uiControl) {\n    var uiApp = ObjC.classes.UIApplication.sharedApplication()\n    // frida bug? anyway we can't call this \n    // var actionTarget = uiApp._targetInChainForAction_sender_(actionSelector, uiControl)\n    // but we can \n    var targetInChainForActionPrototype = new NativeFunction(ObjC.api.objc_msgSend, \"pointer\", [\"pointer\",\"pointer\",\"pointer\", \"pointer\"])\n    var actionTargetPtr = targetInChainForActionPrototype(uiApp, ObjC.selector(\"_targetInChainForAction:sender:\"), actionSelector, uiControl)\n    if (actionTargetPtr != \"0x0\") {\n        var actionTarget = new ObjC.Object(actionTargetPtr) \n        interceptActionWithTarget(actionSelector, actionTarget)\n    } else {\n        console.warn(\"\\tCan't get target for selector: \" + actionSelector.readUtf8String())\n    }\n}\n\nfunction interceptUIAction(uiAction) {\n    // At least in swift 5.5 next scheme work\n    // block invoke points to swift helper that calls blockAdr+0x20\n    var blockAddr = uiAction.$ivars._handler.handle\n    var closurePtr = blockAddr.add(0x20).readPointer()\n    var closureName = DebugSymbol.fromAddress(closurePtr).name \n    console.log(\"\\tSet hook on: \" + closureName)\n    Interceptor.attach(closurePtr, {\n        onEnter: function(a) {\n            this.log = Array()\n            this.log.push(\"Called \" + closureName)\n        },\n        onLeave: function(r) {\n            console.log(this.log.join('\\n') + '\\n')\n        }})\n}\n\nfunction setInteceptionOnRegistredCallbacks(uiControl) {\n    console.log(\"Get callbacks of \" + uiControl.$className + \" \" + uiControl.handle)\n    var targetActions = uiControl.$ivars._targetActions\n    if (targetActions == null) {\n        console.log(\"\\tNo callbacks found\")\n        return\n    }\n\n    var count = targetActions.count().valueOf()\n    \n    for (let i = 0; i !== count; i++) {\n        var action = targetActions.objectAtIndex_(i)\n        // First case when UIAction specified\n        if (action.$ivars._actionHandler != null) {\n            var uiAction = action.$ivars._actionHandler\n            interceptUIAction(uiAction)\n        } else if (action.$ivars._action != null && \n                    action.$ivars._action != \"0x0\" &&\n                    action.$ivars._target != null) {\n            var actionSelector = action.$ivars._action\n            var actionTarget = action.$ivars._target\n            interceptActionWithTarget(actionSelector, actionTarget)\n        }\n        else if (action.$ivars._action != null && \n            action.$ivars._action != \"0x0\"){\n            var actionSelector = action.$ivars._action\n            interceptActionWithoutTarget(actionSelector, uiControl)\n        }\n        else {\n            console.error(\"Invalid UIControlTargetAction with actionHandler and action seted to null\")\n            continue\n        }\n    }\n}\n\nfunction hookAllUIControlsAction() {\n    console.log(\"Getting all UIControl's\")\n    var uiControls = ObjC.chooseSync(ObjC.classes.UIControl)\n    uiControls.forEach(control => {setInteceptionOnRegistredCallbacks(control)})\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "chepaika",
+        "codeshare_slug": "ios-clicklog",
+        "codeshare_fingerprint": "49868bf600f17fc03452c463d8140812c790349c48d8015c739066c92fa52c59",
+        "project_uuid": "75d3fcc3-f5d6-4b28-995f-3d8c14b955e0",
+        "popularity": {
+          "page": 14,
+          "browse_title": "ios-clicklog",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 14,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:chepaika/ios-clicklog",
+        "source_url": "https://codeshare.frida.re/@chepaika/ios-clicklog/",
+        "source_hash": "49868bf600f17fc03452c463d8140812c790349c48d8015c739066c92fa52c59",
+        "normalized_hash": "4c860fde437066193683a47f9538d1d8509f4da94c69f1d897f002d52a3dce7a",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "DebugSymbol",
+          "NativeFunction"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:interference-security/ios-app-all-classes-methods-hooks",
+      "name": "FRIDA - IOS - Native Hooking - iOS App All Classes Methods Hooks [14677819]",
+      "description": "Hook all the methods of all the classes owned by the iOS app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function get_timestamp()\r\n{\r\n\tvar today = new Date();\r\n\tvar timestamp = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate() + ' ' + today.getHours() + \":\" + today.getMinutes() + \":\" + today.getSeconds() + \":\" + today.getMilliseconds();\r\n\treturn timestamp;\r\n}\r\n\r\nfunction hook_class_method(class_name, method_name)\r\n{\r\n\tvar hook = eval('ObjC.classes.'+class_name+'[\"'+method_name+'\"]');\r\n\t\tInterceptor.attach(hook.implementation, {\r\n\t\t\tonEnter: function(args) {\r\n\t\t\tconsole.log(\"[*] [\" + get_timestamp() + \" ] Detected call to: \" + class_name + \" -> \" + method_name);\r\n\t\t}\r\n\t});\r\n}\r\n\r\nfunction run_hook_all_methods_of_classes_app_only()\r\n{\r\n\tconsole.log(\"[*] Started: Hook all methods of all app only classes\");\r\n\tvar free = new NativeFunction(Module.findExportByName(null, 'free'), 'void', ['pointer'])\r\n    var copyClassNamesForImage = new NativeFunction(Module.findExportByName(null, 'objc_copyClassNamesForImage'), 'pointer', ['pointer', 'pointer'])\r\n    var p = Memory.alloc(Process.pointerSize)\r\n    Memory.writeUInt(p, 0)\r\n    var path = ObjC.classes.NSBundle.mainBundle().executablePath().UTF8String()\r\n    var pPath = Memory.allocUtf8String(path)\r\n    var pClasses = copyClassNamesForImage(pPath, p)\r\n    var count = Memory.readUInt(p)\r\n    var classesArray = new Array(count)\r\n    for (var i = 0; i < count; i++)\r\n    {\r\n        var pClassName = Memory.readPointer(pClasses.add(i * Process.pointerSize))\r\n        classesArray[i] = Memory.readUtf8String(pClassName)\r\n\t\tvar className = classesArray[i]\r\n\t\tif (ObjC.classes.hasOwnProperty(className))\r\n\t\t{\r\n\t\t\t//console.log(\"[+] Class: \" + className);\r\n\t\t\t//var methods = ObjC.classes[className].$methods;\r\n\t\t\tvar methods = ObjC.classes[className].$ownMethods;\r\n\t\t\tfor (var j = 0; j < methods.length; j++)\r\n\t\t\t{\r\n\t\t\t\ttry\r\n\t\t\t\t{\r\n\t\t\t\t\tvar className2 = className;\r\n\t\t\t\t\tvar funcName2 = methods[j];\r\n\t\t\t\t\t//console.log(\"[-] Method: \" + methods[j]);\r\n\t\t\t\t\thook_class_method(className2, funcName2);\r\n\t\t\t\t\t//console.log(\"[*] [\" + get_timestamp() + \"] Hooking successful: \" + className2 + \" -> \" + funcName2);\r\n\t\t\t\t}\r\n\t\t\t\tcatch(err)\r\n\t\t\t\t{\r\n\t\t\t\t\tconsole.log(\"[*] [\" + get_timestamp() + \"] Hooking Error: \" + err.message);\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n    }\r\n    free(pClasses)\r\n\tconsole.log(\"[*] Completed: Hook all methods of all app only classes\");\r\n}\r\n\r\nfunction hook_all_methods_of_classes_app_only()\r\n{\r\n\tsetImmediate(run_hook_all_methods_of_classes_app_only)\r\n}\r\n\r\nhook_all_methods_of_classes_app_only()",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "interference-security",
+        "codeshare_slug": "ios-app-all-classes-methods-hooks",
+        "codeshare_fingerprint": "14677819d05fe4774b8d0c6a8677e9ffa5b0b6187f67e523a76afb59b4ddfca2",
+        "project_uuid": "caa086e8-77a2-4a3e-bd11-96b688dc34de",
+        "popularity": {
+          "page": 2,
+          "browse_title": "iOS App All Classes Methods Hooks",
+          "likes": 8,
+          "views": "16K"
+        },
+        "discovery_page": 2,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:interference-security/ios-app-all-classes-methods-hooks",
+        "source_url": "https://codeshare.frida.re/@interference-security/ios-app-all-classes-methods-hooks/",
+        "source_hash": "14677819d05fe4774b8d0c6a8677e9ffa5b0b6187f67e523a76afb59b4ddfca2",
+        "normalized_hash": "dc2936b9f3ca561a41d87d5eb5f6fc983b00b4d961f44fdaaa2acca91c9852b6",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach",
+          "Module.findExportByName",
+          "Memory",
+          "Process",
+          "NativeFunction"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:karim-moftah/ios-openurl",
+      "name": "FRIDA - IOS - Native Hooking - iOS openURL [17276ebd]",
+      "description": "Frida iOS script that hooks both - openURL: and - openURL:options:completionHandler: and prints the opened URLs.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "if (ObjC.available) {\r\n    var UIApplication = ObjC.classes.UIApplication;\r\n\r\n    function tryAttach(methodName, label) {\r\n        var m = UIApplication[methodName];\r\n        if (!m) {\r\n            console.log('[*] ' + methodName + ' not found on UIApplication');\r\n            return;\r\n        }\r\n        Interceptor.attach(m.implementation, {\r\n            onEnter: function(args) {\r\n                try {\r\n                    // args[0] = self, args[1] = _cmd, args[2] = NSURL *\r\n                    if (args[2].isNull()) {\r\n                        console.log(label + ' called with NULL url');\r\n                        return;\r\n                    }\r\n                    var url = new ObjC.Object(args[2]);\r\n                    // absoluteString is the most reliable readable form\r\n                    var s = (typeof url.absoluteString === 'function') ? url.absoluteString().toString() : url.toString();\r\n                    console.log(label + ' -> ' + s);\r\n                } catch (e) {\r\n                    console.log(label + ' -> error reading url: ' + e);\r\n                }\r\n            }\r\n        });\r\n        console.log('[*] Attached to UIApplication ' + methodName);\r\n    }\r\n\r\n    tryAttach('- openURL:', '[openURL:]');\r\n    tryAttach('- openURL:options:completionHandler:', '[openURL:options:completionHandler:]');\r\n\r\n} else {\r\n    console.log('Objective-C runtime is not available!');\r\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "karim-moftah",
+        "codeshare_slug": "ios-openurl",
+        "codeshare_fingerprint": "17276ebd25542b7ed0062b038e95f0e95c2e3497a0125762761d200c8d20a738",
+        "project_uuid": "a7e92899-405e-4746-b318-0fe0512d7763",
+        "popularity": {
+          "page": 25,
+          "browse_title": "iOS openURL",
+          "likes": 0,
+          "views": "925"
+        },
+        "discovery_page": 25,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:karim-moftah/ios-openurl",
+        "source_url": "https://codeshare.frida.re/@karim-moftah/ios-openurl/",
+        "source_hash": "17276ebd25542b7ed0062b038e95f0e95c2e3497a0125762761d200c8d20a738",
+        "normalized_hash": "9b1d9f9979143fff93839e6a2fd068a64bd2bdc6981115fe5e5cd5dd3652d8f2",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Mo7amedFouad/firfirestore",
+      "name": "FRIDA - IOS - Native Hooking - FIRFireStore [6502729b]",
+      "description": "FIRFireStore",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var documentWithPath = ObjC.classes.FIRCollectionReference[\"- documentWithPath:\"];\nvar collectionWithPath = ObjC.classes.FIRFirestore[\"- collectionWithPath:\"];\n\nInterceptor.attach(documentWithPath.implementation, {\n    onEnter: function(args) {\n        var message = ObjC.Object(args[2]);\n        console.log(\"\\n[FIRCollectionReference documentWithPath:@\\\"\" + message.toString() + \"\\\"]\");\n    }\n});\nInterceptor.attach(collectionWithPath.implementation, {\n    onEnter: function(args) {\n        var message = ObjC.Object(args[2]);\n        console.log(\"\\n[FIRFireStore collectionWithPath:@\\\"\" + message.toString() + \"\\\"]\");\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Mo7amedFouad",
+        "codeshare_slug": "firfirestore",
+        "codeshare_fingerprint": "6502729b1d4621f93b3379194895c5759b7361f8a56be17aff9835d494d3f351",
+        "project_uuid": "2814f69b-7234-4515-9d36-91eb880d57e6",
+        "popularity": {
+          "page": 38,
+          "browse_title": "FIRFireStore",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 38,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Mo7amedFouad/firfirestore",
+        "source_url": "https://codeshare.frida.re/@Mo7amedFouad/firfirestore/",
+        "source_hash": "6502729b1d4621f93b3379194895c5759b7361f8a56be17aff9835d494d3f351",
+        "normalized_hash": "6502729b1d4621f93b3379194895c5759b7361f8a56be17aff9835d494d3f351",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sdcampbell/disable-watchdog-timer",
+      "name": "FRIDA - IOS - Native Hooking - Disable Watchdog Timer [da18b081]",
+      "description": "Use this script when you notice that your Frida script crashes the iOS app process after 10 seconds. It will disable the iOS watchdog to allow your Frida script to continue loading. Use \"SpringBoard\" as your Frida target.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var method = ObjC.classes.FBApplicationProcessWatchdogPolicy['- watchdogPolicyForProcess:eventContext:'];\n\nInterceptor.attach(method.implementation, {\n    onLeave: function(retval) {\n        // Print the original policy pointer just for confirmation\n        console.log(`[*] Watchdog Policy requested. Original: ${retval}`);\n\n        // Force it to NULL (No Policy = No Watchdog)\n        retval.replace(ptr(\"0x0\"));\n\n        console.log(\"[+] Policy killed. Watchdog disabled for this launch.\");\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "sdcampbell",
+        "codeshare_slug": "disable-watchdog-timer",
+        "codeshare_fingerprint": "da18b081811634fde793b2386cbc86876f84fa57750ebac740d7f169d012f817",
+        "project_uuid": "c588089b-cbbd-4478-9531-924e0ed3e169",
+        "popularity": {
+          "page": 8,
+          "browse_title": "Disable Watchdog Timer",
+          "likes": 1,
+          "views": "703"
+        },
+        "discovery_page": 8,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sdcampbell/disable-watchdog-timer",
+        "source_url": "https://codeshare.frida.re/@sdcampbell/disable-watchdog-timer/",
+        "source_hash": "da18b081811634fde793b2386cbc86876f84fa57750ebac740d7f169d012f817",
+        "normalized_hash": "1564b264a020ad87947ecc73957616acc4ad89c3dbef691f9513ab4b93c293f6",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "method-hooking",
+          "native-hooking"
+        ],
+        "primary_behavior": "native-hooking",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

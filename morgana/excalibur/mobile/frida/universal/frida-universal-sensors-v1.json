@@ -1,0 +1,438 @@
+{
+  "package_id": "frida-universal-sensors-v1",
+  "package_name": "Frida - Universal - Sensors",
+  "version": "1.0.0",
+  "summary": "4 Frida instrumentation procedures for universal sensors mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 4 standalone Frida procedures from 2 source families.",
+    "Target platforms: universal-native; frameworks: generic-native.",
+    "Scope mix: {'generic': 4}; compatibility: {'likely-compatible': 3, 'legacy': 1}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1430",
+    "T1513"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact"
+  ],
+  "category": "mobile/frida/universal",
+  "target_platform_counts": {
+    "universal-native": 4
+  },
+  "frameworks": [
+    "generic-native"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "location",
+    "method-hooking",
+    "native-hooking",
+    "runtime-tracing",
+    "screenshot"
+  ],
+  "source_providers": [
+    "frida-codeshare",
+    "iddoeldor-frida-snippets"
+  ],
+  "scope_counts": {
+    "generic": 4
+  },
+  "quality_distribution": {
+    "C": 2,
+    "A": 2
+  },
+  "license_distribution": {
+    "unknown": 4
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 3,
+    "legacy": 1
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:mrmacete/stalker-event-parser",
+      "name": "FRIDA - UNIVERSAL - Location - Stalker event parser [6e676449]",
+      "description": "Totally inefficient, client-side toy parser for Stalker events. It's mostly useful for exploring and debugging the Stalker.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\n\n/*\n * Sample parser for Stalker events. It's intended as an example\n * to understand the format, it's possible to optimize it more.\n * It produces disassembly for block, compile and exec events - which\n * is totally unnecessary but it's useful for debugging.\n *\n * parseEvents(events, callback);\n *\n * Parameters:\n *\n *   events - the events as got from onReceive()\n *   callback - a callback to be executed for each parsed event\n *\n * Example:\n\n  Stalker.follow({\n    events: {\n      call: false,\n      ret: false,\n      exec: false,\n      block: false,\n      compile: true\n    },\n    onReceive: function (events) {\n      console.log('[' + tid + '] onReceive!');\n      parseEvents(events, function (event) {\n        if (event.type === 'compile' || event.type === 'block') {\n          console.log('\\n' + event.begin + ' -> ' + event.end);\n          console.log(event.code + '\\n');\n        }\n      });\n    }\n  });\n*/\n\nvar threads = {};\n\nvar EV_TYPE_NOTHING = 0;\nvar EV_TYPE_CALL = 1;\nvar EV_TYPE_RET = 2;\nvar EV_TYPE_EXEC = 4;\nvar EV_TYPE_BLOCK = 8;\nvar EV_TYPE_COMPILE = 16;\n\nvar intSize = Process.pointerSize;\nvar EV_STRUCT_SIZE = 2 * Process.pointerSize + 2 * intSize;\n\nfunction parseEvents(blob, callback) {\n    var len = getLen(blob);\n    for (var i = 0; i !== len; i++) {\n        var type = getType(blob, i);\n        switch (type) {\n            case EV_TYPE_CALL:\n                callback(parseCallEvent(blob, i));\n                break;\n            case EV_TYPE_RET:\n                callback(parseRetEvent(blob, i));\n                break;\n            case EV_TYPE_EXEC:\n                callback(parseExecEvent(blob, i));\n                break;\n            case EV_TYPE_BLOCK:\n                callback(parseBlockEvent(blob, i));\n                break;\n            case EV_TYPE_COMPILE:\n                callback(parseCompileEvent(blob, i));\n                break;\n            default:\n                console.log('Unsupported type ' + type);\n                break;\n        }\n    }\n}\n\nfunction getType(blob, idx) {\n    return parseInteger(blob, idx, 0);\n}\n\nfunction getLen(blob) {\n    return blob.byteLength / EV_STRUCT_SIZE;\n}\n\nfunction parseCallEvent(blob, idx) {\n    return {\n        type: 'call',\n        location: parsePointer(blob, idx, intSize),\n        target: parsePointer(blob, idx, intSize + Process.pointerSize),\n        depth: parseInteger(blob, idx, intSize + 2 * Process.pointerSize)\n    };\n}\n\nfunction parseRetEvent(blob, idx) {\n    var ev = parseCallEvent(blob, idx);\n    ev.type = 'ret';\n    return ev;\n}\n\nfunction parseExecEvent(blob, idx) {\n    var loc = parsePointer(blob, idx, intSize);\n    return {\n        type: 'exec',\n        location: loc,\n        code: Instruction.parse(loc).toString()\n    };\n}\n\nfunction parseBlockEvent(blob, idx) {\n    var begin = parsePointer(blob, idx, intSize);\n    var end = parsePointer(blob, idx, intSize + Process.pointerSize);\n    var i = begin.add(0);\n    var code = [];\n    while (i.compare(end) < 0) {\n        var instr = Instruction.parse(i);\n        code.push(i.toString() + '    ' + instr.toString());\n        i = instr.next;\n    }\n    return {\n        type: 'block',\n        begin: begin,\n        end: end,\n        code: code.join('\\n')\n    };\n}\n\nfunction parseCompileEvent(blob, idx) {\n    var parsed = parseBlockEvent(blob, idx);\n    parsed.type = 'compile';\n    return parsed;\n}\n\nfunction parseInteger(blob, idx, offset) {\n    return new Int32Array(blob, idx * EV_STRUCT_SIZE + offset, 1)[0];\n}\n\nfunction parsePointer(blob, idx, offset) {\n    var view = new Uint8Array(blob, idx * EV_STRUCT_SIZE + offset, Process.pointerSize);\n    var stringed = [];\n    for (var i = 0; i < Process.pointerSize; i++) {\n        var x = view[i];\n        var conv = x.toString(16);\n        if (conv.length === 1) {\n            conv = '0' + conv;\n        }\n        stringed.push(conv);\n    }\n    return ptr('0x' + stringed.reverse().join(''));\n}\n\nfunction reverse(arr) {\n    var result = [];\n    for (var i = arr.length - 1; i >= 0; i--) {\n        result.push(arr[i]);\n    }\n    return result;\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "mrmacete",
+        "codeshare_slug": "stalker-event-parser",
+        "codeshare_fingerprint": "6e676449a679f4de88f57b7e68656437374cf871881431941f569b89fed3ddf2",
+        "project_uuid": "109c5a10-5a1e-4f07-8160-ae517da0ed4c",
+        "popularity": {
+          "page": 17,
+          "browse_title": "Stalker event parser",
+          "likes": 1,
+          "views": "10K"
+        },
+        "discovery_page": 17,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:mrmacete/stalker-event-parser",
+        "source_url": "https://codeshare.frida.re/@mrmacete/stalker-event-parser/",
+        "source_hash": "6e676449a679f4de88f57b7e68656437374cf871881431941f569b89fed3ddf2",
+        "normalized_hash": "6e676449a679f4de88f57b7e68656437374cf871881431941f569b89fed3ddf2",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "location",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "Process",
+          "Stalker"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:qingusi1/test1",
+      "name": "FRIDA - UNIVERSAL - Location - test1 [b77208ac]",
+      "description": "1",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// frida_dump_fun_0080bbcc.js\r\n'use strict';\r\n\r\nif (Process.arch !== 'arm64') {\r\n    send({\r\n        type: 'error',\r\n        msg: 'Script built for arm64. Current arch: ' + Process.arch\r\n    });\r\n    throw 'Incompatible arch';\r\n}\r\n\r\n// Thay địa chỉ hàm tại đây (VA runtime)\r\nconst FUNC_ADDR = ptr('0xADDR_FUN_0080bbcc');\r\n\r\nfunction safeReadU64(ptrAddr) {\r\n    try {\r\n        return ptr(ptrAddr).readU64();\r\n    } catch (e) {\r\n        return ptr('0x0');\r\n    }\r\n}\r\n\r\nfunction safeReadU32(ptrAddr) {\r\n    try {\r\n        return ptr(ptrAddr).readU32();\r\n    } catch (e) {\r\n        return 0;\r\n    }\r\n}\r\n\r\nfunction hexdumpSafe(p, len) {\r\n    try {\r\n        return Memory.readByteArray(ptr(p), len);\r\n    } catch (e) {\r\n        return null;\r\n    }\r\n}\r\n\r\nInterceptor.attach(FUNC_ADDR, {\r\n    onEnter: function(args) {\r\n        // registers context: x19 and x20 used in decompiled code as unaff_x19/unaff_x20\r\n        this.x19 = this.context.x19;\r\n        this.x20 = this.context.x20;\r\n        send({\r\n            type: 'enter',\r\n            addr: FUNC_ADDR.toString(),\r\n            x19: this.x19.toString(),\r\n            x20: this.x20.toString()\r\n        });\r\n\r\n        const left_struct_ptr = ptr(this.x19);\r\n        const right_struct_ptr = ptr(this.x20);\r\n\r\n        // lVar8 was computed as *(long *)(*(long *)(unaff_x19 + 0x30) + 0x1d0)\r\n        // We can't recompute exactly, but we can read fields relative to x19/x20 that appear in decompiled code:\r\n        // - right object pointer location appears: *(long *)(x20 + 0x5f0)\r\n        // We'll read that and then access +0x88, +0x100, +0xf8, +0xb0 from that target.\r\n        try {\r\n            const obj_right_base = safeReadU64(this.x20.add(0x5f0));\r\n            send({\r\n                type: 'info',\r\n                msg: 'obj_right_base',\r\n                val: ptr(obj_right_base).toString()\r\n            });\r\n\r\n            const right_b88 = safeReadU64(ptr(obj_right_base).add(0x88)); // pointer to array struct\r\n            send({\r\n                type: 'info',\r\n                msg: 'right->+0x88',\r\n                val: ptr(right_b88).toString()\r\n            });\r\n\r\n            const right_b100 = safeReadU64(ptr(obj_right_base).add(0x100));\r\n            const right_bf8 = safeReadU64(ptr(obj_right_base).add(0xf8));\r\n            const right_bB0 = safeReadU64(ptr(obj_right_base).add(0xb0));\r\n            send({\r\n                type: 'info',\r\n                msg: 'right fields',\r\n                b100: ptr(right_b100).toString(),\r\n                bf8: ptr(right_bf8).toString(),\r\n                bb0: right_bB0\r\n            });\r\n\r\n            // Dump array on right if present\r\n            if (!right_b88.isNull()) {\r\n                const count = safeReadU64(ptr(right_b88).add(0x0)).toNumber(); // *puVar10\r\n                const entries_ptr = safeReadU64(ptr(right_b88).add(0x8)); // puVar10[1]\r\n                send({\r\n                    type: 'info',\r\n                    msg: 'right array',\r\n                    count: count,\r\n                    entries_ptr: ptr(entries_ptr).toString()\r\n                });\r\n                for (let i = 0; i < Math.min(count, 64); i++) {\r\n                    const entry_addr = safeReadU64(ptr(entries_ptr).add(i * 8));\r\n                    if (entry_addr.isNull()) continue;\r\n                    const typeField = safeReadU64(ptr(entry_addr).add(0x10));\r\n                    const dataPtr = safeReadU64(ptr(entry_addr).add(8));\r\n                    let blob = hexdumpSafe(dataPtr, 32);\r\n                    send({\r\n                        type: 'entry_right',\r\n                        idx: i,\r\n                        entry: ptr(entry_addr).toString(),\r\n                        typeField: ptr(typeField).toString(),\r\n                        dataPtr: ptr(dataPtr).toString(),\r\n                        blob: blob\r\n                    });\r\n                }\r\n            }\r\n\r\n            // Try to find left table pointer lVar8 by computing: *(long *)(*(long *)(x19 + 0x30) + 0x1d0)\r\n            const p30 = safeReadU64(this.x19.add(0x30));\r\n            const lVar8 = safeReadU64(ptr(p30).add(0x1d0));\r\n            send({\r\n                type: 'info',\r\n                msg: 'computed lVar8',\r\n                val: ptr(lVar8).toString()\r\n            });\r\n            if (!lVar8.isNull()) {\r\n                const left_b88 = safeReadU64(ptr(lVar8).add(0x88));\r\n                send({\r\n                    type: 'info',\r\n                    msg: 'left->+0x88',\r\n                    val: ptr(left_b88).toString()\r\n                });\r\n                if (!left_b88.isNull()) {\r\n                    const countL = safeReadU64(ptr(left_b88).add(0x0)).toNumber();\r\n                    const entriesL = safeReadU64(ptr(left_b88).add(0x8));\r\n                    send({\r\n                        type: 'info',\r\n                        msg: 'left array',\r\n                        count: countL,\r\n                        entries_ptr: ptr(entriesL).toString()\r\n                    });\r\n                    for (let j = 0; j < Math.min(countL, 64); j++) {\r\n                        const entry_addr = safeReadU64(ptr(entriesL).add(j * 8));\r\n                        if (entry_addr.isNull()) continue;\r\n                        const typeField = safeReadU64(ptr(entry_addr).add(0x10));\r\n                        const dataPtr = safeReadU64(ptr(entry_addr).add(8));\r\n                        let blob = hexdumpSafe(dataPtr, 32);\r\n                        send({\r\n                            type: 'entry_left',\r\n                            idx: j,\r\n                            entry: ptr(entry_addr).toString(),\r\n                            typeField: ptr(typeField).toString(),\r\n                            dataPtr: ptr(dataPtr).toString(),\r\n                            blob: blob\r\n                        });\r\n                    }\r\n                }\r\n                // Also dump lVar8 + 0xb0 (the field copied later)\r\n                const lVar8_bB0 = safeReadU64(ptr(lVar8).add(0xb0));\r\n                send({\r\n                    type: 'info',\r\n                    msg: 'lVar8 +0xb0',\r\n                    val: lVar8_bB0\r\n                });\r\n            }\r\n        } catch (e) {\r\n            send({\r\n                type: 'error',\r\n                msg: 'exception reading memory: ' + e\r\n            });\r\n        }\r\n    },\r\n    onLeave: function(retval) {\r\n        send({\r\n            type: 'leave',\r\n            retval: retval\r\n        });\r\n    }\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "qingusi1",
+        "codeshare_slug": "test1",
+        "codeshare_fingerprint": "b77208ac12c5a74d6bde220a9059f4049d803872c3d7599e627850eb3eb6157a",
+        "project_uuid": "9782f6b2-f05f-482a-8110-3f9740a527a5",
+        "popularity": {
+          "page": 25,
+          "browse_title": "test1",
+          "likes": 0,
+          "views": "574"
+        },
+        "discovery_page": 25,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:qingusi1/test1",
+        "source_url": "https://codeshare.frida.re/@qingusi1/test1/",
+        "source_hash": "b77208ac12c5a74d6bde220a9059f4049d803872c3d7599e627850eb3eb6157a",
+        "normalized_hash": "ff92c76ef5ab47703995b326f763c27fd1866b068828f92ffa0d322ba00c1786",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "location",
+          "native-hooking"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "Interceptor.attach",
+          "Memory",
+          "Process",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Change location:js:29",
+      "name": "FRIDA - UNIVERSAL - Location - Change location [043963fb]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Change location:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(() => {\n\tvar Location = Java.use('android.location.Location');\n\tLocation.getLatitude.implementation = function() {\n\t\treturn LATITUDE;\n\t}\n\tLocation.getLongitude.implementation = function() {\n\t\treturn LONGITUDE;\n\t}\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Change location:js",
+        "readme_snippet_index": 29,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Change location:js:29",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "043963fb1868a9ae4c073704b63555d2564b17376b662ae3b64031c12e461ece",
+        "normalized_hash": "043963fb1868a9ae4c073704b63555d2564b17376b662ae3b64031c12e461ece",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "location",
+          "method-hooking"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:iddoeldor/frida-snippets:readme:Take screenshot:js:53",
+      "name": "FRIDA - UNIVERSAL - Screenshot - Take screenshot [aafcecff]",
+      "description": "Standalone Frida snippet extracted from iddoeldor/frida-snippets README section Take screenshot:js.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1513",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "universal-native",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function screenshot() {\n  ObjC.schedule(ObjC.mainQueue, function() {\n    var getNativeFunction = function (ex, retVal, args) {\n      return new NativeFunction(Module.findExportByName('UIKit', ex), retVal, args);\n    };\n    var api = {\n      UIWindow: ObjC.classes.UIWindow,\n      UIGraphicsBeginImageContextWithOptions: getNativeFunction('UIGraphicsBeginImageContextWithOptions', 'void', [['double', 'double'], 'bool', 'double']),\n      UIGraphicsBeginImageContextWithOptions: getNativeFunction('UIGraphicsBeginImageContextWithOptions', 'void', [['double', 'double'], 'bool', 'double']),\n      UIGraphicsEndImageContext: getNativeFunction('UIGraphicsEndImageContext', 'void', []),\n      UIGraphicsGetImageFromCurrentImageContext: getNativeFunction('UIGraphicsGetImageFromCurrentImageContext', 'pointer', []),\n      UIImagePNGRepresentation: getNativeFunction('UIImagePNGRepresentation', 'pointer', ['pointer'])\n    };\n    var view = api.UIWindow.keyWindow();\n    var bounds = view.bounds();\n    var size = bounds[1];\n    api.UIGraphicsBeginImageContextWithOptions(size, 0, 0);\n    view.drawViewHierarchyInRect_afterScreenUpdates_(bounds, true);\n\n    var image = api.UIGraphicsGetImageFromCurrentImageContext();\n    api.UIGraphicsEndImageContext();\n\n    var png = new ObjC.Object(api.UIImagePNGRepresentation(image));\n    send('screenshot', Memory.readByteArray(png.bytes(), png.length()));\n  });\n}\n\nrpc.exports = {\n  takescreenshot: screenshot\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "repository": "https://github.com/iddoeldor/frida-snippets",
+        "source_commit": "773f89ce8fcd32b0c2e843d148436d6556e064e9",
+        "source_commit_date": "2024-11-29",
+        "source_path": "README.md",
+        "readme_heading": "Take screenshot:js",
+        "readme_snippet_index": 53,
+        "platform_hint": [
+          "android",
+          "ios",
+          "universal-native"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "iddoeldor-frida-snippets",
+        "source_id": "frida:github:iddoeldor/frida-snippets:readme:Take screenshot:js:53",
+        "source_url": "https://github.com/iddoeldor/frida-snippets/blob/773f89ce8fcd32b0c2e843d148436d6556e064e9/README.md",
+        "source_hash": "aafcecffa4a1ff0c784427bcae9f6791ffa6359bc638830c1a08296a3cb29394",
+        "normalized_hash": "aafcecffa4a1ff0c784427bcae9f6791ffa6359bc638830c1a08296a3cb29394",
+        "target_platform": "universal-native",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "generic-native"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "native-hooking",
+          "screenshot"
+        ],
+        "primary_behavior": "screenshot",
+        "frida_apis": [
+          "ObjC.classes",
+          "Module.findExportByName",
+          "Memory",
+          "NativeFunction",
+          "rpc.exports",
+          "send"
+        ],
+        "compatibility_status": "legacy",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1513"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "unknown",
+        "license_source": "No repository LICENSE file",
+        "distribution_status": "unknown-license",
+        "readiness": "legacy",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

@@ -1,0 +1,570 @@
+{
+  "package_id": "frida-android-ipc-v1",
+  "package_name": "Frida - Android - Ipc",
+  "version": "1.0.0",
+  "summary": "6 Frida instrumentation procedures for android ipc mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 6 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 6}; compatibility: {'likely-compatible': 6}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact",
+    "disrupt"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 6
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "ipc",
+    "method-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 6
+  },
+  "quality_distribution": {
+    "C": 4,
+    "B": 2
+  },
+  "license_distribution": {
+    "unknown": 6
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 6
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:FixedOctocat/pendingintent-interception",
+      "name": "FRIDA - ANDROID - Ipc - PendingIntent Interception [b0c38cc6]",
+      "description": "Frida script based on OWASP MASTG",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    var pendingIntent = Java.use('android.app.PendingIntent');\n\n    var getActivity_1 = pendingIntent.getActivity.overload(\"android.content.Context\", \"int\", \"android.content.Intent\", \"int\");\n    getActivity_1.implementation = function(context, requestCode, intent, flags) {\n        console.log(\"[*] Calling PendingIntent.getActivity(\" + intent.getAction() + \")\");\n        console.log(\"\\t[-] Base Intent toString: \" + intent.toString());\n        console.log(\"\\t[-] Base Intent getExtras: \" + intent.getExtras());\n        console.log(\"\\t[-] Base Intent getFlags: \" + intent.getFlags());\n        return this.getActivity(context, requestCode, intent, flags);\n    }\n\n    var getActivities_1 = pendingIntent.getActivities.overload(\"android.content.Context\", \"int\", \"android.content.Intent\", \"int\");\n    getActivities_1.implementation = function(context, requestCode, intent, flags) {\n        console.log(\"[*] Calling PendingIntent.getActivity(\" + intent.getAction() + \")\");\n        console.log(\"\\t[-] Base Intent toString: \" + intent.toString());\n        console.log(\"\\t[-] Base Intent getExtras: \" + intent.getExtras());\n        console.log(\"\\t[-] Base Intent getFlags: \" + intent.getFlags());\n        return this.getActivities(context, requestCode, intent, flags);\n    }\n\n    var getBroadcast_1 = pendingIntent.getBroadcast.overload(\"android.content.Context\", \"int\", \"android.content.Intent\", \"int\");\n    getBroadcast_1.implementation = function(context, requestCode, intent, flags) {\n        console.log(\"[*] Calling PendingIntent.getActivity(\" + intent.getAction() + \")\");\n        console.log(\"\\t[-] Base Intent toString: \" + intent.toString());\n        console.log(\"\\t[-] Base Intent getExtras: \" + intent.getExtras());\n        console.log(\"\\t[-] Base Intent getFlags: \" + intent.getFlags());\n        return this.getBroadcast(context, requestCode, intent, flags);\n    }\n\n    var getService_1 = pendingIntent.getService.overload(\"android.content.Context\", \"int\", \"android.content.Intent\", \"int\");\n    getService_1.implementation = function(context, requestCode, intent, flags) {\n        console.log(\"[*] Calling PendingIntent.getActivity(\" + intent.getAction() + \")\");\n        console.log(\"\\t[-] Base Intent toString: \" + intent.toString());\n        console.log(\"\\t[-] Base Intent getExtras: \" + intent.getExtras());\n        console.log(\"\\t[-] Base Intent getFlags: \" + intent.getFlags());\n        return this.getService(context, requestCode, intent, flags);\n    }\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "FixedOctocat",
+        "codeshare_slug": "pendingintent-interception",
+        "codeshare_fingerprint": "b0c38cc6695cf47f9f16bd76dbb1bdab91ef2cd81a58e3d4428e5e61cfa7fc22",
+        "project_uuid": "bdca159a-704b-42a6-80f6-b4115638fd81",
+        "popularity": {
+          "page": 34,
+          "browse_title": "PendingIntent Interception",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 34,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:FixedOctocat/pendingintent-interception",
+        "source_url": "https://codeshare.frida.re/@FixedOctocat/pendingintent-interception/",
+        "source_hash": "b0c38cc6695cf47f9f16bd76dbb1bdab91ef2cd81a58e3d4428e5e61cfa7fc22",
+        "normalized_hash": "b0c38cc6695cf47f9f16bd76dbb1bdab91ef2cd81a58e3d4428e5e61cfa7fc22",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "method-hooking"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:leolashkevych/android-broadcast-receiver",
+      "name": "FRIDA - ANDROID - Ipc - Android Broadcast Receiver [c57abfb7]",
+      "description": "Script for creating and interacting with BroadcastReceiver instances",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Android Broadcast Receiver\n *\n * Usage: frida -U --codeshare leolashkevych/android-broadcast-receiver com.android.systemui\n *\n * 1. Registering a broadcast receiver with a specified intent filter:\n *\n *     registerReceiver(IntentFilter);\n *     registerReceiver('com.example.customAction');\n *\n * 2. Registering a \"catch all\" broadcast receiver:\n * Android SDK does not allow the registration of a receiver without specifying an intent filter\n * and does not support wildcard filters. This restriction can be circumvented using Java's\n * reflection features to enumerate all applicable events. Then a custom receiver can be\n * registered for each event type. The limitation of this method is the inability to catch\n * non-standard actions/categories/extras. In such cases, use \"registerReceiver(IntentFilter);\".\n *\n *     registerReceiverForAll();\n *\n * 3. Hook an existing broadcast receiver:\n *\n *   frida -U --codeshare leolashkevych/android-broadcast-receiver -f com.application.receiver\n *   hookReceiver();\n *   hookReceiver(BroadcastReceiverClass);\n *\n * 4. Hook an existing broadcast sender (via the Context.sendBroadcast() method):\n * Note that intents sent with LocalBroadcastManager will not be hooked.\n *\n *   frida -U --codeshare leolashkevych/android-broadcast-receiver -f com.application.sender\n *   hookSender();\n */\n\n\nfunction registerReceiver(intentFilter) {\n    Java.perform(function() {\n        var cxt = getContext();\n        if (cxt) {\n            const parent = BroadcastReceiver().$new();\n            cxt.registerReceiver(ChildBroadcastReceiver().$new(parent), Java.use('android.content.IntentFilter').$new(intentFilter));\n        }\n    });\n}\n\nfunction registerReceiverForAll() {\n    Java.perform(function() {\n        var Modifier = Java.use('java.lang.reflect.Modifier');\n        var String = Java.use('java.lang.String');\n        const parent = BroadcastReceiver().$new();\n        var intent = Java.use('android.content.Intent').$new();\n        var fields = intent.getClass().getDeclaredFields();\n        for (var i = 0; i < fields.length; i++) {\n            var field = fields[i];\n            var modifiers = field.getModifiers();\n            if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && field.getType().equals(String.class)) {\n                var filter = field.get(intent);\n                if (filter) {\n                    console.log('Global BroadcastReceiver -> Registered: ' + filter);\n                    getContext().registerReceiver(ChildBroadcastReceiver().$new(parent), Java.use('android.content.IntentFilter').$new(filter));\n                }\n            }\n        }\n    });\n}\n\n\nfunction hookReceiver(receiverClassID) {\n    if (typeof receiverClassID == 'undefined') {\n        receiverClassID = 'android.content.BroadcastReceiver';\n    }\n    Java.perform(function() {\n        var ReceiverClass = Java.use(receiverClassID);\n        if (ReceiverClass) {\n            ReceiverClass.onReceive.implementation = function(context, intent) {\n                printIntent(intent);\n                return this.onReceive(context, intent);\n            };\n            console.log(\"[+] BroadcastReceiver (\" + receiverClassID + \") hook loaded.\");\n        }\n    });\n}\n\nfunction hookSender() {\n    Java.perform(function() {\n        var Context = Java.use('android.content.Context');\n        Context.sendBroadcast.overload('android.content.Intent').implementation = function(intent) {\n            printIntent(intent);\n            return this.sendBroadcast(intent);\n        };\n        console.log(\"[+] Context.sendBroadcast() hook loaded.\");\n    });\n}\n\nfunction getContext() {\n    return Java.use('android.app.ActivityThread').currentApplication().getApplicationContext();\n}\n\nfunction BroadcastReceiver() {\n    const ParentBroadcastReceiver = Java.registerClass({\n        name: 'ParentBroadcastReceiver',\n        superClass: Java.use('android.content.BroadcastReceiver'),\n        fields: {\n            parent: 'android.content.BroadcastReceiver'\n        },\n        methods: {\n            onReceive: [{\n                returnType: 'void',\n                argumentTypes: ['android.content.Context', 'android.content.Intent'],\n                implementation: function(context, intent) {\n                    printIntent(intent);\n                }\n            }]\n        },\n    });\n    return ParentBroadcastReceiver;\n}\n\nfunction ChildBroadcastReceiver() {\n    const ChildBroadcastReceiver = Java.registerClass({\n        name: 'ChildBroadcastReceiver',\n        superClass: Java.use('android.content.BroadcastReceiver'),\n        fields: {\n            parent: 'android.content.BroadcastReceiver'\n        },\n        methods: {\n            '<init>': [{\n                returnType: 'void',\n                argumentTypes: [],\n                implementation: function() {}\n            }, {\n                returnType: 'void',\n                argumentTypes: ['android.content.BroadcastReceiver'],\n                implementation: function(parent) {\n                    this.parent.value = parent;\n                }\n            }],\n            onReceive: [{\n                returnType: 'void',\n                argumentTypes: ['android.content.Context', 'android.content.Intent'],\n                implementation: function(context, intent) {\n                    this.parent.value.onReceive(context, intent);\n                }\n            }]\n        },\n    });\n    return ChildBroadcastReceiver;\n}\n\nfunction printIntent(intent) {\n    console.log(\"\\n[*] Intent received. Action: \" + intent.getAction());\n    var keys = intent.getExtras().keySet();\n    var extras = \"\";\n    var iterator = keys.iterator();\n    for (var i = 0; i < keys.size(); i++) {\n        if (iterator.hasNext()) {\n            var key = iterator.next();\n            extras += \"\\n\" + key + \" = \" + intent.getExtras().get(key);\n        }\n    }\n    console.log(\"[*] Extras:\" + extras);\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "leolashkevych",
+        "codeshare_slug": "android-broadcast-receiver",
+        "codeshare_fingerprint": "c57abfb7c1305bada2149f10eca67006eb73625a433a1fd91776c8d98214f0fd",
+        "project_uuid": "f040b927-c54c-4613-9e13-2987720f51b2",
+        "popularity": {
+          "page": 7,
+          "browse_title": "Android Broadcast Receiver",
+          "likes": 2,
+          "views": "9K"
+        },
+        "discovery_page": 7,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:leolashkevych/android-broadcast-receiver",
+        "source_url": "https://codeshare.frida.re/@leolashkevych/android-broadcast-receiver/",
+        "source_hash": "c57abfb7c1305bada2149f10eca67006eb73625a433a1fd91776c8d98214f0fd",
+        "normalized_hash": "17a1afd706101bacb34b92b89cbc502b86d12aa61c849c342a168665290a1337",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "ipc",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:leolashkevych/android-deep-link-observer",
+      "name": "FRIDA - ANDROID - Ipc - Android Deep Link Observer [a335c791]",
+      "description": "Dumping URI data from a deep link",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    var Intent = Java.use(\"android.content.Intent\");\n    Intent.getData.implementation = function() {\n        var action = this.getAction() !== null ? this.getAction().toString() : false;\n        if (action) {\n            console.log(\"[*] Intent.getData() was called\");\n            console.log(\"[*] Activity: \" + this.getComponent().getClassName());\n            console.log(\"[*] Action: \" + action);\n            var uri = this.getData();\n            if (uri !== null) {\n                console.log(\"\\n[*] Data\");\n                uri.getScheme() && console.log(\"- Scheme:\\t\" + uri.getScheme() + \"://\");\n                uri.getHost() && console.log(\"- Host:\\t\\t/\" + uri.getHost());\n                uri.getQuery() && console.log(\"- Params:\\t\" + uri.getQuery());\n                uri.getFragment() && console.log(\"- Fragment:\\t\" + uri.getFragment());\n                console.log(\"\\n\\n\");\n            } else {\n                console.log(\"[-] No data supplied.\");\n            }\n        }\n        return this.getData();\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "leolashkevych",
+        "codeshare_slug": "android-deep-link-observer",
+        "codeshare_fingerprint": "a335c79140ed6d91550c7f1a4f6e7b058a9410df902b6aec17e462588a19bdd1",
+        "project_uuid": "9a6bd924-bf4d-414b-85f1-eb0617289424",
+        "popularity": {
+          "page": 3,
+          "browse_title": "Android Deep Link Observer",
+          "likes": 5,
+          "views": "17K"
+        },
+        "discovery_page": 3,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:leolashkevych/android-deep-link-observer",
+        "source_url": "https://codeshare.frida.re/@leolashkevych/android-deep-link-observer/",
+        "source_hash": "a335c79140ed6d91550c7f1a4f6e7b058a9410df902b6aec17e462588a19bdd1",
+        "normalized_hash": "a335c79140ed6d91550c7f1a4f6e7b058a9410df902b6aec17e462588a19bdd1",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:realgam3/alert-on-mainactivity",
+      "name": "FRIDA - ANDROID - Ipc - Alert On MainActivity [a97a1ace]",
+      "description": "[Android] Create Alert Dialog In MainActivity",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\r\n    var System = Java.use('java.lang.System');\r\n    var ActivityThread = Java.use(\"android.app.ActivityThread\");\r\n    var AlertDialogBuilder = Java.use(\"android.app.AlertDialog$Builder\");\r\n    var DialogInterfaceOnClickListener = Java.use('android.content.DialogInterface$OnClickListener');\r\n\r\n    Java.use(\"android.app.Activity\").onCreate.overload(\"android.os.Bundle\").implementation = function(savedInstanceState) {\r\n        var currentActivity = this;\r\n\r\n        // Get Main Activity\r\n        var application = ActivityThread.currentApplication();\r\n        var launcherIntent = application.getPackageManager().getLaunchIntentForPackage(application.getPackageName());\r\n        var launchActivityInfo = launcherIntent.resolveActivityInfo(application.getPackageManager(), 0);\r\n\r\n        // Alert Will Only Execute On Main Package Activity Creation\r\n        if (launchActivityInfo.name.value === this.getComponentName().getClassName()) {\r\n            var alert = AlertDialogBuilder.$new(this);\r\n            alert.setMessage(\"What you want to do now?\");\r\n\r\n            alert.setPositiveButton(\"Dismiss\", Java.registerClass({\r\n                name: 'il.co.realgame.OnClickListenerPositive',\r\n                implements: [DialogInterfaceOnClickListener],\r\n                methods: {\r\n                    getName: function() {\r\n                        return 'OnClickListenerPositive';\r\n                    },\r\n                    onClick: function(dialog, which) {\r\n                        // Dismiss\r\n                        dialog.dismiss();\r\n                    }\r\n                }\r\n            }).$new());\r\n\r\n            alert.setNegativeButton(\"Force Close!\", Java.registerClass({\r\n                name: 'il.co.realgame.OnClickListenerNegative',\r\n                implements: [DialogInterfaceOnClickListener],\r\n                methods: {\r\n                    getName: function() {\r\n                        return 'OnClickListenerNegative';\r\n                    },\r\n                    onClick: function(dialog, which) {\r\n                        // Close Application\r\n                        currentActivity.finish();\r\n                        System.exit(0);\r\n                    }\r\n                }\r\n            }).$new());\r\n\r\n            // Create Alert\r\n            alert.create().show();\r\n        }\r\n        return this.onCreate.overload(\"android.os.Bundle\").call(this, savedInstanceState);\r\n    };\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "disrupt",
+      "source_metadata": {
+        "codeshare_author": "realgam3",
+        "codeshare_slug": "alert-on-mainactivity",
+        "codeshare_fingerprint": "a97a1aced7b63b6ae5afe938aeefec8bbd9dc1d225945acd348f9d9fc5ca3d3f",
+        "project_uuid": "9e8382c4-36ff-495f-badf-97014a5cb898",
+        "popularity": {
+          "page": 2,
+          "browse_title": "Alert On MainActivity",
+          "likes": 8,
+          "views": "21K"
+        },
+        "discovery_page": 2,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:realgam3/alert-on-mainactivity",
+        "source_url": "https://codeshare.frida.re/@realgam3/alert-on-mainactivity/",
+        "source_hash": "a97a1aced7b63b6ae5afe938aeefec8bbd9dc1d225945acd348f9d9fc5ca3d3f",
+        "normalized_hash": "25c9fb39c183815fa8c3aeccdbc80870267c3f2434478cfeee462d5d44cf037e",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "ipc",
+          "method-hooking"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sdcampbell/android-monitor-implicit-intents",
+      "name": "FRIDA - ANDROID - Ipc - Android Monitor Implicit Intents [93984219]",
+      "description": "This script monitors Android implicit intents. For use in testing \"MASTG-TEST-0026: Testing Implicit Intents\"",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    // Hook startActivityForResult method to inspect the outgoing intent\n    var Activity = Java.use(\"android.app.Activity\");\n\n    Activity.startActivityForResult.overload('android.content.Intent', 'int').implementation = function(intent, requestCode) {\n        // Call the original method\n        this.startActivityForResult(intent, requestCode);\n\n        // Log the outgoing Intent data\n        var action = intent.getAction();\n        var data = intent.getDataString();\n\n        console.log(\"startActivityForResult called with:\");\n        console.log(\"Request Code: \" + requestCode);\n        console.log(\"Action: \" + action);\n        if (data !== null) {\n            console.log(\"Data: \" + data);\n        } else {\n            console.log(\"No data associated with the intent.\");\n        }\n\n        // Optionally, you can log extra fields in the intent\n        var extras = intent.getExtras();\n        if (extras !== null) {\n            var keys = extras.keySet().toArray();\n            console.log(\"Extras: \");\n            for (var i = 0; i < keys.length; i++) {\n                var key = keys[i];\n                console.log(key + \": \" + extras.get(key));\n            }\n        } else {\n            console.log(\"No extras in the intent.\");\n        }\n    };\n\n    // Hook onActivityResult to inspect the returned result\n    Activity.onActivityResult.overload('int', 'int', 'android.content.Intent').implementation = function(requestCode, resultCode, data) {\n        // Call the original method\n        this.onActivityResult(requestCode, resultCode, data);\n\n        console.log(\"onActivityResult called with:\");\n        console.log(\"Request Code: \" + requestCode);\n        console.log(\"Result Code: \" + resultCode);\n\n        if (data !== null) {\n            // Log returned Intent data\n            var action = data.getAction();\n            var dataString = data.getDataString();\n\n            console.log(\"Returned Intent Action: \" + action);\n            if (dataString !== null) {\n                console.log(\"Returned Intent Data: \" + dataString);\n            } else {\n                console.log(\"No data associated with the returned intent.\");\n            }\n\n            // Optionally, log returned intent extras\n            var extras = data.getExtras();\n            if (extras !== null) {\n                var keys = extras.keySet().toArray();\n                console.log(\"Returned Extras: \");\n                for (var i = 0; i < keys.length; i++) {\n                    var key = keys[i];\n                    console.log(key + \": \" + extras.get(key));\n                }\n            } else {\n                console.log(\"No extras in the returned intent.\");\n            }\n        } else {\n            console.log(\"No returned intent data.\");\n        }\n    };\n});\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "sdcampbell",
+        "codeshare_slug": "android-monitor-implicit-intents",
+        "codeshare_fingerprint": "93984219b5937f34e41f429c677bcef75dc942d3be0aff5166d182eb74b78cc8",
+        "project_uuid": "6029690d-e79d-4d61-9f8f-c550e88a6179",
+        "popularity": {
+          "page": 11,
+          "browse_title": "Android Monitor Implicit Intents",
+          "likes": 1,
+          "views": "2K"
+        },
+        "discovery_page": 11,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sdcampbell/android-monitor-implicit-intents",
+        "source_url": "https://codeshare.frida.re/@sdcampbell/android-monitor-implicit-intents/",
+        "source_hash": "93984219b5937f34e41f429c677bcef75dc942d3be0aff5166d182eb74b78cc8",
+        "normalized_hash": "9020c23b44ffb66a7503e3439fb69715781ea4da9c65db169d36634720714988",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "ipc",
+          "method-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:ThatOneAltAcc/alert-on-main-activity-alertdialogbuilder",
+      "name": "FRIDA - ANDROID - Ipc - alert on main Activity AlertDialogBuilder [b1fd5c28]",
+      "description": "alert on main Activity AlertDialogBuilder",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\r\n    var ActivityThread = Java.use(\"android.app.ActivityThread\");\r\n    var AlertDialogBuilder = Java.use(\"android.app.AlertDialog$Builder\");\r\n    var DialogInterfaceOnClickListener = Java.use('android.content.DialogInterface$OnClickListener');\r\n\r\n    const options = [\r\n        \"Yeah\",\r\n        \"Test\",\r\n        \"Yeah\",\r\n        \"AAAAA\"\r\n    ];\r\n\r\n\r\n    Java.use(\"android.app.Activity\").onCreate.overload(\"android.os.Bundle\").implementation = function(savedInstanceState) {\r\n        // Get Main Activity\r\n        var application = ActivityThread.currentApplication();\r\n        var launcherIntent = application.getPackageManager().getLaunchIntentForPackage(application.getPackageName());\r\n        var launchActivityInfo = launcherIntent.resolveActivityInfo(application.getPackageManager(), 0);\r\n\r\n        // Alert Will Only Execute On Main Package Activity Creation\r\n        if (launchActivityInfo.name.value === this.getComponentName().getClassName()) {\r\n            var alert = AlertDialogBuilder.$new(this);\r\n            alert.setTitle(Java.use(\"java.lang.StringBuilder\").$new(\"yes title\"));\r\n            alert.setSingleChoiceItems(Java.array('java.lang.CharSequence', options), 0, Java.registerClass({\r\n                name: 'dialogue.OnClickListenerSingleChoice',\r\n                implements: [DialogInterfaceOnClickListener],\r\n                methods: {\r\n                    getName: function() {\r\n                        return 'OnClickListenerSingleChoice';\r\n                    },\r\n                    onClick: function(dialog, value) {\r\n                        console.log(options[value])\r\n                    }\r\n                }\r\n            }).$new());\r\n\r\n            alert.setNegativeButton(Java.use(\"java.lang.StringBuilder\").$new(\"test button\"), Java.registerClass({\r\n                name: 'dialogue.OnClickListenerNegative',\r\n                implements: [DialogInterfaceOnClickListener],\r\n                methods: {\r\n                    getName: function() {\r\n                        return 'OnClickListenerNegative';\r\n                    },\r\n                    onClick: function(dialog, value) {\r\n                        // Close Application\r\n                        console.log(options[value])\r\n                    }\r\n                }\r\n            }).$new());\r\n\r\n            // Create Alert\r\n            alert.create().show();\r\n        }\r\n        return this.onCreate.overload(\"android.os.Bundle\").call(this, savedInstanceState);\r\n    };\r\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "ThatOneAltAcc",
+        "codeshare_slug": "alert-on-main-activity-alertdialogbuilder",
+        "codeshare_fingerprint": "b1fd5c283326d43f9f2f9b48b017903ccb8289a182aca6c11fe166d6fc22fb08",
+        "project_uuid": "7bdc4512-9e25-4879-9fdc-b28f6b0eeec5",
+        "popularity": {
+          "page": 39,
+          "browse_title": "alert on main Activity AlertDialogBuilder",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 39,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ThatOneAltAcc/alert-on-main-activity-alertdialogbuilder",
+        "source_url": "https://codeshare.frida.re/@ThatOneAltAcc/alert-on-main-activity-alertdialogbuilder/",
+        "source_hash": "b1fd5c283326d43f9f2f9b48b017903ccb8289a182aca6c11fe166d6fc22fb08",
+        "normalized_hash": "943fbc27f8638979b95d8f5dde7f5385941287df9b8c9b3383bdf89c5e84b2c4",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "ipc",
+          "method-hooking"
+        ],
+        "primary_behavior": "ipc",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": "codeshare:realgam3/alert-on-mainactivity",
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

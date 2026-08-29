@@ -1,0 +1,945 @@
+{
+  "package_id": "frida-ios-enumeration-v1",
+  "package_name": "Frida - Ios - Enumeration",
+  "version": "1.0.0",
+  "summary": "11 Frida instrumentation procedures for ios enumeration mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 11 standalone Frida procedures from 2 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 11}; compatibility: {'likely-compatible': 11}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1418"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 11
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "enumeration"
+  ],
+  "source_providers": [
+    "as0ler-frida-scripts",
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 11
+  },
+  "quality_distribution": {
+    "C": 9,
+    "B": 1,
+    "A": 1
+  },
+  "license_distribution": {
+    "unknown": 10,
+    "GPL-3.0": 1
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 11
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:ay-kay/ios-custom-keyboard-support",
+      "name": "FRIDA - IOS - Enumeration - iOS Custom Keyboard Support [e28d268c]",
+      "description": "Check if an iOS app supports the use of custom third-party keyboards.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "function areThirdPartyKeyboardsAllowed() {\n    var UIApplication = ObjC.classes.UIApplication.sharedApplication();\n    var shouldAllowKeyboardExtension = true;\n    var isDelegateImplemented = false;\n    try {\n        shouldAllowKeyboardExtension = UIApplication.delegate().application_shouldAllowExtensionPointIdentifier_(UIApplication, \"com.apple.keyboard-service\");\n        isDelegateImplemented = true;\n        console.log(\"App delegate implements application:shouldAllowExtensionPointIdentifier:\");\n    } catch (e) {\n        if (e instanceof TypeError) {\n            console.log(\"App delegate has no application:shouldAllowExtensionPointIdentifier:, default behaviour applies:\");\n        }\n    }\n\n    if (shouldAllowKeyboardExtension) {\n        console.log(\"-> Third-party keyboards are allowed.\")\n    } else {\n        console.log(\"-> Third-party keyboards are NOT allowed.\")\n    }\n\n    if (shouldAllowKeyboardExtension && isDelegateImplemented) {\n        console.log(\"\\nNote: App delegate is implemented but is configured to allow third-party keyboards.\");\n        console.log(\"      Review the implementation to check if third-party keyboard support is configurable.\");\n    }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "ay-kay",
+        "codeshare_slug": "ios-custom-keyboard-support",
+        "codeshare_fingerprint": "e28d268c607b404b7f426df7f698a6800682cffcb10a177601c50e5576379cbb",
+        "project_uuid": "6d3161c4-a27b-4989-95c7-df918a8d0f9f",
+        "popularity": {
+          "page": 4,
+          "browse_title": "iOS Custom Keyboard Support",
+          "likes": 4,
+          "views": "5K"
+        },
+        "discovery_page": 4,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ay-kay/ios-custom-keyboard-support",
+        "source_url": "https://codeshare.frida.re/@ay-kay/ios-custom-keyboard-support/",
+        "source_hash": "e28d268c607b404b7f426df7f698a6800682cffcb10a177601c50e5576379cbb",
+        "normalized_hash": "e28d268c607b404b7f426df7f698a6800682cffcb10a177601c50e5576379cbb",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:ay-kay/ios-keyboard-cache",
+      "name": "FRIDA - IOS - Enumeration - iOS Keyboard Cache [b7da06a4]",
+      "description": "Iterate over all UITextView, UITextField and UISearchBar elements in the current view and check if keyboard caching is disabled on these text inputs",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * iOS Keyboard Cache\n *\n * iterateInputTraits() - Iterate over all UITextView, UITextField (including UISearchBar) elements in the current view and check if keyboard caching is disabled on these text inputs\n *\n */\n\nfunction resolveAutocorrectionType(typeNr) {\n    switch (parseInt(typeNr, 10)) {\n        case 1:\n            return \"UITextAutocorrectionTypeNo\"\n            break;\n        case 2:\n            return \"UITextAutocorrectionTypeYes\"\n            break;\n        default:\n            return \"UITextAutocorrectionTypeDefault\"\n    }\n}\n\nfunction iterateInputTraits() {\n    var inputTraits = [ObjC.classes.UITextView, ObjC.classes.UITextField];\n    inputTraits.forEach(function(inputTrait) {\n        ObjC.choose(inputTrait, {\n            onMatch: function(ui) {\n                console.log(\"-\".repeat(100));\n                console.log(ui);\n                console.log(\"is Editable: \", ui.isEditable());\n                console.log(\"secureTextEntry: \", ui.isSecureTextEntry());\n                console.log(\"autocorrectionType: \" + ui.autocorrectionType() + \" (\" + resolveAutocorrectionType(ui.autocorrectionType()) + \")\")\n            },\n            onComplete: function() {\n                console.log(\"-\".repeat(100));\n                console.log(\"Finished searching for \" + inputTrait.toString() + \" elements.\");\n            }\n        });\n    });\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "ay-kay",
+        "codeshare_slug": "ios-keyboard-cache",
+        "codeshare_fingerprint": "b7da06a44e9047e7a355176c72e64401dd4a438366f29569d19b74efbb088121",
+        "project_uuid": "f29dafb2-883b-4e64-a75c-508af188aa14",
+        "popularity": {
+          "page": 7,
+          "browse_title": "iOS Keyboard Cache",
+          "likes": 2,
+          "views": "5K"
+        },
+        "discovery_page": 7,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ay-kay/ios-keyboard-cache",
+        "source_url": "https://codeshare.frida.re/@ay-kay/ios-keyboard-cache/",
+        "source_hash": "b7da06a44e9047e7a355176c72e64401dd4a438366f29569d19b74efbb088121",
+        "normalized_hash": "b7da06a44e9047e7a355176c72e64401dd4a438366f29569d19b74efbb088121",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:caiorobaldo/visit-deeplinks-openurl",
+      "name": "FRIDA - IOS - Enumeration - Visit DeepLinks OpenURL [a3feef14]",
+      "description": "Teste manually deeplinks",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// deeplink.js - generico para qualquer app iOS\r\n// frida -U -n \"Nome do App\" -l deeplink.js\r\n//\r\n// No console:\r\n//   o(\"scheme://host/path?param=valor\")\r\n//   history()   -> mostra os deeplinks disparados na sessao\r\n//   last()      -> redispara o ultimo\r\n\r\n'use strict';\r\n\r\nconst _history = [];\r\n\r\nfunction openURL(urlString) {\r\n    if (!ObjC.available) {\r\n        console.log('[!] ObjC indisponivel');\r\n        return;\r\n    }\r\n\r\n    ObjC.schedule(ObjC.mainQueue, function() {\r\n        try {\r\n            const url = ObjC.classes.NSURL.URLWithString_(urlString);\r\n            if (!url || url.isNull()) {\r\n                console.log('[!] URL invalida: ' + urlString);\r\n                return;\r\n            }\r\n            const app = ObjC.classes.UIApplication.sharedApplication();\r\n            if (app.respondsToSelector_(ObjC.selector('openURL:options:completionHandler:'))) {\r\n                app.openURL_options_completionHandler_(url, ObjC.classes.NSDictionary.dictionary(), NULL);\r\n            } else {\r\n                app.openURL_(url);\r\n            }\r\n            _history.push(urlString);\r\n            console.log('[+] ' + urlString);\r\n        } catch (e) {\r\n            console.log('[!] Erro: ' + e);\r\n        }\r\n    });\r\n}\r\n\r\nglobalThis.o = openURL;\r\nglobalThis.open = openURL;\r\nglobalThis.history = () => _history.forEach((u, i) => console.log(`[${i}] ${u}`));\r\nglobalThis.last = () => _history.length ? openURL(_history[_history.length - 1]) : console.log('[!] Historico vazio');\r\n\r\nconsole.log('\\n[*] Generico - funciona em qualquer app iOS');\r\nconsole.log('    o(\"scheme://...\")   -> dispara deeplink');\r\nconsole.log('    history()           -> lista disparados');\r\nconsole.log('    last()              -> redispara o ultimo\\n');",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "caiorobaldo",
+        "codeshare_slug": "visit-deeplinks-openurl",
+        "codeshare_fingerprint": "a3feef14a9f8dad00216f091a91aaa0a2f5fb2eb094bd0d03a8374894d3578c1",
+        "project_uuid": "4341f7f6-f274-474e-8b8c-e9715fe523d3",
+        "popularity": {
+          "page": 18,
+          "browse_title": "Visit DeepLinks OpenURL",
+          "likes": 0,
+          "views": "111"
+        },
+        "discovery_page": 18,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:caiorobaldo/visit-deeplinks-openurl",
+        "source_url": "https://codeshare.frida.re/@caiorobaldo/visit-deeplinks-openurl/",
+        "source_hash": "a3feef14a9f8dad00216f091a91aaa0a2f5fb2eb094bd0d03a8374894d3578c1",
+        "normalized_hash": "ac8799f280927180b9d2e1a03233bd71d1051b4fe7102858b12fb3405244c64f",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dki/dump-ios-text-views",
+      "name": "FRIDA - IOS - Enumeration - Dump iOS Text Views [46ed3eb8]",
+      "description": "List UITextField and UITextView objects in the current view hierarchy and show their current content, autocorrectionType, address, and label.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "'use strict';\n\n/* small script to dump UITextField and UITextView attributes for a view\n * (keyWindow by default if invoked with no arg)\n *\n * primarily to see the autocorrectType setting without dumping the whole UI\n */\n\nvar UITextAutocorrectionType = [\"default\", \"no\", \"yes\"]\n\nfunction dumpUIText(view) {\n    if (!view) {\n        view = ObjC.classes.UIWindow.keyWindow();\n    }\n\n    var subviews = view.subviews();\n    var count = subviews.count();\n    for (var i = 0; i < count; i++) {\n        var x = subviews.objectAtIndex_(i);\n        if (x.isKindOfClass_(ObjC.classes.UITextField) || x.isKindOfClass_(ObjC.classes.UITextView)) {\n            console.log(\"<\" + x.$className + \": \" + x.handle + \">\");\n            console.log(\"    autocorrectionType: \" + UITextAutocorrectionType[x.autocorrectionType()]);\n            if (x.text() != \"\") {\n                console.log(\"    content: \" + x.text());\n            }\n            // this may not always work, i'm making some assumptions about subviews\n        } else if (x.isKindOfClass_(ObjC.classes.UITextFieldLabel)) {\n            console.log(\"    Label: \" + x.text());\n        }\n        dumpUIText(x);\n    }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "dki",
+        "codeshare_slug": "dump-ios-text-views",
+        "codeshare_fingerprint": "46ed3eb8c7841fc78f12ca968f1a62de98105bb4ae9de0d614fe5d132227eaa9",
+        "project_uuid": "42aa3e22-83c0-4e00-93a6-33e5343b12c1",
+        "popularity": {
+          "page": 46,
+          "browse_title": "Dump iOS Text Views",
+          "likes": 0,
+          "views": "5K"
+        },
+        "discovery_page": 46,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dki/dump-ios-text-views",
+        "source_url": "https://codeshare.frida.re/@dki/dump-ios-text-views/",
+        "source_hash": "46ed3eb8c7841fc78f12ca968f1a62de98105bb4ae9de0d614fe5d132227eaa9",
+        "normalized_hash": "d590b0851c60ff4feb6673e5c913dd3776b648b4fa1224705aa95dde2c227ec3",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:dki/ios-app-info",
+      "name": "FRIDA - IOS - Enumeration - ios-app-info [816d326d]",
+      "description": "Dump useful information for an iOS app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n *  Convenience functions to access app info.\n *  Dump key app paths and metadata:\n *      appInfo()\n *\n *  Print contents of Info.plist:\n *      infoDictionary()\n *\n *  Query Info.plist by key:\n *      infoLookup(\"NSAppTransportSecurity\")\n *\n */\n\nfunction dictFromNSDictionary(nsDict) {\n    var jsDict = {};\n    var keys = nsDict.allKeys();\n    var count = keys.count();\n    for (var i = 0; i < count; i++) {\n        var key = keys.objectAtIndex_(i);\n        var value = nsDict.objectForKey_(key);\n        jsDict[key.toString()] = value.toString();\n    }\n\n    return jsDict;\n}\n\nfunction arrayFromNSArray(nsArray) {\n    var jsArray = [];\n    var count = nsArray.count();\n    for (var i = 0; i < count; i++) {\n        jsArray[i] = nsArray.objectAtIndex_(i).toString();\n    }\n    return jsArray;\n}\n\nfunction infoDictionary() {\n    if (ObjC.available && \"NSBundle\" in ObjC.classes) {\n        var info = ObjC.classes.NSBundle.mainBundle().infoDictionary();\n        return dictFromNSDictionary(info);\n    }\n    return null;\n}\n\nfunction infoLookup(key) {\n    if (ObjC.available && \"NSBundle\" in ObjC.classes) {\n        var info = ObjC.classes.NSBundle.mainBundle().infoDictionary();\n        var value = info.objectForKey_(key);\n        if (value === null) {\n            return value;\n        } else if (value.class().toString() === \"__NSCFArray\") {\n            return arrayFromNSArray(value);\n        } else if (value.class().toString() === \"__NSCFDictionary\") {\n            return dictFromNSDictionary(value);\n        } else {\n            return value.toString();\n        }\n    }\n    return null;\n}\n\nfunction appInfo() {\n    var output = {};\n    output[\"Name\"] = infoLookup(\"CFBundleName\");\n    output[\"Bundle ID\"] = ObjC.classes.NSBundle.mainBundle().bundleIdentifier().toString();\n    output[\"Version\"] = infoLookup(\"CFBundleVersion\");\n    output[\"Bundle\"] = ObjC.classes.NSBundle.mainBundle().bundlePath().toString();\n    output[\"Data\"] = ObjC.classes.NSProcessInfo.processInfo().environment().objectForKey_(\"HOME\").toString();\n    output[\"Binary\"] = ObjC.classes.NSBundle.mainBundle().executablePath().toString();\n    return output;\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "dki",
+        "codeshare_slug": "ios-app-info",
+        "codeshare_fingerprint": "816d326d8a62781447b4fe4570f2b103ed9a1bf27fb43c24895c7295fa6f609a",
+        "project_uuid": "d7b61f9a-658a-41ef-8234-b4613c916e77",
+        "popularity": {
+          "page": 3,
+          "browse_title": "ios-app-info",
+          "likes": 5,
+          "views": "17K"
+        },
+        "discovery_page": 3,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dki/ios-app-info",
+        "source_url": "https://codeshare.frida.re/@dki/ios-app-info/",
+        "source_hash": "816d326d8a62781447b4fe4570f2b103ed9a1bf27fb43c24895c7295fa6f609a",
+        "normalized_hash": "816d326d8a62781447b4fe4570f2b103ed9a1bf27fb43c24895c7295fa6f609a",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "B",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lateralusd/uibutton-method",
+      "name": "FRIDA - IOS - Enumeration - UIButton method [f89bcb3f]",
+      "description": "Get method behind the UIButton click",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/* Sample output\n\n[Local::PID::53862 ]-> findButtonMethod()\n[*] UIButton \"Sample button\" @0x7f7d2190cc40:\n         -[ViewController pressed:]\n\n*/\n\nfunction findButtonMethod(view) {\n        ObjC.schedule(ObjC.mainQueue, function() {\n                if (view == null) {\n                        view = ObjC.classes.UIWindow.keyWindow()\n                }\n\n                var subviews = view.subviews();\n                for (var i = 0; i < subviews.count(); i++) {\n                        var vView = subviews.objectAtIndex_(i);\n                        if (vView.isKindOfClass_(ObjC.classes.UIButton)) {\n                                var label = vView.titleLabel().text();\n                                var targets = vView.allTargets().allObjects();\n                                var controlEvents = vView.allControlEvents();\n\n                                var msg = \"[*] UIButton \\\"\" + label + \"\\\" @\" + vView.handle + \":\";\n                                console.log(msg);\n\n                                for (var j = 0; j < targets.count(); j++) {\n                                        var tgt = targets.objectAtIndex_(j);\n                                        var actions = vView.actionsForTarget_forControlEvent_(tgt.handle, controlEvents);\n                                        for (var k = 0; k < actions.count(); k++) {\n                                                var method = \"-[\" + tgt.$className + \" \" + actions.objectAtIndex_(k) + \"]\";\n                                                console.log(\"\\t\", method);\n                                        }\n                                }\n                        }\n                        findButtonMethod(vView);\n                }\n        })\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "lateralusd",
+        "codeshare_slug": "uibutton-method",
+        "codeshare_fingerprint": "f89bcb3f9f737002f37661b764159984a914d3c4a158ce467aa0375b297cda02",
+        "project_uuid": "d34780e5-820d-452e-9788-1e38fa2131a4",
+        "popularity": {
+          "page": 39,
+          "browse_title": "UIButton method",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 39,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lateralusd/uibutton-method",
+        "source_url": "https://codeshare.frida.re/@lateralusd/uibutton-method/",
+        "source_hash": "f89bcb3f9f737002f37661b764159984a914d3c4a158ce467aa0375b297cda02",
+        "normalized_hash": "f89bcb3f9f737002f37661b764159984a914d3c4a158ce467aa0375b297cda02",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:oleavr/ios-list-apps",
+      "name": "FRIDA - IOS - Enumeration - ios-list-apps [2d2dc05d]",
+      "description": "List installed iOS apps",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Usage: frida -U -n itunesstored --codeshare oleavr/ios-list-apps\n *\n * Then:\n *   list()\n */\n\n'use strict';\n\nvar NSAutoreleasePool = ObjC.classes.NSAutoreleasePool;\nvar NSNumber = ObjC.classes.NSNumber;\nvar SoftwareLibraryLookupOperation = ObjC.classes.SoftwareLibraryLookupOperation;\n\nfunction list () {\n  var pool = NSAutoreleasePool.alloc().init();\n  try {\n    var op = SoftwareLibraryLookupOperation.alloc().initWithBundleIdentifiers_(NULL);\n    op.autorelease();\n    op.run();\n    return nsArrayMap(op.softwareLibraryItems(), parseSoftwareLibraryItem);\n  } finally {\n    pool.release();\n  }\n}\n\nfunction parseSoftwareLibraryItem (item) {\n  var result = {};\n  nsDictionaryForEach(item.$ivars._propertyValues, function (key, value) {\n    var parsedValue;\n    if (value.isKindOfClass_(NSNumber)) {\n      parsedValue = value.doubleValue();\n    } else {\n      parsedValue = value.toString();\n    }\n    result[key] = parsedValue;\n  });\n  return result;\n}\n\nfunction nsArrayMap (array, callback) {\n  var result = [];\n  var count = array.count().valueOf();\n  for (var index = 0; index !== count; index++)\n    result.push(callback(array.objectAtIndex_(index)));\n  return result;\n}\n\nfunction nsDictionaryForEach (dict, callback) {\n  var keys = dict.allKeys();\n  var count = keys.count().valueOf();\n  for (var i = 0; i !== count; i++) {\n    var key = keys.objectAtIndex_(i);\n    var value = dict.objectForKey_(key);\n    callback(key.toString(), value);\n  }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "oleavr",
+        "codeshare_slug": "ios-list-apps",
+        "codeshare_fingerprint": "2d2dc05d9f2a509aa158bfc0fd5bf0af48c6893592e583019226ec5d848dd08d",
+        "project_uuid": "45880499-8fc3-46b9-a2c6-b8c0c65017ba",
+        "popularity": {
+          "page": 7,
+          "browse_title": "ios-list-apps",
+          "likes": 2,
+          "views": "6K"
+        },
+        "discovery_page": 7,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:oleavr/ios-list-apps",
+        "source_url": "https://codeshare.frida.re/@oleavr/ios-list-apps/",
+        "source_hash": "2d2dc05d9f2a509aa158bfc0fd5bf0af48c6893592e583019226ec5d848dd08d",
+        "normalized_hash": "2d2dc05d9f2a509aa158bfc0fd5bf0af48c6893592e583019226ec5d848dd08d",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:oleavr/macbook-charging-controls",
+      "name": "FRIDA - IOS - Enumeration - macbook-charging-controls [f4f13f03]",
+      "description": "Override MacBook charging smartness",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/*\n * Inject into PowerUIAgent (SIP must be disabled)\n */\n\nconst {\n  NSAutoreleasePool,\n  PowerUISmartChargeManager,\n} = ObjC.classes;\n\nlet onComplete;\n\nfunction forceDesktopMode() {\n  withManager(manager => {\n    manager.setDesktopMode_withHandler_('DesktopMode', onComplete);\n    console.log('Forced desktop mode');\n  });\n}\n\nfunction resetDesktopMode() {\n  withManager(manager => {\n    manager.resetDesktopModeWithHandler_(onComplete);\n    console.log('Reset desktop mode');\n  });\n}\n\nonComplete = new ObjC.Block({\n  retType: 'void',\n  argTypes: ['int64'],\n  implementation(result) {\n    console.log(`onComplete() result=${result}`);\n  }\n});\n\nfunction enableCharging() {\n  withManager(manager => {\n    manager.enableCharging();\n    console.log('Enabled charging');\n  });\n}\n\nfunction disableCharging() {\n  withManager(manager => {\n    manager.disableCharging();\n    console.log('Disabled charging');\n  });\n}\n\nfunction withManager(work) {\n  const pool = NSAutoreleasePool.alloc().init();\n  try {\n    const manager = PowerUISmartChargeManager.manager();\n    ObjC.schedule(manager.queue(), () => {\n      work(manager);\n    });\n  } finally {\n    pool.release();\n  }\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "oleavr",
+        "codeshare_slug": "macbook-charging-controls",
+        "codeshare_fingerprint": "f4f13f0382b515f3189ff0d39214605e939fe9589179ae7193ad3d64036f03b7",
+        "project_uuid": "d43058c6-4699-4886-8be2-cd473e753474",
+        "popularity": {
+          "page": 15,
+          "browse_title": "macbook-charging-controls",
+          "likes": 1,
+          "views": "4K"
+        },
+        "discovery_page": 15,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:oleavr/macbook-charging-controls",
+        "source_url": "https://codeshare.frida.re/@oleavr/macbook-charging-controls/",
+        "source_hash": "f4f13f0382b515f3189ff0d39214605e939fe9589179ae7193ad3d64036f03b7",
+        "normalized_hash": "f4f13f0382b515f3189ff0d39214605e939fe9589179ae7193ad3d64036f03b7",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:sdcampbell/list-ios-apps",
+      "name": "FRIDA - IOS - Enumeration - list-ios-apps [2974ee10]",
+      "description": "Prints a list of all installed iOS apps.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/* Lists all installed apps on iOS\n   Example: frida --codeshare sdcampbell/list-ios-apps -U -n SpringBoard\n*/\n\nObjC.schedule(ObjC.mainQueue, function() {\n    var workspace = ObjC.classes.LSApplicationWorkspace.defaultWorkspace();\n    var apps = workspace.allApplications();\n    var appEnumerator = apps.objectEnumerator();\n    var app;\n    while ((app = appEnumerator.nextObject()) !== null) {\n        console.log(app.applicationIdentifier().toString() + \": \" + app.localizedName().toString());\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "sdcampbell",
+        "codeshare_slug": "list-ios-apps",
+        "codeshare_fingerprint": "2974ee105003972d0150632a0ccf98ea03d08f7aa08d94fa1d6c67b552314cd1",
+        "project_uuid": "07b5ff10-8bea-4fe2-b04b-74feff400819",
+        "popularity": {
+          "page": 34,
+          "browse_title": "list-ios-apps",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 34,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:sdcampbell/list-ios-apps",
+        "source_url": "https://codeshare.frida.re/@sdcampbell/list-ios-apps/",
+        "source_hash": "2974ee105003972d0150632a0ccf98ea03d08f7aa08d94fa1d6c67b552314cd1",
+        "normalized_hash": "2974ee105003972d0150632a0ccf98ea03d08f7aa08d94fa1d6c67b552314cd1",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:xiaooojun/ios-list-apps",
+      "name": "FRIDA - IOS - Enumeration - ios-list-apps [ab856ca8]",
+      "description": "列出手机上安装的应用",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "ObjC.schedule(ObjC.mainQueue, function() {\n    var workspace = ObjC.classes.LSApplicationWorkspace.defaultWorkspace();\n    var apps = workspace.allApplications();\n    var appEnumerator = apps.objectEnumerator();\n    var app;\n    while ((app = appEnumerator.nextObject()) !== null) {\n        console.log(app.localizedName().toString() + \": \" + app.applicationIdentifier().toString());\n    }\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "codeshare_author": "xiaooojun",
+        "codeshare_slug": "ios-list-apps",
+        "codeshare_fingerprint": "ab856ca8110a8e8f469fa279a64f8c9856c6685d1c87ef459cf5b1e9fb11d0d5",
+        "project_uuid": "4e023727-6227-434b-966a-4bb7644b29d1",
+        "popularity": {
+          "page": 11,
+          "browse_title": "ios-list-apps",
+          "likes": 1,
+          "views": "1K"
+        },
+        "discovery_page": 11,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:xiaooojun/ios-list-apps",
+        "source_url": "https://codeshare.frida.re/@xiaooojun/ios-list-apps/",
+        "source_hash": "ab856ca8110a8e8f469fa279a64f8c9856c6685d1c87ef459cf5b1e9fb11d0d5",
+        "normalized_hash": "ab856ca8110a8e8f469fa279a64f8c9856c6685d1c87ef459cf5b1e9fb11d0d5",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "frida:github:as0ler/frida-scripts:ios/misc/alert.js",
+      "name": "FRIDA - IOS - Enumeration - alert [735191fe]",
+      "description": "Curated Frida source from as0ler/frida-scripts: ios/misc/alert.js",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1418",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "var UIAlertController = ObjC.classes.UIAlertController;\nvar UIAlertAction = ObjC.classes.UIAlertAction;\nvar UIApplication = ObjC.classes.UIApplication;\nvar handler = new ObjC.Block({ retType: 'void', argTypes: ['object'], implementation: function () {} });\n\nObjC.schedule(ObjC.mainQueue, function () {\n  var alert = UIAlertController.alertControllerWithTitle_message_preferredStyle_('From r2frida', 'Welcome to r2land folks!', 1);\n  var defaultAction = UIAlertAction.actionWithTitle_style_handler_('OK', 0, handler);\n  alert.addAction_(defaultAction);\n  UIApplication.sharedApplication().keyWindow().rootViewController().presentViewController_animated_completion_(alert, true, NULL);\n})\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "repository": "https://github.com/as0ler/frida-scripts",
+        "source_commit": "4feb410aedf60bb2aae3fd77b021bc7ac7317ce1",
+        "source_commit_date": "2021-12-21",
+        "source_path": "ios/misc/alert.js",
+        "platform_hint": [
+          "ios"
+        ],
+        "framework_hint": [],
+        "source_extension": ".js",
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "as0ler-frida-scripts",
+        "source_id": "frida:github:as0ler/frida-scripts:ios/misc/alert.js",
+        "source_url": "https://github.com/as0ler/frida-scripts/blob/4feb410aedf60bb2aae3fd77b021bc7ac7317ce1/ios/misc/alert.js",
+        "source_hash": "735191fe80c4cac74830d6595975d34152ac27321ef51f402301e1a887180221",
+        "normalized_hash": "e2c90062472be5e0fc5b030c1e390e755a1c4a4da883d613e456f522f9918d0f",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration"
+        ],
+        "primary_behavior": "enumeration",
+        "frida_apis": [
+          "ObjC.classes"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1418"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "A",
+        "license": "GPL-3.0",
+        "license_source": "LICENSE",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

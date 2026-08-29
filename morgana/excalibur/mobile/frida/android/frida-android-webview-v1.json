@@ -1,0 +1,342 @@
+{
+  "package_id": "frida-android-webview-v1",
+  "package_name": "Frida - Android - Webview",
+  "version": "1.0.0",
+  "summary": "3 Frida instrumentation procedures for android webview mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 3 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 3}; compatibility: {'likely-compatible': 3}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 3
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "filesystem",
+    "ipc",
+    "method-hooking",
+    "runtime-tracing",
+    "webview"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 3
+  },
+  "quality_distribution": {
+    "C": 3
+  },
+  "license_distribution": {
+    "unknown": 3
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 3
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:komen205/hook-javascript-interfaces",
+      "name": "FRIDA - ANDROID - Webview - hook javascript interfaces [aa085d9b]",
+      "description": "hook javascript interfaces",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "\tJava.perform(function() {\r\n\r\n\t    var webView = Java.use('android.webkit.WebView');\r\n\t    var webSettings = Java.use('android.webkit.WebSettings');\r\n\t    webSettings.setJavaScriptEnabled.implementation = function(allow) {\r\n\t        console.log('[!] Java Script Enabled:' + allow);\r\n\t        return this.setJavaScriptEnabled(allow);\r\n\r\n\t    }\r\n\t    webView.addJavascriptInterface.implementation = function(object, name) {\r\n\t        console.log('[i] Javascript interface detected:' + object.$className + ' instatiated as: ' + name);\r\n\t        this.addJavascriptInterface(object, name);\r\n\t    }\r\n\r\n\r\n\t    webView.evaluateJavascript.implementation = function(script, resultCallback) {\r\n\t        console.log('WebView Client: ' + this.getWebViewClient());\r\n\t        console.log('[i] evaluateJavascript called with the following script: ' + script);\r\n\t        this.evaluateJavascript(script, resultCallback);\r\n\t    }\r\n\t    webView.removeJavascriptInterface.implementation = function(name) {\r\n\t        console.log('The ' + name + ' Javascript interface removed');\r\n\t        this.removeJavascriptInterface(name);\r\n\t    }\r\n\t});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "komen205",
+        "codeshare_slug": "hook-javascript-interfaces",
+        "codeshare_fingerprint": "aa085d9b59f35ab35dce989a7afec0b4195496edb8f82753b46f6a6c3c9b227a",
+        "project_uuid": "5d445a90-9481-4cd7-a4fb-77f024867cd7",
+        "popularity": {
+          "page": 34,
+          "browse_title": "hook javascript interfaces",
+          "likes": 0,
+          "views": "4K"
+        },
+        "discovery_page": 34,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:komen205/hook-javascript-interfaces",
+        "source_url": "https://codeshare.frida.re/@komen205/hook-javascript-interfaces/",
+        "source_hash": "aa085d9b59f35ab35dce989a7afec0b4195496edb8f82753b46f6a6c3c9b227a",
+        "normalized_hash": "9b2235ef4bc83f19e241495972925c65fbdf35a2906240e58eea86c78d665673",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "runtime-tracing",
+          "webview"
+        ],
+        "primary_behavior": "webview",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:lolicon/debug-webview",
+      "name": "FRIDA - ANDROID - Webview - debug-webview [4c69212c]",
+      "description": "enable android webview debugging",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(() => {\n    const WebView = Java.use('android.webkit.WebView')\n    const Log = Java.use('android.util.Log')\n    const Exception = Java.use('java.lang.Exception')\n\n    WebView.setWebContentsDebuggingEnabled.implementation = function(\n        ...args\n    ) {\n        const exception = Exception.$new(\n            `WebView.setWebContentsDebuggingEnabled(${args})`\n        )\n        Log.e('natsuki', `setWebContentsDebuggingEnabled:${args}`, exception)\n\n        console.log(\n            `WebView.setWebContentsDebuggingEnabled: `,\n            ...args,\n            Log.getStackTraceString(exception)\n        )\n\n        return this.setWebContentsDebuggingEnabled(true)\n    }\n\n    Java.scheduleOnMainThread(() => {\n        Log.e('natsuki', 'initialized to true')\n        WebView.setWebContentsDebuggingEnabled(true)\n    })\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "lolicon",
+        "codeshare_slug": "debug-webview",
+        "codeshare_fingerprint": "4c69212c9f32b5f569994e66c8ae5e979e25f0e56539d2d4d38f79cc2f9855d0",
+        "project_uuid": "168ac3db-ad38-4445-83a3-12f4a7b108ca",
+        "popularity": {
+          "page": 37,
+          "browse_title": "debug-webview",
+          "likes": 0,
+          "views": "3K"
+        },
+        "discovery_page": 37,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:lolicon/debug-webview",
+        "source_url": "https://codeshare.frida.re/@lolicon/debug-webview/",
+        "source_hash": "4c69212c9f32b5f569994e66c8ae5e979e25f0e56539d2d4d38f79cc2f9855d0",
+        "normalized_hash": "4c69212c9f32b5f569994e66c8ae5e979e25f0e56539d2d4d38f79cc2f9855d0",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "filesystem",
+          "method-hooking",
+          "runtime-tracing",
+          "webview"
+        ],
+        "primary_behavior": "webview",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:ma4the/android-deeplink-jsi-monitor",
+      "name": "FRIDA - ANDROID - Webview - android-deeplink-jsi-monitor [48fcdbea]",
+      "description": "Monitors Android deeplink activity and WebView JavaScript interfaces (JSI) using Frida. Tracks Intent data, JavaScript interface usage, and WebView.evaluateJavascript execution.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T0000",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    console.log(\"[*] Starting Android monitoring script\");\n\n    // Deep Link Monitoring Section\n    var Intent = Java.use(\"android.content.Intent\");\n    var original_getData = Intent.getData.overload().implementation;\n\n    Intent.getData.implementation = function() {\n        var action = this.getAction() !== null ? this.getAction().toString() : false;\n        if (action) {\n            console.log(\"[Deeplink] Intent.getData() was called\");\n            console.log(\"[Deeplink] Activity: \" + this.getComponent().getClassName());\n            console.log(\"[Deeplink] Action: \" + action);\n            var uri = original_getData.call(this);\n            if (uri !== null) {\n                // Logging URI information\n                console.log(\"[Deeplink] Data:\");\n                uri.getScheme() && console.log(\"- Scheme: \" + uri.getScheme() + \"://\");\n                uri.getHost() && console.log(\"- Host: \" + uri.getHost());\n                uri.getPath() && console.log(\"- Path: \" + uri.getPath());\n                uri.getQuery() && console.log(\"- Params: \" + uri.getQuery());\n                uri.getFragment() && console.log(\"- Fragment: \" + uri.getFragment());\n            } else {\n                console.log(\"[Deeplink] No data supplied.\");\n            }\n            return uri;\n        }\n        return original_getData.call(this);\n    };\n\n    // WebView JavaScript Interface (JSI) Monitoring Section \n    var webView = Java.use('android.webkit.WebView');\n    var webSettings = Java.use('android.webkit.WebSettings');\n    var JavascriptInterface = Java.use('android.webkit.JavascriptInterface');\n\n    var addedInterfaces = [];\n\n    webSettings.setJavaScriptEnabled.implementation = function(allow) {\n        console.log('[WebView] JavaScript Enabled: ' + allow);\n        return this.setJavaScriptEnabled(allow);\n    };\n\n    // Monitor and hook JavaScript interface additions\n    webView.addJavascriptInterface.implementation = function(object, name) {\n        console.log('[JSI] JavaScript interface detected: ' + object.$className + ' instantiated as: ' + name);\n        addedInterfaces.push(name);\n\n        var interfaceClass = Java.use(object.$className);\n        var methods = interfaceClass.class.getDeclaredMethods();\n        methods.forEach(function(method) {\n            var methodName = method.getName();\n            if (method.isAnnotationPresent(JavascriptInterface.class)) {\n                var overloads = interfaceClass[methodName].overloads;\n                overloads.forEach(function(overload) {\n                    overload.implementation = function() {\n                        var args = [].slice.call(arguments);\n                        console.log('[JSI] ' + name + '.' + methodName + ' called with args: ' + JSON.stringify(args));\n                        var result = this[methodName].apply(this, arguments);\n                        console.log('[JSI] ' + name + '.' + methodName + ' returned: ' + result);\n                        return result;\n                    };\n                });\n                console.log('[JSI] Hooked method: ' + name + '.' + methodName + ' (overloads: ' + overloads.length + ')');\n            }\n        });\n\n        // Update JSI list in WebView \n        var updateScript = \"window.frida_interfaces = \" + JSON.stringify(addedInterfaces) + \";\";\n        this.evaluateJavascript(updateScript, null);\n\n        return this.addJavascriptInterface(object, name);\n    };\n\n    // Monitor JavaScript evaluation\n    webView.evaluateJavascript.implementation = function(script, resultCallback) {\n        console.log('[WebView] evaluateJavascript called with script: ' + script);\n        this.evaluateJavascript(script, Java.use(\"android.webkit.ValueCallback\").$new({\n            onReceiveValue: function(value) {\n                console.log('[WebView] evaluateJavascript result: ' + value);\n                if (resultCallback) {\n                    resultCallback.onReceiveValue(value);\n                }\n            }\n        }));\n    };\n\n    // Monitor JavaScript interface removal\n    webView.removeJavascriptInterface.implementation = function(name) {\n        console.log('[JSI] The ' + name + ' JavaScript interface removed');\n        var index = addedInterfaces.indexOf(name);\n        if (index > -1) {\n            addedInterfaces.splice(index, 1);\n            // Update interface list in WebView\n            var updateScript = \"window.frida_interfaces = \" + JSON.stringify(addedInterfaces) + \";\";\n            this.evaluateJavascript(updateScript, null);\n        }\n        this.removeJavascriptInterface(name);\n    };\n\n    // Monitor URL loading and inject JavaScript for JSI call tracing\n    webView.loadUrl.overload('java.lang.String').implementation = function(url) {\n        console.log('[WebView] Loading URL: ' + url);\n        this.loadUrl(url);\n\n        // Inject JavaScript code for JSI call tracing \n        var js = `\n            (function() {\n                function wrapInterface(interfaceName) {\n                    if (window[interfaceName]) {\n                        for (var prop in window[interfaceName]) {\n                            if (typeof window[interfaceName][prop] === 'function') {\n                                var original = window[interfaceName][prop];\n                                window[interfaceName][prop] = function() {\n                                    console.log('JS called: ' + interfaceName + '.' + prop + ' with args: ' + JSON.stringify([].slice.call(arguments)));\n                                    return original.apply(this, arguments);\n                                };\n                            }\n                        }\n                    }\n                }\n\n                // Initial wrapping\n                var interfaces = window.frida_interfaces || [];\n                interfaces.forEach(wrapInterface);\n\n                // Set up observer to watch for changes to frida_interfaces\n                var observer = new MutationObserver(function(mutations) {\n                    mutations.forEach(function(mutation) {\n                        if (mutation.type === 'childList') {\n                            var newInterfaces = JSON.parse(mutation.target.textContent);\n                            newInterfaces.forEach(wrapInterface);\n                        }\n                    });\n                });\n\n                var target = document.createElement('div');\n                target.id = 'frida_interfaces_container';\n                target.style.display = 'none';\n                document.body.appendChild(target);\n\n                observer.observe(target, { childList: true });\n\n                Object.defineProperty(window, 'frida_interfaces', {\n                    set: function(value) {\n                        target.textContent = JSON.stringify(value);\n                    },\n                    get: function() {\n                        return JSON.parse(target.textContent || '[]');\n                    }\n                });\n            })();\n        `;\n        this.evaluateJavascript(js, null);\n    };\n\n    console.log(\"[*] Android monitoring script loaded successfully\");\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "ma4the",
+        "codeshare_slug": "android-deeplink-jsi-monitor",
+        "codeshare_fingerprint": "48fcdbeac6065d7cd593fff533bb3d0a4914296de7c3f4c2d59d4475418c3d81",
+        "project_uuid": "cb2f61f2-d9ab-48c9-b98b-c9d7647b7003",
+        "popularity": {
+          "page": 10,
+          "browse_title": "android-deeplink-jsi-monitor",
+          "likes": 1,
+          "views": "870"
+        },
+        "discovery_page": 10,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:ma4the/android-deeplink-jsi-monitor",
+        "source_url": "https://codeshare.frida.re/@ma4the/android-deeplink-jsi-monitor/",
+        "source_hash": "48fcdbeac6065d7cd593fff533bb3d0a4914296de7c3f4c2d59d4475418c3d81",
+        "normalized_hash": "ca597351b4f9d9c0be425a7266675213520e4d7667e05881cb9fdff4045b498a",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "ipc",
+          "method-hooking",
+          "runtime-tracing",
+          "webview"
+        ],
+        "primary_behavior": "webview",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [],
+        "mitre_mapping_status": "unmapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

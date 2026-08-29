@@ -1,0 +1,344 @@
+{
+  "package_id": "frida-android-sensors-v1",
+  "package_name": "Frida - Android - Sensors",
+  "version": "1.0.0",
+  "summary": "3 Frida instrumentation procedures for android sensors mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 3 standalone Frida procedures from 1 source families.",
+    "Target platforms: android; frameworks: native-java.",
+    "Scope mix: {'generic': 3}; compatibility: {'likely-compatible': 3}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1430",
+    "T1513"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/android",
+  "target_platform_counts": {
+    "android": 3
+  },
+  "frameworks": [
+    "native-java"
+  ],
+  "behavior_categories": [
+    "location",
+    "method-hooking",
+    "screenshot"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 3
+  },
+  "quality_distribution": {
+    "C": 3
+  },
+  "license_distribution": {
+    "unknown": 3
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 3
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:dzervas/android-location-spoofing",
+      "name": "FRIDA - ANDROID - Location - Android Location Spoofing [4299a7cc]",
+      "description": "Spoofs the current location reported by GPS",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "const lat = 27.9864882;\nconst lng = 33.7279001;\n\nJava.perform(function () {\n\tvar Location = Java.use(\"android.location.Location\");\n\tLocation.getLatitude.implementation = function() {\n\t\tsend(\"Overwriting Lat to \" + lat);\n\t\treturn lat;\n\t}\n\tLocation.getLongitude.implementation = function() {\n\t\tsend(\"Overwriting Lng to \" + lng);\n\t\treturn lng;\n\t}\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "dzervas",
+        "codeshare_slug": "android-location-spoofing",
+        "codeshare_fingerprint": "4299a7cca922f6a9633a451cb472d03c8daa04aa0baeaacdae4766c3a598c6f4",
+        "project_uuid": "740a2a2e-f258-4a96-b68f-562f22472228",
+        "popularity": {
+          "page": 4,
+          "browse_title": "Android Location Spoofing",
+          "likes": 4,
+          "views": "12K"
+        },
+        "discovery_page": 4,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:dzervas/android-location-spoofing",
+        "source_url": "https://codeshare.frida.re/@dzervas/android-location-spoofing/",
+        "source_hash": "4299a7cca922f6a9633a451cb472d03c8daa04aa0baeaacdae4766c3a598c6f4",
+        "normalized_hash": "4299a7cca922f6a9633a451cb472d03c8daa04aa0baeaacdae4766c3a598c6f4",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "location",
+          "method-hooking"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:eiliyakeshtkar0/screenshot-protection",
+      "name": "FRIDA - ANDROID - Screenshot - screenshot-protection [6f772397]",
+      "description": "Frida script to bypass Android’s FLAG_SECURE protection, allowing screenshots and screen recording in apps that normally block them. #Android, #Frida, #FLAG_SECURE, #screenshot, #screen_recording, #bypass",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1513",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "Java.perform(function() {\n    var Window = Java.use(\"android.view.Window\");\n    Window.setFlags.implementation = function(flags, mask) {\n        var FLAG_SECURE = 0x2000;\n        flags = flags & ~FLAG_SECURE;\n        mask = mask & ~FLAG_SECURE;\n        console.log(\"Bypassed FLAG_SECURE\");\n        return this.setFlags(flags, mask);\n    };\n});",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "eiliyakeshtkar0",
+        "codeshare_slug": "screenshot-protection",
+        "codeshare_fingerprint": "6f772397a395ee2d104ef0c99884a83ae76339c542c89646f989fa73f4bc6b35",
+        "project_uuid": "8ae74d51-287c-4470-96f9-0244b1738f22",
+        "popularity": {
+          "page": 9,
+          "browse_title": "screenshot-protection",
+          "likes": 1,
+          "views": "1K"
+        },
+        "discovery_page": 9,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:eiliyakeshtkar0/screenshot-protection",
+        "source_url": "https://codeshare.frida.re/@eiliyakeshtkar0/screenshot-protection/",
+        "source_hash": "6f772397a395ee2d104ef0c99884a83ae76339c542c89646f989fa73f4bc6b35",
+        "normalized_hash": "6f772397a395ee2d104ef0c99884a83ae76339c542c89646f989fa73f4bc6b35",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "method-hooking",
+          "screenshot"
+        ],
+        "primary_behavior": "screenshot",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1513"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:Rickpg2023/localizacao",
+      "name": "FRIDA - ANDROID - Location - localizacao [f09a9f7f]",
+      "description": "Mascarar a localizaçao no app",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "android",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "const lat = -23.6269477;\nconst lng = -46.4701341;\n\nJava.perform(function () {\n\tvar Location = Java.use(\"android.location.Location\");\n\tLocation.getLatitude.implementation = function() {\n\t\tsend(\"Overwriting Lat to \" + lat);\n\t\treturn lat;\n\t}\n\tLocation.getLongitude.implementation = function() {\n\t\tsend(\"Overwriting Lng to \" + lng);\n\t\treturn lng;\n\t}\n})",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "Rickpg2023",
+        "codeshare_slug": "localizacao",
+        "codeshare_fingerprint": "f09a9f7f6465fa16b101503d8f37538eb8b550f250889a18d4826c692121a95c",
+        "project_uuid": "a0f6db4b-f27b-4983-948c-5e5a67ea34de",
+        "popularity": {
+          "page": 36,
+          "browse_title": "localizacao",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 36,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:Rickpg2023/localizacao",
+        "source_url": "https://codeshare.frida.re/@Rickpg2023/localizacao/",
+        "source_hash": "f09a9f7f6465fa16b101503d8f37538eb8b550f250889a18d4826c692121a95c",
+        "normalized_hash": "f09a9f7f6465fa16b101503d8f37538eb8b550f250889a18d4826c692121a95c",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-java"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "location",
+          "method-hooking"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "Java.perform",
+          "Java.use",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": "codeshare:dzervas/android-location-spoofing",
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}

@@ -1,0 +1,350 @@
+{
+  "package_id": "frida-ios-sensors-v1",
+  "package_name": "Frida - Ios - Sensors",
+  "version": "1.0.0",
+  "summary": "3 Frida instrumentation procedures for ios sensors mobile testing.",
+  "description": "Source-faithful public Frida JavaScript from CodeShare and curated repositories, statically validated and classified for authorized mobile dynamic analysis.",
+  "purpose": "Run authorized Android/iOS runtime observation, hooking, framework, network, crypto, storage, and security-control validation through a Morgana host Agent.",
+  "capabilities": [
+    "Contains 3 standalone Frida procedures from 1 source families.",
+    "Target platforms: ios; frameworks: native-objc.",
+    "Scope mix: {'generic': 3}; compatibility: {'likely-compatible': 3}."
+  ],
+  "use_cases": [
+    "Instrument an explicitly authorized Android or iOS test application through USB or Frida remote transport.",
+    "Select procedures by platform, framework, behavior, source, app scope, ATT&CK Mobile mapping, or quality tier."
+  ],
+  "prerequisites": [
+    "Morgana host Agent with a compatible Frida CLI installed and reachable in PATH.",
+    "Authorized mobile test device/emulator with Frida server, Gadget, or supported instrumentation path.",
+    "Operator-supplied target package, bundle ID, or process and optional device ID."
+  ],
+  "safety_notes": [
+    "Third-party scripts may change application runtime behavior; review source and risk metadata before execution.",
+    "Unknown-license content is clearly labeled in per-Script metadata and the license inventory.",
+    "Full-corpus runtime validation is intentionally left for isolated operator mobile labs."
+  ],
+  "author": "Frida ecosystem / X3M.AI conversion",
+  "created": "2026-08-29",
+  "script_prefix": "FRIDA - ",
+  "provider": "frida-mobile",
+  "source": "frida-mobile",
+  "source_repository": "https://codeshare.frida.re/",
+  "source_license": "mixed",
+  "documentation_url": "https://frida.re/docs/",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Runtime Instrumentation",
+  "mitre_tcodes": [
+    "T1430"
+  ],
+  "platform": [
+    "all"
+  ],
+  "risk_badges": [
+    "interact"
+  ],
+  "category": "mobile/frida/ios",
+  "target_platform_counts": {
+    "ios": 3
+  },
+  "frameworks": [
+    "native-objc"
+  ],
+  "behavior_categories": [
+    "enumeration",
+    "location",
+    "native-hooking",
+    "runtime-tracing"
+  ],
+  "source_providers": [
+    "frida-codeshare"
+  ],
+  "scope_counts": {
+    "generic": 3
+  },
+  "quality_distribution": {
+    "C": 3
+  },
+  "license_distribution": {
+    "unknown": 3
+  },
+  "compatibility_distribution": {
+    "likely-compatible": 3
+  },
+  "tag_categories": [
+    {
+      "category_id": "frida_mobile_target",
+      "label": "Frida Mobile Target",
+      "description": "Host-to-mobile Frida target parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "mobile_app_id",
+          "label": "Mobile App ID / Process",
+          "description": "Android package ID, iOS bundle ID, or target process for the authorized test application.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "mobile_device_id",
+          "label": "Mobile Device ID",
+          "description": "Optional Frida device identifier. Blank uses the default USB device.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "scripts": [
+    {
+      "id": "codeshare:karim-moftah/ios-location-spoofer",
+      "name": "FRIDA - IOS - Location - iOS Location Spoofer [136c1fe4]",
+      "description": "A Frida script that hijacks -[CLLocation coordinate] and returns spoofed GPS coordinates. It exposes simple movement helpers (right, left, up, down) that move the spoofed position by a configurable distance (default 50 m) and re-install the spoofed coordinate.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "// Base coordinates\r\nvar spoof_latitude = 46.211275;\r\nvar spoof_longitude = 2.368013;\r\n\r\nfunction spoof_location(lat, lon) {\r\n\tvar hook_cllocation = ObjC.classes[\"CLLocation\"][\"- coordinate\"];\r\n\tInterceptor.attach(hook_cllocation.implementation, {\r\n\t\tonLeave: function (ret) {\r\n\t\t\tvar spoofed = (new ObjC.Object(ret)).initWithLatitude_longitude_(lat, lon);\r\n\t\t\tret.replace(spoofed);\r\n\t\t}\r\n\t});\r\n}\r\n\r\n// Convert meters to degrees (approx)\r\nfunction metersToDegrees(m) {\r\n\treturn m / 111111; // ~111.111 km per degree latitude\r\n}\r\n\r\nfunction right(m = 50) {\r\n\tspoof_longitude += metersToDegrees(m);\r\n\tspoof_location(spoof_latitude, spoof_longitude);\r\n}\r\n\r\nfunction left(m = 50) {\r\n\tspoof_longitude -= metersToDegrees(m);\r\n\tspoof_location(spoof_latitude, spoof_longitude);\r\n}\r\n\r\nfunction up(m = 50) {\r\n\tspoof_latitude += metersToDegrees(m);\r\n\tspoof_location(spoof_latitude, spoof_longitude);\r\n}\r\n\r\nfunction down(m = 50) {\r\n\tspoof_latitude -= metersToDegrees(m);\r\n\tspoof_location(spoof_latitude, spoof_longitude);\r\n}\r\n\r\n// Initial spoof\r\nspoof_location(spoof_latitude, spoof_longitude);",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "karim-moftah",
+        "codeshare_slug": "ios-location-spoofer",
+        "codeshare_fingerprint": "136c1fe4a880dbb3765cad114e0b34ce79cfd3afe85780ff6345b8e9d7c7c4e2",
+        "project_uuid": "a4d63546-e8d6-459a-904e-1d928ef93a7b",
+        "popularity": {
+          "page": 24,
+          "browse_title": "iOS Location Spoofer",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 24,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:karim-moftah/ios-location-spoofer",
+        "source_url": "https://codeshare.frida.re/@karim-moftah/ios-location-spoofer/",
+        "source_hash": "136c1fe4a880dbb3765cad114e0b34ce79cfd3afe85780ff6345b8e9d7c7c4e2",
+        "normalized_hash": "d52510629a2f39a0049641d7e5a26f4cd882549044b965740d2d01a137b3d924",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "location",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:karim-moftah/ios-walk-spoofer",
+      "name": "FRIDA - IOS - Location - iOS Walk Spoofer [c6994799]",
+      "description": "This Frida script hooks into Apple’s CoreLocation framework to simulate a moving GPS location on iOS apps. It intercepts CLLocationManager methods and continuously delivers fake location updates that appear as if the device is walking randomly within a defined area.",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "\r\nif (ObjC.available) {\r\n    try {\r\n        var CLLocation = ObjC.classes.CLLocation;\r\n        var CLLocationManager = ObjC.classes.CLLocationManager;\r\n        var NSArray = ObjC.classes.NSArray;\r\n\r\n        // === Configuration (English variable names) ===\r\n        var centerLatitude = 46.211275;           // center latitude (must be between -90 and 90)\r\n        var centerLongitude = 4.368013;        // center longitude (must be between -180 and 180)\r\n        var maxRadiusMeters = 50;              // max radius in meters (1 km)\r\n        var updateIntervalMs = 1000;             // update interval in milliseconds\r\n        var walkSpeedMetersPerSecond = 10.4;      // walking speed in meters/second\r\n        var allowVerticalMovement = true;       // keep altitude constant unless true\r\n\r\n        // sanity check\r\n        function sendError(msg) {\r\n            send(\"Fake-GPS ERROR: \" + msg);\r\n        }\r\n        if (typeof centerLatitude !== 'number' || centerLatitude < -90 || centerLatitude > 90) {\r\n            sendError(\"centerLatitude invalid. Must be between -90 and 90.\");\r\n            throw new Error(\"Invalid centerLatitude\");\r\n        }\r\n        if (typeof centerLongitude !== 'number' || centerLongitude < -180 || centerLongitude > 180) {\r\n            sendError(\"centerLongitude invalid. Must be between -180 and 180.\");\r\n            throw new Error(\"Invalid centerLongitude\");\r\n        }\r\n\r\n        // internal state\r\n        var intervals = new WeakMap(); // manager ObjC.Object -> interval id\r\n        var currentPosition = { lat: centerLatitude, lon: centerLongitude }; // start at the center\r\n\r\n        // Earth radius (meters)\r\n        var earthRadiusMeters = 6371000.0;\r\n\r\n        // utility: degrees <-> radians\r\n        function deg2rad(deg) { return deg * Math.PI / 180.0; }\r\n        function rad2deg(rad) { return rad * 180.0 / Math.PI; }\r\n\r\n        // haversine distance (meters)\r\n        function distanceMeters(lat1, lon1, lat2, lon2) {\r\n            var phi1 = deg2rad(lat1);\r\n            var phi2 = deg2rad(lat2);\r\n            var dPhi = deg2rad(lat2 - lat1);\r\n            var dLambda = deg2rad(lon2 - lon1);\r\n\r\n            var a = Math.sin(dPhi/2) * Math.sin(dPhi/2) +\r\n                    Math.cos(phi1) * Math.cos(phi2) *\r\n                    Math.sin(dLambda/2) * Math.sin(dLambda/2);\r\n            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\r\n            return earthRadiusMeters * c;\r\n        }\r\n\r\n        // destination point given start lat/lon, bearing (radians) and distance (meters)\r\n        // returns {lat, lon}\r\n        function destinationPoint(lat, lon, bearingRad, distanceM) {\r\n            var phi1 = deg2rad(lat);\r\n            var lambda1 = deg2rad(lon);\r\n            var delta = distanceM / earthRadiusMeters; // angular distance in radians\r\n            var theta = bearingRad;\r\n\r\n            var sinPhi2 = Math.sin(phi1) * Math.cos(delta) + Math.cos(phi1) * Math.sin(delta) * Math.cos(theta);\r\n            var phi2 = Math.asin(Math.max(-1, Math.min(1, sinPhi2))); // clamp for safety\r\n            var y = Math.sin(theta) * Math.sin(delta) * Math.cos(phi1);\r\n            var x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);\r\n            var lambda2 = lambda1 + Math.atan2(y, x);\r\n\r\n            return { lat: rad2deg(phi2), lon: ((rad2deg(lambda2) + 540) % 360) - 180 }; // normalize lon to [-180,180]\r\n        }\r\n\r\n        // helper to create CLLocation (uses initWithLatitude:longitude:)\r\n        function makeLocation(lat, lon) {\r\n            try {\r\n                return CLLocation.alloc().initWithLatitude_longitude_(lat, lon);\r\n            } catch (e) {}\r\n            try {\r\n                return CLLocation.alloc().initWithLatitude_longitude_altitude_horizontalAccuracy_verticalAccuracy_course_speed_timestamp_(\r\n                    lat, lon, 0, 5, 5, 0, 0, ObjC.classes.NSDate.date()\r\n                );\r\n            } catch (e) {}\r\n            try {\r\n                return CLLocation.alloc().init();\r\n            } catch (e) {}\r\n            return null;\r\n        }\r\n\r\n        // deliver fake location to delegate\r\n        function deliverFakeLocation(manager, delegate, lat, lon) {\r\n            try {\r\n                var loc = makeLocation(lat, lon);\r\n                if (!loc) return;\r\n                var arr = NSArray.arrayWithObject_(loc);\r\n\r\n                var sel = ObjC.selector(\"locationManager:didUpdateLocations:\");\r\n                if (delegate && delegate.respondsToSelector_ && delegate.respondsToSelector_(sel)) {\r\n                    delegate[\"locationManager:didUpdateLocations:\"](manager, arr);\r\n                } else {\r\n                    try { delegate.locationManager_didUpdateLocations_(manager, arr); } catch (e) {}\r\n                }\r\n            } catch (e) {\r\n                send(\"Fake-GPS: delivery error: \" + e);\r\n            }\r\n        }\r\n\r\n        // compute next walking position: random small move; keep inside maxRadiusMeters\r\n        function computeNextPosition() {\r\n            // step distance: speed * time\r\n            var stepMeters = walkSpeedMetersPerSecond * (updateIntervalMs / 1000.0);\r\n\r\n            // randomize speed slightly (±30%)\r\n            var randomFactor = 0.7 + Math.random() * 0.6; // between 0.7 and 1.3\r\n            stepMeters = stepMeters * randomFactor;\r\n\r\n            // random bearing\r\n            var bearing = Math.random() * 2 * Math.PI;\r\n\r\n            // candidate position after step\r\n            var candidate = destinationPoint(currentPosition.lat, currentPosition.lon, bearing, stepMeters);\r\n\r\n            // if inside allowed circle, accept\r\n            var distToCenter = distanceMeters(centerLatitude, centerLongitude, candidate.lat, candidate.lon);\r\n            if (distToCenter <= maxRadiusMeters) {\r\n                currentPosition.lat = candidate.lat;\r\n                currentPosition.lon = candidate.lon;\r\n                return;\r\n            }\r\n\r\n            // otherwise, compute bearing from current position toward center and step toward center\r\n            var phi1 = deg2rad(currentPosition.lat);\r\n            var phi2 = deg2rad(centerLatitude);\r\n            var dLambda = deg2rad(centerLongitude - currentPosition.lon);\r\n            var y = Math.sin(dLambda) * Math.cos(phi2);\r\n            var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(dLambda);\r\n            var bearingToCenterFromCurrent = Math.atan2(y, x);\r\n\r\n            var distanceCurrentToCenter = distanceMeters(currentPosition.lat, currentPosition.lon, centerLatitude, centerLongitude);\r\n            var moveMeters = Math.min(stepMeters, Math.max(0.5, distanceCurrentToCenter)); // avoid overshoot; ensure small nonzero move\r\n            var nextPos = destinationPoint(currentPosition.lat, currentPosition.lon, bearingToCenterFromCurrent, moveMeters);\r\n\r\n            // If next position still outside (rare), clamp to the boundary along bearing from center to current\r\n            if (distanceMeters(centerLatitude, centerLongitude, nextPos.lat, nextPos.lon) > maxRadiusMeters + 0.1) {\r\n                var phiC = deg2rad(centerLatitude);\r\n                var lambdaC = deg2rad(centerLongitude);\r\n                var phiCur = deg2rad(currentPosition.lat);\r\n                var lambdaCur = deg2rad(currentPosition.lon);\r\n                var y2 = Math.sin(lambdaCur - lambdaC) * Math.cos(phiCur);\r\n                var x2 = Math.cos(phiC)*Math.sin(phiCur) - Math.sin(phiC)*Math.cos(phiCur)*Math.cos(lambdaCur - lambdaC);\r\n                var bearingCenterToCur = Math.atan2(y2, x2);\r\n                var boundaryPoint = destinationPoint(centerLatitude, centerLongitude, bearingCenterToCur, maxRadiusMeters - 0.5);\r\n                currentPosition.lat = boundaryPoint.lat;\r\n                currentPosition.lon = boundaryPoint.lon;\r\n            } else {\r\n                currentPosition.lat = nextPos.lat;\r\n                currentPosition.lon = nextPos.lon;\r\n            }\r\n        }\r\n\r\n        // hook startUpdatingLocation\r\n        var startImpl = CLLocationManager[\"- startUpdatingLocation\"].implementation;\r\n        Interceptor.replace(startImpl, new NativeCallback(function (selfPtr, _cmd) {\r\n            try {\r\n                var manager = new ObjC.Object(selfPtr);\r\n                var delegate = null;\r\n                try { delegate = manager.delegate ? manager.delegate() : null; } catch (e) {}\r\n\r\n                if (!intervals.has(manager)) {\r\n                    var id = setInterval(function () {\r\n                        try {\r\n                            computeNextPosition();\r\n                            deliverFakeLocation(manager, delegate, currentPosition.lat, currentPosition.lon);\r\n                        } catch (e) {\r\n                            send(\"Fake-GPS tick error: \" + e);\r\n                        }\r\n                    }, updateIntervalMs);\r\n                    intervals.set(manager, id);\r\n                    send(\"Fake-GPS: started walking simulator for manager \" + manager.toString() +\r\n                         \" center=(\" + centerLatitude + \",\" + centerLongitude + \") radius=\" + maxRadiusMeters + \"m\");\r\n                }\r\n            } catch (e) {\r\n                send(\"Fake-GPS: start hook error: \" + e);\r\n            }\r\n            // call original startUpdatingLocation\r\n            var orig = ObjC.classes.CLLocationManager[\"- startUpdatingLocation\"];\r\n            return orig.call(new ObjC.Object(selfPtr));\r\n        }, 'pointer', ['pointer','pointer']));\r\n\r\n        // hook stopUpdatingLocation to clear interval\r\n        var stopImpl = CLLocationManager[\"- stopUpdatingLocation\"].implementation;\r\n        Interceptor.replace(stopImpl, new NativeCallback(function (selfPtr, _cmd) {\r\n            try {\r\n                var manager = new ObjC.Object(selfPtr);\r\n                if (intervals.has(manager)) {\r\n                    var id = intervals.get(manager);\r\n                    clearInterval(id);\r\n                    intervals.delete(manager);\r\n                    send(\"Fake-GPS: stopped updates for manager \" + manager.toString());\r\n                }\r\n            } catch (e) {\r\n                send(\"Fake-GPS: stop hook error: \" + e);\r\n            }\r\n            // call original stopUpdatingLocation\r\n            var orig = ObjC.classes.CLLocationManager[\"- stopUpdatingLocation\"];\r\n            return orig.call(new ObjC.Object(selfPtr));\r\n        }, 'pointer', ['pointer','pointer']));\r\n\r\n        send(\"Fake-GPS walking script injected. Center=(\" + centerLatitude + \",\" + centerLongitude + \"), maxRadius=\" + maxRadiusMeters + \"m, updateInterval=\" + updateIntervalMs + \"ms.\");\r\n    } catch (err) {\r\n        send(\"Fake-GPS: exception: \" + err);\r\n    }\r\n} else {\r\n    send(\"Objective-C runtime is not available!\");\r\n}\r\n",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "karim-moftah",
+        "codeshare_slug": "ios-walk-spoofer",
+        "codeshare_fingerprint": "c6994799c3ad8c1a7001badab508382b2947d95f406296433169e0eaf8dcf6ec",
+        "project_uuid": "1bc25ea5-7c34-4881-b397-44354d8aae6e",
+        "popularity": {
+          "page": 24,
+          "browse_title": "iOS Walk Spoofer",
+          "likes": 0,
+          "views": "725"
+        },
+        "discovery_page": 24,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:karim-moftah/ios-walk-spoofer",
+        "source_url": "https://codeshare.frida.re/@karim-moftah/ios-walk-spoofer/",
+        "source_hash": "c6994799c3ad8c1a7001badab508382b2947d95f406296433169e0eaf8dcf6ec",
+        "normalized_hash": "5f2f605b192a7f90cc1dbb17c64fdaf24728ad62fa83492f98aa4a02059a0ad0",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "location",
+          "native-hooking",
+          "runtime-tracing"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "ObjC.available",
+          "ObjC.classes",
+          "Interceptor.replace",
+          "NativeCallback",
+          "send"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    },
+    {
+      "id": "codeshare:xiaooojun/ios-change-location",
+      "name": "FRIDA - IOS - Location - ios-change-location [7729b802]",
+      "description": "修改地理位置",
+      "tactic": "Mobile Runtime Instrumentation",
+      "tcode": "T1430",
+      "executor": "frida",
+      "executor_config": {
+        "target_platform": "ios",
+        "target": "#{mobile_app_id}",
+        "device": "#{mobile_device_id}",
+        "transport": "usb",
+        "mode": "spawn",
+        "resume": true,
+        "max_stdout_bytes": 102400,
+        "max_stderr_bytes": 102400
+      },
+      "platform": "all",
+      "command": "/**\neg: changeLocation(30.616347, 103.992081)\n*/\nfunction changeLocation(newLat, newLong) {\n    var clLocation = ObjC.classes[\"CLLocation\"][\"- coordinate\"];\n    Interceptor.attach(clLocation.implementation, {\n        onLeave: (curLocation) => {\n            var newLocation = new ObjC.Object(curLocation)[\n                \"- initWithLatitude:longitude:\"\n            ](newLat, newLong);\n            curLocation.replace(newLocation);\n        },\n    });\n}",
+      "cleanup_command": null,
+      "required_tags": [
+        "mobile_app_id",
+        "mobile_device_id"
+      ],
+      "required_assets": [],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "codeshare_author": "xiaooojun",
+        "codeshare_slug": "ios-change-location",
+        "codeshare_fingerprint": "7729b802fec56b423d4a9ad764d5f1112af78f3279ea7d51297c79561902e6d8",
+        "project_uuid": "f041e52b-24d1-4a0f-829f-02d483bc60af",
+        "popularity": {
+          "page": 33,
+          "browse_title": "ios-change-location",
+          "likes": 0,
+          "views": "1K"
+        },
+        "discovery_page": 33,
+        "target_app": "",
+        "tested_version": "",
+        "provider": "frida-mobile",
+        "source_provider": "frida-codeshare",
+        "source_id": "codeshare:xiaooojun/ios-change-location",
+        "source_url": "https://codeshare.frida.re/@xiaooojun/ios-change-location/",
+        "source_hash": "7729b802fec56b423d4a9ad764d5f1112af78f3279ea7d51297c79561902e6d8",
+        "normalized_hash": "7729b802fec56b423d4a9ad764d5f1112af78f3279ea7d51297c79561902e6d8",
+        "target_platform": "ios",
+        "execution_platform": "host-agent",
+        "frameworks": [
+          "native-objc"
+        ],
+        "scope": "generic",
+        "behaviors": [
+          "enumeration",
+          "location",
+          "native-hooking"
+        ],
+        "primary_behavior": "location",
+        "frida_apis": [
+          "ObjC.classes",
+          "Interceptor.attach"
+        ],
+        "compatibility_status": "likely-compatible",
+        "mitre_domain": "mobile-attack",
+        "source_tcodes": [
+          "T1430"
+        ],
+        "mitre_mapping_status": "mapped",
+        "quality_tier": "C",
+        "license": "unknown",
+        "license_source": "No per-project license detected by crawler",
+        "distribution_status": "unknown-license",
+        "readiness": "ready_with_target",
+        "duplicate_of": null,
+        "derived_from": null,
+        "source_modified": false,
+        "transformations": []
+      }
+    }
+  ],
+  "chains": []
+}
