@@ -1,12 +1,16 @@
 {
   "source_repository": "ANSSI-FR/fuzzysully",
   "source_url": "https://github.com/ANSSI-FR/fuzzysully",
-  "license": "LGPL-2.1",
+  "license": "GPL-2.0",
   "provider": "anssi-fuzzysully",
   "mitre_domain": "ics-attack",
   "source_attack_version": "ICS v13",
   "upstream_version": "0.1.1",
   "requires_python": ">=3.10",
+  "runtime_bundle_filename": "fuzzysully-runtime-linux-amd64.tar.gz",
+  "requirements_lock_filename": "requirements-lock.txt",
+  "runtime_self_contained": "bundle-build-required",
+  "runtime_build_note": "Run build-bundle.sh on a Linux build machine to produce the self-contained venv archive. Until a pre-built bundle is published, the Linux Agent must install fuzzysully from the requirements-lock.txt. No runtime pip/git/build tools are needed after the bundle is deployed.",
 
   "modes": ["server", "gds", "reverse"],
 
@@ -126,6 +130,76 @@
     "Key & Signing Requests": ["T0861"],
     "Client & Reverse Connection": ["T0858"]
   },
+
+  "_comment_targeted_nodes": "Nodes from the Fuzzowski request graph that are NEVER the fuzz target in any existing high-level function but CAN be targeted via goto_path(). These are legitimate additional profiles.",
+  "targeted_nodes": [
+    {
+      "node": "CreateSession",
+      "mode": "server",
+      "valid_policies": ["None"],
+      "parent_functions": ["session"],
+      "prerequisite_path": ["hello", "OpenSecureChannel"],
+      "category": "Connection & Security",
+      "risk": "modify",
+      "tcodes": ["T0858", "T0831"],
+      "description": "Targets the CreateSession request node directly via Fuzzowski goto_path. Exercises application-layer session establishment message fields, nonce encoding, and application-identity certificate parsing while keeping Hello and OpenSecureChannel as non-fuzzed prerequisites."
+    },
+    {
+      "node": "ActivateSession",
+      "mode": "server",
+      "valid_policies": ["None"],
+      "parent_functions": ["session"],
+      "prerequisite_path": ["hello", "OpenSecureChannel", "CreateSession"],
+      "category": "Connection & Security",
+      "risk": "modify",
+      "tcodes": ["T0858", "T0831"],
+      "description": "Targets the ActivateSession request node directly via Fuzzowski goto_path. Exercises identity token, locale, and extension-object fields in session activation while running the full prerequisite chain as non-fuzzed traffic."
+    },
+    {
+      "node": "CloseSession",
+      "mode": "server",
+      "valid_policies": ["None"],
+      "parent_functions": ["session", "browse", "read"],
+      "prerequisite_path": ["hello", "OpenSecureChannel", "CreateSession", "ActivateSession"],
+      "category": "Connection & Security",
+      "risk": "modify",
+      "tcodes": ["T0831"],
+      "description": "Targets the CloseSession cleanup message directly via Fuzzowski goto_path. Fuzzes session teardown handling including delete-subscriptions flag and session-id encoding."
+    },
+    {
+      "node": "CloseSecureChannel",
+      "mode": "server",
+      "valid_policies": ["None"],
+      "parent_functions": ["secure_channel"],
+      "prerequisite_path": ["hello", "OpenSecureChannel"],
+      "category": "Connection & Security",
+      "risk": "modify",
+      "tcodes": ["T0858"],
+      "description": "Targets the CloseSecureChannel cleanup message directly via Fuzzowski goto_path. Fuzzes secure-channel teardown encoding, token-id validation, and sequence-number handling."
+    },
+    {
+      "node": "CloseSecureChannelSign",
+      "mode": "server",
+      "valid_policies": ["Basic256Sha256"],
+      "parent_functions": ["secure_channel"],
+      "prerequisite_path": ["OpenSecureChannel (signed)"],
+      "category": "Connection & Security",
+      "risk": "modify",
+      "tcodes": ["T0858"],
+      "description": "Targets the CloseSecureChannel message in Basic256Sha256 Sign mode. Exercises secure-channel teardown with active message signing."
+    },
+    {
+      "node": "ReverseHelloError",
+      "mode": "reverse",
+      "valid_policies": ["None"],
+      "parent_functions": ["reverse_hello"],
+      "prerequisite_path": [],
+      "category": "Client & Reverse Connection",
+      "risk": "modify",
+      "tcodes": ["T0858"],
+      "description": "Targets the ReverseHelloError response message sent to a reverse-connecting OPC UA client. Fuzzes error-code encoding and reason-string handling in reverse-connection rejection paths."
+    }
+  ],
 
   "function_descriptions": {
     "hello": "Fuzzes the OPC UA Hello message that initiates the TCP-level connection, exercising transport-layer parsing, buffer sizes, and protocol version negotiation.",

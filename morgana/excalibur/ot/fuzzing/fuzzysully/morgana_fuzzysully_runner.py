@@ -178,6 +178,9 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Morgana test ID for log filename correlation")
     p.add_argument("--list-functions", action="store_true",
                    help="Print available functions for the given mode and exit")
+    p.add_argument("--goto-path", default=None,
+                   help="Fuzzowski goto_path target: fuzz a specific request node (e.g. CreateSession). "
+                        "Used by targeted profiles. Requires --function to set up the prerequisite graph.")
     return p
 
 
@@ -215,7 +218,11 @@ def main() -> int:
     all_funcs = FuzzySully.list_available_functions(mode_enum)
     requested_funcs = [args.function] if args.function else list(all_funcs)
 
-    print(f"[INFO] Mode: {args.mode} | Policy: {args.policy} | Function(s): {requested_funcs}", flush=True)
+    goto_path = getattr(args, "goto_path", None)
+    if goto_path:
+        print(f"[INFO] Mode: {args.mode} | Policy: {args.policy} | Function(s): {requested_funcs} | goto_path: {goto_path}", flush=True)
+    else:
+        print(f"[INFO] Mode: {args.mode} | Policy: {args.policy} | Function(s): {requested_funcs}", flush=True)
 
     # Register signal handlers for clean cancellation
     signal.signal(signal.SIGTERM, _signal_handler)
@@ -242,6 +249,7 @@ def main() -> int:
         "duration_seconds": 0.0,
         "session_log": None,
         "status": "started",
+        "goto_path": goto_path,
     }
 
     _START_TIME = time.time()
@@ -295,8 +303,18 @@ def main() -> int:
     except Exception:
         total = None
 
+    # If goto_path specified, navigate to target node first
+    if goto_path:
+        try:
+            print(f"[INFO] Navigating to request node: {goto_path}", flush=True)
+            tc = fuzzy.session.goto(goto_path)
+            if tc is None:
+                print(f"[WARN] goto_path({goto_path!r}) returned None — node may not exist in graph for this function/policy combination", flush=True)
+        except Exception as e:
+            print(f"[WARN] goto_path({goto_path!r}) failed: {e}. Continuing from case 1.", flush=True)
+
     # Seek to start case if not 1
-    if args.case_start and args.case_start > 1:
+    if args.case_start and args.case_start > 1 and not goto_path:
         try:
             print(f"[INFO] Seeking to case {args.case_start}...", flush=True)
             fuzzy.session.goto(args.case_start)

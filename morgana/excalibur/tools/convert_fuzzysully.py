@@ -253,6 +253,45 @@ def build_combinations(contract: dict, mapping: dict) -> tuple[list[dict], list[
             "package_key": "reverse",
         })
 
+    # ── TARGETED NODE PROFILES ─────────────────────────────────────────────────
+    # Nodes that are NEVER the fuzz target in any existing high-level function
+    # but can be targeted via Fuzzowski goto_path("NodeName").
+    for tnode in mapping.get("targeted_nodes", []):
+        node = tnode["node"]
+        tmode = tnode["mode"]
+        for policy in tnode["valid_policies"]:
+            policy_norm = policy.lower().replace("basic256sha256", "basic256sha256")
+            encrypt = False
+            if tmode == "server" and policy == "None":
+                pkg_key = "server-none-targeted"
+                sid_suffix = "none"
+            elif tmode == "server" and policy == "Basic256Sha256":
+                pkg_key = "server-basic256sha256-targeted"
+                sid_suffix = "basic256sha256-sign"
+            elif tmode == "reverse":
+                pkg_key = "reverse-targeted"
+                sid_suffix = "none"
+            else:
+                pkg_key = f"{tmode}-targeted"
+                sid_suffix = policy_norm
+            node_slug = node.lower().replace(" ", "_")
+            valid.append({
+                "mode": tmode,
+                "function": node,  # actual request node name
+                "policy": policy,
+                "encrypt": encrypt,
+                "script_id": f"fuzzysully:target:{tmode}:{node_slug}:{sid_suffix}",
+                "name": f"FUZZYSULLY TARGET - {tmode.upper()} - {node.upper().replace('_',' ')} - {policy.upper()}",
+                "category": tnode["category"],
+                "risk": tnode["risk"],
+                "tcodes": tnode["tcodes"],
+                "description": tnode["description"],
+                "package_key": pkg_key,
+                "is_targeted": True,
+                "target_node": node,
+                "prerequisite_path": tnode.get("prerequisite_path", []),
+            })
+
     return valid, skipped
 
 
@@ -340,6 +379,8 @@ def _build_command(profile: dict, runner_asset_id: str) -> str:
     encrypt = profile["encrypt"]
     needs_cert = (policy != "None")
     is_reverse = (mode == "reverse")
+    is_targeted = profile.get("is_targeted", False)
+    target_node = profile.get("target_node", None)
 
     lines = [
         "set -u",
@@ -405,9 +446,15 @@ def _build_command(profile: dict, runner_asset_id: str) -> str:
         "  --threshold-element \"$threshold_el\"",
         f"  --test-id \"${{MORGANA_TEST_ID:-manual}}\"",
         "  --log-dir /tmp",
+    ]
+    if is_targeted and target_node:
+        lines.append(f"  --goto-path {target_node}")
+    lines += [
         ")",
         "",
-        f'echo "[INFO] ANSSI FuzzySully: mode={mode} function={func} policy={policy} encrypt={str(encrypt).lower()}" >&1',
+        'echo "[INFO] ANSSI FuzzySully: mode={m} function={f} policy={p} encrypt={e}{g}" >&1'.format(
+            m=mode, f=func, p=policy, e=str(encrypt).lower(),
+            g=(" goto=" + target_node) if is_targeted and target_node else ""),
         'python3 "$runner" "${args[@]}"',
         "exit $?",
     ]
@@ -507,6 +554,33 @@ _PACKAGE_META = {
         "policy": "None",
         "encrypt": False,
     },
+    "server-none-targeted": {
+        "package_id": "fuzzysully-server-none-targeted-v1",
+        "package_name": "ANSSI FuzzySully — OPC UA Server Targeted Nodes / None",
+        "description": "Targeted OPC UA server fuzz profiles for specific protocol request nodes not covered by high-level function profiles: CreateSession, ActivateSession, CloseSession, CloseSecureChannel. Uses Fuzzowski goto_path() to target each node while preserving the required prerequisite graph.",
+        "purpose": "Exercise OPC UA server session lifecycle and secure-channel teardown nodes in isolation with targeted mutation.",
+        "mode": "server",
+        "policy": "None",
+        "encrypt": False,
+    },
+    "server-basic256sha256-targeted": {
+        "package_id": "fuzzysully-server-basic256sha256-targeted-v1",
+        "package_name": "ANSSI FuzzySully — OPC UA Server Targeted Nodes / Basic256Sha256",
+        "description": "Targeted OPC UA server fuzz profiles for CloseSecureChannelSign in Basic256Sha256 Sign mode. Exercises signed secure-channel teardown handling.",
+        "purpose": "Exercise authenticated OPC UA secure-channel teardown with targeted mutation.",
+        "mode": "server",
+        "policy": "Basic256Sha256",
+        "encrypt": False,
+    },
+    "reverse-targeted": {
+        "package_id": "fuzzysully-reverse-targeted-v1",
+        "package_name": "ANSSI FuzzySully — OPC UA Reverse Client Targeted",
+        "description": "Targeted fuzzing of the ReverseHelloError response message in reverse-client mode.",
+        "purpose": "Exercise OPC UA client-side error-response parsing in reverse-connection scenarios.",
+        "mode": "reverse",
+        "policy": "None",
+        "encrypt": False,
+    },
 }
 
 _PACKAGE_CAPS = {
@@ -573,9 +647,9 @@ def _runner_asset_def(runner_sha256: str, runner_size: int, source_commit: str) 
         "size": runner_size,
         "executable": False,
         "source": "ANSSI-FR/fuzzysully",
-        "license": "LGPL-2.1",
+        "license": "GPL-2.0",
         "source_commit": source_commit,
-        "description": "Non-interactive Morgana execution wrapper for ANSSI FuzzySully. Requires fuzzysully Python package installed on the agent.",
+        "description": "Non-interactive Morgana execution wrapper for ANSSI FuzzySully. Requires fuzzysully Python package installed on the agent (see requirements-lock.txt).",
     }
 
 
@@ -610,12 +684,19 @@ def build_packages(
             "summary": f"{len(scripts)} OPC UA deep-fuzzing profiles using ANSSI FuzzySully.",
             "description": meta["description"],
             "purpose": meta["purpose"],
-            "capabilities": _PACKAGE_CAPS[pkg_key],
+            "capabilities": _PACKAGE_CAPS.get(pkg_key, _PACKAGE_CAPS.get(pkg_key.replace("-targeted", "-none"), [
+                f"{len(scripts)} targeted OPC UA request-node profiles using ANSSI FuzzySully.",
+                "Programmatic goto_path() targeting of specific request nodes not covered by high-level function profiles.",
+                "Runtime-bounded fuzz campaigns with structured result output.",
+            ])),
             "use_cases": [
                 "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
                 "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic.",
             ],
-            "prerequisites": _PACKAGE_PREREQS[pkg_key],
+            "prerequisites": _PACKAGE_PREREQS.get(pkg_key, _PACKAGE_PREREQS.get(pkg_key.replace("-targeted", "-none"), [
+                "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+                "Network access to an explicitly authorized OPC UA server simulator or testbed.",
+            ])),
             "safety_notes": [
                 "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
                 "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
@@ -627,7 +708,7 @@ def build_packages(
             "source": "anssi-fuzzysully",
             "source_repository": "https://github.com/ANSSI-FR/fuzzysully",
             "source_commit": source_commit,
-            "source_license": "LGPL-2.1",
+            "source_license": "GPL-2.0",
             "documentation_url": "https://github.com/ANSSI-FR/fuzzysully",
             "mitre_domain": "ics-attack",
             "source_attack_version": mapping.get("source_attack_version", "ICS v13"),
@@ -769,16 +850,27 @@ def main() -> int:
         print(f"[OK] Written: {out_path} ({len(pkg['scripts'])} scripts)", flush=True)
 
     # Write build manifest
+    import hashlib as _hl
+    reqs_lock_path = out_dir / "requirements-lock.txt"
+    reqs_lock_sha = _hl.sha256(reqs_lock_path.read_bytes()).hexdigest() if reqs_lock_path.exists() else None
     bm = {
         "source_repository": "https://github.com/ANSSI-FR/fuzzysully",
         "source_commit": source_commit,
         "upstream_version": mapping.get("upstream_version", "0.1.1"),
-        "source_license": "LGPL-2.1",
+        "source_license": "GPL-2.0",
         "source_modified": False,
         "python_requires": mapping.get("requires_python", ">=3.10"),
         "runner_filename": runner_path.name,
         "runner_sha256": runner_sha256,
         "runner_size": runner_size,
+        "requirements_lock_filename": "requirements-lock.txt",
+        "requirements_lock_sha256": reqs_lock_sha,
+        "runtime_bundle_filename": mapping.get("runtime_bundle_filename", "fuzzysully-runtime-linux-amd64.tar.gz"),
+        "runtime_bundle_sha256": None,
+        "runtime_self_contained": mapping.get("runtime_self_contained", "bundle-build-required"),
+        "runtime_build_note": mapping.get("runtime_build_note", "Run build-bundle.sh on Linux to produce self-contained venv archive."),
+        "manual_fuzzysully_install_required": True,
+        "manual_install_note": "Until the Linux bundle is built and published, agents install via: pip install -r requirements-lock.txt && pip install fuzzysully==0.1.1. No git/gcc/apt/WSL required at runtime.",
         "platform": "linux",
         "architecture": "amd64",
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -807,7 +899,7 @@ def main() -> int:
     report = {
         "source_repository": "https://github.com/ANSSI-FR/fuzzysully",
         "source_commit": source_commit,
-        "source_license": "LGPL-2.1",
+        "source_license": "GPL-2.0",
         "source_modified": False,
         "modes_discovered": contract["modes"],
         "server_function_count": contract["server_function_count"],
@@ -817,11 +909,19 @@ def main() -> int:
         "valid_profiles": len(valid_profiles),
         "skipped_profiles": len(skipped),
         "total_scripts": len(valid_profiles),
+        "existing_high_level_profiles": len([p for p in valid_profiles if not p.get("is_targeted")]),
+        "targeted_profiles_generated": len([p for p in valid_profiles if p.get("is_targeted")]),
         "packages": len(packages),
         "script_counts_by_package": {key: len(pkg["scripts"]) for pkg, key in packages},
         "skipped_detail": skipped,
         "drift_warnings": contract.get("drift_warnings", []),
         "runner_sha256": runner_sha256,
+        "requirements_lock_sha256": reqs_lock_sha,
+        "runtime_bundle_filename": mapping.get("runtime_bundle_filename", "fuzzysully-runtime-linux-amd64.tar.gz"),
+        "runtime_self_contained": mapping.get("runtime_self_contained", "bundle-build-required"),
+        "manual_fuzzysully_install_required": True,
+        "license_corrected": "GPL-2.0 (was LGPL-2.1 in previous milestone)",
+        "python_requires": mapping.get("requires_python", ">=3.10"),
         "source_reconciled": True,
         "result_parser": {
             "faults": True,

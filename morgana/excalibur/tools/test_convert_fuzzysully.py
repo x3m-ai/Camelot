@@ -42,21 +42,21 @@ class FuzzySullyConverterTests(unittest.TestCase):
 
     def test_all_valid_profiles_generated(self) -> None:
         valid, skipped = build_combinations(self.contract, self.mapping)
-        # server/None = 20
-        # server/Basic256Sha256-Sign = 17 (3 excluded)
-        # server/Basic256Sha256-SignEncrypt = 17
-        # gds/Sign = 9
-        # gds/SignEncrypt = 9
-        # reverse/None = 1
-        self.assertEqual(len([p for p in valid if p["mode"] == "server" and p["policy"] == "None"]), 20)
-        self.assertEqual(len([p for p in valid if p["mode"] == "server" and p["policy"] == "Basic256Sha256" and not p["encrypt"]]), 17)
-        self.assertEqual(len([p for p in valid if p["mode"] == "server" and p["policy"] == "Basic256Sha256" and p["encrypt"]]), 17)
-        self.assertEqual(len([p for p in valid if p["mode"] == "gds"]), 18)
-        self.assertEqual(len([p for p in valid if p["mode"] == "reverse"]), 1)
+        # High-level (non-targeted) counts
+        hl = [p for p in valid if not p.get("is_targeted")]
+        self.assertEqual(len([p for p in hl if p["mode"] == "server" and p["policy"] == "None"]), 20)
+        self.assertEqual(len([p for p in hl if p["mode"] == "server" and p["policy"] == "Basic256Sha256" and not p["encrypt"]]), 17)
+        self.assertEqual(len([p for p in hl if p["mode"] == "server" and p["policy"] == "Basic256Sha256" and p["encrypt"]]), 17)
+        self.assertEqual(len([p for p in hl if p["mode"] == "gds"]), 18)
+        self.assertEqual(len([p for p in hl if p["mode"] == "reverse"]), 1)
+        self.assertEqual(len(hl), 73)
         # 6 skipped (3 functions × 2 encrypt variants for Basic256Sha256)
         self.assertEqual(len(skipped), 6)
-        # Total
-        self.assertEqual(len(valid), 73)
+        # Targeted counts: 4 server-none, 1 server-basic256sha256, 1 reverse
+        targeted = [p for p in valid if p.get("is_targeted")]
+        self.assertEqual(len(targeted), 6)
+        # Total: 73 + 6 = 79
+        self.assertEqual(len(valid), 79)
 
     def test_excluded_functions_not_in_basic256_profiles(self) -> None:
         valid, _ = build_combinations(self.contract, self.mapping)
@@ -110,7 +110,7 @@ class FuzzySullyConverterTests(unittest.TestCase):
         finally:
             runner_path.unlink(missing_ok=True)
 
-        self.assertEqual(len(packages), 4)
+        self.assertEqual(len(packages), 7)  # 4 high-level + 3 targeted
         for pkg, key in packages:
             self.assertIn("scripts", pkg)
             self.assertIn("assets", pkg)

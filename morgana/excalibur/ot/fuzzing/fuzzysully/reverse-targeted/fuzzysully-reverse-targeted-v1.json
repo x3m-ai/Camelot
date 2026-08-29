@@ -1,14 +1,14 @@
 {
-  "package_id": "fuzzysully-reverse-v1",
-  "package_name": "ANSSI FuzzySully — OPC UA Reverse Client",
+  "package_id": "fuzzysully-reverse-targeted-v1",
+  "package_name": "ANSSI FuzzySully — OPC UA Reverse Client Targeted",
   "version": "1.0.0",
   "summary": "1 OPC UA deep-fuzzing profiles using ANSSI FuzzySully.",
-  "description": "Fuzzes the OPC UA ReverseHello message targeting compatible OPC UA clients that accept reverse connections from a server endpoint.",
-  "purpose": "Validate OPC UA client-side protocol handling and resilience to malformed reverse-connection messages.",
+  "description": "Targeted fuzzing of the ReverseHelloError response message in reverse-client mode.",
+  "purpose": "Exercise OPC UA client-side error-response parsing in reverse-connection scenarios.",
   "capabilities": [
-    "OPC UA ReverseHello fuzzing targeting compliant OPC UA clients.",
-    "None security policy; no certificates required.",
-    "Compact profile for reverse-connection attack surface."
+    "1 targeted OPC UA request-node profiles using ANSSI FuzzySully.",
+    "Programmatic goto_path() targeting of specific request nodes not covered by high-level function profiles.",
+    "Runtime-bounded fuzz campaigns with structured result output."
   ],
   "use_cases": [
     "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
@@ -16,8 +16,7 @@
   ],
   "prerequisites": [
     "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
-    "OPC UA client on the target network that supports reverse connections.",
-    "Operator configures bind port and target identification."
+    "Network access to an explicitly authorized OPC UA server simulator or testbed."
   ],
   "safety_notes": [
     "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
@@ -245,9 +244,9 @@
   ],
   "scripts": [
     {
-      "id": "fuzzysully:reverse:reverse_hello:none",
-      "name": "FUZZYSULLY - REVERSE - REVERSE HELLO - NONE",
-      "description": "Fuzzes the OPC UA ReverseHello message, targeting compatible OPC UA clients that accept reverse connections from a server endpoint.",
+      "id": "fuzzysully:target:reverse:reversehelloerror:none",
+      "name": "FUZZYSULLY TARGET - REVERSE - REVERSEHELLOERROR - NONE",
+      "description": "Targets the ReverseHelloError response message sent to a reverse-connecting OPC UA client. Fuzzes error-code encoding and reason-string handling in reverse-connection rejection paths.",
       "tactic": "Impair Process Control",
       "tcode": "T0858",
       "executor": "bash",
@@ -256,7 +255,7 @@
         "result_parser": "morgana-marker-v1"
       },
       "platform": "linux",
-      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n\n  --mode reverse\n  --function reverse_hello\n  --policy None\n  --bind-port '#{opcua_bind_port}'\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=reverse function=reverse_hello policy=None encrypt=false\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n\n  --mode reverse\n  --function ReverseHelloError\n  --policy None\n  --bind-port '#{opcua_bind_port}'\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path ReverseHelloError\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=reverse function=ReverseHelloError policy=None encrypt=false goto=ReverseHelloError\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
       "cleanup_command": null,
       "required_tags": [
         "opcua_target_host",
@@ -275,7 +274,7 @@
         "source_repository": "ANSSI-FR/fuzzysully",
         "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
         "mode": "reverse",
-        "function": "reverse_hello",
+        "function": "ReverseHelloError",
         "security_policy": "None",
         "encrypt": false,
         "generator_type": "protocol-fuzzer",

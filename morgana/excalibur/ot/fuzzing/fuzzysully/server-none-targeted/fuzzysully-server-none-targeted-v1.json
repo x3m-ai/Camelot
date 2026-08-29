@@ -1,0 +1,413 @@
+{
+  "package_id": "fuzzysully-server-none-targeted-v1",
+  "package_name": "ANSSI FuzzySully — OPC UA Server Targeted Nodes / None",
+  "version": "1.0.0",
+  "summary": "4 OPC UA deep-fuzzing profiles using ANSSI FuzzySully.",
+  "description": "Targeted OPC UA server fuzz profiles for specific protocol request nodes not covered by high-level function profiles: CreateSession, ActivateSession, CloseSession, CloseSecureChannel. Uses Fuzzowski goto_path() to target each node while preserving the required prerequisite graph.",
+  "purpose": "Exercise OPC UA server session lifecycle and secure-channel teardown nodes in isolation with targeted mutation.",
+  "capabilities": [
+    "4 targeted OPC UA request-node profiles using ANSSI FuzzySully.",
+    "Programmatic goto_path() targeting of specific request nodes not covered by high-level function profiles.",
+    "Runtime-bounded fuzz campaigns with structured result output."
+  ],
+  "use_cases": [
+    "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
+    "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic."
+  ],
+  "prerequisites": [
+    "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+    "Network access to an explicitly authorized OPC UA server simulator or testbed."
+  ],
+  "safety_notes": [
+    "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
+    "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
+    "Crash candidates are reported as such until independently verified."
+  ],
+  "author": "ANSSI-FR / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "anssi-fuzzysully",
+  "source": "anssi-fuzzysully",
+  "source_repository": "https://github.com/ANSSI-FR/fuzzysully",
+  "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+  "source_license": "GPL-2.0",
+  "documentation_url": "https://github.com/ANSSI-FR/fuzzysully",
+  "mitre_domain": "ics-attack",
+  "source_attack_version": "ICS v13",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0831",
+    "T0858"
+  ],
+  "platform": [
+    "linux"
+  ],
+  "category": "ot/fuzzing/fuzzysully",
+  "mode": "server",
+  "security_policy": "None",
+  "encrypt_variant": false,
+  "runtime_case_generator": true,
+  "tag_categories": [
+    {
+      "category_id": "opcua_fuzzing",
+      "label": "OPC UA Fuzzing",
+      "description": "Authorized OPC UA target, session parameters, security credentials, and execution bounds.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "opcua_target_host",
+          "label": "OPC UA Target Host",
+          "description": "Authorized lab OPC UA server hostname or IP address.",
+          "default": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "opcua_target_port",
+          "label": "OPC UA Target Port",
+          "description": "OPC UA server TCP port (1-65535).",
+          "default": "4840",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "opcua_target_path",
+          "label": "OPC UA Endpoint Path",
+          "description": "Optional endpoint path (e.g. /OPCUA/SimulationServer).",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "opcua_bind_port",
+          "label": "Bind Port (reverse mode)",
+          "description": "Local bind port for reverse-client mode.",
+          "default": "4840",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "opcua_app_uri",
+          "label": "Application URI",
+          "description": "OPC UA client application URI.",
+          "default": "urn:morgana:fuzzysully:client",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_send_timeout",
+          "label": "Send Timeout (s)",
+          "description": "Socket send timeout in seconds.",
+          "default": "5.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_recv_timeout",
+          "label": "Receive Timeout (s)",
+          "description": "Socket receive timeout in seconds.",
+          "default": "5.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_sleep_time",
+          "label": "Sleep Between Requests (s)",
+          "description": "Delay between fuzz requests in seconds.",
+          "default": "0.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "fuzz_case_start",
+          "label": "Start Case Index",
+          "description": "First fuzz case index to execute (1-based).",
+          "default": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "fuzz_max_cases",
+          "label": "Max Cases",
+          "description": "Maximum number of fuzz cases to execute per campaign.",
+          "default": "1000",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "fuzz_max_duration",
+          "label": "Max Duration (s)",
+          "description": "Maximum campaign duration in seconds (1-86400).",
+          "default": "600",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_threshold_request",
+          "label": "Crash Threshold (request)",
+          "description": "Number of consecutive errors before marking a crash candidate.",
+          "default": "9999",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_threshold_element",
+          "label": "Crash Threshold (element)",
+          "description": "Number of element-level errors before marking a crash candidate.",
+          "default": "9999",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "opcua_fuzzing_security",
+      "label": "OPC UA Fuzzing — Security",
+      "description": "Certificate and credential parameters for secured OPC UA fuzzing profiles.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "opcua_client_cert_path",
+          "label": "Client Certificate Path",
+          "description": "Path to client certificate PEM file on the agent (required for Basic256Sha256).",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "opcua_private_key_path",
+          "label": "Private Key Path",
+          "description": "Path to private key PEM file on the agent (required for Basic256Sha256).",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "opcua_private_key_password",
+          "label": "Private Key Password",
+          "description": "Private key password; injected via FUZZ_KEY_PWD environment variable.",
+          "default": "",
+          "sensitive": true,
+          "required": false,
+          "parameter_class": "secret"
+        },
+        {
+          "key": "opcua_username",
+          "label": "OPC UA Username",
+          "description": "OPC UA username for GDS or user-authenticated endpoints.",
+          "default": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "opcua_password",
+          "label": "OPC UA Password",
+          "description": "OPC UA password; injected via FUZZ_PASSWORD environment variable.",
+          "default": "",
+          "sensitive": true,
+          "required": false,
+          "parameter_class": "secret"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "anssi_fuzzysully_runner",
+      "name": "morgana-fuzzysully-runner",
+      "filename": "morgana_fuzzysully_runner.py",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/fuzzing/fuzzysully/morgana_fuzzysully_runner.py",
+      "sha256": "4f78a9bb35da5815c0349acfc649629635629d1685c9474ef1cdc0a8e01cc72d",
+      "size": 18873,
+      "executable": false,
+      "source": "ANSSI-FR/fuzzysully",
+      "license": "GPL-2.0",
+      "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+      "description": "Non-interactive Morgana execution wrapper for ANSSI FuzzySully. Requires fuzzysully Python package installed on the agent (see requirements-lock.txt)."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "fuzzysully:target:server:createsession:none",
+      "name": "FUZZYSULLY TARGET - SERVER - CREATESESSION - NONE",
+      "description": "Targets the CreateSession request node directly via Fuzzowski goto_path. Exercises application-layer session establishment message fields, nonce encoding, and application-identity certificate parsing while keeping Hello and OpenSecureChannel as non-fuzzed prerequisites.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{fuzz_max_duration}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n  --path \"$path\"\n  --mode server\n  --function CreateSession\n  --policy None\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path CreateSession\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=server function=CreateSession policy=None encrypt=false goto=CreateSession\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "cleanup_command": null,
+      "required_tags": [
+        "opcua_target_host",
+        "opcua_target_port",
+        "fuzz_max_cases",
+        "fuzz_max_duration"
+      ],
+      "required_assets": [
+        "anssi_fuzzysully_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "anssi-fuzzysully",
+        "source_provider": "ANSSI-FR",
+        "source_repository": "ANSSI-FR/fuzzysully",
+        "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+        "mode": "server",
+        "function": "CreateSession",
+        "security_policy": "None",
+        "encrypt": false,
+        "generator_type": "protocol-fuzzer",
+        "protocol": "opcua",
+        "mitre_domain": "ics-attack",
+        "source_attack_version": "ICS v13",
+        "source_modified": false,
+        "category": "Connection & Security"
+      }
+    },
+    {
+      "id": "fuzzysully:target:server:activatesession:none",
+      "name": "FUZZYSULLY TARGET - SERVER - ACTIVATESESSION - NONE",
+      "description": "Targets the ActivateSession request node directly via Fuzzowski goto_path. Exercises identity token, locale, and extension-object fields in session activation while running the full prerequisite chain as non-fuzzed traffic.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{fuzz_max_duration}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n  --path \"$path\"\n  --mode server\n  --function ActivateSession\n  --policy None\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path ActivateSession\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=server function=ActivateSession policy=None encrypt=false goto=ActivateSession\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "cleanup_command": null,
+      "required_tags": [
+        "opcua_target_host",
+        "opcua_target_port",
+        "fuzz_max_cases",
+        "fuzz_max_duration"
+      ],
+      "required_assets": [
+        "anssi_fuzzysully_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "anssi-fuzzysully",
+        "source_provider": "ANSSI-FR",
+        "source_repository": "ANSSI-FR/fuzzysully",
+        "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+        "mode": "server",
+        "function": "ActivateSession",
+        "security_policy": "None",
+        "encrypt": false,
+        "generator_type": "protocol-fuzzer",
+        "protocol": "opcua",
+        "mitre_domain": "ics-attack",
+        "source_attack_version": "ICS v13",
+        "source_modified": false,
+        "category": "Connection & Security"
+      }
+    },
+    {
+      "id": "fuzzysully:target:server:closesession:none",
+      "name": "FUZZYSULLY TARGET - SERVER - CLOSESESSION - NONE",
+      "description": "Targets the CloseSession cleanup message directly via Fuzzowski goto_path. Fuzzes session teardown handling including delete-subscriptions flag and session-id encoding.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{fuzz_max_duration}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n  --path \"$path\"\n  --mode server\n  --function CloseSession\n  --policy None\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path CloseSession\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=server function=CloseSession policy=None encrypt=false goto=CloseSession\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "cleanup_command": null,
+      "required_tags": [
+        "opcua_target_host",
+        "opcua_target_port",
+        "fuzz_max_cases",
+        "fuzz_max_duration"
+      ],
+      "required_assets": [
+        "anssi_fuzzysully_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "anssi-fuzzysully",
+        "source_provider": "ANSSI-FR",
+        "source_repository": "ANSSI-FR/fuzzysully",
+        "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+        "mode": "server",
+        "function": "CloseSession",
+        "security_policy": "None",
+        "encrypt": false,
+        "generator_type": "protocol-fuzzer",
+        "protocol": "opcua",
+        "mitre_domain": "ics-attack",
+        "source_attack_version": "ICS v13",
+        "source_modified": false,
+        "category": "Connection & Security"
+      }
+    },
+    {
+      "id": "fuzzysully:target:server:closesecurechannel:none",
+      "name": "FUZZYSULLY TARGET - SERVER - CLOSESECURECHANNEL - NONE",
+      "description": "Targets the CloseSecureChannel cleanup message directly via Fuzzowski goto_path. Fuzzes secure-channel teardown encoding, token-id validation, and sequence-number handling.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0858",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": "#{fuzz_max_duration}",
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n  --path \"$path\"\n  --mode server\n  --function CloseSecureChannel\n  --policy None\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path CloseSecureChannel\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=server function=CloseSecureChannel policy=None encrypt=false goto=CloseSecureChannel\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "cleanup_command": null,
+      "required_tags": [
+        "opcua_target_host",
+        "opcua_target_port",
+        "fuzz_max_cases",
+        "fuzz_max_duration"
+      ],
+      "required_assets": [
+        "anssi_fuzzysully_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "anssi-fuzzysully",
+        "source_provider": "ANSSI-FR",
+        "source_repository": "ANSSI-FR/fuzzysully",
+        "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
+        "mode": "server",
+        "function": "CloseSecureChannel",
+        "security_policy": "None",
+        "encrypt": false,
+        "generator_type": "protocol-fuzzer",
+        "protocol": "opcua",
+        "mitre_domain": "ics-attack",
+        "source_attack_version": "ICS v13",
+        "source_modified": false,
+        "category": "Connection & Security"
+      }
+    }
+  ],
+  "chains": []
+}

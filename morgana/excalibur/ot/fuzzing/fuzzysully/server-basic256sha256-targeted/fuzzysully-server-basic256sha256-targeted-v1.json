@@ -1,14 +1,14 @@
 {
-  "package_id": "fuzzysully-reverse-v1",
-  "package_name": "ANSSI FuzzySully — OPC UA Reverse Client",
+  "package_id": "fuzzysully-server-basic256sha256-targeted-v1",
+  "package_name": "ANSSI FuzzySully — OPC UA Server Targeted Nodes / Basic256Sha256",
   "version": "1.0.0",
   "summary": "1 OPC UA deep-fuzzing profiles using ANSSI FuzzySully.",
-  "description": "Fuzzes the OPC UA ReverseHello message targeting compatible OPC UA clients that accept reverse connections from a server endpoint.",
-  "purpose": "Validate OPC UA client-side protocol handling and resilience to malformed reverse-connection messages.",
+  "description": "Targeted OPC UA server fuzz profiles for CloseSecureChannelSign in Basic256Sha256 Sign mode. Exercises signed secure-channel teardown handling.",
+  "purpose": "Exercise authenticated OPC UA secure-channel teardown with targeted mutation.",
   "capabilities": [
-    "OPC UA ReverseHello fuzzing targeting compliant OPC UA clients.",
-    "None security policy; no certificates required.",
-    "Compact profile for reverse-connection attack surface."
+    "1 targeted OPC UA request-node profiles using ANSSI FuzzySully.",
+    "Programmatic goto_path() targeting of specific request nodes not covered by high-level function profiles.",
+    "Runtime-bounded fuzz campaigns with structured result output."
   ],
   "use_cases": [
     "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
@@ -16,8 +16,7 @@
   ],
   "prerequisites": [
     "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
-    "OPC UA client on the target network that supports reverse connections.",
-    "Operator configures bind port and target identification."
+    "Network access to an explicitly authorized OPC UA server simulator or testbed."
   ],
   "safety_notes": [
     "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
@@ -42,8 +41,8 @@
     "linux"
   ],
   "category": "ot/fuzzing/fuzzysully",
-  "mode": "reverse",
-  "security_policy": "None",
+  "mode": "server",
+  "security_policy": "Basic256Sha256",
   "encrypt_variant": false,
   "runtime_case_generator": true,
   "tag_categories": [
@@ -245,9 +244,9 @@
   ],
   "scripts": [
     {
-      "id": "fuzzysully:reverse:reverse_hello:none",
-      "name": "FUZZYSULLY - REVERSE - REVERSE HELLO - NONE",
-      "description": "Fuzzes the OPC UA ReverseHello message, targeting compatible OPC UA clients that accept reverse connections from a server endpoint.",
+      "id": "fuzzysully:target:server:closesecurechannelsign:basic256sha256-sign",
+      "name": "FUZZYSULLY TARGET - SERVER - CLOSESECURECHANNELSIGN - BASIC256SHA256",
+      "description": "Targets the CloseSecureChannel message in Basic256Sha256 Sign mode. Exercises secure-channel teardown with active message signing.",
       "tactic": "Impair Process Control",
       "tcode": "T0858",
       "executor": "bash",
@@ -256,14 +255,15 @@
         "result_parser": "morgana-marker-v1"
       },
       "platform": "linux",
-      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n\n  --mode reverse\n  --function reverse_hello\n  --policy None\n  --bind-port '#{opcua_bind_port}'\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=reverse function=reverse_hello policy=None encrypt=false\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
+      "command": "set -u\nrunner=\"{{asset:anssi_fuzzysully_runner}}\"\nhost='#{opcua_target_host}'\nport='#{opcua_target_port}'\npath='#{opcua_target_path}'\nsend_timeout='#{opcua_send_timeout}'\nrecv_timeout='#{opcua_recv_timeout}'\nsleep_time='#{opcua_sleep_time}'\ncase_start='#{fuzz_case_start}'\nmax_cases='#{fuzz_max_cases}'\nmax_duration='#{fuzz_max_duration}'\nthreshold_req='#{opcua_threshold_request}'\nthreshold_el='#{opcua_threshold_element}'\n\n# Input validation\ncase \"$host\" in ''|*[!A-Za-z0-9._:-]*) echo '[ERROR] Invalid authorized target host' >&2; exit 2;; esac\ncase \"$port\" in ''|*[!0-9]*) echo '[ERROR] Port must be numeric' >&2; exit 2;; esac\n[ \"$port\" -ge 1 ] && [ \"$port\" -le 65535 ] || { echo '[ERROR] Port must be 1-65535' >&2; exit 2; }\ncase \"$max_cases\" in ''|*[!0-9]*) echo '[ERROR] max_cases must be numeric' >&2; exit 2;; esac\ncase \"$max_duration\" in ''|*[!0-9]*) echo '[ERROR] max_duration must be numeric' >&2; exit 2;; esac\n[ \"$max_duration\" -ge 1 ] && [ \"$max_duration\" -le 86400 ] || { echo '[ERROR] max_duration must be 1-86400' >&2; exit 2; }\ncert_path='#{opcua_client_cert_path}'\nkey_path='#{opcua_private_key_path}'\n[ -f \"$cert_path\" ] || { echo '[ERROR] Client cert not found: '\"$cert_path\" >&2; exit 2; }\n[ -f \"$key_path\" ] || { echo '[ERROR] Private key not found: '\"$key_path\" >&2; exit 2; }\nexport FUZZ_KEY_PWD='#{opcua_private_key_password}'\n\n# Build argument array\nargs=(\n  --host \"$host\"\n  --port \"$port\"\n  --path \"$path\"\n  --mode server\n  --function CloseSecureChannelSign\n  --policy Basic256Sha256\n  --client-cert \"$cert_path\"\n  --private-key \"$key_path\"\n  --send-timeout \"$send_timeout\"\n  --recv-timeout \"$recv_timeout\"\n  --sleep-time \"$sleep_time\"\n  --case-start \"$case_start\"\n  --max-cases \"$max_cases\"\n  --max-duration \"$max_duration\"\n  --threshold-request \"$threshold_req\"\n  --threshold-element \"$threshold_el\"\n  --test-id \"${MORGANA_TEST_ID:-manual}\"\n  --log-dir /tmp\n  --goto-path CloseSecureChannelSign\n)\n\necho \"[INFO] ANSSI FuzzySully: mode=server function=CloseSecureChannelSign policy=Basic256Sha256 encrypt=false goto=CloseSecureChannelSign\" >&1\npython3 \"$runner\" \"${args[@]}\"\nexit $?",
       "cleanup_command": null,
       "required_tags": [
         "opcua_target_host",
         "opcua_target_port",
         "fuzz_max_cases",
         "fuzz_max_duration",
-        "opcua_bind_port"
+        "opcua_client_cert_path",
+        "opcua_private_key_path"
       ],
       "required_assets": [
         "anssi_fuzzysully_runner"
@@ -274,16 +274,16 @@
         "source_provider": "ANSSI-FR",
         "source_repository": "ANSSI-FR/fuzzysully",
         "source_commit": "50a0631178331d2cc39b6ed554b9b68050580f92",
-        "mode": "reverse",
-        "function": "reverse_hello",
-        "security_policy": "None",
+        "mode": "server",
+        "function": "CloseSecureChannelSign",
+        "security_policy": "Basic256Sha256",
         "encrypt": false,
         "generator_type": "protocol-fuzzer",
         "protocol": "opcua",
         "mitre_domain": "ics-attack",
         "source_attack_version": "ICS v13",
         "source_modified": false,
-        "category": "Client & Reverse Connection"
+        "category": "Connection & Security"
       }
     }
   ],
