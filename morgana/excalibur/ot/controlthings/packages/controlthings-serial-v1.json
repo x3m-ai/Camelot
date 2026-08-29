@@ -1,0 +1,218 @@
+{
+  "package_id": "controlthings-serial-v1",
+  "package_name": "ControlThings — Serial Assessment",
+  "version": "1.0.0",
+  "summary": "2 ControlThings Serial Assessment profiles.",
+  "description": "ControlThings ctserial for sending raw hex/UTF-8 data to serial devices in authorized lab environments.",
+  "purpose": "Assess serial-connected industrial devices in authorized OT/ICS labs.",
+  "capabilities": [
+    "2 ControlThings operation profiles.",
+    "Source-faithful execution via pinned ctmodbus/ctserial."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment.",
+    "Detection validation for industrial protocol operations."
+  ],
+  "prerequisites": [
+    "Linux Morgana Agent with Python 3.8+.",
+    "ctmodbus/ctserial installed (pip install ctmodbus ctserial).",
+    "Authorized OT/ICS test target or simulator.",
+    "Never use against production systems."
+  ],
+  "safety_notes": [
+    "All write/modify operations alter device state. Use only against authorized test targets.",
+    "Never target production OT/ICS systems without written authorization and change controls."
+  ],
+  "author": "Justin Searle / ControlThings / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "controlthings",
+  "source": "controlthings",
+  "source_repository": "https://github.com/ControlThings-io",
+  "source_commit": "multi-repo",
+  "source_license": "LGPL-3.0-or-later",
+  "documentation_url": "https://www.controlthings.io/",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0843",
+    "T0831"
+  ],
+  "platform": [
+    "linux",
+    "macos"
+  ],
+  "category": "ot/controlthings/serial",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "modbus",
+    "serial",
+    "embedded",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "endpoint",
+    "ot-ics",
+    "serial"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "controlthings_serial",
+      "label": "ControlThings Serial",
+      "description": "Serial device connection parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ct_serial_device",
+          "label": "Serial Device",
+          "description": "Device path, e.g. /dev/ttyUSB0 or COM2.",
+          "default": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        },
+        {
+          "key": "ct_serial_baud",
+          "label": "Baud Rate",
+          "description": "Serial baud rate (default 9600).",
+          "default": "9600",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_serial_parity",
+          "label": "Parity",
+          "description": "none/even/odd/mark/space.",
+          "default": "none",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_serial_payload",
+          "label": "Payload",
+          "description": "Hex bytes (send_hex) or text (send_utf8).",
+          "default": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_serial_timeout",
+          "label": "Timeout (s)",
+          "description": "Read timeout in seconds.",
+          "default": "5",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "controlthings_serial_runner",
+      "name": "controlthings-serial-runner",
+      "filename": "morgana_ctserial_runner.py",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/controlthings/morgana_ctserial_runner.py",
+      "sha256": "543158a49b073084487d3ee53119e30e26ca64d2684e51841880f2010b00d553",
+      "executable": false,
+      "source": "ControlThings-io",
+      "license": "LGPL-3.0-or-later",
+      "description": "Morgana non-interactive wrapper for ctserial operations. Requires ctserial Python package."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "controlthings:ctserial:send-hex",
+      "name": "CONTROLTHINGS - SERIAL - Send Raw Hex",
+      "description": "ControlThings ctserial: Send raw hex payload to serial device. Sends data to serial devices in authorized lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 30,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Serial — Send raw hex payload to serial device\nRUNNER='{{asset:controlthings_serial_runner}}'\n\ncase \"#{ct_serial_device}\" in ''|*[!A-Za-z0-9./_:-]*) echo \"[ERROR] Invalid device\" >&2; exit 2;; esac\n\npython3 \"$RUNNER\" ctserial connect \"#{ct_serial_device}\" #{ct_serial_baud} #{ct_serial_parity}\npython3 \"$RUNNER\" ctserial send_hex \"#{ct_serial_payload}\"\npython3 \"$RUNNER\" ctserial close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctserial\\\",\\\"operation\\\":\\\"send-hex\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_serial_device",
+        "ct_serial_baud",
+        "ct_serial_parity",
+        "ct_serial_payload",
+        "ct_serial_timeout"
+      ],
+      "required_assets": [
+        "controlthings_serial_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctserial",
+        "source_repository": "ControlThings-io/ctserial",
+        "source_commit": "58abc185a71ffa2d7abd93b55c44db8c14baca1e",
+        "source_version": "0.5.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "send-hex",
+        "protocol": "serial",
+        "mitre_domain": "ics-attack",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctserial:send-utf8",
+      "name": "CONTROLTHINGS - SERIAL - Send UTF-8",
+      "description": "ControlThings ctserial: Send UTF-8 text payload to serial device. Sends data to serial devices in authorized lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0831",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 30,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Serial — Send UTF-8 text payload to serial device\nRUNNER='{{asset:controlthings_serial_runner}}'\n\ncase \"#{ct_serial_device}\" in ''|*[!A-Za-z0-9./_:-]*) echo \"[ERROR] Invalid device\" >&2; exit 2;; esac\n\npython3 \"$RUNNER\" ctserial connect \"#{ct_serial_device}\" #{ct_serial_baud} #{ct_serial_parity}\npython3 \"$RUNNER\" ctserial send_utf8 \"#{ct_serial_payload}\"\npython3 \"$RUNNER\" ctserial close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctserial\\\",\\\"operation\\\":\\\"send-utf8\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_serial_device",
+        "ct_serial_baud",
+        "ct_serial_parity",
+        "ct_serial_payload",
+        "ct_serial_timeout"
+      ],
+      "required_assets": [
+        "controlthings_serial_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctserial",
+        "source_repository": "ControlThings-io/ctserial",
+        "source_commit": "58abc185a71ffa2d7abd93b55c44db8c14baca1e",
+        "source_version": "0.5.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "send-utf8",
+        "protocol": "serial",
+        "mitre_domain": "ics-attack",
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}

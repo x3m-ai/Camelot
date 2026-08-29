@@ -1,0 +1,510 @@
+{
+  "package_id": "controlthings-modbus-write-v1",
+  "package_name": "ControlThings — Modbus Write & Control",
+  "version": "1.0.0",
+  "summary": "8 ControlThings Modbus Write & Control profiles.",
+  "description": "ControlThings ctmodbus write operations for authorized Modbus device assessment. Requires explicit operator confirmation.",
+  "purpose": "Write Modbus registers and coils in an authorized isolated OT/ICS lab.",
+  "capabilities": [
+    "8 ControlThings operation profiles.",
+    "Source-faithful execution via pinned ctmodbus/ctserial."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment.",
+    "Detection validation for industrial protocol operations."
+  ],
+  "prerequisites": [
+    "Linux Morgana Agent with Python 3.8+.",
+    "ctmodbus/ctserial installed (pip install ctmodbus ctserial).",
+    "Authorized OT/ICS test target or simulator.",
+    "Never use against production systems."
+  ],
+  "safety_notes": [
+    "All write/modify operations alter device state. Use only against authorized test targets.",
+    "Never target production OT/ICS systems without written authorization and change controls."
+  ],
+  "author": "Justin Searle / ControlThings / X3M.AI integration",
+  "created": "2026-08-29",
+  "provider": "controlthings",
+  "source": "controlthings",
+  "source_repository": "https://github.com/ControlThings-io",
+  "source_commit": "multi-repo",
+  "source_license": "LGPL-3.0-or-later",
+  "documentation_url": "https://www.controlthings.io/",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0843",
+    "T0831"
+  ],
+  "platform": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "category": "ot/controlthings/modbus-write",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "modbus",
+    "serial",
+    "embedded",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "target_environments": [
+    "endpoint",
+    "modbus",
+    "ot-ics"
+  ],
+  "risk_badges": [
+    "modify"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "controlthings_modbus",
+      "label": "ControlThings Modbus",
+      "description": "Modbus target, transport, and operation parameters.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ct_modbus_target",
+          "label": "Modbus Target",
+          "description": "IP/hostname or serial device path.",
+          "default": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ct_modbus_port",
+          "label": "Modbus TCP/UDP Port",
+          "description": "TCP/UDP port (default 502).",
+          "default": "502",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ct_modbus_unit_id",
+          "label": "Unit/Slave ID",
+          "description": "Modbus unit/slave ID (1-247).",
+          "default": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_registers",
+          "label": "Address Range (CSR)",
+          "description": "Comma-separated ranges, e.g. 0-9,50.",
+          "default": "0-9",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_timeout",
+          "label": "Timeout (seconds)",
+          "description": "Connection timeout.",
+          "default": "3",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_baud",
+          "label": "Baud Rate (RTU/ASCII)",
+          "description": "Serial baud rate for RTU/ASCII.",
+          "default": "9600",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ct_modbus_parity",
+          "label": "Parity (RTU/ASCII)",
+          "description": "Serial parity: none/even/odd.",
+          "default": "none",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "controlthings_modbus_runner",
+      "name": "controlthings-modbus-runner",
+      "filename": "morgana_ctmodbus_runner.py",
+      "platform": "linux",
+      "architecture": "amd64",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/controlthings/morgana_ctmodbus_runner.py",
+      "sha256": "711c9a324e14900d180f4d32e9f18dfc2d5cab84af189cf00cb8f3e4daee9798",
+      "executable": false,
+      "source": "ControlThings-io",
+      "license": "LGPL-3.0-or-later",
+      "description": "Morgana non-interactive wrapper for ctmodbus operations. Requires ctmodbus Python package."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "controlthings:ctmodbus:write-register-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Write Register (TCP)",
+      "description": "ControlThings ctmodbus: Write Register (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC06/FC16 Write Register (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_register #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-register-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-register-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC06/FC16 Write Register",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-register-udp",
+      "name": "CONTROLTHINGS - MODBUS - Write Register (UDP)",
+      "description": "ControlThings ctmodbus: Write Register (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC06/FC16 Write Register (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_register #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-register-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-register-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC06/FC16 Write Register",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-register-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Write Register (RTU)",
+      "description": "ControlThings ctmodbus: Write Register (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC06/FC16 Write Register (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_register #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-register-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-register-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC06/FC16 Write Register",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-register-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Write Register (ASCII)",
+      "description": "ControlThings ctmodbus: Write Register (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC06/FC16 Write Register (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_register #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-register-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-register-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC06/FC16 Write Register",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-coil-tcp",
+      "name": "CONTROLTHINGS - MODBUS - Write Coil (TCP)",
+      "description": "ControlThings ctmodbus: Write Coil (TCP). Targets Modbus TCP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC05/FC15 Write Coil (TCP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_tcp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_coil #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-coil-tcp\\\",\\\"transport\\\":\\\"tcp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-coil-tcp",
+        "transport": "tcp",
+        "protocol": "modbus",
+        "function_code": "FC05/FC15 Write Coil",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-coil-udp",
+      "name": "CONTROLTHINGS - MODBUS - Write Coil (UDP)",
+      "description": "ControlThings ctmodbus: Write Coil (UDP). Targets Modbus UDP devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC05/FC15 Write Coil (UDP)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_udp \"#{ct_modbus_target}:#{ct_modbus_port}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_coil #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-coil-udp\\\",\\\"transport\\\":\\\"udp\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_port"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-coil-udp",
+        "transport": "udp",
+        "protocol": "modbus",
+        "function_code": "FC05/FC15 Write Coil",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-coil-rtu",
+      "name": "CONTROLTHINGS - MODBUS - Write Coil (RTU)",
+      "description": "ControlThings ctmodbus: Write Coil (RTU). Targets Modbus RTU devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC05/FC15 Write Coil (RTU)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_rtu \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_coil #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-coil-rtu\\\",\\\"transport\\\":\\\"rtu\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-coil-rtu",
+        "transport": "rtu",
+        "protocol": "modbus",
+        "function_code": "FC05/FC15 Write Coil",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    },
+    {
+      "id": "controlthings:ctmodbus:write-coil-ascii",
+      "name": "CONTROLTHINGS - MODBUS - Write Coil (ASCII)",
+      "description": "ControlThings ctmodbus: Write Coil (ASCII). Targets Modbus ASCII devices in authorized OT/ICS lab environments.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0843",
+      "executor": "bash",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "linux",
+      "command": "# ControlThings Modbus — FC05/FC15 Write Coil (ASCII)\n# Uses ctmodbus Python API via Morgana runner wrapper\n# All interactions are with an explicitly authorized OT/ICS lab target\n\nRUNNER='{{asset:controlthings_modbus_runner}}'\n\n# Validate target\ncase \"#{ct_modbus_target}\" in ''|*[!A-Za-z0-9._:-]*) echo \"[ERROR] Invalid target\" >&2; exit 2;; esac\n\n# Connect and execute\npython3 \"$RUNNER\" ctmodbus connect_ascii \"#{ct_modbus_target}\"\npython3 \"$RUNNER\" ctmodbus unit_id \"#{ct_modbus_unit_id}\"\npython3 \"$RUNNER\" ctmodbus write_coil #{ct_modbus_registers} #{ct_write_value}\npython3 \"$RUNNER\" ctmodbus close\n\necho \"MORGANA_RESULT_METADATA={\\\"provider\\\":\\\"controlthings\\\",\\\"component\\\":\\\"ctmodbus\\\",\\\"operation\\\":\\\"write-coil-ascii\\\",\\\"transport\\\":\\\"ascii\\\",\\\"status\\\":\\\"completed\\\"}\"",
+      "cleanup_command": null,
+      "required_tags": [
+        "ct_modbus_target",
+        "ct_modbus_unit_id",
+        "ct_modbus_timeout",
+        "ct_modbus_registers",
+        "ct_write_value",
+        "ct_modbus_baud",
+        "ct_modbus_parity"
+      ],
+      "required_assets": [
+        "controlthings_modbus_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "controlthings",
+        "component": "ctmodbus",
+        "source_repository": "ControlThings-io/ctmodbus",
+        "source_commit": "f8f91d978c38c82a1b7a7e19f95b3e1fc9c84b08",
+        "source_version": "0.6.0",
+        "license": "LGPL-3.0-or-later",
+        "operation": "write-coil-ascii",
+        "transport": "ascii",
+        "protocol": "modbus",
+        "function_code": "FC05/FC15 Write Coil",
+        "is_write": true,
+        "mitre_domain": "ics-attack",
+        "attck_technique": "T0843",
+        "source_modified": false
+      }
+    }
+  ],
+  "chains": []
+}

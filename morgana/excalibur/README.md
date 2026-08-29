@@ -27,7 +27,8 @@ Excalibur packages are professionally crafted attack script collections covering
 | [Stratus Red Team](cloud/stratus/) | 30 | 93 | 0 |
 | [Elastic Cortado](detection/cortado/) | 13 | 698 | 0 |
 | [LOLRMM](lotl/lolrmm/) | 3 | 320 | 0 |
-| **Total** | **270** | **27 434** | **2 121** |
+| [ControlThings Suite](ot/controlthings/) | 5 | 33 | 0 |
+| **Total** | **275** | **27 467** | **2 121** |
 
 Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 

@@ -28,7 +28,8 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [Stratus Red Team](#11-stratus-red-team) | 30 | 93 | 0 | Enterprise ATT&CK |
 | [Elastic Cortado](#12-elastic-cortado) | 13 | 698 | 0 | Enterprise ATT&CK |
 | [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
-| **Total** | **270** | **27 434** | **2 121** | |
+| [ControlThings Suite](#14-controlthings-suite) | 5 | 33 | 0 | ICS ATT&CK |
+| **Total** | **275** | **27 467** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
 
@@ -466,6 +467,33 @@ Every profile preserves: PE metadata, installation paths, registry keys, Event L
 **LOLRMM catalogs legitimate tools.** Presence does not imply compromise. Use only in authorized environments.
 
 See the [LOLRMM README](lotl/lolrmm/README.md) for full details.
+
+---
+
+## 14. ControlThings Suite
+
+Industrial protocol and embedded hardware assessment tools from [ControlThings-io](https://github.com/ControlThings-io), created by Justin Searle. Provides Modbus TCP/UDP/RTU/ASCII, raw serial, SPI/I2C embedded hardware, and Velocio PLC protocol primitives.
+
+| Package | Scripts | Component | Risk |
+|---|---|---|---|
+| `controlthings-modbus-read-v1` | 17 | ctmodbus | interact |
+| `controlthings-modbus-write-v1` | 8 | ctmodbus | modify |
+| `controlthings-serial-v1` | 2 | ctserial | modify |
+| `controlthings-embedded-v1` | 4 | ctspi + cti2c (manual) | interact/modify |
+| `controlthings-velocio-v1` | 2 | ctvelocio (manual) | interact/modify |
+
+**ctmodbus (25 scripts):** Non-interactive Modbus read/write via pymodbus. Supports TCP, UDP, RTU, ASCII transports.  
+**ctserial (2 scripts):** Send raw hex or UTF-8 to serial devices via pyserial.  
+**ctspi/cti2c/ctvelocio (6 scripts):** Manual profiles for legacy Python 2 hardware tools requiring Bus Pirate/PLC adapters.
+
+**Source:** [ControlThings-io/ctmodbus](https://github.com/ControlThings-io/ctmodbus) @ `f8f91d9` (LGPL-3.0)  
+**ATT&CK Domain:** ICS ATT&CK | **Techniques:** T0843 (Impair Process Control), T0831  
+**Execution Platform:** Linux, macOS (Windows for Modbus TCP/UDP)  
+**Prerequisites:** Python 3.8+, `pip install ctmodbus ctserial`, authorized OT/ICS lab
+
+**Safety:** Write operations alter industrial device/process state. Modbus write profiles require explicit operator confirmation. Never use against production systems.
+
+See [ControlThings README](ot/controlthings/README.md) for full details.
 
 ---
 
