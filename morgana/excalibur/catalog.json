@@ -15410,6 +15410,179 @@
       "status": "community",
       "author": "ridpath / X3M.AI integration",
       "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/fuzzing/ics-scada-fuzzer/opcua/ics-scada-fuzzer-opcua-v1.json"
+    },
+    {
+      "package_id": "fuzzysully-server-none-v1",
+      "package_name": "ANSSI FuzzySully — OPC UA Server / None Policy",
+      "version": "1.0.0",
+      "description": "Deep OPC UA server fuzzing using all available upstream functions with no security policy. Tests discovery, secure-channel, session, address-space, and monitoring services.",
+      "capabilities": [
+        "All 20 upstream server functions in None security mode.",
+        "Runtime generation of configurable fuzz campaigns per function.",
+        "Structured result with faults, connection failures, timeouts, crash candidates.",
+        "Bounded execution with case-count and duration limits."
+      ],
+      "use_cases": [
+        "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
+        "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic."
+      ],
+      "safety_notes": [
+        "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
+        "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
+        "Crash candidates are reported as such until independently verified."
+      ],
+      "mitre_tactic": "Impair Process Control",
+      "mitre_tcodes": [
+        "T0831",
+        "T0837",
+        "T0840",
+        "T0843",
+        "T0858"
+      ],
+      "script_count": 20,
+      "chain_count": 0,
+      "platform": [
+        "linux"
+      ],
+      "prerequisites": [
+        "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+        "Network access to an explicitly authorized OPC UA server simulator or testbed.",
+        "Operator configures host, port, case bounds, and risk acknowledgement before execution."
+      ],
+      "sentinel_connectors": [],
+      "status": "community",
+      "provider": "anssi-fuzzysully",
+      "author": "ANSSI-FR / X3M.AI integration",
+      "category": "ot/fuzzing/fuzzysully",
+      "url": "https://github.com/ANSSI-FR/fuzzysully"
+    },
+    {
+      "package_id": "fuzzysully-server-basic256sha256-v1",
+      "package_name": "ANSSI FuzzySully — OPC UA Server / Basic256Sha256",
+      "version": "1.0.0",
+      "description": "Deep OPC UA server fuzzing with Basic256Sha256 Sign and SignAndEncrypt security policies. Excludes hello/secure_channel/session per upstream restrictions.",
+      "capabilities": [
+        "17 server functions compatible with Basic256Sha256 (hello/secure_channel/session excluded per upstream).",
+        "Both Sign and SignAndEncrypt variants for each function.",
+        "Client certificate and private key handled as controlled assets.",
+        "Full structured result output."
+      ],
+      "use_cases": [
+        "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
+        "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic."
+      ],
+      "safety_notes": [
+        "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
+        "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
+        "Crash candidates are reported as such until independently verified."
+      ],
+      "mitre_tactic": "Impair Process Control",
+      "mitre_tcodes": [
+        "T0831",
+        "T0837",
+        "T0840",
+        "T0843",
+        "T0858"
+      ],
+      "script_count": 34,
+      "chain_count": 0,
+      "platform": [
+        "linux"
+      ],
+      "prerequisites": [
+        "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+        "Valid client certificate and private key in PEM format on the agent.",
+        "Authorized OPC UA server supporting Basic256Sha256 security.",
+        "Operator configures cert/key paths, host, port, and execution bounds."
+      ],
+      "sentinel_connectors": [],
+      "status": "community",
+      "provider": "anssi-fuzzysully",
+      "author": "ANSSI-FR / X3M.AI integration",
+      "category": "ot/fuzzing/fuzzysully",
+      "url": "https://github.com/ANSSI-FR/fuzzysully"
+    },
+    {
+      "package_id": "fuzzysully-gds-v1",
+      "package_name": "ANSSI FuzzySully — OPC UA Global Discovery Server",
+      "version": "1.0.0",
+      "description": "Deep fuzzing of OPC UA Global Discovery Server certificate lifecycle, trust-list management, key-pair and signing requests. Requires Basic256Sha256 policy and a running GDS endpoint.",
+      "capabilities": [
+        "All 9 GDS functions in Sign and SignAndEncrypt variants.",
+        "Certificate lifecycle: trust lists, groups, status, revocation.",
+        "Key and signing request workflows.",
+        "Requires a running Global Discovery Server."
+      ],
+      "use_cases": [
+        "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
+        "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic."
+      ],
+      "safety_notes": [
+        "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
+        "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
+        "Crash candidates are reported as such until independently verified."
+      ],
+      "mitre_tactic": "Impair Process Control",
+      "mitre_tcodes": [
+        "T0861"
+      ],
+      "script_count": 18,
+      "chain_count": 0,
+      "platform": [
+        "linux"
+      ],
+      "prerequisites": [
+        "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+        "Valid client certificate and private key for Basic256Sha256.",
+        "Running OPC UA Global Discovery Server accessible from the agent.",
+        "Operator configures all GDS connection and certificate parameters."
+      ],
+      "sentinel_connectors": [],
+      "status": "community",
+      "provider": "anssi-fuzzysully",
+      "author": "ANSSI-FR / X3M.AI integration",
+      "category": "ot/fuzzing/fuzzysully",
+      "url": "https://github.com/ANSSI-FR/fuzzysully"
+    },
+    {
+      "package_id": "fuzzysully-reverse-v1",
+      "package_name": "ANSSI FuzzySully — OPC UA Reverse Client",
+      "version": "1.0.0",
+      "description": "Fuzzes the OPC UA ReverseHello message targeting compatible OPC UA clients that accept reverse connections from a server endpoint.",
+      "capabilities": [
+        "OPC UA ReverseHello fuzzing targeting compliant OPC UA clients.",
+        "None security policy; no certificates required.",
+        "Compact profile for reverse-connection attack surface."
+      ],
+      "use_cases": [
+        "Validate OPC UA protocol parsing, anomaly detection, and device resilience in an authorized OT lab.",
+        "Exercise NDR, IDS, Suricata, Zeek, firewall, SIEM, and SOC workflows using real OPC UA mutation traffic."
+      ],
+      "safety_notes": [
+        "OPC UA fuzzing can disrupt or crash real industrial devices. Never target production systems without explicit written authorization and change controls.",
+        "GDS certificate operations can invalidate production PKI trust chains. Use only in isolated lab environments.",
+        "Crash candidates are reported as such until independently verified."
+      ],
+      "mitre_tactic": "Impair Process Control",
+      "mitre_tcodes": [
+        "T0858"
+      ],
+      "script_count": 1,
+      "chain_count": 0,
+      "platform": [
+        "linux"
+      ],
+      "prerequisites": [
+        "Linux amd64 Morgana Agent with Python 3.10+ and fuzzysully installed.",
+        "OPC UA client on the target network that supports reverse connections.",
+        "Operator configures bind port and target identification."
+      ],
+      "sentinel_connectors": [],
+      "status": "community",
+      "provider": "anssi-fuzzysully",
+      "author": "ANSSI-FR / X3M.AI integration",
+      "category": "ot/fuzzing/fuzzysully",
+      "url": "https://github.com/ANSSI-FR/fuzzysully"
     }
   ],
   "providers": [

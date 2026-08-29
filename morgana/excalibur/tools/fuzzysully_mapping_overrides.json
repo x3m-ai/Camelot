@@ -1,0 +1,162 @@
+{
+  "source_repository": "ANSSI-FR/fuzzysully",
+  "source_url": "https://github.com/ANSSI-FR/fuzzysully",
+  "license": "LGPL-2.1",
+  "provider": "anssi-fuzzysully",
+  "mitre_domain": "ics-attack",
+  "source_attack_version": "ICS v13",
+  "upstream_version": "0.1.1",
+  "requires_python": ">=3.10",
+
+  "modes": ["server", "gds", "reverse"],
+
+  "server_functions": [
+    "hello", "secure_channel", "session",
+    "find_server", "find_server_on_network", "get_endpoints",
+    "read", "browse", "browse_next", "history_read",
+    "create_subscription", "publish",
+    "create_monitor", "delete_monitor", "modify_monitor",
+    "add_nodes", "register_nodes", "unregister_nodes",
+    "translate_browse_path_to_node_ids", "register_server2"
+  ],
+
+  "gds_functions": [
+    "start_signing_request", "start_new_key_pair_request", "finish_request",
+    "finish_request_start_signing_request", "finish_request_start_new_key_pair_request",
+    "get_trust_list", "get_certificate_groups", "get_certificate_status",
+    "revoke_certificate"
+  ],
+
+  "reverse_functions": ["reverse_hello"],
+
+  "_comment_server_basic_exclusions": "hello/secure_channel/session are not handled with Basic256Sha256 per upstream docs",
+  "server_basic_excluded_functions": ["hello", "secure_channel", "session"],
+
+  "_comment_gds_requires_basic": "GDS requires Basic256Sha256; None is not supported",
+  "gds_requires_policy": "Basic256Sha256",
+
+  "_comment_reverse_none_only": "Reverse mode supports None policy only",
+  "reverse_supported_policies": ["None"],
+
+  "function_categories": {
+    "server": {
+      "hello": "Discovery",
+      "secure_channel": "Connection & Security",
+      "session": "Connection & Security",
+      "find_server": "Discovery",
+      "find_server_on_network": "Discovery",
+      "get_endpoints": "Discovery",
+      "register_server2": "Discovery",
+      "read": "Address Space",
+      "browse": "Address Space",
+      "browse_next": "Address Space",
+      "history_read": "Address Space",
+      "translate_browse_path_to_node_ids": "Address Space",
+      "add_nodes": "Address Space",
+      "register_nodes": "Address Space",
+      "unregister_nodes": "Address Space",
+      "create_subscription": "Monitoring & Subscription",
+      "publish": "Monitoring & Subscription",
+      "create_monitor": "Monitoring & Subscription",
+      "delete_monitor": "Monitoring & Subscription",
+      "modify_monitor": "Monitoring & Subscription"
+    },
+    "gds": {
+      "get_trust_list": "Trust",
+      "get_certificate_groups": "Trust",
+      "get_certificate_status": "Certificate Lifecycle",
+      "revoke_certificate": "Certificate Lifecycle",
+      "start_signing_request": "Key & Signing Requests",
+      "start_new_key_pair_request": "Key & Signing Requests",
+      "finish_request": "Key & Signing Requests",
+      "finish_request_start_signing_request": "Key & Signing Requests",
+      "finish_request_start_new_key_pair_request": "Key & Signing Requests"
+    },
+    "reverse": {
+      "reverse_hello": "Client & Reverse Connection"
+    }
+  },
+
+  "operational_risk": {
+    "server": {
+      "hello": "interact",
+      "secure_channel": "modify",
+      "session": "modify",
+      "find_server": "interact",
+      "find_server_on_network": "interact",
+      "get_endpoints": "interact",
+      "register_server2": "disrupt",
+      "read": "modify",
+      "browse": "interact",
+      "browse_next": "interact",
+      "history_read": "modify",
+      "translate_browse_path_to_node_ids": "interact",
+      "add_nodes": "disrupt",
+      "register_nodes": "modify",
+      "unregister_nodes": "modify",
+      "create_subscription": "modify",
+      "publish": "modify",
+      "create_monitor": "modify",
+      "delete_monitor": "modify",
+      "modify_monitor": "modify"
+    },
+    "gds": {
+      "get_trust_list": "disrupt",
+      "get_certificate_groups": "interact",
+      "get_certificate_status": "interact",
+      "revoke_certificate": "disrupt",
+      "start_signing_request": "disrupt",
+      "start_new_key_pair_request": "disrupt",
+      "finish_request": "disrupt",
+      "finish_request_start_signing_request": "disrupt",
+      "finish_request_start_new_key_pair_request": "disrupt"
+    },
+    "reverse": {
+      "reverse_hello": "modify"
+    }
+  },
+
+  "mitre_tcodes": {
+    "Discovery": ["T0840", "T0858"],
+    "Connection & Security": ["T0858", "T0831"],
+    "Address Space": ["T0831", "T0843"],
+    "Monitoring & Subscription": ["T0831", "T0837"],
+    "Certificate Lifecycle": ["T0861"],
+    "Trust": ["T0861"],
+    "Key & Signing Requests": ["T0861"],
+    "Client & Reverse Connection": ["T0858"]
+  },
+
+  "function_descriptions": {
+    "hello": "Fuzzes the OPC UA Hello message that initiates the TCP-level connection, exercising transport-layer parsing, buffer sizes, and protocol version negotiation.",
+    "secure_channel": "Fuzzes OpenSecureChannel/CloseSecureChannel requests to exercise security token negotiation, lifetime handling, and channel-level protocol state.",
+    "session": "Fuzzes CreateSession/ActivateSession/CloseSession to exercise application-level authentication, session nonce handling, and identity token parsing.",
+    "find_server": "Fuzzes the FindServers service to test discovery endpoint parsing and response handling.",
+    "find_server_on_network": "Fuzzes the FindServersOnNetwork service covering multicast/LAN discovery protocol fields.",
+    "get_endpoints": "Fuzzes the GetEndpoints service covering security-mode/policy advertisement and endpoint URL handling.",
+    "register_server2": "Fuzzes the RegisterServer2 service to exercise server-registration message parsing and callback handling.",
+    "read": "Fuzzes the Read service covering NodeId, attribute id, and index-range parsing across the OPC UA address space.",
+    "browse": "Fuzzes the Browse service covering BrowseDirection, ReferenceTypeId, NodeClassMask, and result continuation.",
+    "browse_next": "Fuzzes the BrowseNext continuation request covering ContinuationPoint handling and result assembly.",
+    "history_read": "Fuzzes the HistoryRead service covering time-range, history-mode, and continuation-point handling.",
+    "translate_browse_path_to_node_ids": "Fuzzes the TranslateBrowsePathsToNodeIds service exercising relative path element parsing.",
+    "add_nodes": "Fuzzes the AddNodes service testing server-side address-space mutation, type-checking, and reference consistency.",
+    "register_nodes": "Fuzzes the RegisterNodes service testing NodeId list handling and performance-registration paths.",
+    "unregister_nodes": "Fuzzes the UnregisterNodes service testing deregistration state and reference cleanup.",
+    "create_subscription": "Fuzzes the CreateSubscription service testing publishing interval, keepalive, and priority handling.",
+    "publish": "Fuzzes the Publish service testing acknowledgement, retransmit-queue, and sequence-number handling.",
+    "create_monitor": "Fuzzes the CreateMonitoredItems service testing NodeId, sampling interval, filter, and queue-size handling.",
+    "delete_monitor": "Fuzzes the DeleteMonitoredItems service testing monitored-item lifecycle and reference cleanup.",
+    "modify_monitor": "Fuzzes the ModifyMonitoredItems service testing in-place parameter update and filter modification.",
+    "start_signing_request": "Fuzzes the GDS StartSigningRequest operation testing certificate-request encoding and application-identity fields.",
+    "start_new_key_pair_request": "Fuzzes the GDS StartNewKeyPairRequest operation testing key-pair generation request encoding.",
+    "finish_request": "Fuzzes the GDS FinishRequest operation testing request-id resolution and certificate delivery.",
+    "finish_request_start_signing_request": "Fuzzes a combined FinishRequest-then-StartSigningRequest chained GDS workflow.",
+    "finish_request_start_new_key_pair_request": "Fuzzes a combined FinishRequest-then-StartNewKeyPairRequest chained GDS workflow.",
+    "get_trust_list": "Fuzzes the GDS GetTrustList operation testing trust-list encoding, certificate-group-id handling, and FileNodeId references.",
+    "get_certificate_groups": "Fuzzes the GDS GetCertificateGroups operation testing group enumeration and node-id list handling.",
+    "get_certificate_status": "Fuzzes the GDS GetCertificateStatus operation testing certificate-chain validation and status encoding.",
+    "revoke_certificate": "Fuzzes the GDS RevokeCertificate operation testing certificate-identifier parsing and revocation state.",
+    "reverse_hello": "Fuzzes the OPC UA ReverseHello message, targeting compatible OPC UA clients that accept reverse connections from a server endpoint."
+  }
+}
