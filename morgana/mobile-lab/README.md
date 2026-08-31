@@ -33,6 +33,15 @@ runtime is not run without credentials.
 | `android-app-test-lab` | android | android-emulator | snapshot |
 | `ios-simulator-app-lab` | ios | apple-simulator | erase |
 | `physical-android-test-session` | android | physical-android | none |
+| `android-drozer-lab` | android | android-emulator | wipe (drozer runtime + agent) |
+| `android-appsec-lab` | android | android-emulator | wipe (drozer + frida + MEDUSA) |
+
+## Drozer integration
+
+Drozer (ReversecLabs/drozer + drozer-agent + drozer-modules) integrates as an
+Android tooling capability on Mobile Lab targets. Its Excalibur packages live
+under `morgana/excalibur/mobile/drozer/`. See
+`Morgana/docs/DROZER_ARCHITECTURE.md` and the Mobile Lab section of this guide.
 
 ## App Licensing
 

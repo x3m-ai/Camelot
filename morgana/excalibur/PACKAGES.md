@@ -23,6 +23,7 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [LOLDrivers](#6-loldrivers) | 58 | 18 766 | 0 | Enterprise ATT&CK |
 | [Frida Mobile](#7-frida-mobile) | 40 | 830 | 0 | Mobile ATT&CK |
 | [MEDUSA](#medusa) | 38 | 147 | 0 | Mobile ATT&CK |
+| [Drozer](#drozer) | 8 | 79 | 0 | Mobile ATT&CK |
 | [MITRE CALDERA OT](#8-mitre-caldera-ot) | 15 | 223 | 223 | ICS ATT&CK |
 | [ICS-SCADA-Fuzzer](#9-ics-scada-fuzzer) | 5 | 120 | 0 | ICS ATT&CK |
 | [ANSSI FuzzySully](#10-anssi-fuzzysully) | 7 | 79 | 0 | ICS ATT&CK |
@@ -31,7 +32,7 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
 | [ControlThings Suite](#14-controlthings-suite) | 5 | 33 | 0 | ICS ATT&CK |
 | [IndustriConnect](#15-industriconnect) | 10 | 130 | 0 | ICS ATT&CK |
-| **Total** | **323** | **27 744** | **2 121** | |
+| **Total** | **331** | **27 823** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-31. Run **Refresh catalog** to see the current version.
 
@@ -306,6 +307,40 @@ Complete [Ch0pin/medusa](https://github.com/Ch0pin/medusa) framework/module corp
 - Authorized target package/bundle ID (supplied as `mobile_app_id` at run time)
 
 Review the [MEDUSA README](mobile/medusa/README.md) before use.
+
+---
+
+## Drozer
+
+Complete [ReversecLabs/drozer](https://github.com/ReversecLabs/drozer) core module corpus plus the external [drozer-modules](https://github.com/ReversecLabs/drozer-modules) tree — a dedicated, first-class Android application-security provider. Modules run through the pinned isolated Drozer runtime (`drozer console connect` over `adb forward tcp:31415`) using the generic `morgana_drozer_runner.py` asset.
+
+> **Drozer is intentionally independent from Frida Mobile and MEDUSA.** Drozer content is published even when similar functionality exists in the other mobile providers, because Drozer uses a device-side agent + IPC model rather than runtime instrumentation. Operators choose the provider that best fits the target application.
+
+### Packages (8 packs, 79 scripts)
+
+| Namespace | Scripts |
+|---|---|
+| app | 29 |
+| auxiliary | 2 |
+| exploit | 13 |
+| information | 3 |
+| post | 10 |
+| scanner | 12 |
+| shell | 3 |
+| tools | 7 |
+
+**Execution Platform:** Host Agent (Windows/Linux/macOS running the pinned isolated Drozer runtime)  
+**Target Environment:** Android device/emulator with the official `drozer-agent`  
+**License:** BSD-3-Clause (drozer core + drozer-agent); drozer-modules per-module (see license notice)  
+**Source:** [ReversecLabs/drozer](https://github.com/ReversecLabs/drozer) @ `d992f637` (v3.2.0) + [drozer-modules](https://github.com/ReversecLabs/drozer-modules) @ `c6fb1570`  
+
+**Prerequisites:**
+- Morgana Mobile Lab Host with the pinned isolated Drozer runtime (default `C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0`)
+- Android Emulator or authorized Physical Android device with `adb` access
+- Official `drozer-agent` installed on the target device (package `com.reversec.dz`)
+- Authorized target package identifier
+
+Review the [Drozer README](mobile/drozer/README.md) before use.
 
 ---
 

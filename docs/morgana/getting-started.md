@@ -23,8 +23,7 @@ Morgana is a professional-grade Red Team platform that delivers:
 - **Penetration testing workflows** — Repeatable, evidence-based execution with full audit trails
 - **Excalibur Packs** — Certified script libraries covering real-world attack scenarios
 - **Industrial Lab** — Deploy, manage, reset, and observe industrial mock devices / simulators on Agents
-- **Mobile Lab** — Provision and manage Android and iOS security test environments (emulators, simulators, physical devices) on Agents
-- **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
+- **Mobile Lab** — Provision and manage Android and iOS security test environments (emulators, simulators, physical devices) on Agents- **Drozer / MEDUSA / Frida Mobile** â€” Mobile security providers bound to Mobile Lab targets for Android application-model assessment (Drozer) and runtime instrumentation (MEDUSA, Frida Mobile)- **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
 - **Campaign management** — Group tests into named campaigns, track results, generate evidence reports
 - **Purple Team automation** — Merlino threat intelligence drives Morgana execution automatically
 
@@ -86,7 +85,7 @@ Android/iOS devices, and an extensible external virtual-device architecture
 2. **Templates** tab — deploy a lab (e.g. "Android Security Lab — Clean AVD").
 3. **Devices** tab — start the device and wait for `READY`.
 4. **Apps** tab — register and install a test app.
-5. **Run Compatible Scripts** — bind MEDUSA / Frida Mobile procedures to the target.
+5. **Run Compatible Scripts** â€” bind MEDUSA / Frida Mobile / Drozer procedures to the target.
 
 Apple Simulator is available only on compatible macOS/Xcode Hosts (no false
 Windows/Linux support). Physical devices are non-destructive by default. See

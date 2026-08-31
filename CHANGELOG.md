@@ -2,6 +2,26 @@
 
 All notable releases and updates for the X3M.AI ecosystem are documented here.
 
+## Morgana / Camelot — Drozer provider (August 2026)
+
+### Added
+- Complete dedicated **Drozer** Android application-security provider
+  - 79 source-faithful Scripts (65 core + 14 external) across 8 namespace packages (app, auxiliary, exploit, information, post, scanner, shell, tools)
+  - Three separately pinned upstreams: [ReversecLabs/drozer](https://github.com/ReversecLabs/drozer) @ `d992f637` (v3.2.0, BSD-3-Clause), `drozer-agent` @ `c1f18ceb` (BSD-3-Clause), [drozer-modules](https://github.com/ReversecLabs/drozer-modules) @ `c6fb1570`
+  - AST-based module discovery, argument extraction, risk model, and Mobile ATT&CK mapping
+  - Generic `morgana_drozer_runner.py` asset (`executor=python`) over the pinned isolated Drozer runtime (`drozer console connect` over `adb forward tcp:31415`)
+  - Mobile Lab Drozer readiness / agent check / prepare operations + `drozer_readiness` device state
+  - `Android Drozer Lab` and `Android AppSec Lab` Mobile Lab templates
+- Backend: `build_drozer_command` in `core/mobile_lab.py`, `drozer_readiness` column + migration, router op-map, `DROZER - ` Script prefix
+- Camelot content: `morgana/excalibur/mobile/drozer/` (8 packs + runtime + inventory/report), catalog + classification, `update-drozer.ps1` pipeline
+- Docs: 10 `DROZER_*.md` guides in Morgana + `mobile/drozer/README.md` in Camelot
+
+### Notes
+- Drozer is intentionally independent from MEDUSA and Frida Mobile (zero cross-provider suppression).
+- Android-only; Apple Simulator / iOS is explicitly NOT_SUPPORTED.
+- 23 core candidates are manual/support/internal (reported, never silently dropped); full reconciliation has zero silent loss.
+- Live Android runtime E2E is NOT RUN where no emulator/system image is available (reported accurately, never false PASS).
+
 ## Morgana / Camelot — Mobile Lab subsystem (August 2026)
 
 ### Added

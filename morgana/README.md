@@ -732,6 +732,8 @@ The public catalog also contains community packs converted from Red Canary Atomi
 
 The **IndustriConnect** provider publishes 130 industrial-protocol MCP tools across 10 protocol packages (BACnet, DNP3, EtherCAT, EtherNet/IP, Modbus, MQTT/Sparkplug B, OPC UA, PROFIBUS, PROFINET, Siemens S7). These pair with the **Industrial Lab** subsystem (see [Section 11](#11-industrial-lab)) for deploying mock devices on Agents.
 
+The **Drozer** provider publishes 79 Android application-security modules across 8 namespace packages (app, auxiliary, exploit, information, post, scanner, shell, tools) from the pinned [ReversecLabs/drozer](https://github.com/ReversecLabs/drozer) core and the [drozer-modules](https://github.com/ReversecLabs/drozer-modules) external corpus. Drozer pairs with the **Mobile Lab** subsystem (see the Mobile Lab section below) for deploying authorized Android Emulator or Physical Android targets with the official `drozer-agent`. Drozer is independent from MEDUSA and Frida Mobile.
+
 > **Full package reference:** [Excalibur Packages](https://github.com/x3m-ai/Camelot/blob/main/morgana/excalibur/PACKAGES.md) — complete catalog of all packages including providers, script/chain counts, prerequisites, ATT&CK coverage, execution platforms, target environments, and source references.
 
 ### 10.1 Refresh the catalog
@@ -931,12 +933,13 @@ patterns while remaining a distinct domain.
 | Capability | Detail |
 |---|---|
 | Providers | Android Emulator, Apple Simulator, Physical Android, Physical iOS, and an extensible external virtual-device provider architecture (Corellium) |
-| Device model | Provider-agnostic `MobileDevice` with platform, OS version, model, architecture, device type, Host Agent, runtime/readiness/connection/reservation state, ownership, Frida readiness |
+| Device model | Provider-agnostic `MobileDevice` with platform, OS version, model, architecture, device type, Host Agent, runtime/readiness/connection/reservation state, ownership, Frida readiness, Drozer readiness |
 | Ownership safety | `MORGANA_MANAGED`, `EXTERNAL_API_MANAGED`, `DISCOVERED_EXTERNAL`, `EXTERNAL_PHYSICAL` — destructive actions are gated |
 | Apps | `MobileAppAsset` with SHA-256, package/bundle ID, compatibility, license status, install tracking |
 | Templates | Declarative `MobileLabTemplate` + `MobileLabInstance` deployment |
 | Target references | Stable `mobilelab://<device>/app/<app>` references resolved at runtime |
 | Frida / MEDUSA | Reuses the existing Frida executor; MEDUSA and Frida Mobile remain independent Script providers bound via target-aware filtering |
+| Drozer | Independent Android application-security provider run through the pinned isolated Drozer runtime; bound via target-aware filtering |
 
 **Page structure** (sidebar, after Industrial Lab): Overview, Devices, Apps,
 Templates, Hosts.
