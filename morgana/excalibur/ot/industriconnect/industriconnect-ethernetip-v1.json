@@ -1,0 +1,1063 @@
+{
+  "package_id": "industriconnect-ethernetip-v1",
+  "package_name": "IndustriConnect - EtherNet/IP",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect EtherNet/IP MCP tool corpus as Morgana Scripts. 17 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "EtherNetIP-Project",
+  "source_path": "EtherNetIP-Project/ethernetip-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "ethernetip",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/ethernetip",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "ethernetip",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "ethernetip"
+  ],
+  "capabilities": [
+    "Provides the complete EtherNet/IP MCP tool corpus (17 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_ethernetip_connection",
+      "label": "IndustriConnect EtherNet/IP Connection",
+      "description": "Connection and transport parameters for the EtherNet/IP MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_enip_host",
+          "label": "Enip Host",
+          "description": "EtherNet/IP controller IP address.",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_enip_port",
+          "label": "Enip Port",
+          "description": "EtherNet/IP TCP port (default 44818).",
+          "default": "44818",
+          "example": "44818",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_enip_slot",
+          "label": "Enip Slot",
+          "description": "EtherNet/IP PLC slot (0 = compactlogix).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_enip_writes_enabled",
+          "label": "Enip Writes Enabled",
+          "description": "Allow EtherNet/IP write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_enip_system_cmds_enabled",
+          "label": "Enip System Cmds Enabled",
+          "description": "Allow EtherNet/IP system commands such as set PLC time (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_ethernetip_parameters",
+      "label": "IndustriConnect EtherNet/IP Parameters",
+      "description": "Operation parameters for EtherNet/IP MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_enip_tag_name",
+          "label": "Enip Tag Name",
+          "description": "Controller tag name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_count",
+          "label": "Enip Count",
+          "description": "Optional element count (blank = scalar).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_write_value",
+          "label": "Enip Write Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_data_type",
+          "label": "Enip Data Type",
+          "description": "Optional data type (blank = auto).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_elements",
+          "label": "Enip Elements",
+          "description": "Number of elements.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_values",
+          "label": "Enip Values",
+          "description": "JSON array of values.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_program",
+          "label": "Enip Program",
+          "description": "Optional program name (blank = default).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_tags",
+          "label": "Enip Tags",
+          "description": "JSON array of tag names.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_payloads",
+          "label": "Enip Payloads",
+          "description": "JSON array of {tag_name, value, data_type} objects.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_alias",
+          "label": "Enip Alias",
+          "description": "Tag-map alias name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_enip_alias_value",
+          "label": "Enip Alias Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:ethernetip:ping",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Ping / Connection Status",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:read_tag",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Read Tag",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'read_tag'. Read an EtherNet/IP controller tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n    'count': '#{ic_enip_count}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='read_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name",
+        "ic_enip_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "read_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:write_tag",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Write Tag",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'write_tag'. Write an EtherNet/IP controller tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n    'value': '#{ic_enip_write_value}'.strip(),\n    'data_type': '#{ic_enip_data_type}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='write_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name",
+        "ic_enip_write_value",
+        "ic_enip_data_type"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "write_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:read_array",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Read Array",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'read_array'. Read an array of elements from an EtherNet/IP tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n    'elements': int('#{ic_enip_elements}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='read_array',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name",
+        "ic_enip_elements"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "read_array",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:write_array",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Write Array",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'write_array'. Write an array of values to an EtherNet/IP tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n    'values': _j.loads('#{ic_enip_values}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='write_array',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name",
+        "ic_enip_values"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "write_array",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:read_string",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Read String",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'read_string'. Read an EtherNet/IP tag and coerce the value to a string.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='read_string',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "read_string",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:write_string",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Write String",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'write_string'. Write a string value to an EtherNet/IP tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tag_name': '#{ic_enip_tag_name}'.strip(),\n    'value': '#{ic_enip_write_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='write_string',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tag_name",
+        "ic_enip_write_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "write_string",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:get_tag_list",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Get Tag List",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'get_tag_list'. Retrieve the tag list from an EtherNet/IP controller program.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'program': '#{ic_enip_program}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='get_tag_list',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_program"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "get_tag_list",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:read_multiple_tags",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Read Multiple Tags",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'read_multiple_tags'. Read multiple EtherNet/IP tags in a single request.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'tags': _j.loads('#{ic_enip_tags}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='read_multiple_tags',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_tags"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "read_multiple_tags",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:write_multiple_tags",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Write Multiple Tags",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'write_multiple_tags'. Write multiple EtherNet/IP tags in a single request.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'payloads': _j.loads('#{ic_enip_payloads}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='write_multiple_tags',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_payloads"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "write_multiple_tags",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:list_tags",
+      "name": "INDUSTRICONNECT - EtherNet/IP - List Tag Aliases",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'list_tags'. List configured EtherNet/IP tag aliases from the tag map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='list_tags',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "list_tags",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:read_tag_by_alias",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Read Tag By Alias",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'read_tag_by_alias'. Read an EtherNet/IP tag using a configured tag-map alias (with scaling).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_enip_alias}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='read_tag_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_alias"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "read_tag_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:write_tag_by_alias",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Write Tag By Alias",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'write_tag_by_alias'. Write an EtherNet/IP tag using a configured tag-map alias (with scaling).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_enip_alias}'.strip(),\n    'value': '#{ic_enip_alias_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='write_tag_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled",
+        "ic_enip_alias",
+        "ic_enip_alias_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "write_tag_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:get_connection_status",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Get Connection Status",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'get_connection_status'. Return EtherNet/IP controller connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='get_connection_status',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "get_connection_status",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:get_plc_info",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Get PLC Info",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'get_plc_info'. Return EtherNet/IP controller identity information.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='get_plc_info',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "get_plc_info",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:get_plc_time",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Get PLC Time",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'get_plc_time'. Read the EtherNet/IP controller wall-clock time.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='get_plc_time',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "get_plc_time",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    },
+    {
+      "id": "industriconnect:ethernetip:set_plc_time",
+      "name": "INDUSTRICONNECT - EtherNet/IP - Set PLC Time",
+      "description": "IndustriConnect EtherNet/IP MCP tool 'set_plc_time'. Set the EtherNet/IP controller wall-clock time to the client time.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ENIP_HOST']=str('#{ic_enip_host}'.strip())\n_env['ENIP_PORT']=str('#{ic_enip_port}'.strip())\n_env['ENIP_SLOT']=str('#{ic_enip_slot}'.strip())\n_env['ENIP_WRITES_ENABLED']=str('#{ic_enip_writes_enabled}'.strip())\n_env['ENIP_SYSTEM_CMDS_ENABLED']=str('#{ic_enip_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethernetip-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherNetIP-Project', 'ethernetip-python'),tool_name='set_plc_time',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_enip_host",
+        "ic_enip_port",
+        "ic_enip_slot",
+        "ic_enip_writes_enabled",
+        "ic_enip_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethernetip",
+        "project": "EtherNetIP-Project",
+        "source_project": "ethernetip-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherNetIP-Project/ethernetip-python",
+        "tool": "set_plc_time",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 44818
+      },
+      "package": "industriconnect-ethernetip-v1"
+    }
+  ],
+  "chains": []
+}

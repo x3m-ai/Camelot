@@ -1,0 +1,1311 @@
+{
+  "package_id": "industriconnect-s7comm-v1",
+  "package_name": "IndustriConnect - Siemens S7 / S7comm",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect Siemens S7 / S7comm MCP tool corpus as Morgana Scripts. 20 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "S7comm-Project",
+  "source_path": "S7comm-Project/s7comm-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "s7comm",
+  "risk_badges": [
+    "disrupt",
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/s7comm",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "s7comm",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "s7comm"
+  ],
+  "capabilities": [
+    "Provides the complete Siemens S7 / S7comm MCP tool corpus (20 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_s7comm_connection",
+      "label": "IndustriConnect Siemens S7 / S7comm Connection",
+      "description": "Connection and transport parameters for the Siemens S7 / S7comm MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_s7_host",
+          "label": "S7 Host",
+          "description": "Siemens S7 PLC IP address.",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_port",
+          "label": "S7 Port",
+          "description": "Siemens S7 TCP port (default 102).",
+          "default": "102",
+          "example": "102",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_rack",
+          "label": "S7 Rack",
+          "description": "Siemens S7 rack number.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_slot",
+          "label": "S7 Slot",
+          "description": "Siemens S7 slot number.",
+          "default": "2",
+          "example": "2",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_connection_type",
+          "label": "S7 Connection Type",
+          "description": "Siemens S7 connection type (PG/OP).",
+          "default": "PG",
+          "example": "PG",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_writes_enabled",
+          "label": "S7 Writes Enabled",
+          "description": "Allow S7 write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_s7_system_cmds_enabled",
+          "label": "S7 System Cmds Enabled",
+          "description": "Allow S7 system commands such as CPU state change (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_s7comm_parameters",
+      "label": "IndustriConnect Siemens S7 / S7comm Parameters",
+      "description": "Operation parameters for Siemens S7 / S7comm MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_s7_db_number",
+          "label": "S7 Db Number",
+          "description": "Data block number.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_start_offset",
+          "label": "S7 Start Offset",
+          "description": "Byte offset within the data block.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_size",
+          "label": "S7 Size",
+          "description": "Number of bytes to read.",
+          "default": "4",
+          "example": "4",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_write_value",
+          "label": "S7 Write Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_data_type",
+          "label": "S7 Data Type",
+          "description": "Optional data type (BYTE,WORD,DWORD,INT,DINT,REAL,BOOL).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_bit_index",
+          "label": "S7 Bit Index",
+          "description": "Optional bit index (blank = none).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_string_length",
+          "label": "S7 String Length",
+          "description": "Optional string length (blank = none).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_start_byte",
+          "label": "S7 Start Byte",
+          "description": "Starting byte address.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_cpu_state",
+          "label": "S7 Cpu State",
+          "description": "Target state: RUN or STOP.",
+          "default": "RUN",
+          "example": "RUN",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_szl_id",
+          "label": "S7 Szl Id",
+          "description": "SZL ID.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_szl_index",
+          "label": "S7 Szl Index",
+          "description": "SZL index.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_variables",
+          "label": "S7 Variables",
+          "description": "JSON array of variable descriptors.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_tag_name",
+          "label": "S7 Tag Name",
+          "description": "Tag-map tag name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_s7_tag_value",
+          "label": "S7 Tag Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:s7comm:ping",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Ping / Connection Status",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_db",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Data Block",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_db'. Read raw bytes from a Siemens S7 data block (DB).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'db_number': int('#{ic_s7_db_number}'.strip() or 0),\n    'start_offset': int('#{ic_s7_start_offset}'.strip() or 0),\n    'size': int('#{ic_s7_size}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_db',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_db_number",
+        "ic_s7_start_offset",
+        "ic_s7_size"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_db",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:write_db",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Write Data Block",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'write_db'. Write bytes (raw or typed) into a Siemens S7 data block.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'db_number': int('#{ic_s7_db_number}'.strip() or 0),\n    'start_offset': int('#{ic_s7_start_offset}'.strip() or 0),\n    'value': '#{ic_s7_write_value}'.strip(),\n    'data_type': '#{ic_s7_data_type}'.strip(),\n    'size': '#{ic_s7_size}'.strip(),\n    'bit_index': '#{ic_s7_bit_index}'.strip(),\n    'string_length': '#{ic_s7_string_length}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='write_db',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_db_number",
+        "ic_s7_start_offset",
+        "ic_s7_write_value",
+        "ic_s7_data_type",
+        "ic_s7_size",
+        "ic_s7_bit_index",
+        "ic_s7_string_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "write_db",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_db_typed",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Data Block Typed",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_db_typed'. Read and decode typed data from a Siemens S7 data block.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'db_number': int('#{ic_s7_db_number}'.strip() or 0),\n    'start_offset': int('#{ic_s7_start_offset}'.strip() or 0),\n    'data_type': '#{ic_s7_data_type}'.strip(),\n    'size': '#{ic_s7_size}'.strip(),\n    'bit_index': '#{ic_s7_bit_index}'.strip(),\n    'string_length': '#{ic_s7_string_length}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_db_typed',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_db_number",
+        "ic_s7_start_offset",
+        "ic_s7_data_type",
+        "ic_s7_size",
+        "ic_s7_bit_index",
+        "ic_s7_string_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_db_typed",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_input",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Process Input",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_input'. Read Siemens S7 process input (PI) bytes.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'start_byte': int('#{ic_s7_start_byte}'.strip() or 0),\n    'size': int('#{ic_s7_size}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_input',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_start_byte",
+        "ic_s7_size"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_input",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_output",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Process Output",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_output'. Read Siemens S7 process output (PQ) bytes.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'start_byte': int('#{ic_s7_start_byte}'.strip() or 0),\n    'size': int('#{ic_s7_size}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_output',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_start_byte",
+        "ic_s7_size"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_output",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:write_output",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Write Process Output",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'write_output'. Write Siemens S7 process output (PQ) bytes.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'start_byte': int('#{ic_s7_start_byte}'.strip() or 0),\n    'value': '#{ic_s7_write_value}'.strip(),\n    'data_type': '#{ic_s7_data_type}'.strip(),\n    'size': '#{ic_s7_size}'.strip(),\n    'bit_index': '#{ic_s7_bit_index}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='write_output',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_start_byte",
+        "ic_s7_write_value",
+        "ic_s7_data_type",
+        "ic_s7_size",
+        "ic_s7_bit_index"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "write_output",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_marker",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Marker",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_marker'. Read Siemens S7 marker memory (M) bytes.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'start_byte': int('#{ic_s7_start_byte}'.strip() or 0),\n    'size': int('#{ic_s7_size}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_marker',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_start_byte",
+        "ic_s7_size"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_marker",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:write_marker",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Write Marker",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'write_marker'. Write Siemens S7 marker memory (M) bytes.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'start_byte': int('#{ic_s7_start_byte}'.strip() or 0),\n    'value': '#{ic_s7_write_value}'.strip(),\n    'data_type': '#{ic_s7_data_type}'.strip(),\n    'size': '#{ic_s7_size}'.strip(),\n    'bit_index': '#{ic_s7_bit_index}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='write_marker',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_start_byte",
+        "ic_s7_write_value",
+        "ic_s7_data_type",
+        "ic_s7_size",
+        "ic_s7_bit_index"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "write_marker",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_plc_info",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read PLC Info",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_plc_info'. Return Siemens S7 PLC identity information.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_plc_info',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_plc_info",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_cpu_state",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read CPU State",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_cpu_state'. Read the Siemens S7 CPU run/stop state.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_cpu_state',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_cpu_state",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:set_cpu_state",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Set CPU State",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'set_cpu_state'. Set the Siemens S7 CPU run/stop state.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'state': '#{ic_s7_cpu_state}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='set_cpu_state',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_cpu_state"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "set_cpu_state",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_system_time",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read System Time",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_system_time'. Read the Siemens S7 CPU system time.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_system_time',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_system_time",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_szl",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read SZL",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_szl'. Read a Siemens S7 system status list (SZL) entry.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'szl_id': int('#{ic_s7_szl_id}'.strip() or 0),\n    'szl_index': int('#{ic_s7_szl_index}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_szl',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_szl_id",
+        "ic_s7_szl_index"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_szl",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_multiple_vars",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Multiple Variables",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_multiple_vars'. Batch read multiple Siemens S7 variables described by JSON descriptors.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'variables': _j.loads('#{ic_s7_variables}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_multiple_vars',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_variables"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_multiple_vars",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:write_multiple_vars",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Write Multiple Variables",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'write_multiple_vars'. Batch write multiple Siemens S7 variables described by JSON descriptors.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'variables': _j.loads('#{ic_s7_variables}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='write_multiple_vars',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_variables"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "write_multiple_vars",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:list_tags",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - List Tag-Map Tags",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'list_tags'. List configured Siemens S7 tags from the tag map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='list_tags',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "list_tags",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:read_tag",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Read Tag-Map Tag",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'read_tag'. Read a Siemens S7 value using a configured tag-map tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'name': '#{ic_s7_tag_name}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='read_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_tag_name"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "read_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:write_tag",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Write Tag-Map Tag",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'write_tag'. Write a Siemens S7 value using a configured tag-map tag.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'name': '#{ic_s7_tag_name}'.strip(),\n    'value': '#{ic_s7_tag_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='write_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled",
+        "ic_s7_tag_name",
+        "ic_s7_tag_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "write_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    },
+    {
+      "id": "industriconnect:s7comm:get_connection_status",
+      "name": "INDUSTRICONNECT - Siemens S7 / S7comm - Get Connection Status",
+      "description": "IndustriConnect Siemens S7 / S7comm MCP tool 'get_connection_status'. Return Siemens S7 connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['S7_HOST']=str('#{ic_s7_host}'.strip())\n_env['S7_PORT']=str('#{ic_s7_port}'.strip())\n_env['S7_RACK']=str('#{ic_s7_rack}'.strip())\n_env['S7_SLOT']=str('#{ic_s7_slot}'.strip())\n_env['S7_CONNECTION_TYPE']=str('#{ic_s7_connection_type}'.strip())\n_env['S7_WRITES_ENABLED']=str('#{ic_s7_writes_enabled}'.strip())\n_env['S7_SYSTEM_CMDS_ENABLED']=str('#{ic_s7_system_cmds_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 's7comm-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'S7comm-Project', 's7comm-python'),tool_name='get_connection_status',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_s7_host",
+        "ic_s7_port",
+        "ic_s7_rack",
+        "ic_s7_slot",
+        "ic_s7_connection_type",
+        "ic_s7_writes_enabled",
+        "ic_s7_system_cmds_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "s7comm",
+        "project": "S7comm-Project",
+        "source_project": "s7comm-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "S7comm-Project/s7comm-python",
+        "tool": "get_connection_status",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 102
+      },
+      "package": "industriconnect-s7comm-v1"
+    }
+  ],
+  "chains": []
+}

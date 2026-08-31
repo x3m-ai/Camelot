@@ -1,0 +1,909 @@
+{
+  "package_id": "industriconnect-mqtt-v1",
+  "package_name": "IndustriConnect - MQTT / Sparkplug B",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect MQTT / Sparkplug B MCP tool corpus as Morgana Scripts. 15 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "MQTT-Project",
+  "source_path": "MQTT-Project/mqtt-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "mqtt",
+  "risk_badges": [
+    "interact",
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/mqtt",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "mqtt",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "mqtt"
+  ],
+  "capabilities": [
+    "Provides the complete MQTT / Sparkplug B MCP tool corpus (15 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_mqtt_connection",
+      "label": "IndustriConnect MQTT / Sparkplug B Connection",
+      "description": "Connection and transport parameters for the MQTT / Sparkplug B MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_mqtt_broker_url",
+          "label": "Mqtt Broker Url",
+          "description": "MQTT broker URL (mqtt:// or mqtts://).",
+          "default": "mqtt://127.0.0.1:1883",
+          "example": "mqtt://127.0.0.1:1883",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_mqtt_client_id",
+          "label": "Mqtt Client Id",
+          "description": "MQTT client identifier.",
+          "default": "morgana-industriconnect",
+          "example": "morgana-industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_mqtt_sparkplug_group_id",
+          "label": "Mqtt Sparkplug Group Id",
+          "description": "Sparkplug B group ID.",
+          "default": "factory",
+          "example": "factory",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_mqtt_sparkplug_edge_node_id",
+          "label": "Mqtt Sparkplug Edge Node Id",
+          "description": "Sparkplug B edge node ID.",
+          "default": "edge-node-1",
+          "example": "edge-node-1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_mqtt_parameters",
+      "label": "IndustriConnect MQTT / Sparkplug B Parameters",
+      "description": "Operation parameters for MQTT / Sparkplug B MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_mqtt_topic",
+          "label": "Mqtt Topic",
+          "description": "MQTT topic name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_payload",
+          "label": "Mqtt Payload",
+          "description": "Message payload.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_qos",
+          "label": "Mqtt Qos",
+          "description": "Quality of service (0, 1, or 2).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_retain",
+          "label": "Mqtt Retain",
+          "description": "Retain message on broker (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_metrics",
+          "label": "Mqtt Metrics",
+          "description": "Optional JSON array of node metrics.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_device_id",
+          "label": "Mqtt Device Id",
+          "description": "Device identifier.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_mqtt_payload_hex",
+          "label": "Mqtt Payload Hex",
+          "description": "Hex-encoded protobuf payload.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:mqtt:publish_message",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Message",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_message'. Publish a message to an MQTT topic.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'topic': '#{ic_mqtt_topic}'.strip(),\n    'payload': '#{ic_mqtt_payload}'.strip(),\n    'qos': int('#{ic_mqtt_qos}'.strip() or 0),\n    'retain': ('#{ic_mqtt_retain}'.strip().lower() in ('true','1','yes','on')),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_message',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_topic",
+        "ic_mqtt_payload",
+        "ic_mqtt_qos",
+        "ic_mqtt_retain"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_message",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:subscribe_topic",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Subscribe Topic",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'subscribe_topic'. Subscribe to an MQTT topic pattern.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'topic': '#{ic_mqtt_topic}'.strip(),\n    'qos': int('#{ic_mqtt_qos}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='subscribe_topic',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_topic",
+        "ic_mqtt_qos"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "interact",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "subscribe_topic",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:unsubscribe_topic",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Unsubscribe Topic",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'unsubscribe_topic'. Unsubscribe from an MQTT topic.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'topic': '#{ic_mqtt_topic}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='unsubscribe_topic',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_topic"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "interact",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "unsubscribe_topic",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:list_subscriptions",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - List Subscriptions",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'list_subscriptions'. List active MQTT subscriptions.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='list_subscriptions',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "list_subscriptions",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:get_broker_info",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Get Broker Info",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'get_broker_info'. Return MQTT broker connection info and status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='get_broker_info',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "get_broker_info",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_node_birth",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Node Birth (NBIRTH)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_node_birth'. Publish a Sparkplug B Node Birth (NBIRTH) certificate.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_node_birth',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_node_birth",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_node_death",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Node Death (NDEATH)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_node_death'. Publish a Sparkplug B Node Death (NDEATH) certificate.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_node_death',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_node_death",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_device_birth",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Device Birth (DBIRTH)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_device_birth'. Publish a Sparkplug B Device Birth (DBIRTH) certificate.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': '#{ic_mqtt_device_id}'.strip(),\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_device_birth',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_device_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_device_birth",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_device_death",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Device Death (DDEATH)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_device_death'. Publish a Sparkplug B Device Death (DDEATH) certificate.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': '#{ic_mqtt_device_id}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_device_death',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_device_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_device_death",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_node_data",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Node Data (NDATA)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_node_data'. Publish a Sparkplug B Node Data (NDATA) update.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_node_data',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_node_data",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_device_data",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Device Data (DDATA)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_device_data'. Publish a Sparkplug B Device Data (DDATA) update.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': '#{ic_mqtt_device_id}'.strip(),\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_device_data',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_device_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_device_data",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_node_command",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Node Command (NCMD)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_node_command'. Publish a Sparkplug B Node Command (NCMD).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_node_command',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_node_command",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:publish_device_command",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Publish Device Command (DCMD)",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'publish_device_command'. Publish a Sparkplug B Device Command (DCMD).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': '#{ic_mqtt_device_id}'.strip(),\n    'metrics': _j.loads('#{ic_mqtt_metrics}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='publish_device_command',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_device_id",
+        "ic_mqtt_metrics"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "publish_device_command",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:list_sparkplug_nodes",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - List Sparkplug Nodes",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'list_sparkplug_nodes'. List discovered Sparkplug B nodes and devices.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='list_sparkplug_nodes',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "list_sparkplug_nodes",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    },
+    {
+      "id": "industriconnect:mqtt:decode_sparkplug_payload",
+      "name": "INDUSTRICONNECT - MQTT / Sparkplug B - Decode Sparkplug Payload",
+      "description": "IndustriConnect MQTT / Sparkplug B MCP tool 'decode_sparkplug_payload'. Decode a hex-encoded Sparkplug B protobuf payload.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MQTT_BROKER_URL']=str('#{ic_mqtt_broker_url}'.strip())\n_env['MQTT_CLIENT_ID']=str('#{ic_mqtt_client_id}'.strip())\n_env['SPARKPLUG_GROUP_ID']=str('#{ic_mqtt_sparkplug_group_id}'.strip())\n_env['SPARKPLUG_EDGE_NODE_ID']=str('#{ic_mqtt_sparkplug_edge_node_id}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'payload_hex': '#{ic_mqtt_payload_hex}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'mqtt-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MQTT-Project', 'mqtt-python'),tool_name='decode_sparkplug_payload',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_mqtt_broker_url",
+        "ic_mqtt_client_id",
+        "ic_mqtt_sparkplug_group_id",
+        "ic_mqtt_sparkplug_edge_node_id",
+        "ic_mqtt_payload_hex"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "mqtt",
+        "project": "MQTT-Project",
+        "source_project": "mqtt-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MQTT-Project/mqtt-python",
+        "tool": "decode_sparkplug_payload",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 1883
+      },
+      "package": "industriconnect-mqtt-v1"
+    }
+  ],
+  "chains": []
+}

@@ -1,0 +1,875 @@
+{
+  "package_id": "industriconnect-ethercat-v1",
+  "package_name": "IndustriConnect - EtherCAT",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect EtherCAT MCP tool corpus as Morgana Scripts. 14 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "EtherCAT-Project",
+  "source_path": "EtherCAT-Project/ethercat-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "ethercat",
+  "risk_badges": [
+    "disrupt",
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/ethercat",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "ethercat",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "ethercat"
+  ],
+  "capabilities": [
+    "Provides the complete EtherCAT MCP tool corpus (14 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_ethercat_connection",
+      "label": "IndustriConnect EtherCAT Connection",
+      "description": "Connection and transport parameters for the EtherCAT MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_ethercat_interface",
+          "label": "Ethercat Interface",
+          "description": "EtherCAT network interface (requires raw socket / Layer-2 access).",
+          "default": "eth0",
+          "example": "eth0",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_ethercat_writes_enabled",
+          "label": "Ethercat Writes Enabled",
+          "description": "Allow EtherCAT write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_ethercat_state_change_enabled",
+          "label": "Ethercat State Change Enabled",
+          "description": "Allow EtherCAT slave state changes (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_ethercat_parameters",
+      "label": "IndustriConnect EtherCAT Parameters",
+      "description": "Operation parameters for EtherCAT MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_ethercat_slave_position",
+          "label": "Ethercat Slave Position",
+          "description": "Slave bus position.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_offset",
+          "label": "Ethercat Offset",
+          "description": "PDO byte offset.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_length",
+          "label": "Ethercat Length",
+          "description": "Number of bytes to read.",
+          "default": "8",
+          "example": "8",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_data",
+          "label": "Ethercat Data",
+          "description": "JSON array of byte values (0-255).",
+          "default": "[1,0,0,0]",
+          "example": "[1,0,0,0]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_sdo_index",
+          "label": "Ethercat Sdo Index",
+          "description": "SDO index (e.g. 0x1000).",
+          "default": "0x1000",
+          "example": "0x1000",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_sdo_subindex",
+          "label": "Ethercat Sdo Subindex",
+          "description": "SDO subindex.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_sdo_value",
+          "label": "Ethercat Sdo Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_state",
+          "label": "Ethercat State",
+          "description": "Target state: INIT, PREOP, SAFEOP, or OP.",
+          "default": "PREOP",
+          "example": "PREOP",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_esi_filepath",
+          "label": "Ethercat Esi Filepath",
+          "description": "Path to cached ESI file.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_ethercat_alias",
+          "label": "Ethercat Alias",
+          "description": "Slave-map alias name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:ethercat:ping",
+      "name": "INDUSTRICONNECT - EtherCAT - Ping / Connection Status",
+      "description": "IndustriConnect EtherCAT MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:scan_network",
+      "name": "INDUSTRICONNECT - EtherCAT - Scan Network",
+      "description": "IndustriConnect EtherCAT MCP tool 'scan_network'. Scan the EtherCAT network for slave devices.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='scan_network',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "scan_network",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:get_slave_info",
+      "name": "INDUSTRICONNECT - EtherCAT - Get Slave Info",
+      "description": "IndustriConnect EtherCAT MCP tool 'get_slave_info'. Return information for a single EtherCAT slave at a bus position.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='get_slave_info',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "get_slave_info",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:read_pdo",
+      "name": "INDUSTRICONNECT - EtherCAT - Read PDO",
+      "description": "IndustriConnect EtherCAT MCP tool 'read_pdo'. Read process data object bytes from an EtherCAT slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n    'offset': int('#{ic_ethercat_offset}'.strip() or 0),\n    'length': int('#{ic_ethercat_length}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='read_pdo',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position",
+        "ic_ethercat_offset",
+        "ic_ethercat_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "read_pdo",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:write_pdo",
+      "name": "INDUSTRICONNECT - EtherCAT - Write PDO",
+      "description": "IndustriConnect EtherCAT MCP tool 'write_pdo'. Write process data object bytes to an EtherCAT slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n    'offset': int('#{ic_ethercat_offset}'.strip() or 0),\n    'data': _j.loads('#{ic_ethercat_data}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='write_pdo',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position",
+        "ic_ethercat_offset",
+        "ic_ethercat_data"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "write_pdo",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:read_sdo",
+      "name": "INDUSTRICONNECT - EtherCAT - Read SDO",
+      "description": "IndustriConnect EtherCAT MCP tool 'read_sdo'. Read a service data object from an EtherCAT slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n    'index': '#{ic_ethercat_sdo_index}'.strip(),\n    'subindex': int('#{ic_ethercat_sdo_subindex}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='read_sdo',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position",
+        "ic_ethercat_sdo_index",
+        "ic_ethercat_sdo_subindex"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "read_sdo",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:write_sdo",
+      "name": "INDUSTRICONNECT - EtherCAT - Write SDO",
+      "description": "IndustriConnect EtherCAT MCP tool 'write_sdo'. Write a service data object to an EtherCAT slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n    'index': '#{ic_ethercat_sdo_index}'.strip(),\n    'subindex': int('#{ic_ethercat_sdo_subindex}'.strip() or 0),\n    'value': '#{ic_ethercat_sdo_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='write_sdo',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position",
+        "ic_ethercat_sdo_index",
+        "ic_ethercat_sdo_subindex",
+        "ic_ethercat_sdo_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "write_sdo",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:set_slave_state",
+      "name": "INDUSTRICONNECT - EtherCAT - Set Slave State",
+      "description": "IndustriConnect EtherCAT MCP tool 'set_slave_state'. Change an EtherCAT slave state (INIT, PREOP, SAFEOP, OP).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n    'state': '#{ic_ethercat_state}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='set_slave_state',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position",
+        "ic_ethercat_state"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "disrupt",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "set_slave_state",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:load_esi_file",
+      "name": "INDUSTRICONNECT - EtherCAT - Load ESI File",
+      "description": "IndustriConnect EtherCAT MCP tool 'load_esi_file'. Load a cached EtherCAT ESI (slave description) XML file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'filepath': '#{ic_ethercat_esi_filepath}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='load_esi_file',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_esi_filepath"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "load_esi_file",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:list_slaves",
+      "name": "INDUSTRICONNECT - EtherCAT - List Slave Aliases",
+      "description": "IndustriConnect EtherCAT MCP tool 'list_slaves'. List configured EtherCAT slave aliases from the slave map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='list_slaves',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "list_slaves",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:read_slave_by_alias",
+      "name": "INDUSTRICONNECT - EtherCAT - Read Slave By Alias",
+      "description": "IndustriConnect EtherCAT MCP tool 'read_slave_by_alias'. Read a slave PDO using a configured slave-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_ethercat_alias}'.strip(),\n    'length': int('#{ic_ethercat_length}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='read_slave_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_alias",
+        "ic_ethercat_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "read_slave_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:write_slave_by_alias",
+      "name": "INDUSTRICONNECT - EtherCAT - Write Slave By Alias",
+      "description": "IndustriConnect EtherCAT MCP tool 'write_slave_by_alias'. Write a slave PDO using a configured slave-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_ethercat_alias}'.strip(),\n    'data': _j.loads('#{ic_ethercat_data}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='write_slave_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_alias",
+        "ic_ethercat_data"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "write_slave_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:get_master_status",
+      "name": "INDUSTRICONNECT - EtherCAT - Get Master Status",
+      "description": "IndustriConnect EtherCAT MCP tool 'get_master_status'. Return EtherCAT master connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='get_master_status',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "get_master_status",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    },
+    {
+      "id": "industriconnect:ethercat:test_slave_communication",
+      "name": "INDUSTRICONNECT - EtherCAT - Test Slave Communication",
+      "description": "IndustriConnect EtherCAT MCP tool 'test_slave_communication'. Perform a minimal read against an EtherCAT slave to verify communication.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['ETHERCAT_INTERFACE']=str('#{ic_ethercat_interface}'.strip())\n_env['ETHERCAT_WRITES_ENABLED']=str('#{ic_ethercat_writes_enabled}'.strip())\n_env['ETHERCAT_STATE_CHANGE_ENABLED']=str('#{ic_ethercat_state_change_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_position': int('#{ic_ethercat_slave_position}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'ethercat-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'EtherCAT-Project', 'ethercat-python'),tool_name='test_slave_communication',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_ethercat_interface",
+        "ic_ethercat_writes_enabled",
+        "ic_ethercat_state_change_enabled",
+        "ic_ethercat_slave_position"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "ethercat",
+        "project": "EtherCAT-Project",
+        "source_project": "ethercat-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "EtherCAT-Project/ethercat-python",
+        "tool": "test_slave_communication",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 6700
+      },
+      "package": "industriconnect-ethercat-v1"
+    }
+  ],
+  "chains": []
+}
