@@ -1,0 +1,1411 @@
+{
+  "package_id": "drozer-scanner-v1",
+  "package_name": "Drozer - Scanner",
+  "version": "1.0.0",
+  "summary": "12 Drozer modules in the scanner namespace (10 core, 2 external).",
+  "description": "Source-faithful Drozer Android application-security modules (ReversecLabs/drozer + drozer-modules) executed through the pinned drozer runtime on a Morgana Mobile Lab Host.",
+  "purpose": "Run authorized Android application-model assessment: packages, activities, services, broadcast receivers, content providers, permissions, Intents/IPC, and scanners.",
+  "capabilities": [
+    "Contains 12 Drozer modules (12 with runtime Options).",
+    "Target platform: android; risk mix: observe.",
+    "Mobile ATT&CK mappings: 2 techniques (T1409, T1418)."
+  ],
+  "use_cases": [
+    "Assess an explicitly authorized Android application through a Morgana Mobile Lab device.",
+    "Enumerate package/component/permission attack surface and validate detection coverage."
+  ],
+  "prerequisites": [
+    "Morgana Mobile Lab Host with an isolated pinned drozer runtime and drozer-agent installed on the target device.",
+    "Authorized Android Emulator or Physical Android device.",
+    "drozer console connect over ADB forward tcp:31415."
+  ],
+  "safety_notes": [
+    "Modules in the exploit/shell namespaces can modify or disrupt device/app state; review risk metadata before execution.",
+    "Use only on authorized targets; physical devices are non-destructive by default."
+  ],
+  "author": "MWR InfoSecurity / ReversecLabs / X3M.AI conversion",
+  "created": "2026-09-01",
+  "script_prefix": "DROZER - ",
+  "provider": "drozer",
+  "source": "drozer",
+  "source_repository": "https://github.com/ReversecLabs/drozer",
+  "source_license": "BSD-3-Clause",
+  "documentation_url": "https://github.com/ReversecLabs/drozer",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Application Security Assessment",
+  "mitre_tcodes": [
+    "T1409",
+    "T1418"
+  ],
+  "platform": [
+    "android"
+  ],
+  "risk_badges": [
+    "observe"
+  ],
+  "category": "mobile/drozer/scanner",
+  "target_platform_counts": {
+    "android": 12
+  },
+  "frameworks": [
+    "drozer"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "drozer_scanner_params",
+      "label": "Drozer Scanner Parameters",
+      "description": "Host-to-device Drozer target and scanner module arguments.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "drozer_serial",
+          "label": "ADB Serial / Device",
+          "description": "ADB serial of the Android device (emulator or physical). Blank auto-selects the single connected device.",
+          "default": "",
+          "example": "emulator-5554",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_runtime_dir",
+          "label": "Drozer Runtime Dir",
+          "description": "Path to the isolated pinned drozer runtime on the Mobile Lab Host (e.g. C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0).",
+          "default": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "example": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_package",
+          "label": "Package",
+          "description": "specify a package to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_filter",
+          "label": "Filter",
+          "description": "filter term",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--filter",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_unexported",
+          "label": "Unexported",
+          "description": "include activities that are not exported",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--unexported",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_disabled",
+          "label": "Disabled",
+          "description": "include disabled activities",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--disabled",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_exclude_aliases",
+          "label": "Exclude-Aliases",
+          "description": "exclude activity aliases",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--exclude-aliases",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_activity_browsable_debug",
+          "label": "Debug",
+          "description": "enable debug mode",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--debug",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_native_package",
+          "label": "Package",
+          "description": "specify a package to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_native_filter",
+          "label": "Filter",
+          "description": "filter term",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--filter",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_native_verbose",
+          "label": "Verbose",
+          "description": "be verbose",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--verbose",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_readablefiles_target",
+          "label": "Target",
+          "description": "the target directory to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_scanner_misc_readablefiles_privileged",
+          "label": "Privileged",
+          "description": "request root to perform the task in a privileged context",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--privileged",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_secretcodes_verbose",
+          "label": "Verbose",
+          "description": "be verbose",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--verbose",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_sflagbinaries_target",
+          "label": "Target",
+          "description": "the target directory to search",
+          "default": "/system",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--target",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_sflagbinaries_privileged",
+          "label": "Privileged",
+          "description": "request root to perform the task in a privileged context",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--privileged",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_writablefiles_target",
+          "label": "Target",
+          "description": "the target directory to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_scanner_misc_writablefiles_privileged",
+          "label": "Privileged",
+          "description": "request root to perform the task in a privileged context",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--privileged",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_provider_finduris_package",
+          "label": "Package",
+          "description": "specify a package to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_provider_injection_package",
+          "label": "Package",
+          "description": "specify a package, or content uri to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_provider_sqltables_package",
+          "label": "Package",
+          "description": "specify a package, or content uri to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_provider_traversal_package",
+          "label": "Package",
+          "description": "specify a package, or content uri to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_weburls_package",
+          "label": "Package",
+          "description": "specify a package to search",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--package",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_weburls_http",
+          "label": "Http",
+          "description": "only display http urls",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--http",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_misc_weburls_https",
+          "label": "Https",
+          "description": "only display https urls",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--https",
+          "_positional": false
+        },
+        {
+          "key": "drozer_scanner_malware_virustotal_package",
+          "label": "Package",
+          "description": "package to scan",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_scanner_malware_virustotal_api_key",
+          "label": "Api Key",
+          "description": "Virus Total API Key",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "drozer_runner",
+      "name": "morgana_drozer_runner.py",
+      "filename": "morgana_drozer_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/mobile/drozer/runtime/morgana_drozer_runner.py",
+      "sha256": "e0b0ad8dae3c6977a90e6343d6062b974d324d56faac1b0833c0f7f4bfb27153",
+      "size": 6090,
+      "executable": false,
+      "source": "https://github.com/ReversecLabs/drozer",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "drozer:core:scanner_activity_browsable",
+      "name": "DROZER - scanner.activity.browsable",
+      "description": "Get all BROWSABLE activities that can be invoked from the web browser through the use of a custom data handler. This can indicate the presence of an entry point into application code from a web browser.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_activity_browsable_package}'.strip() else None\n_args.append(str('#{drozer_scanner_activity_browsable_package}'.strip())) if '#{drozer_scanner_activity_browsable_package}'.strip() else None\n_args.append('--filter') if '#{drozer_scanner_activity_browsable_filter}'.strip() else None\n_args.append(str('#{drozer_scanner_activity_browsable_filter}'.strip())) if '#{drozer_scanner_activity_browsable_filter}'.strip() else None\n_args.append('--unexported') if '#{drozer_scanner_activity_browsable_unexported}'.strip().lower() in ('1','true','yes','on') else None\n_args.append('--disabled') if '#{drozer_scanner_activity_browsable_disabled}'.strip().lower() in ('1','true','yes','on') else None\n_args.append('--exclude-aliases') if '#{drozer_scanner_activity_browsable_exclude_aliases}'.strip().lower() in ('1','true','yes','on') else None\n_args.append('--debug') if '#{drozer_scanner_activity_browsable_debug}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.activity.browsable', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_activity_browsable_package",
+        "drozer_scanner_activity_browsable_filter",
+        "drozer_scanner_activity_browsable_unexported",
+        "drozer_scanner_activity_browsable_disabled",
+        "drozer_scanner_activity_browsable_exclude_aliases",
+        "drozer_scanner_activity_browsable_debug"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_activity_browsable",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/activity/browsable.py",
+        "source_file": "browsable.py",
+        "source_sha256": "45d9d4e3ab31b9add8538f5f672d28474cd0ba6ca01bcbfabacb8befe41597fd",
+        "code_sha256": "02c42bd3e0fccc192d6e8f40aa0c0979d0dd7c8000981732bb8f138f74816e18",
+        "module_name": "Get all BROWSABLE activities that can be invoked from the web browser",
+        "namespace": "scanner.activity",
+        "fqmn": "scanner.activity.browsable",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "filter",
+            "flag": "--filter",
+            "help": "filter term",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": "store",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "unexported",
+            "flag": "--unexported",
+            "help": "include activities that are not exported",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "disabled",
+            "flag": "--disabled",
+            "help": "include disabled activities",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "exclude-aliases",
+            "flag": "--exclude-aliases",
+            "help": "exclude activity aliases",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "debug",
+            "flag": "--debug",
+            "help": "enable debug mode",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3-clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Tyrone (@mwrlabs), Miłosz Gaczkowski (@cyberMilosz)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_misc_native",
+      "name": "DROZER - scanner.misc.native",
+      "description": "Lists packages which use native code. NOTE: This only checks for libraries that are bundled inside the package APK. System packages often do not contain the libraries they use inside their APK and so this module will miss them.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_misc_native_package}'.strip() else None\n_args.append(str('#{drozer_scanner_misc_native_package}'.strip())) if '#{drozer_scanner_misc_native_package}'.strip() else None\n_args.append('--filter') if '#{drozer_scanner_misc_native_filter}'.strip() else None\n_args.append(str('#{drozer_scanner_misc_native_filter}'.strip())) if '#{drozer_scanner_misc_native_filter}'.strip() else None\n_args.append('--verbose') if '#{drozer_scanner_misc_native_verbose}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.native', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_native_package",
+        "drozer_scanner_misc_native_filter",
+        "drozer_scanner_misc_native_verbose"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_misc_native",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/misc/native.py",
+        "source_file": "native.py",
+        "source_sha256": "5fa7fedf83fe9bcdf577b61d9364ccf8805acb7960f90794b1345ebfdf0cf722",
+        "code_sha256": "a523cfc67e360deacc3bba689386dba9701b514b8b4134a711f70ae67efce962",
+        "module_name": "Find native components included in packages",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.native",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "filter",
+            "flag": "--filter",
+            "help": "filter term",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": "store",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "verbose",
+            "flag": "--verbose",
+            "help": "be verbose",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_misc_readablefiles",
+      "name": "DROZER - scanner.misc.readablefiles",
+      "description": "Find world-readable files in the given folder",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_scanner_misc_readablefiles_target}'.strip())) if '#{drozer_scanner_misc_readablefiles_target}'.strip() else None\n_args.append('--privileged') if '#{drozer_scanner_misc_readablefiles_privileged}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.readablefiles', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_readablefiles_target",
+        "drozer_scanner_misc_readablefiles_privileged"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_misc_readablefiles",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/misc/readable_files.py",
+        "source_file": "readable_files.py",
+        "source_sha256": "f37b1913054f6924bee6c85d169eac6a2b28e5ea31cbd617a10e532cfd34cd97",
+        "code_sha256": "144d823e6764aa1f86866a44b6553cb5f0beae4dc4d04148918b5f91b3791aa2",
+        "module_name": "Find world-readable files in the given folder",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.readablefiles",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "target",
+            "flag": null,
+            "help": "the target directory to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "privileged",
+            "flag": "--privileged",
+            "help": "request root to perform the task in a privileged context",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_misc_secretcodes",
+      "name": "DROZER - scanner.misc.secretcodes",
+      "description": "Finds Secret Codes from all installed packages.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--verbose') if '#{drozer_scanner_misc_secretcodes_verbose}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.secretcodes', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_secretcodes_verbose"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_misc_secretcodes",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/misc/secretcodes.py",
+        "source_file": "secretcodes.py",
+        "source_sha256": "50b35f286f65fc6f2ff1f58c914841823f4f59e67db8b7d639737e68d3ab35e6",
+        "code_sha256": "f3ea35f9a46b8338c4b43de98df2c2c92806183db0d7fef17de073c60fa79353",
+        "module_name": "Search for secret codes that can be used from the dialer",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.secretcodes",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "verbose",
+            "flag": "--verbose",
+            "help": "be verbose",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Mike (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_misc_sflagbinaries",
+      "name": "DROZER - scanner.misc.sflagbinaries",
+      "description": "Find suid/sgid binaries in the given folder (default is /system). Uses the method from http://hexesec.wordpress.com/2009/10/14/exploiting-suid-binaries/.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--target') if '#{drozer_scanner_misc_sflagbinaries_target}'.strip() else None\n_args.append(str('#{drozer_scanner_misc_sflagbinaries_target}'.strip())) if '#{drozer_scanner_misc_sflagbinaries_target}'.strip() else None\n_args.append('--privileged') if '#{drozer_scanner_misc_sflagbinaries_privileged}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.sflagbinaries', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_sflagbinaries_target",
+        "drozer_scanner_misc_sflagbinaries_privileged"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_misc_sflagbinaries",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/misc/sflag_binaries.py",
+        "source_file": "sflag_binaries.py",
+        "source_sha256": "53908bd2b8979dd2369a78b74f93af27552cb14d7015a58b2ec64d2ecce81ee4",
+        "code_sha256": "3c9cf9ab07049c163470444772a8c0833760a456383584309120157850990feb",
+        "module_name": "Find suid/sgid binaries in the given folder (default is /system).",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.sflagbinaries",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "target",
+            "flag": "--target",
+            "help": "the target directory to search",
+            "type": "string",
+            "required": false,
+            "default": "/system",
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "privileged",
+            "flag": "--privileged",
+            "help": "request root to perform the task in a privileged context",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_misc_writablefiles",
+      "name": "DROZER - scanner.misc.writablefiles",
+      "description": "Find world-writable files in the given folder",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_scanner_misc_writablefiles_target}'.strip())) if '#{drozer_scanner_misc_writablefiles_target}'.strip() else None\n_args.append('--privileged') if '#{drozer_scanner_misc_writablefiles_privileged}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.writablefiles', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_writablefiles_target",
+        "drozer_scanner_misc_writablefiles_privileged"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_misc_writablefiles",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/misc/writable_files.py",
+        "source_file": "writable_files.py",
+        "source_sha256": "693a9a7363871d49c7004917989a58c27e9647ba8c7777b0a70c096410080927",
+        "code_sha256": "cba61dbb2d733fabb5a217d6c5233a8bf1f60d26e383c2c869e74fdfe4af7329",
+        "module_name": "Find world-writable files in the given folder",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.writablefiles",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "target",
+            "flag": null,
+            "help": "the target directory to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "privileged",
+            "flag": "--privileged",
+            "help": "request root to perform the task in a privileged context",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_provider_finduris",
+      "name": "DROZER - scanner.provider.finduris",
+      "description": "Search for content providers that can be queried from our context.",
+      "tactic": "Discovery",
+      "tcode": "T1418",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_provider_finduris_package}'.strip() else None\n_args.append(str('#{drozer_scanner_provider_finduris_package}'.strip())) if '#{drozer_scanner_provider_finduris_package}'.strip() else None\n_r=_m.run_drozer_module(fqmn='scanner.provider.finduris', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_provider_finduris_package"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_provider_finduris",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/provider/find_uris.py",
+        "source_file": "find_uris.py",
+        "source_sha256": "3f8cd01b79c1af928dae1c74c201dfbea5d5c8a2a160cb3fa7b3728e61b2e787",
+        "code_sha256": "48dee0f538cd3bfea7abfad49b6a1cd75f2e8e4abcf89b4beea6624cd92df04c",
+        "module_name": "Search for content providers that can be queried from our context.",
+        "namespace": "scanner.provider",
+        "fqmn": "scanner.provider.finduris",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1418",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Luander (luander.r@samsung.com)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_provider_injection",
+      "name": "DROZER - scanner.provider.injection",
+      "description": "Search for content providers with SQL Injection vulnerabilities.",
+      "tactic": "Collection",
+      "tcode": "T1409",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_provider_injection_package}'.strip() else None\n_args.append(str('#{drozer_scanner_provider_injection_package}'.strip())) if '#{drozer_scanner_provider_injection_package}'.strip() else None\n_r=_m.run_drozer_module(fqmn='scanner.provider.injection', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_provider_injection_package"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_provider_injection",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/provider/injection.py",
+        "source_file": "injection.py",
+        "source_sha256": "36815ad2033b3632d7d17ec60ef928480f402fb55e94606eff4ae2db10c10c4b",
+        "code_sha256": "282b53ede35b3ef87209eb6ca229de4f71c97313a541f484ada0f6ae7640e6ba",
+        "module_name": "Test content providers for SQL injection vulnerabilities.",
+        "namespace": "scanner.provider",
+        "fqmn": "scanner.provider.injection",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package, or content uri to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1409",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Rob (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_provider_sqltables",
+      "name": "DROZER - scanner.provider.sqltables",
+      "description": "Enumerate SQL tables accessible through SQL (projection) Injection vulnerabilities.",
+      "tactic": "Collection",
+      "tcode": "T1409",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_provider_sqltables_package}'.strip() else None\n_args.append(str('#{drozer_scanner_provider_sqltables_package}'.strip())) if '#{drozer_scanner_provider_sqltables_package}'.strip() else None\n_r=_m.run_drozer_module(fqmn='scanner.provider.sqltables', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_provider_sqltables_package"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_provider_sqltables",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/provider/sql_table_dump.py",
+        "source_file": "sql_table_dump.py",
+        "source_sha256": "d0c5922decb8b8e3d3032c0dcef54ee3531be2bf83caf77755baf253fc232040",
+        "code_sha256": "6ae778ff4872c4cada1e881d8d276f8f86f76cabbc746cefd83fbbe32823af00",
+        "module_name": "Find tables accessible through SQL injection vulnerabilities.",
+        "namespace": "scanner.provider",
+        "fqmn": "scanner.provider.sqltables",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package, or content uri to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1409",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Rijnard"
+      }
+    },
+    {
+      "id": "drozer:core:scanner_provider_traversal",
+      "name": "DROZER - scanner.provider.traversal",
+      "description": "Finds content providers with basic directory traversal vulnerabilities.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_provider_traversal_package}'.strip() else None\n_args.append(str('#{drozer_scanner_provider_traversal_package}'.strip())) if '#{drozer_scanner_provider_traversal_package}'.strip() else None\n_r=_m.run_drozer_module(fqmn='scanner.provider.traversal', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_provider_traversal_package"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:scanner_provider_traversal",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "scanner/provider/traversal.py",
+        "source_file": "traversal.py",
+        "source_sha256": "ce6050fe0fdea1ae5702e6f47a6b97c49b147ccea6be86fc7b47aca1f67c719f",
+        "code_sha256": "82f621aaf417815e5a2b9164a22f2823726326d4463e1fcccea0f29c5ef2cd3f",
+        "module_name": "Test content providers for basic directory traversal vulnerabilities.",
+        "namespace": "scanner.provider",
+        "fqmn": "scanner.provider.traversal",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package, or content uri to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Nils (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:scanner_misc_weburls",
+      "name": "DROZER - scanner.misc.weburls",
+      "description": "Finds URLs with the HTTP or HTTPS schemes by searching the strings inside APK files.      You can, for instance, use this for finding API servers, C&C servers within malicious APKs and checking for presence of advertising networks.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--package') if '#{drozer_scanner_misc_weburls_package}'.strip() else None\n_args.append(str('#{drozer_scanner_misc_weburls_package}'.strip())) if '#{drozer_scanner_misc_weburls_package}'.strip() else None\n_args.append('--http') if '#{drozer_scanner_misc_weburls_http}'.strip().lower() in ('1','true','yes','on') else None\n_args.append('--https') if '#{drozer_scanner_misc_weburls_https}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='scanner.misc.weburls', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_misc_weburls_package",
+        "drozer_scanner_misc_weburls_http",
+        "drozer_scanner_misc_weburls_https"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:scanner_misc_weburls",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "mwrlabs/urls.py",
+        "source_file": "urls.py",
+        "source_sha256": "b20e55148abfa9c628a96a559b19ba9fbee9943d872ada0916cb0f0a87fb569a",
+        "code_sha256": "4afebca5cc4af4476f859ee5338f7c3cee24d7eaba5ab3797ea933fa7a2b6bff",
+        "module_name": "Find HTTP and HTTPS URLs specified in packages.",
+        "namespace": "scanner.misc",
+        "fqmn": "scanner.misc.weburls",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": "--package",
+            "help": "specify a package to search",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "http",
+            "flag": "--http",
+            "help": "only display http urls",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "https",
+            "flag": "--https",
+            "help": "only display https urls",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "@HenryHoggard (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:scanner_malware_virustotal",
+      "name": "DROZER - scanner.malware.virustotal",
+      "description": "Extends Drozer's malware analysis capability to check applications on the device agains the VirusTotal malware dataset",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_scanner_malware_virustotal_package}'.strip())) if '#{drozer_scanner_malware_virustotal_package}'.strip() else None\n_args.append(str('#{drozer_scanner_malware_virustotal_api_key}'.strip())) if '#{drozer_scanner_malware_virustotal_api_key}'.strip() else None\n_r=_m.run_drozer_module(fqmn='scanner.malware.virustotal', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_scanner_malware_virustotal_package",
+        "drozer_scanner_malware_virustotal_api_key"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:scanner_malware_virustotal",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "mwrlabs/virustotal.py",
+        "source_file": "virustotal.py",
+        "source_sha256": "6838bfbedc291a0e0804601510b06ce3fe455c575d24b52237d2e523f1980a1d",
+        "code_sha256": "3c26373032378ddada8f78854ef72d8dc47cc95e98d6355d19c597dc3c0123f3",
+        "module_name": "Virus Scanner",
+        "namespace": "scanner.malware",
+        "fqmn": "scanner.malware.virustotal",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "package",
+            "flag": null,
+            "help": "package to scan",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "api_key",
+            "flag": null,
+            "help": "Virus Total API Key",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3-clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "@HenryHoggard (@mwrlabs)"
+      }
+    }
+  ],
+  "chains": []
+}

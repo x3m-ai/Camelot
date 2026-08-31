@@ -1,0 +1,369 @@
+{
+  "package_id": "drozer-shell-v1",
+  "package_name": "Drozer - Shell",
+  "version": "1.0.0",
+  "summary": "3 Drozer modules in the shell namespace (3 core, 0 external).",
+  "description": "Source-faithful Drozer Android application-security modules (ReversecLabs/drozer + drozer-modules) executed through the pinned drozer runtime on a Morgana Mobile Lab Host.",
+  "purpose": "Run authorized Android application-model assessment: packages, activities, services, broadcast receivers, content providers, permissions, Intents/IPC, and scanners.",
+  "capabilities": [
+    "Contains 3 Drozer modules (2 with runtime Options).",
+    "Target platform: android; risk mix: interact, modify.",
+    "Mobile ATT&CK mappings: 1 techniques (T1407)."
+  ],
+  "use_cases": [
+    "Assess an explicitly authorized Android application through a Morgana Mobile Lab device.",
+    "Enumerate package/component/permission attack surface and validate detection coverage."
+  ],
+  "prerequisites": [
+    "Morgana Mobile Lab Host with an isolated pinned drozer runtime and drozer-agent installed on the target device.",
+    "Authorized Android Emulator or Physical Android device.",
+    "drozer console connect over ADB forward tcp:31415."
+  ],
+  "safety_notes": [
+    "Modules in the exploit/shell namespaces can modify or disrupt device/app state; review risk metadata before execution.",
+    "Use only on authorized targets; physical devices are non-destructive by default."
+  ],
+  "author": "MWR InfoSecurity / ReversecLabs / X3M.AI conversion",
+  "created": "2026-09-01",
+  "script_prefix": "DROZER - ",
+  "provider": "drozer",
+  "source": "drozer",
+  "source_repository": "https://github.com/ReversecLabs/drozer",
+  "source_license": "BSD-3-Clause",
+  "documentation_url": "https://github.com/ReversecLabs/drozer",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Application Security Assessment",
+  "mitre_tcodes": [
+    "T1407"
+  ],
+  "platform": [
+    "android"
+  ],
+  "risk_badges": [
+    "interact",
+    "modify"
+  ],
+  "category": "mobile/drozer/shell",
+  "target_platform_counts": {
+    "android": 3
+  },
+  "frameworks": [
+    "drozer"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "drozer_shell_params",
+      "label": "Drozer Shell Parameters",
+      "description": "Host-to-device Drozer target and shell module arguments.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "drozer_serial",
+          "label": "ADB Serial / Device",
+          "description": "ADB serial of the Android device (emulator or physical). Blank auto-selects the single connected device.",
+          "default": "",
+          "example": "emulator-5554",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_runtime_dir",
+          "label": "Drozer Runtime Dir",
+          "description": "Path to the isolated pinned drozer runtime on the Mobile Lab Host (e.g. C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0).",
+          "default": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "example": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_shell_send_ip",
+          "label": "Ip",
+          "description": "ip address of the remote listener",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_shell_send_port",
+          "label": "Port",
+          "description": "port address of the remote listener",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_shell_send_privileged",
+          "label": "Privileged",
+          "description": "request root to perform the task in a privileged context",
+          "default": "False",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--privileged",
+          "_positional": false
+        },
+        {
+          "key": "drozer_shell_exec_command",
+          "label": "Command",
+          "description": "the Linux command to execute",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "drozer_runner",
+      "name": "morgana_drozer_runner.py",
+      "filename": "morgana_drozer_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/mobile/drozer/runtime/morgana_drozer_runner.py",
+      "sha256": "e0b0ad8dae3c6977a90e6343d6062b974d324d56faac1b0833c0f7f4bfb27153",
+      "size": 6090,
+      "executable": false,
+      "source": "https://github.com/ReversecLabs/drozer",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "drozer:core:shell_send",
+      "name": "DROZER - shell.send",
+      "description": "Sends an Java Reverse Shell to the Agent.  This module sends a Java reverse shell to the Agent.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_shell_send_ip}'.strip())) if '#{drozer_shell_send_ip}'.strip() else None\n_args.append(str('#{drozer_shell_send_port}'.strip())) if '#{drozer_shell_send_port}'.strip() else None\n_args.append('--privileged') if '#{drozer_shell_send_privileged}'.strip().lower() in ('1','true','yes','on') else None\n_r=_m.run_drozer_module(fqmn='shell.send', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_shell_send_ip",
+        "drozer_shell_send_port",
+        "drozer_shell_send_privileged"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:shell_send",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "shell/send.py",
+        "source_file": "send.py",
+        "source_sha256": "d8f08c9f475c2a1893b29e3054863c8f9ab1e4a92b6763dce56d362b6a569200",
+        "code_sha256": "ce96d794aa91c1c65021ba483190ff60cfc4b1111957f57f8d2929d89b5a82b5",
+        "module_name": "Send an ASH shell to a remote listener.",
+        "namespace": "shell",
+        "fqmn": "shell.send",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "ip",
+            "flag": null,
+            "help": "ip address of the remote listener",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "port",
+            "flag": null,
+            "help": "port address of the remote listener",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "privileged",
+            "flag": "--privileged",
+            "help": "request root to perform the task in a privileged context",
+            "type": "string",
+            "required": false,
+            "default": false,
+            "choices": null,
+            "action": "store_true",
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "Tyrone (@mwrlabs), Thomas Cross (https://github.com/ThomasCross)"
+      }
+    },
+    {
+      "id": "drozer:core:shell_start",
+      "name": "DROZER - shell.start",
+      "description": "Execute Linux commands in a shell in the context of drozer.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_r=_m.run_drozer_module(fqmn='shell.start', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:shell_start",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "shell/startexec.py",
+        "source_file": "startexec.py",
+        "source_sha256": "5e29b07eb532ceb61f9c7454fb3fba7688fd43fe4ad8253880836465d455d904",
+        "code_sha256": "3aa694091cb9d435d60e8f2fdf86d9da3d8795224a72398cee0da3bb292cecfe",
+        "module_name": "Enter into an interactive Linux shell.",
+        "namespace": "shell",
+        "fqmn": "shell.start",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": false,
+        "options": [],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:core:shell_exec",
+      "name": "DROZER - shell.exec",
+      "description": "Execute a single Linux command from the context of drozer.",
+      "tactic": "Execution",
+      "tcode": "T1407",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_shell_exec_command}'.strip())) if '#{drozer_shell_exec_command}'.strip() else None\n_r=_m.run_drozer_module(fqmn='shell.exec', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_shell_exec_command"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:core:shell_exec",
+        "source_repository": "https://github.com/ReversecLabs/drozer",
+        "source_commit": "d992f6378d42680ea96ee03eff4117f150e1049c",
+        "source_release": "3.2.0",
+        "source_path": "shell/startexec.py",
+        "source_file": "startexec.py",
+        "source_sha256": "5e29b07eb532ceb61f9c7454fb3fba7688fd43fe4ad8253880836465d455d904",
+        "code_sha256": "3aa694091cb9d435d60e8f2fdf86d9da3d8795224a72398cee0da3bb292cecfe",
+        "module_name": "Execute a single Linux command.",
+        "namespace": "shell",
+        "fqmn": "shell.exec",
+        "source_collection": "core",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "command",
+            "flag": null,
+            "help": "the Linux command to execute",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1407",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "A",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    }
+  ],
+  "chains": []
+}

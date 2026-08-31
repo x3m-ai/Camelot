@@ -4,7 +4,7 @@ Excalibur is the certified adversary emulation script library for the **Morgana 
 
 Excalibur packages are professionally crafted attack script collections covering real-world MITRE ATT&CK tactics and techniques. Each package targets a specific platform, identity domain, or detection surface and is designed for authorised Purple Team and Red Team exercises — including adversary emulation, kill chain execution, and detection validation against enterprise security controls (Microsoft Sentinel, Defender for Endpoint, and others).
 
-> **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 224 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
+> **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 331 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
 
 > **Access notice:** Excalibur packages run inside Morgana, which is a controlled-distribution platform. To use Excalibur packs for Red Team or Purple Team operations, you must have authorised access to Morgana. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
 
@@ -22,6 +22,7 @@ Excalibur packages are professionally crafted attack script collections covering
 | [LOLDrivers](loldrivers/) | 58 | 18 766 | 0 |
 | [Frida Mobile](mobile/frida/) | 40 | 830 | 0 |
 | [MEDUSA](mobile/medusa/) | 38 | 147 | 0 |
+| [Drozer](mobile/drozer/) | 8 | 79 | 0 |
 | [MITRE CALDERA OT](ot/) | 15 | 223 | 223 |
 | [ICS-SCADA-Fuzzer](ot/fuzzing/ics-scada-fuzzer/) | 5 | 120 | 0 |
 | [ANSSI FuzzySully](ot/fuzzing/fuzzysully/) | 7 | 79 | 0 |
@@ -29,7 +30,8 @@ Excalibur packages are professionally crafted attack script collections covering
 | [Elastic Cortado](detection/cortado/) | 13 | 698 | 0 |
 | [LOLRMM](lotl/lolrmm/) | 3 | 320 | 0 |
 | [ControlThings Suite](ot/controlthings/) | 5 | 33 | 0 |
-| **Total** | **275** | **27 467** | **2 121** |
+| [IndustriConnect](ot/industriconnect/) | 10 | 130 | 0 |
+| **Total** | **331** | **27 823** | **2 121** |
 
 Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 

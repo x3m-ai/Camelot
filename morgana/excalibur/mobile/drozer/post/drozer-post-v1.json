@@ -1,0 +1,910 @@
+{
+  "package_id": "drozer-post-v1",
+  "package_name": "Drozer - Post",
+  "version": "1.0.0",
+  "summary": "10 Drozer modules in the post namespace (0 core, 10 external).",
+  "description": "Source-faithful Drozer Android application-security modules (ReversecLabs/drozer + drozer-modules) executed through the pinned drozer runtime on a Morgana Mobile Lab Host.",
+  "purpose": "Run authorized Android application-model assessment: packages, activities, services, broadcast receivers, content providers, permissions, Intents/IPC, and scanners.",
+  "capabilities": [
+    "Contains 10 Drozer modules (7 with runtime Options).",
+    "Target platform: android; risk mix: observe, interact, modify.",
+    "Mobile ATT&CK mappings: 2 techniques (T1414, T1430)."
+  ],
+  "use_cases": [
+    "Assess an explicitly authorized Android application through a Morgana Mobile Lab device.",
+    "Enumerate package/component/permission attack surface and validate detection coverage."
+  ],
+  "prerequisites": [
+    "Morgana Mobile Lab Host with an isolated pinned drozer runtime and drozer-agent installed on the target device.",
+    "Authorized Android Emulator or Physical Android device.",
+    "drozer console connect over ADB forward tcp:31415."
+  ],
+  "safety_notes": [
+    "Modules in the exploit/shell namespaces can modify or disrupt device/app state; review risk metadata before execution.",
+    "Use only on authorized targets; physical devices are non-destructive by default."
+  ],
+  "author": "MWR InfoSecurity / ReversecLabs / X3M.AI conversion",
+  "created": "2026-09-01",
+  "script_prefix": "DROZER - ",
+  "provider": "drozer",
+  "source": "drozer",
+  "source_repository": "https://github.com/ReversecLabs/drozer",
+  "source_license": "BSD-3-Clause",
+  "documentation_url": "https://github.com/ReversecLabs/drozer",
+  "mitre_domain": "mobile-attack",
+  "mitre_tactic": "Mobile Application Security Assessment",
+  "mitre_tcodes": [
+    "T1414",
+    "T1430"
+  ],
+  "platform": [
+    "android"
+  ],
+  "risk_badges": [
+    "observe",
+    "interact",
+    "modify"
+  ],
+  "category": "mobile/drozer/post",
+  "target_platform_counts": {
+    "android": 10
+  },
+  "frameworks": [
+    "drozer"
+  ],
+  "tag_categories": [
+    {
+      "category_id": "drozer_post_params",
+      "label": "Drozer Post Parameters",
+      "description": "Host-to-device Drozer target and post module arguments.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "drozer_serial",
+          "label": "ADB Serial / Device",
+          "description": "ADB serial of the Android device (emulator or physical). Blank auto-selects the single connected device.",
+          "default": "",
+          "example": "emulator-5554",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_runtime_dir",
+          "label": "Drozer Runtime Dir",
+          "description": "Path to the isolated pinned drozer runtime on the Mobile Lab Host (e.g. C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0).",
+          "default": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "example": "C:/ProgramData/Morgana/mobile-lab/runtimes/drozer/3.2.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "drozer_post_pivot_portforward_remote_host",
+          "label": "Remote-Host",
+          "description": "the remote host to connect to",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--remote-host",
+          "_positional": false
+        },
+        {
+          "key": "drozer_post_pivot_portforward_remote_port",
+          "label": "Remote-Port",
+          "description": "the remote port to connect to",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--remote-port",
+          "_positional": false
+        },
+        {
+          "key": "drozer_post_pivot_portforward_local_port",
+          "label": "Local-Port",
+          "description": "the local port to listen on",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--local-port",
+          "_positional": false
+        },
+        {
+          "key": "drozer_post_perform_call_number",
+          "label": "Number",
+          "description": "number to call e.g. +27123456789",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_post_perform_setclipboard_text",
+          "label": "Text",
+          "description": "value to set the clipboard to",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_post_contacts_read_filter",
+          "label": "Filter",
+          "description": "filter results by a keyword",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--filter",
+          "_positional": false
+        },
+        {
+          "key": "drozer_post_capture_microphone_destination",
+          "label": "Destination",
+          "description": "destination to save recording (.3gp extension)",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_post_sms_read_filter",
+          "label": "Filter",
+          "description": "filter results by a keyword",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": "--filter",
+          "_positional": false
+        },
+        {
+          "key": "drozer_post_sms_send_to",
+          "label": "To",
+          "description": "the cell number to send the SMS to",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        },
+        {
+          "key": "drozer_post_sms_send_message",
+          "label": "Message",
+          "description": "the SMS message body",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value",
+          "tag_type": "string",
+          "_flag": null,
+          "_positional": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "drozer_runner",
+      "name": "morgana_drozer_runner.py",
+      "filename": "morgana_drozer_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/mobile/drozer/runtime/morgana_drozer_runner.py",
+      "sha256": "e0b0ad8dae3c6977a90e6343d6062b974d324d56faac1b0833c0f7f4bfb27153",
+      "size": 6090,
+      "executable": false,
+      "source": "https://github.com/ReversecLabs/drozer",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "drozer:drozer-modules:post_pivot_portforward",
+      "name": "DROZER - post.pivot.portforward",
+      "description": "PortForwarder listens on the local host for a connection, and tries to establish a connection to a remote host from the android device. If this connection succeeds it tries to forward the traffic. This module currently will only forward a single connection at a time.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--remote-host') if '#{drozer_post_pivot_portforward_remote_host}'.strip() else None\n_args.append(str('#{drozer_post_pivot_portforward_remote_host}'.strip())) if '#{drozer_post_pivot_portforward_remote_host}'.strip() else None\n_args.append('--remote-port') if '#{drozer_post_pivot_portforward_remote_port}'.strip() else None\n_args.append(str('#{drozer_post_pivot_portforward_remote_port}'.strip())) if '#{drozer_post_pivot_portforward_remote_port}'.strip() else None\n_args.append('--local-port') if '#{drozer_post_pivot_portforward_local_port}'.strip() else None\n_args.append(str('#{drozer_post_pivot_portforward_local_port}'.strip())) if '#{drozer_post_pivot_portforward_local_port}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.pivot.portforward', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_pivot_portforward_remote_host",
+        "drozer_post_pivot_portforward_remote_port",
+        "drozer_post_pivot_portforward_local_port"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_pivot_portforward",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "meatballs1/auxillary/port_forward.py",
+        "source_file": "port_forward.py",
+        "source_sha256": "e8df47e30ab18b5e85294c3938860f85347426b464d5d269f8e93089481f9a5d",
+        "code_sha256": "58885d1cc8c517d8d7578cd3e1a5264597cbe4c62ff1daf7d04485b779dd2aae",
+        "module_name": "Start a port forward",
+        "namespace": "post.pivot",
+        "fqmn": "post.pivot.portforward",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "remote-host",
+            "flag": "--remote-host",
+            "help": "the remote host to connect to",
+            "type": "string",
+            "required": true,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "remote-port",
+            "flag": "--remote-port",
+            "help": "the remote port to connect to",
+            "type": "string",
+            "required": true,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          },
+          {
+            "name": "local-port",
+            "flag": "--local-port",
+            "help": "the local port to listen on",
+            "type": "string",
+            "required": true,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Ben Campbell"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_perform_call",
+      "name": "DROZER - post.perform.call",
+      "description": "Call a phone number. Relies on the agent having the CALL_PHONE permission.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_post_perform_call_number}'.strip())) if '#{drozer_post_perform_call_number}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.perform.call', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_perform_call_number"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_perform_call",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/call.py",
+        "source_file": "call.py",
+        "source_sha256": "1c047bc41917e401f939aa647e56bfe443acd3de542f81d75e41f8b581268dc2",
+        "code_sha256": "aa2de2fb90e95ec77967f1bd33729a8339aa9c80e6e01c661b3c9ab3446e4ff8",
+        "module_name": "Call a phone number",
+        "namespace": "post.perform",
+        "fqmn": "post.perform.call",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "number",
+            "flag": null,
+            "help": "number to call e.g. +27123456789",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_capture_clipboard",
+      "name": "DROZER - post.capture.clipboard",
+      "description": "Retrieve and display the current clipboard text.",
+      "tactic": "Collection",
+      "tcode": "T1414",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_r=_m.run_drozer_module(fqmn='post.capture.clipboard', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_capture_clipboard",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/clipboard.py",
+        "source_file": "clipboard.py",
+        "source_sha256": "0d6d066ef09ab0665a464669d49348a4e6f0e10b011b8ce93848335cef07849d",
+        "code_sha256": "1e909a57fcce0f0303207b338d38bbe1890bdfab42bb05f2461c604e1fb46365",
+        "module_name": "Retrieve and display the current clipboard text.",
+        "namespace": "post.capture",
+        "fqmn": "post.capture.clipboard",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": false,
+        "options": [],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1414",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_perform_setclipboard",
+      "name": "DROZER - post.perform.setclipboard",
+      "description": "Put the specified text into the clipboard.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_post_perform_setclipboard_text}'.strip())) if '#{drozer_post_perform_setclipboard_text}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.perform.setclipboard', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_perform_setclipboard_text"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_perform_setclipboard",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/clipboard.py",
+        "source_file": "clipboard.py",
+        "source_sha256": "0d6d066ef09ab0665a464669d49348a4e6f0e10b011b8ce93848335cef07849d",
+        "code_sha256": "1e909a57fcce0f0303207b338d38bbe1890bdfab42bb05f2461c604e1fb46365",
+        "module_name": "Put the specified text into the clipboard.",
+        "namespace": "post.perform",
+        "fqmn": "post.perform.setclipboard",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "text",
+            "flag": null,
+            "help": "value to set the clipboard to",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_contacts_read",
+      "name": "DROZER - post.contacts.read",
+      "description": "Read all contacts and filter by names or cellphone numbers. Relies on the agent having the READ_CONTACTS permission.",
+      "tactic": "Collection",
+      "tcode": "T1430",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--filter') if '#{drozer_post_contacts_read_filter}'.strip() else None\n_args.append(str('#{drozer_post_contacts_read_filter}'.strip())) if '#{drozer_post_contacts_read_filter}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.contacts.read', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_contacts_read_filter"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "observe",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_contacts_read",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/contacts.py",
+        "source_file": "contacts.py",
+        "source_sha256": "ab49d2d55c77c3e82e8e11b8134a2e69caf9bc1e4c1ee4cfb1b39e47c903b571",
+        "code_sha256": "c15f1dec4efdafde1a34a5ab6e290512b2f4a6c1fe099f216d93b8cdf4b2a79c",
+        "module_name": "Read all contacts",
+        "namespace": "post.contacts",
+        "fqmn": "post.contacts.read",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "filter",
+            "flag": "--filter",
+            "help": "filter results by a keyword",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": "T1430",
+        "mitre_mapping_status": "mapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_capture_location",
+      "name": "DROZER - post.capture.location",
+      "description": "Show the last known location of the user making use of the most accurate location source available.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_r=_m.run_drozer_module(fqmn='post.capture.location', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_capture_location",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/location/location.py",
+        "source_file": "location.py",
+        "source_sha256": "8f59f513541804bf897f49d4b695a7707f2f2d00a8cef9494a0f45d7572f4b5b",
+        "code_sha256": "1a466b7ebd833bfb00b80cb390d48027ada87f6a20b315471d0ae2f28e598a3a",
+        "module_name": "Get last known GPS coordinates of user",
+        "namespace": "post.capture",
+        "fqmn": "post.capture.location",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": false,
+        "options": [],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_capture_microphone",
+      "name": "DROZER - post.capture.microphone",
+      "description": "Record sound from the microphone and store it in a 3GP sound file. Relies on the agent having the RECORD_AUDIO permission.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_post_capture_microphone_destination}'.strip())) if '#{drozer_post_capture_microphone_destination}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.capture.microphone', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_capture_microphone_destination"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_capture_microphone",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/microphone.py",
+        "source_file": "microphone.py",
+        "source_sha256": "2d7b4e44d16e69005f9c8b4f3830d572eb9ad42de41cd7897cc994631232f949",
+        "code_sha256": "2a55c5502b00fd41d7dece4fc05a3614f4574ae32db2ce74e2a08b96735cd40f",
+        "module_name": "Record sound from the microphone",
+        "namespace": "post.capture",
+        "fqmn": "post.capture.microphone",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "destination",
+            "flag": null,
+            "help": "destination to save recording (.3gp extension)",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_sms_read",
+      "name": "DROZER - post.sms.read",
+      "description": "Read all SMS messages from content://sms or filter by keywords or cellphone numbers. Relies on the agent having the READ_SMS permission.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append('--filter') if '#{drozer_post_sms_read_filter}'.strip() else None\n_args.append(str('#{drozer_post_sms_read_filter}'.strip())) if '#{drozer_post_sms_read_filter}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.sms.read', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_sms_read_filter"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_sms_read",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/sms.py",
+        "source_file": "sms.py",
+        "source_sha256": "ebc594688661809431a69032cbc9ab6521b200449cd83c1058e56b62850ebf01",
+        "code_sha256": "e6a7914c9df63d70fac731e0d4c20c5e930f684aefa5c6f5a9a613b1d9cd3a45",
+        "module_name": "Read all SMS messages",
+        "namespace": "post.sms",
+        "fqmn": "post.sms.read",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "filter",
+            "flag": "--filter",
+            "help": "filter results by a keyword",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": false
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_sms_send",
+      "name": "DROZER - post.sms.send",
+      "description": "Send an SMS message to another cellphone. Relies on the agent having the SEND_SMS permission.",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_args.append(str('#{drozer_post_sms_send_to}'.strip())) if '#{drozer_post_sms_send_to}'.strip() else None\n_args.append(str('#{drozer_post_sms_send_message}'.strip())) if '#{drozer_post_sms_send_message}'.strip() else None\n_r=_m.run_drozer_module(fqmn='post.sms.send', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir",
+        "drozer_post_sms_send_to",
+        "drozer_post_sms_send_message"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "modify",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_sms_send",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/sms.py",
+        "source_file": "sms.py",
+        "source_sha256": "ebc594688661809431a69032cbc9ab6521b200449cd83c1058e56b62850ebf01",
+        "code_sha256": "e6a7914c9df63d70fac731e0d4c20c5e930f684aefa5c6f5a9a613b1d9cd3a45",
+        "module_name": "Send an SMS messages",
+        "namespace": "post.sms",
+        "fqmn": "post.sms.send",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": true,
+        "options": [
+          {
+            "name": "to",
+            "flag": null,
+            "help": "the cell number to send the SMS to",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          },
+          {
+            "name": "message",
+            "flag": null,
+            "help": "the SMS message body",
+            "type": "string",
+            "required": false,
+            "default": null,
+            "choices": null,
+            "action": null,
+            "nargs": null,
+            "positional": true
+          }
+        ],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD License (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "MWR InfoSecurity (@mwrlabs)"
+      }
+    },
+    {
+      "id": "drozer:drozer-modules:post_perform_startinstalledagent",
+      "name": "DROZER - post.perform.startinstalledagent",
+      "description": "This is a helper module to start a drozer agent once it has been installed (somehow).",
+      "tactic": "Mobile Application Security Assessment",
+      "tcode": "T0000",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 180,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mdr', r'{{asset:drozer_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_serial=str('#{drozer_serial}'.strip())\n_runtime=str('#{drozer_runtime_dir}'.strip())\n_args=[]\n_r=_m.run_drozer_module(fqmn='post.perform.startinstalledagent', args=_args, serial=_serial, runtime_dir=_runtime)\nprint('MORGANA_RESULT_METADATA='+_j.dumps(_r))\n_s.exit(0 if _r.get('success') else 1)",
+      "cleanup_command": null,
+      "required_tags": [
+        "drozer_serial",
+        "drozer_runtime_dir"
+      ],
+      "required_assets": [
+        "drozer_runner"
+      ],
+      "operational_risk": "interact",
+      "source_metadata": {
+        "provider": "drozer",
+        "source_provider": "drozer",
+        "source_id": "drozer:drozer-modules:post_perform_startinstalledagent",
+        "source_repository": "https://github.com/ReversecLabs/drozer-modules",
+        "source_commit": "c6fb1570163e3347e11c8d8589d51b88931137dd",
+        "source_release": "3.2.0",
+        "source_path": "metall0id/post/start_installed_drozer.py",
+        "source_file": "start_installed_drozer.py",
+        "source_sha256": "019c50a0310b179c8d9f83edac4e8f58ba895f0885105546345b4ee4de5f352e",
+        "code_sha256": "e508af93321fc56555d5cf9e1a3a02a4996adde3b196f2884a6a9cb426ccc220",
+        "module_name": "Start installed drozer agent.",
+        "namespace": "post.perform",
+        "fqmn": "post.perform.startinstalledagent",
+        "source_collection": "drozer-modules",
+        "target_platform": "android",
+        "execution_platform": "host-agent",
+        "runtime_mode": "drozer-console-noninteractive",
+        "requires_drozer": true,
+        "mobile_lab_compatible": true,
+        "has_options": false,
+        "options": [],
+        "mitre_domain": "mobile-attack",
+        "mitre_tcode": null,
+        "mitre_mapping_status": "unmapped",
+        "license": "BSD (3 clause)",
+        "distribution_status": "vendored",
+        "readiness": "ready_with_target",
+        "quality_tier": "B",
+        "author": "Tyrone (@mwrlabs)"
+      }
+    }
+  ],
+  "chains": []
+}
