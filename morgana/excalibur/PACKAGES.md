@@ -22,6 +22,7 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [GTFOBins](#5-lolbas--gtfobins) | 34 | 3 582 | 0 | Enterprise ATT&CK |
 | [LOLDrivers](#6-loldrivers) | 58 | 18 766 | 0 | Enterprise ATT&CK |
 | [Frida Mobile](#7-frida-mobile) | 40 | 830 | 0 | Mobile ATT&CK |
+| [MEDUSA](#medusa) | 38 | 147 | 0 | Mobile ATT&CK |
 | [MITRE CALDERA OT](#8-mitre-caldera-ot) | 15 | 223 | 223 | ICS ATT&CK |
 | [ICS-SCADA-Fuzzer](#9-ics-scada-fuzzer) | 5 | 120 | 0 | ICS ATT&CK |
 | [ANSSI FuzzySully](#10-anssi-fuzzysully) | 7 | 79 | 0 | ICS ATT&CK |
@@ -29,7 +30,7 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [Elastic Cortado](#12-elastic-cortado) | 13 | 698 | 0 | Enterprise ATT&CK |
 | [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
 | [ControlThings Suite](#14-controlthings-suite) | 5 | 33 | 0 | ICS ATT&CK |
-| **Total** | **275** | **27 467** | **2 121** | |
+| **Total** | **313** | **27 614** | **2 121** | |
 
 > Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
 
@@ -276,6 +277,34 @@ Covers Flutter, React Native, Unity IL2CPP, Xamarin, and Universal hooks.
 - For iOS: jailbroken device or developer-mode enabled with Frida Gadget
 
 Review the [Frida Mobile README](mobile/frida/README.md) before use.
+
+---
+
+## MEDUSA
+
+Complete [Ch0pin/medusa](https://github.com/Ch0pin/medusa) framework/module corpus — a dedicated, first-class mobile runtime instrumentation provider for Android and iOS. Source-faithful `.med` (Android) and `.imed` (iOS) modules are compiled through the existing Morgana Frida executor.
+
+> **MEDUSA is intentionally independent from Frida Mobile.** MEDUSA content is published even when similar functionality exists in the Frida Mobile provider, because different source implementations can differ in compatibility, hook coverage, and runtime behavior. Operators choose the implementation that best fits the target application.
+
+### Packages (38 packs, 147 scripts)
+
+| Platform | Packages | Scripts |
+|---|---|---|
+| Android | 33 | 137 (123 modules + 14 standalone snippets) |
+| iOS | 5 | 10 |
+
+**Execution Platform:** Host Agent (PC/Mac running Frida + connected device)  
+**Target Environment:** Android device/emulator, iOS device  
+**License:** GPL-3.0 (upstream Ch0pin/medusa)  
+**Source:** [Ch0pin/medusa](https://github.com/Ch0pin/medusa) @ `8c62447d` (v3.9.6)  
+
+**Prerequisites:**
+- Morgana host Agent with a compatible Frida CLI in PATH
+- For Android: `adb` access, Frida Server on device
+- For iOS: jailbroken device or developer-mode enabled with Frida Gadget
+- Authorized target package/bundle ID (supplied as `mobile_app_id` at run time)
+
+Review the [MEDUSA README](mobile/medusa/README.md) before use.
 
 ---
 
@@ -528,6 +557,7 @@ The Excalibur package schema is documented in the [Morgana manual](../README.md#
 | GTFOBins | [GTFOBins/GTFOBins.github.io](https://github.com/GTFOBins/GTFOBins.github.io) | MIT |
 | LOLDrivers | [magicsword-io/LOLDrivers](https://github.com/magicsword-io/LOLDrivers) | CC-BY-4.0 |
 | Frida | [frida/frida](https://github.com/frida/frida) | MIT |
+| MEDUSA | [Ch0pin/medusa](https://github.com/Ch0pin/medusa) | GPL-3.0 |
 | MITRE CALDERA OT | [mitre/caldera-ot](https://github.com/mitre/caldera-ot) | Apache 2.0 |
 | ICS-SCADA-Fuzzer | [ridpath/ics-scada-fuzzer](https://github.com/ridpath/ics-scada-fuzzer) | MIT |
 | ANSSI FuzzySully | [ANSSI-FR/fuzzysully](https://github.com/ANSSI-FR/fuzzysully) | GPL-2.0 |

@@ -21,6 +21,7 @@ Excalibur packages are professionally crafted attack script collections covering
 | [LOLBAS & GTFOBins](lotl/) | 49 | 4 057 | 0 |
 | [LOLDrivers](loldrivers/) | 58 | 18 766 | 0 |
 | [Frida Mobile](mobile/frida/) | 40 | 830 | 0 |
+| [MEDUSA](mobile/medusa/) | 38 | 147 | 0 |
 | [MITRE CALDERA OT](ot/) | 15 | 223 | 223 |
 | [ICS-SCADA-Fuzzer](ot/fuzzing/ics-scada-fuzzer/) | 5 | 120 | 0 |
 | [ANSSI FuzzySully](ot/fuzzing/fuzzysully/) | 7 | 79 | 0 |
