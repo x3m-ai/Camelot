@@ -2,6 +2,28 @@
 
 All notable releases and updates for the X3M.AI ecosystem are documented here.
 
+## Morgana / Camelot — Mobile Lab subsystem (August 2026)
+
+### Added
+- New provider-agnostic **Mobile Lab** subsystem in Morgana (adjacent to Industrial Lab)
+  - Sidebar page after Industrial Lab with Overview / Devices / Apps / Templates / Hosts tabs
+  - Provider registry: Android Emulator, Apple Simulator, Physical Android, Physical iOS, Corellium (external API architecture)
+  - Ownership model (`MORGANA_MANAGED` / `DISCOVERED_EXTERNAL` / `EXTERNAL_PHYSICAL` / `EXTERNAL_API_MANAGED`) gating destructive lifecycle actions
+  - Runtime / readiness / connection / reservation state machines + structured error model
+  - Android SDK-root-aware host detection, AVD lifecycle, snapshots, APK install/launch/logs/screenshot, Frida readiness
+  - Apple Simulator via `xcrun simctl` (macOS/Xcode only; no false Windows/Linux support)
+  - `MobileAppAsset` (SHA-256, package/bundle ID, license status) + `MobileLabTemplate` / `MobileLabInstance`
+  - Stable `mobilelab://<device>/app/<app>` target references
+  - Frida/MEDUSA binding via `Run Compatible Scripts` (existing Frida executor reused — no duplicate runtime)
+- Backend: `mobile_lab` models, `core/mobile_lab.py`, router (`/api/v2/mobile-lab`), 4 test files
+- Camelot content: `morgana/mobile-lab/catalog.json` (5 providers + 4 templates) + community guide
+- Docs: 13 `MOBILE_LAB_*.md` guides in the Morgana repo
+
+### Notes
+- Apple Simulator is macOS/Xcode only. Physical devices are non-destructive by default.
+- MEDUSA and Frida Mobile remain independent Script providers dynamically bound to Mobile Lab targets.
+- Full AVD boot, iOS Simulator, physical-device and Corellium runtime tests are NOT RUN where the environment/credentials are unavailable (reported accurately, never false PASS).
+
 ## Morgana / Camelot — IndustriConnect provider + Industrial Lab (August 2026)
 
 ### Added

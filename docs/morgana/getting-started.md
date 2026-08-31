@@ -23,6 +23,7 @@ Morgana is a professional-grade Red Team platform that delivers:
 - **Penetration testing workflows** — Repeatable, evidence-based execution with full audit trails
 - **Excalibur Packs** — Certified script libraries covering real-world attack scenarios
 - **Industrial Lab** — Deploy, manage, reset, and observe industrial mock devices / simulators on Agents
+- **Mobile Lab** — Provision and manage Android and iOS security test environments (emulators, simulators, physical devices) on Agents
 - **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
 - **Campaign management** — Group tests into named campaigns, track results, generate evidence reports
 - **Purple Team automation** — Merlino threat intelligence drives Morgana execution automatically
@@ -51,6 +52,9 @@ Morgana uses its own terminology:
 | **Lab Host** | A Morgana Agent enabled to run Industrial Lab services (mock devices / simulators) |
 | **Lab Service** | One deployed mock/simulator instance (e.g. a Modbus PLC) |
 | **Lab** | A composition of one or more Lab Services from a template |
+| **Mobile Lab** | Morgana subsystem for provisioning and managing mobile test devices and mobile test applications |
+| **Mobile Lab Host** | A Morgana Agent enabled to run Mobile Lab tooling (Android SDK, Apple simctl, ADB, Frida) |
+| **Mobile Device** | A mobile runtime target (AVD, simulator, physical device, external virtual device) |
 
 ---
 
@@ -67,6 +71,26 @@ EtherNet/IP, Modbus, MQTT/Sparkplug B, OPC UA, PROFIBUS, PROFINET, Siemens S7).
 4. **Reset / Stop** the Lab when done.
 
 Mocks are simulators, not hardware emulators. See the [Industrial Lab guide](../../morgana/industrial-lab/README.md).
+
+---
+
+## Mobile Lab
+
+Morgana includes a provider-agnostic **Mobile Lab** subsystem for provisioning
+and managing mobile security test environments on Agents acting as Mobile Lab
+Hosts. Initial providers: **Android Emulator**, **Apple Simulator**, physical
+Android/iOS devices, and an extensible external virtual-device architecture
+(Corellium).
+
+1. **Hosts** tab — check and enable an Agent as a Mobile Lab Host.
+2. **Templates** tab — deploy a lab (e.g. "Android Security Lab — Clean AVD").
+3. **Devices** tab — start the device and wait for `READY`.
+4. **Apps** tab — register and install a test app.
+5. **Run Compatible Scripts** — bind MEDUSA / Frida Mobile procedures to the target.
+
+Apple Simulator is available only on compatible macOS/Xcode Hosts (no false
+Windows/Linux support). Physical devices are non-destructive by default. See
+the [Mobile Lab guide](../../morgana/mobile-lab/README.md).
 
 ---
 
