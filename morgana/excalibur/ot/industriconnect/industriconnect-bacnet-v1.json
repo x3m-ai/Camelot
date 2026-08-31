@@ -1,0 +1,572 @@
+{
+  "package_id": "industriconnect-bacnet-v1",
+  "package_name": "IndustriConnect - BACnet",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect BACnet MCP tool corpus as Morgana Scripts. 7 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "BACnet-Project",
+  "source_path": "BACnet-Project/bacnet-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "bacnet",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/bacnet",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "bacnet",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "bacnet"
+  ],
+  "capabilities": [
+    "Provides the complete BACnet MCP tool corpus (7 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_bacnet_connection",
+      "label": "IndustriConnect BACnet Connection",
+      "description": "Connection and transport parameters for the BACnet MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_bacnet_interface",
+          "label": "Bacnet Interface",
+          "description": "BACnet/IP network interface to bind.",
+          "default": "0.0.0.0",
+          "example": "0.0.0.0",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_bacnet_port",
+          "label": "Bacnet Port",
+          "description": "BACnet/IP UDP port (default 47808).",
+          "default": "47808",
+          "example": "47808",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_bacnet_device_instance",
+          "label": "Bacnet Device Instance",
+          "description": "Local BACnet device instance number.",
+          "default": "1234",
+          "example": "1234",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_bacnet_writes_enabled",
+          "label": "Bacnet Writes Enabled",
+          "description": "Allow BACnet write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_bacnet_parameters",
+      "label": "IndustriConnect BACnet Parameters",
+      "description": "Operation parameters for BACnet MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_bacnet_discover_timeout_ms",
+          "label": "Bacnet Discover Timeout Ms",
+          "description": "Who-Is timeout in milliseconds.",
+          "default": "5000",
+          "example": "5000",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_device_id",
+          "label": "Bacnet Device Id",
+          "description": "Target device instance number.",
+          "default": "1234",
+          "example": "1234",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_object_type",
+          "label": "Bacnet Object Type",
+          "description": "BACnet object type (e.g. analog-input).",
+          "default": "analog-input",
+          "example": "analog-input",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_object_instance",
+          "label": "Bacnet Object Instance",
+          "description": "BACnet object instance number.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_property_id",
+          "label": "Bacnet Property Id",
+          "description": "BACnet property identifier.",
+          "default": "present-value",
+          "example": "present-value",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_write_value",
+          "label": "Bacnet Write Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_write_priority",
+          "label": "Bacnet Write Priority",
+          "description": "Optional BACnet write priority (blank = none).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_alias",
+          "label": "Bacnet Alias",
+          "description": "Object-map alias name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_bacnet_alias_value",
+          "label": "Bacnet Alias Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:bacnet:ping",
+      "name": "INDUSTRICONNECT - BACnet - Ping / Connection Status",
+      "description": "IndustriConnect BACnet MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:discover_devices",
+      "name": "INDUSTRICONNECT - BACnet - Discover Devices",
+      "description": "IndustriConnect BACnet MCP tool 'discover_devices'. Discover BACnet devices on the local BACnet/IP network via Who-Is.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'timeout_ms': int('#{ic_bacnet_discover_timeout_ms}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='discover_devices',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled",
+        "ic_bacnet_discover_timeout_ms"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "discover_devices",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:read_property",
+      "name": "INDUSTRICONNECT - BACnet - Read Property",
+      "description": "IndustriConnect BACnet MCP tool 'read_property'. Read a single BACnet object property value from a device.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': int('#{ic_bacnet_device_id}'.strip() or 0),\n    'object_type': '#{ic_bacnet_object_type}'.strip(),\n    'object_instance': int('#{ic_bacnet_object_instance}'.strip() or 0),\n    'property_id': '#{ic_bacnet_property_id}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='read_property',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled",
+        "ic_bacnet_device_id",
+        "ic_bacnet_object_type",
+        "ic_bacnet_object_instance",
+        "ic_bacnet_property_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "read_property",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:write_property",
+      "name": "INDUSTRICONNECT - BACnet - Write Property",
+      "description": "IndustriConnect BACnet MCP tool 'write_property'. Write a value to a BACnet object property.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'device_id': int('#{ic_bacnet_device_id}'.strip() or 0),\n    'object_type': '#{ic_bacnet_object_type}'.strip(),\n    'object_instance': int('#{ic_bacnet_object_instance}'.strip() or 0),\n    'property_id': '#{ic_bacnet_property_id}'.strip(),\n    'value': '#{ic_bacnet_write_value}'.strip(),\n    'priority': '#{ic_bacnet_write_priority}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='write_property',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled",
+        "ic_bacnet_device_id",
+        "ic_bacnet_object_type",
+        "ic_bacnet_object_instance",
+        "ic_bacnet_property_id",
+        "ic_bacnet_write_value",
+        "ic_bacnet_write_priority"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "write_property",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:list_objects",
+      "name": "INDUSTRICONNECT - BACnet - List Object Aliases",
+      "description": "IndustriConnect BACnet MCP tool 'list_objects'. List configured BACnet object aliases from the object map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='list_objects',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "list_objects",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:read_object_by_alias",
+      "name": "INDUSTRICONNECT - BACnet - Read Object By Alias",
+      "description": "IndustriConnect BACnet MCP tool 'read_object_by_alias'. Read a BACnet object using a configured object-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_bacnet_alias}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='read_object_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled",
+        "ic_bacnet_alias"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "read_object_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    },
+    {
+      "id": "industriconnect:bacnet:write_object_by_alias",
+      "name": "INDUSTRICONNECT - BACnet - Write Object By Alias",
+      "description": "IndustriConnect BACnet MCP tool 'write_object_by_alias'. Write a BACnet object using a configured object-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['BACNET_INTERFACE']=str('#{ic_bacnet_interface}'.strip())\n_env['BACNET_PORT']=str('#{ic_bacnet_port}'.strip())\n_env['BACNET_DEVICE_INSTANCE']=str('#{ic_bacnet_device_instance}'.strip())\n_env['BACNET_WRITES_ENABLED']=str('#{ic_bacnet_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_bacnet_alias}'.strip(),\n    'value': '#{ic_bacnet_alias_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'bacnet-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'BACnet-Project', 'bacnet-python'),tool_name='write_object_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_bacnet_interface",
+        "ic_bacnet_port",
+        "ic_bacnet_device_instance",
+        "ic_bacnet_writes_enabled",
+        "ic_bacnet_alias",
+        "ic_bacnet_alias_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "bacnet",
+        "project": "BACnet-Project",
+        "source_project": "bacnet-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "BACnet-Project/bacnet-python",
+        "tool": "write_object_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 47808
+      },
+      "package": "industriconnect-bacnet-v1"
+    }
+  ],
+  "chains": []
+}

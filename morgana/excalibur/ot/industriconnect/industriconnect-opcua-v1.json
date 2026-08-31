@@ -1,0 +1,496 @@
+{
+  "package_id": "industriconnect-opcua-v1",
+  "package_name": "IndustriConnect - OPC UA",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect OPC UA MCP tool corpus as Morgana Scripts. 7 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "OPCUA-Project",
+  "source_path": "OPCUA-Project/opcua-mcp-server",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "opcua",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/opcua",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "opcua",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "opcua"
+  ],
+  "capabilities": [
+    "Provides the complete OPC UA MCP tool corpus (7 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_opcua_connection",
+      "label": "IndustriConnect OPC UA Connection",
+      "description": "Connection and transport parameters for the OPC UA MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_opcua_server_url",
+          "label": "Opcua Server Url",
+          "description": "OPC UA server endpoint URL.",
+          "default": "opc.tcp://localhost:4840",
+          "example": "opc.tcp://localhost:4840",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_opcua_parameters",
+      "label": "IndustriConnect OPC UA Parameters",
+      "description": "Operation parameters for OPC UA MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_opcua_node_id",
+          "label": "Opcua Node Id",
+          "description": "OPC UA node ID (e.g. ns=2;i=2).",
+          "default": "ns=2;i=2",
+          "example": "ns=2;i=2",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_write_value",
+          "label": "Opcua Write Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_object_node_id",
+          "label": "Opcua Object Node Id",
+          "description": "Object node ID containing the method.",
+          "default": "ns=2;i=1",
+          "example": "ns=2;i=1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_method_node_id",
+          "label": "Opcua Method Node Id",
+          "description": "Method node ID to call.",
+          "default": "ns=2;i=2",
+          "example": "ns=2;i=2",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_method_args",
+          "label": "Opcua Method Args",
+          "description": "JSON array of method arguments.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_node_ids",
+          "label": "Opcua Node Ids",
+          "description": "JSON array of OPC UA node IDs.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_opcua_nodes_to_write",
+          "label": "Opcua Nodes To Write",
+          "description": "JSON array of {node_id, value} objects.",
+          "default": "[]",
+          "example": "[]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:opcua:read_opcua_node",
+      "name": "INDUSTRICONNECT - OPC UA - Read Node",
+      "description": "IndustriConnect OPC UA MCP tool 'read_opcua_node'. Read the value of a specific OPC UA node.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'node_id': '#{ic_opcua_node_id}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='read_opcua_node',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "read_opcua_node",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:write_opcua_node",
+      "name": "INDUSTRICONNECT - OPC UA - Write Node",
+      "description": "IndustriConnect OPC UA MCP tool 'write_opcua_node'. Write a value to a specific OPC UA node.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'node_id': '#{ic_opcua_node_id}'.strip(),\n    'value': '#{ic_opcua_write_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='write_opcua_node',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_node_id",
+        "ic_opcua_write_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "write_opcua_node",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:browse_opcua_node_children",
+      "name": "INDUSTRICONNECT - OPC UA - Browse Node Children",
+      "description": "IndustriConnect OPC UA MCP tool 'browse_opcua_node_children'. Browse the children of a specific OPC UA node.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'node_id': '#{ic_opcua_node_id}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='browse_opcua_node_children',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_node_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "browse_opcua_node_children",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:call_opcua_method",
+      "name": "INDUSTRICONNECT - OPC UA - Call Method",
+      "description": "IndustriConnect OPC UA MCP tool 'call_opcua_method'. Call a method on a specific OPC UA object node.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'object_node_id': '#{ic_opcua_object_node_id}'.strip(),\n    'method_node_id': '#{ic_opcua_method_node_id}'.strip(),\n    'arguments': _j.loads('#{ic_opcua_method_args}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='call_opcua_method',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_object_node_id",
+        "ic_opcua_method_node_id",
+        "ic_opcua_method_args"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "call_opcua_method",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:read_multiple_opcua_nodes",
+      "name": "INDUSTRICONNECT - OPC UA - Read Multiple Nodes",
+      "description": "IndustriConnect OPC UA MCP tool 'read_multiple_opcua_nodes'. Read the values of multiple OPC UA nodes in a single request.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'node_ids': _j.loads('#{ic_opcua_node_ids}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='read_multiple_opcua_nodes',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_node_ids"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "read_multiple_opcua_nodes",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:write_multiple_opcua_nodes",
+      "name": "INDUSTRICONNECT - OPC UA - Write Multiple Nodes",
+      "description": "IndustriConnect OPC UA MCP tool 'write_multiple_opcua_nodes'. Write values to multiple OPC UA nodes in a single request.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'nodes_to_write': _j.loads('#{ic_opcua_nodes_to_write}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='write_multiple_opcua_nodes',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url",
+        "ic_opcua_nodes_to_write"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "write_multiple_opcua_nodes",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    },
+    {
+      "id": "industriconnect:opcua:get_all_variables",
+      "name": "INDUSTRICONNECT - OPC UA - Get All Variables",
+      "description": "IndustriConnect OPC UA MCP tool 'get_all_variables'. Enumerate all variables exposed by the OPC UA server.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['OPCUA_SERVER_URL']=str('#{ic_opcua_server_url}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'python', 'opcua-mcp-server.py'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'OPCUA-Project', 'opcua-mcp-server'),tool_name='get_all_variables',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_opcua_server_url"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "opcua",
+        "project": "OPCUA-Project",
+        "source_project": "opcua-mcp-server",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "OPCUA-Project/opcua-mcp-server",
+        "tool": "get_all_variables",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 4840
+      },
+      "package": "industriconnect-opcua-v1"
+    }
+  ],
+  "chains": []
+}

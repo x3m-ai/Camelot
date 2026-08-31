@@ -1,0 +1,1198 @@
+{
+  "package_id": "industriconnect-modbus-v1",
+  "package_name": "IndustriConnect - Modbus",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect Modbus MCP tool corpus as Morgana Scripts. 17 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "MODBUS-Project",
+  "source_path": "MODBUS-Project/modbus-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "modbus",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/modbus",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "modbus",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "modbus"
+  ],
+  "capabilities": [
+    "Provides the complete Modbus MCP tool corpus (17 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_modbus_connection",
+      "label": "IndustriConnect Modbus Connection",
+      "description": "Connection and transport parameters for the Modbus MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_modbus_type",
+          "label": "Modbus Type",
+          "description": "Modbus transport: tcp, udp, or serial.",
+          "default": "tcp",
+          "example": "tcp",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_host",
+          "label": "Modbus Host",
+          "description": "Modbus device IP address.",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_port",
+          "label": "Modbus Port",
+          "description": "Modbus TCP/UDP port (default 502).",
+          "default": "502",
+          "example": "502",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_unit_id",
+          "label": "Modbus Unit Id",
+          "description": "Modbus slave/unit ID (default 1).",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_timeout",
+          "label": "Modbus Timeout",
+          "description": "Modbus operation timeout (seconds).",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_max_retries",
+          "label": "Modbus Max Retries",
+          "description": "Modbus retry count.",
+          "default": "2",
+          "example": "2",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_modbus_writes_enabled",
+          "label": "Modbus Writes Enabled",
+          "description": "Allow Modbus write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_modbus_parameters",
+      "label": "IndustriConnect Modbus Parameters",
+      "description": "Operation parameters for Modbus MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_modbus_address",
+          "label": "Modbus Address",
+          "description": "Register address (0-65535).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_write_value",
+          "label": "Modbus Write Value",
+          "description": "Value to write (0-65535).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_count",
+          "label": "Modbus Count",
+          "description": "Number of coils to read (1-2000).",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_write_bool",
+          "label": "Modbus Write Bool",
+          "description": "Value to write (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_values",
+          "label": "Modbus Values",
+          "description": "JSON array of register values.",
+          "default": "[0]",
+          "example": "[0]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_coil_values",
+          "label": "Modbus Coil Values",
+          "description": "JSON array of boolean values.",
+          "default": "[false]",
+          "example": "[false]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_and_mask",
+          "label": "Modbus And Mask",
+          "description": "AND mask (hex).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_or_mask",
+          "label": "Modbus Or Mask",
+          "description": "OR mask (hex).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_read_code",
+          "label": "Modbus Read Code",
+          "description": "Read code: 1=basic, 2=regular, 3=extended.",
+          "default": "3",
+          "example": "3",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_object_id",
+          "label": "Modbus Object Id",
+          "description": "Object ID.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_dtype",
+          "label": "Modbus Dtype",
+          "description": "Data type: int16,uint16,int32,uint32,float32,int64,uint64,float64.",
+          "default": "uint16",
+          "example": "uint16",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_byteorder",
+          "label": "Modbus Byteorder",
+          "description": "Byte order: big or little.",
+          "default": "big",
+          "example": "big",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_wordorder",
+          "label": "Modbus Wordorder",
+          "description": "Word order: big or little.",
+          "default": "big",
+          "example": "big",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_scale",
+          "label": "Modbus Scale",
+          "description": "Scale factor.",
+          "default": "1.0",
+          "example": "1.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_offset",
+          "label": "Modbus Offset",
+          "description": "Offset added after scaling.",
+          "default": "0.0",
+          "example": "0.0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_tag_name",
+          "label": "Modbus Tag Name",
+          "description": "Register-map tag name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_modbus_tag_value",
+          "label": "Modbus Tag Value",
+          "description": "Value to write (scalar or JSON array).",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:modbus:ping",
+      "name": "INDUSTRICONNECT - Modbus - Ping / Connection Status",
+      "description": "IndustriConnect Modbus MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_register",
+      "name": "INDUSTRICONNECT - Modbus - Read Holding Register",
+      "description": "IndustriConnect Modbus MCP tool 'read_register'. Read a single Modbus holding register (function 3).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_register',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_register",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:write_register",
+      "name": "INDUSTRICONNECT - Modbus - Write Holding Register",
+      "description": "IndustriConnect Modbus MCP tool 'write_register'. Write a value to a Modbus holding register (function 6).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'value': int('#{ic_modbus_write_value}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='write_register',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_write_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "write_register",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_coils",
+      "name": "INDUSTRICONNECT - Modbus - Read Coils",
+      "description": "IndustriConnect Modbus MCP tool 'read_coils'. Read the status of multiple Modbus coils (function 1).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_coils',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_coils",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:write_coil",
+      "name": "INDUSTRICONNECT - Modbus - Write Coil",
+      "description": "IndustriConnect Modbus MCP tool 'write_coil'. Write a value to a single Modbus coil (function 5).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'value': ('#{ic_modbus_write_bool}'.strip().lower() in ('true','1','yes','on')),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='write_coil',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_write_bool"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "write_coil",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_input_registers",
+      "name": "INDUSTRICONNECT - Modbus - Read Input Registers",
+      "description": "IndustriConnect Modbus MCP tool 'read_input_registers'. Read multiple Modbus input registers (function 4).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_input_registers',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_input_registers",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_multiple_holding_registers",
+      "name": "INDUSTRICONNECT - Modbus - Read Multiple Holding Registers",
+      "description": "IndustriConnect Modbus MCP tool 'read_multiple_holding_registers'. Read multiple Modbus holding registers (function 3).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_multiple_holding_registers',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_multiple_holding_registers",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_discrete_inputs",
+      "name": "INDUSTRICONNECT - Modbus - Read Discrete Inputs",
+      "description": "IndustriConnect Modbus MCP tool 'read_discrete_inputs'. Read multiple Modbus discrete inputs (function 2).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_discrete_inputs',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_discrete_inputs",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:write_registers",
+      "name": "INDUSTRICONNECT - Modbus - Write Multiple Registers",
+      "description": "IndustriConnect Modbus MCP tool 'write_registers'. Write multiple Modbus holding registers (function 16).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'values': _j.loads('#{ic_modbus_values}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='write_registers',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_values"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "write_registers",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:write_coils_bulk",
+      "name": "INDUSTRICONNECT - Modbus - Write Multiple Coils",
+      "description": "IndustriConnect Modbus MCP tool 'write_coils_bulk'. Write multiple Modbus coils (function 15).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'values': _j.loads('#{ic_modbus_coil_values}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='write_coils_bulk',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_coil_values"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "write_coils_bulk",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:mask_write_register",
+      "name": "INDUSTRICONNECT - Modbus - Mask Write Register",
+      "description": "IndustriConnect Modbus MCP tool 'mask_write_register'. Mask write a Modbus register (function 22).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'and_mask': int('#{ic_modbus_and_mask}'.strip() or 0),\n    'or_mask': int('#{ic_modbus_or_mask}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='mask_write_register',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_and_mask",
+        "ic_modbus_or_mask"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "mask_write_register",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_device_information",
+      "name": "INDUSTRICONNECT - Modbus - Read Device Information",
+      "description": "IndustriConnect Modbus MCP tool 'read_device_information'. Read Modbus device identification (MEI type 0x2B/0x0E).",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'read_code': int('#{ic_modbus_read_code}'.strip() or 0),\n    'object_id': int('#{ic_modbus_object_id}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_device_information',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_read_code",
+        "ic_modbus_object_id"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_device_information",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_holding_typed",
+      "name": "INDUSTRICONNECT - Modbus - Read Holding Registers Typed",
+      "description": "IndustriConnect Modbus MCP tool 'read_holding_typed'. Read Modbus holding registers and decode as typed values.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'dtype': '#{ic_modbus_dtype}'.strip(),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n    'byteorder': '#{ic_modbus_byteorder}'.strip(),\n    'wordorder': '#{ic_modbus_wordorder}'.strip(),\n    'scale': float('#{ic_modbus_scale}'.strip() or 0),\n    'offset': float('#{ic_modbus_offset}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_holding_typed',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_dtype",
+        "ic_modbus_count",
+        "ic_modbus_byteorder",
+        "ic_modbus_wordorder",
+        "ic_modbus_scale",
+        "ic_modbus_offset"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_holding_typed",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_input_typed",
+      "name": "INDUSTRICONNECT - Modbus - Read Input Registers Typed",
+      "description": "IndustriConnect Modbus MCP tool 'read_input_typed'. Read Modbus input registers and decode as typed values.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'address': int('#{ic_modbus_address}'.strip() or 0),\n    'dtype': '#{ic_modbus_dtype}'.strip(),\n    'count': int('#{ic_modbus_count}'.strip() or 0),\n    'byteorder': '#{ic_modbus_byteorder}'.strip(),\n    'wordorder': '#{ic_modbus_wordorder}'.strip(),\n    'scale': float('#{ic_modbus_scale}'.strip() or 0),\n    'offset': float('#{ic_modbus_offset}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_input_typed',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_address",
+        "ic_modbus_dtype",
+        "ic_modbus_count",
+        "ic_modbus_byteorder",
+        "ic_modbus_wordorder",
+        "ic_modbus_scale",
+        "ic_modbus_offset"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_input_typed",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:list_tags",
+      "name": "INDUSTRICONNECT - Modbus - List Register-Map Tags",
+      "description": "IndustriConnect Modbus MCP tool 'list_tags'. List available tags from the Modbus register map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='list_tags',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "list_tags",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:read_tag",
+      "name": "INDUSTRICONNECT - Modbus - Read Register-Map Tag",
+      "description": "IndustriConnect Modbus MCP tool 'read_tag'. Read a value using the configured Modbus register map.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'name': '#{ic_modbus_tag_name}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='read_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_tag_name"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "read_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    },
+    {
+      "id": "industriconnect:modbus:write_tag",
+      "name": "INDUSTRICONNECT - Modbus - Write Register-Map Tag",
+      "description": "IndustriConnect Modbus MCP tool 'write_tag'. Write a value using the configured Modbus register map.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['MODBUS_TYPE']=str('#{ic_modbus_type}'.strip())\n_env['MODBUS_HOST']=str('#{ic_modbus_host}'.strip())\n_env['MODBUS_PORT']=str('#{ic_modbus_port}'.strip())\n_env['MODBUS_DEFAULT_SLAVE_ID']=str('#{ic_modbus_unit_id}'.strip())\n_env['MODBUS_TIMEOUT']=str('#{ic_modbus_timeout}'.strip())\n_env['MODBUS_MAX_RETRIES']=str('#{ic_modbus_max_retries}'.strip())\n_env['MODBUS_WRITES_ENABLED']=str('#{ic_modbus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'name': '#{ic_modbus_tag_name}'.strip(),\n    'value': '#{ic_modbus_tag_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'modbus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'MODBUS-Project', 'modbus-python'),tool_name='write_tag',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_modbus_type",
+        "ic_modbus_host",
+        "ic_modbus_port",
+        "ic_modbus_unit_id",
+        "ic_modbus_timeout",
+        "ic_modbus_max_retries",
+        "ic_modbus_writes_enabled",
+        "ic_modbus_tag_name",
+        "ic_modbus_tag_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "modbus",
+        "project": "MODBUS-Project",
+        "source_project": "modbus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "MODBUS-Project/modbus-python",
+        "tool": "write_tag",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 502
+      },
+      "package": "industriconnect-modbus-v1"
+    }
+  ],
+  "chains": []
+}

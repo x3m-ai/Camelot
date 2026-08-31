@@ -1,0 +1,1309 @@
+{
+  "catalog_version": "1.0.0",
+  "updated": "2026-08-31",
+  "source": "https://github.com/x3m-ai/Camelot",
+  "description": "Industrial Lab catalog — provider-agnostic lab service manifests and Lab templates. Camelot is the content/distribution plane; Morgana Server orchestrates and Morgana Agents act as Lab Hosts.",
+  "providers": [
+    {
+      "id": "industriconnect",
+      "name": "IndustriConnect",
+      "description": "IndustriAgents IndustriConnect MCP suite: Python MCP servers + mock devices for BACnet, DNP3, EtherCAT, EtherNet/IP, Modbus, MQTT/Sparkplug B, OPC UA, PROFIBUS, PROFINET, and Siemens S7.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "license": "MIT"
+    }
+  ],
+  "services": [
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-modbus",
+      "provider": "industriconnect",
+      "name": "Modbus Mock Device",
+      "description": "Mock Modbus TCP device with a realistic register map (coils, discrete inputs, input registers, holding registers) that periodically mutates to mimic live plant data.",
+      "protocol": "modbus",
+      "fidelity": "simulated industrial process / mock device (not a hardware emulator).",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "MODBUS-Project/modbus-mock-server",
+      "project_dir": "MODBUS-Project",
+      "subdir": "modbus-mock-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        1502
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MODBUS_PORT",
+        "env_host_var": "MODBUS_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "modbus-mock-server"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "modbus",
+        "package": "industriconnect-modbus-v1"
+      },
+      "presets": [
+        {
+          "id": "default-device",
+          "name": "Default Device",
+          "description": "Upstream default register map."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-mqtt",
+      "provider": "industriconnect",
+      "name": "MQTT / Sparkplug B Mock Broker",
+      "description": "Mock MQTT broker with Sparkplug B edge nodes/devices that publish birth/death certificates and live metric data.",
+      "protocol": "mqtt",
+      "fidelity": "simulated broker + Sparkplug edge/device behaviour.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "MQTT-Project/mqtt-mock-server",
+      "project_dir": "MQTT-Project",
+      "subdir": "mqtt-mock-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        1883
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MQTT_BROKER_PORT",
+        "env_host_var": "MQTT_BROKER_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "mqtt-mock-server"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": false
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "mqtt",
+        "package": "industriconnect-mqtt-v1"
+      },
+      "presets": [
+        {
+          "id": "basic-broker",
+          "name": "Basic Broker",
+          "description": "Plain MQTT broker behaviour."
+        },
+        {
+          "id": "sparkplug-demo",
+          "name": "Sparkplug Demo",
+          "description": "Sparkplug B edge nodes publishing NDATA/DDATA."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-opcua",
+      "provider": "industriconnect",
+      "name": "OPC UA Industrial Plant Server",
+      "description": "Rich mock OPC UA server simulating an industrial plant with sensor variables, actuator controls, system status and management methods (StartProduction, StopProduction, EmergencyStop).",
+      "protocol": "opcua",
+      "fidelity": "simulated industrial process / mock plant server.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "OPCUA-Project/opcua-local-server",
+      "project_dir": "OPCUA-Project",
+      "subdir": "opcua-local-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        4840
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "OPCUA_PORT",
+        "env_host_var": "OPCUA_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "python",
+          "opcua_local_server.py"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "opcua",
+        "package": "industriconnect-opcua-v1"
+      },
+      "presets": [
+        {
+          "id": "default-plant",
+          "name": "Default Plant",
+          "description": "Upstream default plant with sensors and actuators."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-bacnet",
+      "provider": "industriconnect",
+      "name": "BACnet Mock Device",
+      "description": "Mock BACnet device exposing a JSON-over-TCP bridge for discovery and property access tests (BACnet/IP stack integration planned upstream).",
+      "protocol": "bacnet",
+      "fidelity": "mock device / test endpoint.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "BACnet-Project/bacnet-mock-device",
+      "project_dir": "BACnet-Project",
+      "subdir": "bacnet-mock-device",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        7900
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_BACNET_PORT",
+        "env_host_var": "MOCK_BACNET_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "bacnet-mock-device"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "bacnet",
+        "package": "industriconnect-bacnet-v1"
+      },
+      "presets": [
+        {
+          "id": "default-device",
+          "name": "Default Device",
+          "description": "Upstream default device map."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-dnp3",
+      "provider": "industriconnect",
+      "name": "DNP3 Mock Outstation",
+      "description": "Mock DNP3 outstation exposing a JSON-over-TCP bridge simulating binary/analog input points and outputs.",
+      "protocol": "dnp3",
+      "fidelity": "mock outstation / test endpoint.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "DNP3-Project/dnp3-mock-outstation",
+      "project_dir": "DNP3-Project",
+      "subdir": "dnp3-mock-outstation",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        7300
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_DNP3_PORT",
+        "env_host_var": "MOCK_DNP3_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "dnp3-mock-outstation"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "dnp3",
+        "package": "industriconnect-dnp3-v1"
+      },
+      "presets": [
+        {
+          "id": "default-outstation",
+          "name": "Default Outstation",
+          "description": "Upstream default point map."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-ethercat",
+      "provider": "industriconnect",
+      "name": "EtherCAT Mock Slave",
+      "description": "Minimalist EtherCAT slave simulator exposing a JSON-over-TCP bridge that mimics network scans and PDO buffers (SOEM-based mock planned upstream).",
+      "protocol": "ethercat",
+      "fidelity": "mock slave / test endpoint (JSON bridge; not a raw EtherCAT frame emulator).",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "EtherCAT-Project/ethercat-mock-slave",
+      "project_dir": "EtherCAT-Project",
+      "subdir": "ethercat-mock-slave",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": true,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        6700
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_ETHERCAT_PORT",
+        "env_host_var": "MOCK_ETHERCAT_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "ethercat-mock-slave"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": false
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "ethercat",
+        "package": "industriconnect-ethercat-v1"
+      },
+      "presets": [
+        {
+          "id": "default-slave",
+          "name": "Default Slave",
+          "description": "Upstream default PDO buffer."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-ethernetip",
+      "provider": "industriconnect",
+      "name": "EtherNet/IP Mock PLC",
+      "description": "Mock CIP server with representative tags/UDTs simulating an EtherNet/IP (Rockwell/AB-style) controller.",
+      "protocol": "ethernetip",
+      "fidelity": "mock CIP/PLC server with representative tags.",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "EtherNetIP-Project/ethernetip-mock-server",
+      "project_dir": "EtherNetIP-Project",
+      "subdir": "ethernetip-mock-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        5025
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_ENIP_PORT",
+        "env_host_var": "MOCK_ENIP_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "ethernetip-mock-server"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "ethernetip",
+        "package": "industriconnect-ethernetip-v1"
+      },
+      "presets": [
+        {
+          "id": "default-plc",
+          "name": "Default PLC",
+          "description": "Upstream default tag set."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-profibus",
+      "provider": "industriconnect",
+      "name": "PROFIBUS Mock Slave",
+      "description": "Mock PROFIBUS slave exposing a JSON-over-TCP bridge that mimics input/output image access (raw PROFIBUS DP/PA planned upstream).",
+      "protocol": "profibus",
+      "fidelity": "mock slave / test endpoint (JSON bridge; not raw PROFIBUS).",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "PROFIBUS-Project/profibus-mock-slave",
+      "project_dir": "PROFIBUS-Project",
+      "subdir": "profibus-mock-slave",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        7100
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_PROFIBUS_PORT",
+        "env_host_var": "MOCK_PROFIBUS_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "profibus-mock-slave"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": false
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "profibus",
+        "package": "industriconnect-profibus-v1"
+      },
+      "presets": [
+        {
+          "id": "default-slave",
+          "name": "Default Slave",
+          "description": "Upstream default I/O image."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-profinet",
+      "provider": "industriconnect",
+      "name": "PROFINET Mock IO Device",
+      "description": "Toy PROFINET IO device exposing a JSON-over-TCP bridge that mimics device discovery and I/O payloads (raw DCP planned upstream).",
+      "protocol": "profinet",
+      "fidelity": "mock IO device / test endpoint (JSON bridge; not raw PROFINET).",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "PROFINET-Project/profinet-mock-server",
+      "project_dir": "PROFINET-Project",
+      "subdir": "profinet-mock-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": true,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        5600
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_PROFINET_PORT",
+        "env_host_var": "MOCK_PROFINET_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "profinet-mock-server"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": false
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "profinet",
+        "package": "industriconnect-profinet-v1"
+      },
+      "presets": [
+        {
+          "id": "default-device",
+          "name": "Default Device",
+          "description": "Upstream default IO device."
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "service_id": "industriconnect-s7comm",
+      "provider": "industriconnect",
+      "name": "Siemens S7 Mock PLC",
+      "description": "Lightweight Siemens S7 mock built with python-snap7. Seeds deterministic data blocks (DB1 motor telemetry, DB2 alarms), inputs, outputs and marker bytes, periodically mutated to mimic live plant data.",
+      "protocol": "s7comm",
+      "fidelity": "mock PLC (DB/I/O/SZL-style behaviour; not a full S7-1500 emulator).",
+      "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+      "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+      "source_path": "S7comm-Project/s7comm-mock-server",
+      "project_dir": "S7comm-Project",
+      "subdir": "s7comm-mock-server",
+      "license": "MIT",
+      "license_status": "declared-mit-in-pyproject",
+      "runtime_type": "python-process",
+      "supported_platforms": [
+        "linux",
+        "windows",
+        "macos"
+      ],
+      "raw_network_required": false,
+      "container_required": false,
+      "requirements": [
+        {
+          "id": "python",
+          "name": "Python 3.10+",
+          "auto_install": false,
+          "check_command": "python --version",
+          "description": "Required to run the mock device."
+        },
+        {
+          "id": "uv",
+          "name": "uv package manager",
+          "auto_install": false,
+          "check_command": "uv --version",
+          "description": "Required to install pinned dependencies and run the mock device."
+        }
+      ],
+      "default_ports": [
+        1102
+      ],
+      "config_schema": {
+        "fields": [
+          {
+            "key": "host",
+            "label": "Listen Interface",
+            "type": "string",
+            "default": "127.0.0.1",
+            "required": true,
+            "description": "Bind address: localhost only, Lab Host network, or custom."
+          },
+          {
+            "key": "port",
+            "label": "Port",
+            "type": "int",
+            "required": true,
+            "description": "TCP port for the mock device."
+          },
+          {
+            "key": "update_interval",
+            "label": "Update Interval (s)",
+            "type": "float",
+            "default": "1.0",
+            "required": false,
+            "description": "How often the mock mutates simulated process values."
+          }
+        ],
+        "env_port_var": "MOCK_S7_PORT",
+        "env_host_var": "MOCK_S7_HOST"
+      },
+      "install": {
+        "strategy": "uv-sync",
+        "commands": [
+          "uv",
+          "sync"
+        ]
+      },
+      "start": {
+        "commands": [
+          "uv",
+          "run",
+          "s7comm-mock-server"
+        ]
+      },
+      "stop": {
+        "strategy": "terminate-process"
+      },
+      "restart": {
+        "strategy": "stop-then-start"
+      },
+      "reset": {
+        "strategy": "restart-with-seed"
+      },
+      "health": {
+        "strategy": "tcp-connect",
+        "port_ref": "$config.port"
+      },
+      "logs": {
+        "source": "process-stdout-stderr"
+      },
+      "state_inspection": {
+        "supports_state_inspection": true
+      },
+      "multiple_instance_support": true,
+      "compatible_scripts": {
+        "protocol": "s7comm",
+        "package": "industriconnect-s7comm-v1"
+      },
+      "presets": [
+        {
+          "id": "default-plc",
+          "name": "Default PLC",
+          "description": "DB1 motor telemetry + DB2 alarms + toggling sensors."
+        }
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "industriconnect-single-modbus",
+      "name": "IndustriConnect - Single Modbus Device",
+      "description": "A single Modbus mock device on one Lab Host. Good first lab for validating read/write operations and detection telemetry.",
+      "providers": [
+        "industriconnect"
+      ],
+      "services": [
+        {
+          "service_id": "industriconnect-modbus",
+          "preset": "default-device",
+          "port": 1502,
+          "friendly_name": "MODBUS-PLC-01"
+        }
+      ],
+      "host_placement": {
+        "all_services_on_one_host": true
+      },
+      "startup_order": [
+        "industriconnect-modbus"
+      ],
+      "shutdown_order": [
+        "industriconnect-modbus"
+      ],
+      "reset_policy": "reset-all-services"
+    },
+    {
+      "id": "industriconnect-single-opcua",
+      "name": "IndustriConnect - Single OPC UA Plant",
+      "description": "A single OPC UA mock plant server with sensors, actuators and methods.",
+      "providers": [
+        "industriconnect"
+      ],
+      "services": [
+        {
+          "service_id": "industriconnect-opcua",
+          "preset": "default-plant",
+          "port": 4840,
+          "friendly_name": "PUMP-STATION-OPCUA"
+        }
+      ],
+      "host_placement": {
+        "all_services_on_one_host": true
+      },
+      "startup_order": [
+        "industriconnect-opcua"
+      ],
+      "shutdown_order": [
+        "industriconnect-opcua"
+      ],
+      "reset_policy": "reset-all-services"
+    },
+    {
+      "id": "industriconnect-single-dnp3",
+      "name": "IndustriConnect - Single DNP3 Outstation",
+      "description": "A single DNP3 mock outstation for binary/analog point operations.",
+      "providers": [
+        "industriconnect"
+      ],
+      "services": [
+        {
+          "service_id": "industriconnect-dnp3",
+          "preset": "default-outstation",
+          "port": 7300,
+          "friendly_name": "SUBSTATION-DNP3-01"
+        }
+      ],
+      "host_placement": {
+        "all_services_on_one_host": true
+      },
+      "startup_order": [
+        "industriconnect-dnp3"
+      ],
+      "shutdown_order": [
+        "industriconnect-dnp3"
+      ],
+      "reset_policy": "reset-all-services"
+    },
+    {
+      "id": "industriconnect-basic-lab",
+      "name": "IndustriConnect - Basic Industrial Lab",
+      "description": "A small multi-protocol lab: one Modbus PLC and one OPC UA plant on the same host, for cross-protocol detection validation.",
+      "providers": [
+        "industriconnect"
+      ],
+      "services": [
+        {
+          "service_id": "industriconnect-modbus",
+          "preset": "default-device",
+          "port": 1502,
+          "friendly_name": "MODBUS-PLC-01"
+        },
+        {
+          "service_id": "industriconnect-opcua",
+          "preset": "default-plant",
+          "port": 4840,
+          "friendly_name": "PUMP-STATION-OPCUA"
+        }
+      ],
+      "host_placement": {
+        "all_services_on_one_host": true
+      },
+      "startup_order": [
+        "industriconnect-modbus",
+        "industriconnect-opcua"
+      ],
+      "shutdown_order": [
+        "industriconnect-opcua",
+        "industriconnect-modbus"
+      ],
+      "reset_policy": "reset-all-services"
+    }
+  ],
+  "generated_at": "2026-08-31T17:13:51.067192+00:00"
+}

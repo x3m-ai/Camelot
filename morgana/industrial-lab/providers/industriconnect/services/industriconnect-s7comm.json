@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "service_id": "industriconnect-s7comm",
+  "provider": "industriconnect",
+  "name": "Siemens S7 Mock PLC",
+  "description": "Lightweight Siemens S7 mock built with python-snap7. Seeds deterministic data blocks (DB1 motor telemetry, DB2 alarms), inputs, outputs and marker bytes, periodically mutated to mimic live plant data.",
+  "protocol": "s7comm",
+  "fidelity": "mock PLC (DB/I/O/SZL-style behaviour; not a full S7-1500 emulator).",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_path": "S7comm-Project/s7comm-mock-server",
+  "project_dir": "S7comm-Project",
+  "subdir": "s7comm-mock-server",
+  "license": "MIT",
+  "license_status": "declared-mit-in-pyproject",
+  "runtime_type": "python-process",
+  "supported_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "raw_network_required": false,
+  "container_required": false,
+  "requirements": [
+    {
+      "id": "python",
+      "name": "Python 3.10+",
+      "auto_install": false,
+      "check_command": "python --version",
+      "description": "Required to run the mock device."
+    },
+    {
+      "id": "uv",
+      "name": "uv package manager",
+      "auto_install": false,
+      "check_command": "uv --version",
+      "description": "Required to install pinned dependencies and run the mock device."
+    }
+  ],
+  "default_ports": [
+    1102
+  ],
+  "config_schema": {
+    "fields": [
+      {
+        "key": "host",
+        "label": "Listen Interface",
+        "type": "string",
+        "default": "127.0.0.1",
+        "required": true,
+        "description": "Bind address: localhost only, Lab Host network, or custom."
+      },
+      {
+        "key": "port",
+        "label": "Port",
+        "type": "int",
+        "required": true,
+        "description": "TCP port for the mock device."
+      },
+      {
+        "key": "update_interval",
+        "label": "Update Interval (s)",
+        "type": "float",
+        "default": "1.0",
+        "required": false,
+        "description": "How often the mock mutates simulated process values."
+      }
+    ],
+    "env_port_var": "MOCK_S7_PORT",
+    "env_host_var": "MOCK_S7_HOST"
+  },
+  "install": {
+    "strategy": "uv-sync",
+    "commands": [
+      "uv",
+      "sync"
+    ]
+  },
+  "start": {
+    "commands": [
+      "uv",
+      "run",
+      "s7comm-mock-server"
+    ]
+  },
+  "stop": {
+    "strategy": "terminate-process"
+  },
+  "restart": {
+    "strategy": "stop-then-start"
+  },
+  "reset": {
+    "strategy": "restart-with-seed"
+  },
+  "health": {
+    "strategy": "tcp-connect",
+    "port_ref": "$config.port"
+  },
+  "logs": {
+    "source": "process-stdout-stderr"
+  },
+  "state_inspection": {
+    "supports_state_inspection": true
+  },
+  "multiple_instance_support": true,
+  "compatible_scripts": {
+    "protocol": "s7comm",
+    "package": "industriconnect-s7comm-v1"
+  },
+  "presets": [
+    {
+      "id": "default-plc",
+      "name": "Default PLC",
+      "description": "DB1 motor telemetry + DB2 alarms + toggling sensors."
+    }
+  ]
+}

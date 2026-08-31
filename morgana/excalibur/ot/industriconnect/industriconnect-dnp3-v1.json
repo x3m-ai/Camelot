@@ -1,0 +1,660 @@
+{
+  "package_id": "industriconnect-dnp3-v1",
+  "package_name": "IndustriConnect - DNP3",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect DNP3 MCP tool corpus as Morgana Scripts. 8 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "DNP3-Project",
+  "source_path": "DNP3-Project/dnp3-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "dnp3",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/dnp3",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "dnp3",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "dnp3"
+  ],
+  "capabilities": [
+    "Provides the complete DNP3 MCP tool corpus (8 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_dnp3_connection",
+      "label": "IndustriConnect DNP3 Connection",
+      "description": "Connection and transport parameters for the DNP3 MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_dnp3_connection_type",
+          "label": "Dnp3 Connection Type",
+          "description": "DNP3 transport: tcp or serial.",
+          "default": "tcp",
+          "example": "tcp",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_host",
+          "label": "Dnp3 Host",
+          "description": "DNP3 outstation IP address.",
+          "default": "127.0.0.1",
+          "example": "127.0.0.1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_port",
+          "label": "Dnp3 Port",
+          "description": "DNP3 outstation TCP port.",
+          "default": "20000",
+          "example": "20000",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_master_address",
+          "label": "Dnp3 Master Address",
+          "description": "DNP3 master link address.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_local_address",
+          "label": "Dnp3 Local Address",
+          "description": "DNP3 local link address.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_timeout",
+          "label": "Dnp3 Timeout",
+          "description": "DNP3 operation timeout (ms).",
+          "default": "5000",
+          "example": "5000",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_dnp3_writes_enabled",
+          "label": "Dnp3 Writes Enabled",
+          "description": "Allow DNP3 write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_dnp3_parameters",
+      "label": "IndustriConnect DNP3 Parameters",
+      "description": "Operation parameters for DNP3 MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_dnp3_outstation_address",
+          "label": "Dnp3 Outstation Address",
+          "description": "DNP3 outstation address.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_start_index",
+          "label": "Dnp3 Start Index",
+          "description": "First point index.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_count",
+          "label": "Dnp3 Count",
+          "description": "Number of points to read.",
+          "default": "1",
+          "example": "1",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_index",
+          "label": "Dnp3 Index",
+          "description": "Point index.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_write_value",
+          "label": "Dnp3 Write Value",
+          "description": "Value to write (true/false).",
+          "default": "false",
+          "example": "false",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_event_class",
+          "label": "Dnp3 Event Class",
+          "description": "DNP3 event class (0-3).",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_alias",
+          "label": "Dnp3 Alias",
+          "description": "Point-map alias name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_dnp3_alias_value",
+          "label": "Dnp3 Alias Value",
+          "description": "Value to write.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:dnp3:ping",
+      "name": "INDUSTRICONNECT - DNP3 - Ping / Connection Status",
+      "description": "IndustriConnect DNP3 MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:read_binary_inputs",
+      "name": "INDUSTRICONNECT - DNP3 - Read Binary Inputs",
+      "description": "IndustriConnect DNP3 MCP tool 'read_binary_inputs'. Read a range of DNP3 binary input points from an outstation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'outstation_address': int('#{ic_dnp3_outstation_address}'.strip() or 0),\n    'start_index': int('#{ic_dnp3_start_index}'.strip() or 0),\n    'count': int('#{ic_dnp3_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='read_binary_inputs',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_outstation_address",
+        "ic_dnp3_start_index",
+        "ic_dnp3_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "read_binary_inputs",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:read_analog_inputs",
+      "name": "INDUSTRICONNECT - DNP3 - Read Analog Inputs",
+      "description": "IndustriConnect DNP3 MCP tool 'read_analog_inputs'. Read a range of DNP3 analog input points from an outstation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'outstation_address': int('#{ic_dnp3_outstation_address}'.strip() or 0),\n    'start_index': int('#{ic_dnp3_start_index}'.strip() or 0),\n    'count': int('#{ic_dnp3_count}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='read_analog_inputs',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_outstation_address",
+        "ic_dnp3_start_index",
+        "ic_dnp3_count"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "read_analog_inputs",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:write_binary_output",
+      "name": "INDUSTRICONNECT - DNP3 - Write Binary Output",
+      "description": "IndustriConnect DNP3 MCP tool 'write_binary_output'. Write a DNP3 binary output point to an outstation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'outstation_address': int('#{ic_dnp3_outstation_address}'.strip() or 0),\n    'index': int('#{ic_dnp3_index}'.strip() or 0),\n    'value': ('#{ic_dnp3_write_value}'.strip().lower() in ('true','1','yes','on')),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='write_binary_output',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_outstation_address",
+        "ic_dnp3_index",
+        "ic_dnp3_write_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "write_binary_output",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:poll_class",
+      "name": "INDUSTRICONNECT - DNP3 - Poll Event Class",
+      "description": "IndustriConnect DNP3 MCP tool 'poll_class'. Poll a DNP3 event class from an outstation.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'outstation_address': int('#{ic_dnp3_outstation_address}'.strip() or 0),\n    'event_class': int('#{ic_dnp3_event_class}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='poll_class',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_outstation_address",
+        "ic_dnp3_event_class"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "poll_class",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:list_points",
+      "name": "INDUSTRICONNECT - DNP3 - List Point Aliases",
+      "description": "IndustriConnect DNP3 MCP tool 'list_points'. List configured DNP3 point aliases from the point map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='list_points',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "list_points",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:read_point_by_alias",
+      "name": "INDUSTRICONNECT - DNP3 - Read Point By Alias",
+      "description": "IndustriConnect DNP3 MCP tool 'read_point_by_alias'. Read a DNP3 point using a configured point-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_dnp3_alias}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='read_point_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_alias"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "read_point_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    },
+    {
+      "id": "industriconnect:dnp3:write_point_by_alias",
+      "name": "INDUSTRICONNECT - DNP3 - Write Point By Alias",
+      "description": "IndustriConnect DNP3 MCP tool 'write_point_by_alias'. Write a DNP3 binary output using a configured point-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['DNP3_CONNECTION_TYPE']=str('#{ic_dnp3_connection_type}'.strip())\n_env['DNP3_HOST']=str('#{ic_dnp3_host}'.strip())\n_env['DNP3_PORT']=str('#{ic_dnp3_port}'.strip())\n_env['DNP3_MASTER_ADDRESS']=str('#{ic_dnp3_master_address}'.strip())\n_env['DNP3_LOCAL_ADDRESS']=str('#{ic_dnp3_local_address}'.strip())\n_env['DNP3_TIMEOUT']=str('#{ic_dnp3_timeout}'.strip())\n_env['DNP3_WRITES_ENABLED']=str('#{ic_dnp3_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_dnp3_alias}'.strip(),\n    'value': '#{ic_dnp3_alias_value}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'dnp3-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'DNP3-Project', 'dnp3-python'),tool_name='write_point_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_dnp3_connection_type",
+        "ic_dnp3_host",
+        "ic_dnp3_port",
+        "ic_dnp3_master_address",
+        "ic_dnp3_local_address",
+        "ic_dnp3_timeout",
+        "ic_dnp3_writes_enabled",
+        "ic_dnp3_alias",
+        "ic_dnp3_alias_value"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "dnp3",
+        "project": "DNP3-Project",
+        "source_project": "dnp3-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "DNP3-Project/dnp3-python",
+        "tool": "write_point_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": 20000
+      },
+      "package": "industriconnect-dnp3-v1"
+    }
+  ],
+  "chains": []
+}

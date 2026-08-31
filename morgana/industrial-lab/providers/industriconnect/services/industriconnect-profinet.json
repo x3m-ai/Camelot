@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "service_id": "industriconnect-profinet",
+  "provider": "industriconnect",
+  "name": "PROFINET Mock IO Device",
+  "description": "Toy PROFINET IO device exposing a JSON-over-TCP bridge that mimics device discovery and I/O payloads (raw DCP planned upstream).",
+  "protocol": "profinet",
+  "fidelity": "mock IO device / test endpoint (JSON bridge; not raw PROFINET).",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_path": "PROFINET-Project/profinet-mock-server",
+  "project_dir": "PROFINET-Project",
+  "subdir": "profinet-mock-server",
+  "license": "MIT",
+  "license_status": "declared-mit-in-pyproject",
+  "runtime_type": "python-process",
+  "supported_platforms": [
+    "linux",
+    "windows",
+    "macos"
+  ],
+  "raw_network_required": true,
+  "container_required": false,
+  "requirements": [
+    {
+      "id": "python",
+      "name": "Python 3.10+",
+      "auto_install": false,
+      "check_command": "python --version",
+      "description": "Required to run the mock device."
+    },
+    {
+      "id": "uv",
+      "name": "uv package manager",
+      "auto_install": false,
+      "check_command": "uv --version",
+      "description": "Required to install pinned dependencies and run the mock device."
+    }
+  ],
+  "default_ports": [
+    5600
+  ],
+  "config_schema": {
+    "fields": [
+      {
+        "key": "host",
+        "label": "Listen Interface",
+        "type": "string",
+        "default": "127.0.0.1",
+        "required": true,
+        "description": "Bind address: localhost only, Lab Host network, or custom."
+      },
+      {
+        "key": "port",
+        "label": "Port",
+        "type": "int",
+        "required": true,
+        "description": "TCP port for the mock device."
+      },
+      {
+        "key": "update_interval",
+        "label": "Update Interval (s)",
+        "type": "float",
+        "default": "1.0",
+        "required": false,
+        "description": "How often the mock mutates simulated process values."
+      }
+    ],
+    "env_port_var": "MOCK_PROFINET_PORT",
+    "env_host_var": "MOCK_PROFINET_HOST"
+  },
+  "install": {
+    "strategy": "uv-sync",
+    "commands": [
+      "uv",
+      "sync"
+    ]
+  },
+  "start": {
+    "commands": [
+      "uv",
+      "run",
+      "profinet-mock-server"
+    ]
+  },
+  "stop": {
+    "strategy": "terminate-process"
+  },
+  "restart": {
+    "strategy": "stop-then-start"
+  },
+  "reset": {
+    "strategy": "restart-with-seed"
+  },
+  "health": {
+    "strategy": "tcp-connect",
+    "port_ref": "$config.port"
+  },
+  "logs": {
+    "source": "process-stdout-stderr"
+  },
+  "state_inspection": {
+    "supports_state_inspection": false
+  },
+  "multiple_instance_support": true,
+  "compatible_scripts": {
+    "protocol": "profinet",
+    "package": "industriconnect-profinet-v1"
+  },
+  "presets": [
+    {
+      "id": "default-device",
+      "name": "Default Device",
+      "description": "Upstream default IO device."
+    }
+  ]
+}

@@ -1,0 +1,705 @@
+{
+  "package_id": "industriconnect-profibus-v1",
+  "package_name": "IndustriConnect - PROFIBUS",
+  "version": "1.0.0",
+  "description": "Complete IndustriConnect PROFIBUS MCP tool corpus as Morgana Scripts. 11 source-faithful tools mapped one-to-one from the pinned IndustriAgents IndustriConnect MCP server. Executes against mock devices or explicitly authorized industrial endpoints via the generic MCP stdio runner.",
+  "author": "IndustriAgents (converted by X3M.AI for Morgana)",
+  "created": "2026-08-31",
+  "provider": "industriconnect",
+  "script_prefix": "INDUSTRICONNECT - ",
+  "source": "industriconnect",
+  "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+  "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+  "source_project": "PROFIBUS-Project",
+  "source_path": "PROFIBUS-Project/profibus-python",
+  "license": "MIT",
+  "mitre_domain": "ics-attack",
+  "mitre_tactic": "Impair Process Control",
+  "mitre_tcodes": [
+    "T0800"
+  ],
+  "protocol": "profibus",
+  "risk_badges": [
+    "modify",
+    "observe"
+  ],
+  "category": "ot/industriconnect/profibus",
+  "specialties": [
+    "ot-ics",
+    "industrial-protocols",
+    "profibus",
+    "protocol-assessment"
+  ],
+  "package_types": [
+    "technology-pack",
+    "procedure-library"
+  ],
+  "execution_platforms": [
+    "windows",
+    "linux",
+    "macos"
+  ],
+  "target_environments": [
+    "ot-ics",
+    "profibus"
+  ],
+  "capabilities": [
+    "Provides the complete PROFIBUS MCP tool corpus (11 tools).",
+    "Read/observe, write/modify, and control operations classified by operational risk.",
+    "Runs through the generic morgana_mcp_stdio_runner asset against the pinned MCP server."
+  ],
+  "use_cases": [
+    "Authorized OT/ICS lab assessment using IndustriConnect mock devices.",
+    "Detection validation for industrial protocol operations.",
+    "Purple Team validation against simulated industrial processes."
+  ],
+  "prerequisites": [
+    "Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and uv installed.",
+    "Pinned IndustriConnect runtime tree installed on the Lab Host (see Industrial Lab).",
+    "An explicitly authorized mock device, simulator, or approved production test target."
+  ],
+  "safety_notes": [
+    "Write and control tools alter device/process state; Morgana requires explicit operator confirmation for modify/disrupt content.",
+    "Never target production OT/ICS systems without written authorization and an agreed rollback plan.",
+    "Raw-socket protocols (EtherCAT, PROFINET) require dedicated network interfaces and Layer-2 access."
+  ],
+  "tag_categories": [
+    {
+      "category_id": "industriconnect_profibus_connection",
+      "label": "IndustriConnect PROFIBUS Connection",
+      "description": "Connection and transport parameters for the PROFIBUS MCP server.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_profibus_port",
+          "label": "Profibus Port",
+          "description": "PROFIBUS serial device path (or virtual port).",
+          "default": "/dev/ttyUSB0",
+          "example": "/dev/ttyUSB0",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_profibus_baudrate",
+          "label": "Profibus Baudrate",
+          "description": "PROFIBUS baud rate.",
+          "default": "500000",
+          "example": "500000",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_profibus_master_address",
+          "label": "Profibus Master Address",
+          "description": "PROFIBUS master station address.",
+          "default": "2",
+          "example": "2",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        },
+        {
+          "key": "ic_profibus_writes_enabled",
+          "label": "Profibus Writes Enabled",
+          "description": "Allow PROFIBUS write operations (true/false).",
+          "default": "true",
+          "example": "true",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "connection"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_profibus_parameters",
+      "label": "IndustriConnect PROFIBUS Parameters",
+      "description": "Operation parameters for PROFIBUS MCP tools.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_profibus_slave_address",
+          "label": "Profibus Slave Address",
+          "description": "PROFIBUS slave station address.",
+          "default": "0",
+          "example": "0",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_profibus_length",
+          "label": "Profibus Length",
+          "description": "Number of bytes to read.",
+          "default": "4",
+          "example": "4",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_profibus_data",
+          "label": "Profibus Data",
+          "description": "JSON array of byte values (0-255).",
+          "default": "[0,0,0,0]",
+          "example": "[0,0,0,0]",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_profibus_gsd_filepath",
+          "label": "Profibus Gsd Filepath",
+          "description": "Path to cached GSD file.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        },
+        {
+          "key": "ic_profibus_alias",
+          "label": "Profibus Alias",
+          "description": "Slave-map alias name.",
+          "default": "",
+          "example": "",
+          "sensitive": false,
+          "required": false,
+          "parameter_class": "value"
+        }
+      ]
+    },
+    {
+      "category_id": "industriconnect_runtime",
+      "label": "IndustriConnect Runtime",
+      "description": "Pinned IndustriConnect runtime installation path on the Lab Host Agent.",
+      "scope": "local",
+      "tags": [
+        {
+          "key": "ic_runtime_dir",
+          "label": "IndustriConnect Runtime Directory",
+          "description": "Base directory where the pinned IndustriConnect runtime source tree is installed on the Lab Host Agent.",
+          "default": "C:/ProgramData/Morgana/industriconnect",
+          "example": "C:/ProgramData/Morgana/industriconnect",
+          "sensitive": false,
+          "required": true,
+          "parameter_class": "local_path"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "industriconnect_mcp_runner",
+      "name": "morgana_mcp_stdio_runner.py",
+      "filename": "morgana_mcp_stdio_runner.py",
+      "platform": "all",
+      "architecture": "any",
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/excalibur/ot/industriconnect/runtime/morgana_mcp_stdio_runner.py",
+      "sha256": "4281af326fb4fc33699fad14d5880714b7a2af64470c85990607a34c459ce5d2",
+      "executable": false,
+      "source": "IndustriAgents/X3M.AI",
+      "license": "MIT",
+      "description": "Generic MCP stdio runner. Launches a pinned MCP server and invokes one tool with structured arguments."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "industriconnect:profibus:ping",
+      "name": "INDUSTRICONNECT - PROFIBUS - Ping / Connection Status",
+      "description": "IndustriConnect PROFIBUS MCP tool 'ping'. Return MCP server health and target connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='ping',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "ping",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:scan_bus",
+      "name": "INDUSTRICONNECT - PROFIBUS - Scan Bus",
+      "description": "IndustriConnect PROFIBUS MCP tool 'scan_bus'. Scan the PROFIBUS network for slave devices.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='scan_bus',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "scan_bus",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:read_inputs",
+      "name": "INDUSTRICONNECT - PROFIBUS - Read Inputs",
+      "description": "IndustriConnect PROFIBUS MCP tool 'read_inputs'. Read input bytes from a PROFIBUS slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_address': int('#{ic_profibus_slave_address}'.strip() or 0),\n    'length': int('#{ic_profibus_length}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='read_inputs',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_slave_address",
+        "ic_profibus_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "read_inputs",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:write_outputs",
+      "name": "INDUSTRICONNECT - PROFIBUS - Write Outputs",
+      "description": "IndustriConnect PROFIBUS MCP tool 'write_outputs'. Write output bytes to a PROFIBUS slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_address': int('#{ic_profibus_slave_address}'.strip() or 0),\n    'data': _j.loads('#{ic_profibus_data}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='write_outputs',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_slave_address",
+        "ic_profibus_data"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "write_outputs",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:read_diagnosis",
+      "name": "INDUSTRICONNECT - PROFIBUS - Read Diagnosis",
+      "description": "IndustriConnect PROFIBUS MCP tool 'read_diagnosis'. Read diagnostic data from a PROFIBUS slave.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_address': int('#{ic_profibus_slave_address}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='read_diagnosis',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_slave_address"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "read_diagnosis",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:load_gsd_file",
+      "name": "INDUSTRICONNECT - PROFIBUS - Load GSD File",
+      "description": "IndustriConnect PROFIBUS MCP tool 'load_gsd_file'. Load a cached PROFIBUS GSD device description file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'filepath': '#{ic_profibus_gsd_filepath}'.strip(),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='load_gsd_file',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_gsd_filepath"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "load_gsd_file",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:list_slaves",
+      "name": "INDUSTRICONNECT - PROFIBUS - List Slave Aliases",
+      "description": "IndustriConnect PROFIBUS MCP tool 'list_slaves'. List configured PROFIBUS slave aliases from the slave map file.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='list_slaves',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "list_slaves",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:read_slave_by_alias",
+      "name": "INDUSTRICONNECT - PROFIBUS - Read Slave By Alias",
+      "description": "IndustriConnect PROFIBUS MCP tool 'read_slave_by_alias'. Read a PROFIBUS slave using a configured slave-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_profibus_alias}'.strip(),\n    'length': int('#{ic_profibus_length}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='read_slave_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_alias",
+        "ic_profibus_length"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "read_slave_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:write_slave_by_alias",
+      "name": "INDUSTRICONNECT - PROFIBUS - Write Slave By Alias",
+      "description": "IndustriConnect PROFIBUS MCP tool 'write_slave_by_alias'. Write a PROFIBUS slave using a configured slave-map alias.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'alias': '#{ic_profibus_alias}'.strip(),\n    'data': _j.loads('#{ic_profibus_data}' or '[]'),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='write_slave_by_alias',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_alias",
+        "ic_profibus_data"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "modify",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "write_slave_by_alias",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:get_master_status",
+      "name": "INDUSTRICONNECT - PROFIBUS - Get Master Status",
+      "description": "IndustriConnect PROFIBUS MCP tool 'get_master_status'. Return PROFIBUS master connection status.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='get_master_status',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "get_master_status",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    },
+    {
+      "id": "industriconnect:profibus:test_slave_communication",
+      "name": "INDUSTRICONNECT - PROFIBUS - Test Slave Communication",
+      "description": "IndustriConnect PROFIBUS MCP tool 'test_slave_communication'. Perform a minimal read against a PROFIBUS slave to verify communication.",
+      "tactic": "Impair Process Control",
+      "tcode": "T0800",
+      "technique_name": "Industrial protocol operation",
+      "mitre_domain": "ics-attack",
+      "executor": "python",
+      "executor_config": {
+        "timeout_seconds": 60,
+        "result_parser": "morgana-marker-v1"
+      },
+      "platform": "all",
+      "command": "import importlib.util as _iu, json as _j, os as _o, sys as _s\n_spec=_iu.spec_from_file_location('_mrm', r'{{asset:industriconnect_mcp_runner}}')\n_m=_iu.module_from_spec(_spec);_spec.loader.exec_module(_m)\n_env=dict(_o.environ)\n_env['PROFIBUS_PORT']=str('#{ic_profibus_port}'.strip())\n_env['PROFIBUS_BAUDRATE']=str('#{ic_profibus_baudrate}'.strip())\n_env['PROFIBUS_MASTER_ADDRESS']=str('#{ic_profibus_master_address}'.strip())\n_env['PROFIBUS_WRITES_ENABLED']=str('#{ic_profibus_writes_enabled}'.strip())\n_env['PYTHONUNBUFFERED']='1'\n_env['PYTHONIOENCODING']='utf-8'\n_args={\n    'slave_address': int('#{ic_profibus_slave_address}'.strip() or 0),\n}\n_out=_m.run_mcp_tool(command=['uv', 'run', 'profibus-mcp'],cwd=_o.path.join(r'#{ic_runtime_dir}'.strip(), 'PROFIBUS-Project', 'profibus-python'),tool_name='test_slave_communication',arguments=_args,env=_env,timeout=60.0)\nprint('MORGANA_RESULT '+_j.dumps(_out))",
+      "cleanup_command": null,
+      "required_tags": [
+        "ic_runtime_dir",
+        "ic_profibus_port",
+        "ic_profibus_baudrate",
+        "ic_profibus_master_address",
+        "ic_profibus_writes_enabled",
+        "ic_profibus_slave_address"
+      ],
+      "required_assets": [
+        "industriconnect_mcp_runner"
+      ],
+      "operational_risk": "observe",
+      "source": "industriconnect",
+      "source_metadata": {
+        "provider": "industriconnect",
+        "protocol": "profibus",
+        "project": "PROFIBUS-Project",
+        "source_project": "profibus-python",
+        "source_repository": "https://github.com/IndustriAgents/IndustriConnect",
+        "source_commit": "aa634a12ece8186b3e6c775cea1917ea89418f5e",
+        "source_path": "PROFIBUS-Project/profibus-python",
+        "tool": "test_slave_communication",
+        "license": "MIT",
+        "mitre_domain": "ics-attack",
+        "lab_compatible": true,
+        "default_port": null
+      },
+      "package": "industriconnect-profibus-v1"
+    }
+  ],
+  "chains": []
+}
