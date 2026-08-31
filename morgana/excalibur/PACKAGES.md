@@ -6,7 +6,7 @@ Excalibur is the certified adversary emulation and security validation script li
 
 All packages are installed through the Morgana UI at **Scripts → Excalibur Packs → Refresh catalog → Install**. No runtime dependencies on the source repositories are required after installation.
 
-> **Numbers as of 2026-08-29.** Run **Refresh catalog** to see the current version.
+> **Numbers as of 2026-08-31.** Run **Refresh catalog** to see the current version.
 
 ---
 
@@ -30,9 +30,10 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [Elastic Cortado](#12-elastic-cortado) | 13 | 698 | 0 | Enterprise ATT&CK |
 | [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
 | [ControlThings Suite](#14-controlthings-suite) | 5 | 33 | 0 | ICS ATT&CK |
-| **Total** | **313** | **27 614** | **2 121** | |
+| [IndustriConnect](#15-industriconnect) | 10 | 130 | 0 | ICS ATT&CK |
+| **Total** | **323** | **27 744** | **2 121** | |
 
-> Numbers reflect the catalog as of 2026-08-29. Run **Refresh catalog** to see the current version.
+> Numbers reflect the catalog as of 2026-08-31. Run **Refresh catalog** to see the current version.
 
 ---
 
@@ -526,6 +527,41 @@ See [ControlThings README](ot/controlthings/README.md) for full details.
 
 ---
 
+## 15. IndustriConnect
+
+Industrial protocol operations from [IndustriAgents/IndustriConnect](https://github.com/IndustriAgents/IndustriConnect) — a suite of Python Model Context Protocol (MCP) servers and mock devices covering ten industrial protocols. Every externally-callable MCP tool maps one-to-one to a Morgana Script; runtime values remain Tag parameters (no fake permutations).
+
+| Package | Protocol | Scripts | Risk |
+|---|---|---|---|
+| `industriconnect-modbus-v1` | Modbus TCP/UDP/RTU | 17 | observe / modify |
+| `industriconnect-s7comm-v1` | Siemens S7 (S7comm) | 20 | observe / modify / disrupt |
+| `industriconnect-ethernetip-v1` | EtherNet/IP (CIP) | 17 | observe / modify |
+| `industriconnect-mqtt-v1` | MQTT / Sparkplug B | 15 | observe / interact / modify |
+| `industriconnect-ethercat-v1` | EtherCAT | 14 | observe / modify / disrupt |
+| `industriconnect-profinet-v1` | PROFINET | 14 | observe / interact / modify |
+| `industriconnect-profibus-v1` | PROFIBUS DP/PA | 11 | observe / modify |
+| `industriconnect-dnp3-v1` | DNP3 | 8 | observe / modify |
+| `industriconnect-bacnet-v1` | BACnet/IP | 7 | observe / modify |
+| `industriconnect-opcua-v1` | OPC UA | 7 | observe / modify |
+
+**130 tools** across 10 protocols, classified by operational risk (observe / interact / modify / disrupt). One Modbus prompt (`analyze_register`) is excluded because prompts are not MCP tools.
+
+**Runtime model:** Each Script runs on the Agent `python` executor and invokes the pinned protocol MCP server through the generic `morgana_mcp_stdio_runner` package asset (SHA256-verified) over stdio JSON-RPC.
+
+**Source:** [IndustriAgents/IndustriConnect](https://github.com/IndustriAgents/IndustriConnect) @ `aa634a12`  
+**License:** MIT (declared per protocol `pyproject.toml`; mocks carry no explicit license field)  
+**ATT&CK Domain:** ICS ATT&CK | **Technique:** T0800 (industrial protocol operation)  
+**Execution Platforms:** Windows, Linux, macOS  
+**Prerequisites:** Morgana Agent enabled as an Industrial Lab Host with Python 3.10+ and `uv`; the pinned IndustriConnect runtime tree installed (see Industrial Lab).
+
+Includes companion **mock devices** (Modbus, OPC UA plant, Siemens S7, EtherNet/IP, DNP3, BACnet, MQTT/Sparkplug, EtherCAT, PROFIBUS, PROFINET) deployable through the Morgana **Industrial Lab** page. Mocks are simulators, not hardware emulators.
+
+> **Dependency note:** upstream MCP servers use the FastMCP v1 API and require `mcp>=1.6,<2` (the pinned `uv.lock` files resolve this). The Modbus mock device is incompatible with `pymodbus` 3.15 — use an older pinned version or another Modbus simulator (this affects only the mock, not the Modbus MCP Scripts).
+
+See the [IndustriConnect README](ot/industriconnect/README.md) and the [Industrial Lab guide](../industrial-lab/README.md) for full details.
+
+---
+
 ## Package update workflow
 
 When new packages or package versions are published to Camelot:
@@ -561,5 +597,6 @@ The Excalibur package schema is documented in the [Morgana manual](../README.md#
 | MITRE CALDERA OT | [mitre/caldera-ot](https://github.com/mitre/caldera-ot) | Apache 2.0 |
 | ICS-SCADA-Fuzzer | [ridpath/ics-scada-fuzzer](https://github.com/ridpath/ics-scada-fuzzer) | MIT |
 | ANSSI FuzzySully | [ANSSI-FR/fuzzysully](https://github.com/ANSSI-FR/fuzzysully) | GPL-2.0 |
+| IndustriConnect | [IndustriAgents/IndustriConnect](https://github.com/IndustriAgents/IndustriConnect) | MIT |
 
 All community content is converted to Morgana pack JSON format. Source repositories are not runtime dependencies.

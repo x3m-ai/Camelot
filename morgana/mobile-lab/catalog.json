@@ -1,0 +1,163 @@
+{
+  "catalog_version": "1.0.0",
+  "updated": "2026-08-31",
+  "source": "https://github.com/x3m-ai/Camelot",
+  "description": "Mobile Lab catalog — provider-agnostic mobile test environment definitions. Camelot is the content/distribution plane; Morgana Server orchestrates and Morgana Agents act as Mobile Lab Hosts.",
+  "providers": [
+    {
+      "id": "android-emulator",
+      "display_name": "Android Emulator",
+      "description": "Android Virtual Device (AVD) management via the official Android SDK command-line tools (sdkmanager, avdmanager, emulator, adb).",
+      "provider_type": "LOCAL_HOST_PROVIDER",
+      "platforms": ["android"],
+      "host_requirements": ["android_sdk", "adb", "emulator", "virtualization"],
+      "external": false,
+      "local": true,
+      "config_schema": { "sdk_root": "string", "avd_name": "string", "system_image": "string", "device_profile": "string" },
+      "credential_requirements": [],
+      "capabilities": [
+        "install_app", "uninstall_app", "launch_app", "terminate_app",
+        "clear_app_data", "device_reset", "snapshot", "snapshot_restore",
+        "screenshot", "screen_record", "shell", "file_push", "file_pull",
+        "logs", "network_info", "adb", "frida", "root_access",
+        "port_forward", "reboot", "power_control"
+      ],
+      "documentation": "https://github.com/x3m-ai/Morgana/blob/main/docs/MOBILE_LAB_ANDROID_EMULATOR.md",
+      "version": "1.0.0"
+    },
+    {
+      "id": "apple-simulator",
+      "display_name": "Apple Simulator",
+      "description": "iOS Simulator management via Xcode command line tools (xcrun simctl). macOS/Xcode only — never advertised for Windows/Linux.",
+      "provider_type": "LOCAL_HOST_PROVIDER",
+      "platforms": ["ios"],
+      "host_requirements": ["macos", "xcode", "simctl"],
+      "external": false,
+      "local": true,
+      "config_schema": { "runtime": "string", "device_type": "string", "udid": "string" },
+      "credential_requirements": [],
+      "capabilities": [
+        "install_app", "uninstall_app", "launch_app", "terminate_app",
+        "erase", "screenshot", "logs", "simctl", "frida", "reboot",
+        "location_simulation", "push_notification_simulation", "clipboard", "orientation"
+      ],
+      "documentation": "https://github.com/x3m-ai/Morgana/blob/main/docs/MOBILE_LAB_APPLE_SIMULATOR.md",
+      "version": "1.0.0"
+    },
+    {
+      "id": "physical-android",
+      "display_name": "Physical Android",
+      "description": "Physical Android device discovery/inspection via ADB. Non-destructive by default.",
+      "provider_type": "PHYSICAL_DEVICE_PROVIDER",
+      "platforms": ["android"],
+      "host_requirements": ["adb"],
+      "external": false,
+      "local": true,
+      "config_schema": { "serial": "string" },
+      "credential_requirements": [],
+      "capabilities": [
+        "install_app", "uninstall_app", "launch_app", "terminate_app",
+        "clear_app_data", "shell", "logs", "screenshot", "adb", "frida",
+        "port_forward", "network_info"
+      ],
+      "documentation": "https://github.com/x3m-ai/Morgana/blob/main/docs/MOBILE_LAB_PHYSICAL_ANDROID.md",
+      "version": "1.0.0"
+    },
+    {
+      "id": "physical-ios",
+      "display_name": "Physical iOS",
+      "description": "Physical iOS device discovery/inspection. Practical supported level only; non-destructive.",
+      "provider_type": "PHYSICAL_DEVICE_PROVIDER",
+      "platforms": ["ios"],
+      "host_requirements": ["macos"],
+      "external": false,
+      "local": true,
+      "config_schema": { "udid": "string" },
+      "credential_requirements": [],
+      "capabilities": ["frida", "logs"],
+      "documentation": "https://github.com/x3m-ai/Morgana/blob/main/docs/MOBILE_LAB_PHYSICAL_IOS.md",
+      "version": "1.0.0"
+    },
+    {
+      "id": "corellium",
+      "display_name": "Corellium",
+      "description": "External API virtual-device provider. Requires a valid Corellium account and API token.",
+      "provider_type": "EXTERNAL_API_PROVIDER",
+      "platforms": ["android", "ios"],
+      "host_requirements": [],
+      "external": true,
+      "local": false,
+      "config_schema": { "api_token": "string", "project_id": "string", "endpoint": "string" },
+      "credential_requirements": ["api_token"],
+      "capabilities": [
+        "install_app", "uninstall_app", "launch_app", "terminate_app",
+        "device_reset", "snapshot", "snapshot_restore", "screenshot",
+        "shell", "logs", "network_info", "frida"
+      ],
+      "documentation": "https://github.com/x3m-ai/Morgana/blob/main/docs/MOBILE_LAB_CORELLIUM.md",
+      "version": "1.0.0"
+    }
+  ],
+  "templates": [
+    {
+      "id": "android-clean-avd",
+      "name": "Android Security Lab — Clean AVD",
+      "description": "A single Morgana-managed Android Virtual Device with a clean baseline for security testing.",
+      "platform": "android",
+      "provider": "android-emulator",
+      "host_requirements": ["android_sdk", "adb", "emulator", "virtualization"],
+      "device_profile": "pixel_5",
+      "os_runtime": null,
+      "baseline_policy": "wipe",
+      "app_assets": [],
+      "instrumentation_requirements": [],
+      "tags": ["android", "emulator", "baseline"],
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/mobile-lab/templates/android-clean-avd.json"
+    },
+    {
+      "id": "android-app-test-lab",
+      "name": "Android App Test Lab — Clean AVD + App",
+      "description": "A clean Android Virtual Device pre-provisioned for application testing (install an app asset after deploy).",
+      "platform": "android",
+      "provider": "android-emulator",
+      "host_requirements": ["android_sdk", "adb", "emulator", "virtualization"],
+      "device_profile": "pixel_5",
+      "os_runtime": null,
+      "baseline_policy": "snapshot",
+      "app_assets": [],
+      "instrumentation_requirements": [],
+      "tags": ["android", "emulator", "app-testing"],
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/mobile-lab/templates/android-app-test-lab.json"
+    },
+    {
+      "id": "ios-simulator-app-lab",
+      "name": "iOS Simulator App Lab",
+      "description": "A single Apple iOS Simulator for application testing. Requires a macOS/Xcode Host.",
+      "platform": "ios",
+      "provider": "apple-simulator",
+      "host_requirements": ["macos", "xcode", "simctl"],
+      "device_profile": null,
+      "os_runtime": null,
+      "baseline_policy": "erase",
+      "app_assets": [],
+      "instrumentation_requirements": [],
+      "tags": ["ios", "simulator", "app-testing"],
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/mobile-lab/templates/ios-simulator-app-lab.json"
+    },
+    {
+      "id": "physical-android-test-session",
+      "name": "Physical Android Test Session",
+      "description": "A non-destructive session on a discovered physical Android device (connect, inspect, test, release).",
+      "platform": "android",
+      "provider": "physical-android",
+      "host_requirements": ["adb"],
+      "device_profile": null,
+      "os_runtime": null,
+      "baseline_policy": "none",
+      "app_assets": [],
+      "instrumentation_requirements": [],
+      "tags": ["android", "physical", "non-destructive"],
+      "url": "https://raw.githubusercontent.com/x3m-ai/Camelot/main/morgana/mobile-lab/templates/physical-android-test-session.json"
+    }
+  ]
+}

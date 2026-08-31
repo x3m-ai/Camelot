@@ -22,6 +22,7 @@ Morgana is a professional-grade Red Team platform that delivers:
 - **Adversary emulation** — Execute certified attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
 - **Penetration testing workflows** — Repeatable, evidence-based execution with full audit trails
 - **Excalibur Packs** — Certified script libraries covering real-world attack scenarios
+- **Industrial Lab** — Deploy, manage, reset, and observe industrial mock devices / simulators on Agents
 - **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
 - **Campaign management** — Group tests into named campaigns, track results, generate evidence reports
 - **Purple Team automation** — Merlino threat intelligence drives Morgana execution automatically
@@ -47,6 +48,25 @@ Morgana uses its own terminology:
 | **Test** | Single execution run, linked to a Merlino row |
 | **Campaign** | Named exercise grouping multiple tests |
 | **Agent** | OS service installed on the target machine |
+| **Lab Host** | A Morgana Agent enabled to run Industrial Lab services (mock devices / simulators) |
+| **Lab Service** | One deployed mock/simulator instance (e.g. a Modbus PLC) |
+| **Lab** | A composition of one or more Lab Services from a template |
+
+---
+
+## Industrial Lab
+
+Morgana includes a provider-agnostic **Industrial Lab** subsystem for deploying
+and managing industrial mock devices and simulators on Agents acting as Lab
+Hosts. The first provider is **IndustriConnect** (BACnet, DNP3, EtherCAT,
+EtherNet/IP, Modbus, MQTT/Sparkplug B, OPC UA, PROFIBUS, PROFINET, Siemens S7).
+
+1. **Hosts** tab — check and enable an Agent as a Lab Host.
+2. **Services** tab — install and start a mock device.
+3. **Run Compatible Scripts** — point the matching IndustriConnect Scripts at the running mock.
+4. **Reset / Stop** the Lab when done.
+
+Mocks are simulators, not hardware emulators. See the [Industrial Lab guide](../../morgana/industrial-lab/README.md).
 
 ---
 
