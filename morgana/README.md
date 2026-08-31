@@ -23,28 +23,28 @@ This public manual intentionally contains no passwords, API keys, tokens, tenant
 8. [Agents](#8-agents)
 9. [Scripts](#9-scripts)
 10. [Excalibur Packs](#10-excalibur-packs)
-11. [Tags and Workspaces](#11-tags-and-workspaces)
-12. [Chains](#12-chains)
-13. [Tests and Jobs](#13-tests-and-jobs)
-14. [Campaigns](#14-campaigns)
-15. [Detection Fabric](#15-detection-fabric)
-16. [Reports and Portable Exports](#16-reports-and-portable-exports)
-17. [AI Mission Engine](#17-ai-mission-engine)
-18. [Automation Center](#18-automation-center)
-19. [Settings Reference](#19-settings-reference)
-20. [Merlino Integration](#20-merlino-integration)
-21. [REST API for Operators](#21-rest-api-for-operators)
-22. [Logs and Diagnostics](#22-logs-and-diagnostics)
-23. [Backup, Restore, and Disaster Recovery](#23-backup-restore-and-disaster-recovery)
-24. [Upgrade the Server](#24-upgrade-the-server)
-25. [Uninstall](#25-uninstall)
-26. [Security and Responsible Operation](#26-security-and-responsible-operation)
-27. [Troubleshooting](#27-troubleshooting)
-28. [FAQ](#28-faq)
-29. [Accessibility and Keyboard Use](#29-accessibility-and-keyboard-use)
-30. [Glossary](#30-glossary)
-31. [References](#31-references)
-
+11. [Industrial Lab](#11-industrial-lab)
+12. [Tags and Workspaces](#12-tags-and-workspaces)
+13. [Chains](#13-chains)
+14. [Tests and Jobs](#14-tests-and-jobs)
+15. [Campaigns](#15-campaigns)
+16. [Detection Fabric](#16-detection-fabric)
+17. [Reports and Portable Exports](#17-reports-and-portable-exports)
+18. [AI Mission Engine](#18-ai-mission-engine)
+19. [Automation Center](#19-automation-center)
+20. [Settings Reference](#20-settings-reference)
+21. [Merlino Integration](#21-merlino-integration)
+22. [REST API for Operators](#22-rest-api-for-operators)
+23. [Logs and Diagnostics](#23-logs-and-diagnostics)
+24. [Backup, Restore, and Disaster Recovery](#24-backup-restore-and-disaster-recovery)
+25. [Upgrade the Server](#25-upgrade-the-server)
+26. [Uninstall](#26-uninstall)
+27. [Security and Responsible Operation](#27-security-and-responsible-operation)
+28. [Troubleshooting](#28-troubleshooting)
+29. [FAQ](#29-faq)
+30. [Accessibility and Keyboard Use](#30-accessibility-and-keyboard-use)
+31. [Glossary](#31-glossary)
+32. [References](#32-references)
 ## 1. Product Overview
 
 Morgana turns approved adversary behavior into repeatable, evidence-producing exercises:
@@ -80,6 +80,10 @@ The server is Windows-only. Linux is supported as an Agent platform, not as a Mo
 | **Agent** | The endpoint service that polls Morgana, executes Jobs, and returns results. |
 | **Job** | The internal server-to-Agent dispatch record for a Test. |
 | **Excalibur Pack** | A versioned package of Scripts, Chains, and runtime tag metadata distributed through Camelot. |
+| **Industrial Lab** | Morgana subsystem for deploying, managing, resetting, observing, and destroying industrial mock devices/simulators on Lab Host Agents. |
+| **Lab Host** | A Morgana Agent enabled to run Industrial Lab services (mock devices/simulators). |
+| **Mobile Lab** | Morgana subsystem for provisioning, discovering, configuring, starting, stopping, resetting and using mobile test devices and mobile test applications (Android emulator, Apple Simulator, physical devices, external virtual-device providers). |
+| **Mobile Lab Host** | A Morgana Agent enabled to run Mobile Lab tooling (Android SDK, Apple simctl, ADB, physical device access, Frida client). |
 | **Detection** | A normalized alert, incident, event, or finding ingested by Detection Fabric. |
 
 ### 1.3 Installed product versus development use
@@ -374,6 +378,8 @@ The left sidebar contains:
 |---|---|
 | **Dashboard** | Last-hour Test summary, Agent state, update check |
 | **Agents** | Enrollment, health, naming, beacon interval, Console, removal |
+| **Industrial Lab** | Deploy, manage, reset, and observe industrial mock devices / simulators on Lab Host Agents |
+| **Mobile Lab** | Provision and manage Android and iOS security test environments (devices, apps, templates, hosts) |
 | **Scripts** | Script library, Excalibur, editing, execution, import/export |
 | **Chains** | Ordered Script flows and execution logs |
 | **Tests** | Execution records, output, AI status, Detection Fabric verdicts, reports |
@@ -722,9 +728,11 @@ Use database/full-data backup for authoritative recovery, not Script export alon
 
 Excalibur is Morgana's native Script library and package format. Morgana does not clone or index a native Atomic Red Team repository.
 
-The public catalog also contains community packs converted from Red Canary Atomic Red Team and MITRE CALDERA Stockpile source material. They appear in separate **Atomic Red Team (Red Canary)** and **MITRE CALDERA Stockpile** categories, but Morgana installs and runs both through the same source-agnostic Excalibur package importer. CALDERA and Atomic Red Team are not runtime dependencies. Treat community content as unverified until reviewed in your lab.
+The public catalog also contains community packs converted from Red Canary Atomic Red Team, MITRE CALDERA Stockpile, and other upstream sources. They appear in separate categories (e.g. **Atomic Red Team (Red Canary)**, **MITRE CALDERA Stockpile**), but Morgana installs and runs all of them through the same source-agnostic Excalibur package importer. CALDERA and Atomic Red Team are not runtime dependencies. Treat community content as unverified until reviewed in your lab.
 
-> **Full package reference:** [Excalibur Packages](https://github.com/x3m-ai/Camelot/blob/main/morgana/excalibur/PACKAGES.md) — complete catalog of all 224 packages including providers, script/chain counts, prerequisites, ATT&CK coverage, execution platforms, target environments, and source references.
+The **IndustriConnect** provider publishes 130 industrial-protocol MCP tools across 10 protocol packages (BACnet, DNP3, EtherCAT, EtherNet/IP, Modbus, MQTT/Sparkplug B, OPC UA, PROFIBUS, PROFINET, Siemens S7). These pair with the **Industrial Lab** subsystem (see [Section 11](#11-industrial-lab)) for deploying mock devices on Agents.
+
+> **Full package reference:** [Excalibur Packages](https://github.com/x3m-ai/Camelot/blob/main/morgana/excalibur/PACKAGES.md) — complete catalog of all packages including providers, script/chain counts, prerequisites, ATT&CK coverage, execution platforms, target environments, and source references.
 
 ### 10.1 Refresh the catalog
 
@@ -843,14 +851,111 @@ python -m json.tool "<CATALOG_FILE>" > $null
 
 Then import into a disposable Morgana instance and verify Script counts, Chain references, required Tags, execution, output, and cleanup. Never test a new pack first on a production endpoint.
 
-## 11. Tags and Workspaces
+### 10.8 IndustriConnect packs
+
+The **IndustriConnect** provider converts the IndustriAgents IndustriConnect MCP suite into native Morgana Scripts (one logical MCP tool per Script). Each Script runs on the Agent `python` executor and invokes the pinned protocol MCP server through the generic `morgana_mcp_stdio_runner` asset.
+
+- 10 protocol packages (`industriconnect-{protocol}-v1`), 130 Scripts total.
+- Connection parameters (host, port, unit/device ID, etc.) are exposed as required runtime Tags.
+- Operational risk is classified per Script (`observe` / `interact` / `modify` / `disrupt`); write/control content requires operator confirmation.
+- The upstream FastMCP v1 servers require `mcp>=1.6,<2` (resolved by the pinned `uv.lock`).
+
+Use the **Industrial Lab** page to deploy the companion mock devices, or point the Scripts at an authorized real/simulated target. See the [IndustriConnect README](excalibur/ot/industriconnect/README.md).
+
+## 11. Industrial Lab
+
+Industrial Lab is Morgana's provider-agnostic subsystem for deploying, managing,
+resetting, observing, and destroying industrial mock devices and simulators on
+Morgana Agents acting as **Lab Hosts**.
+
+The three planes are cleanly separated:
+
+| Plane | Owner | Responsibility |
+|---|---|---|
+| Content / distribution | Camelot (`morgana/industrial-lab/`) | catalog, provider, service manifests, Lab templates |
+| Control / orchestration | Morgana Server | Lab catalog cache, Lab Hosts, service instances, Labs, audit events |
+| Execution | Morgana Agent (Lab Host) | runtime environment, processes, state/log directories |
+
+### 11.1 Page structure
+
+The **Industrial Lab** page (sidebar, after Agents) has four tabs:
+
+| Tab | Purpose |
+|---|---|
+| **Overview** | Services available, installed, running; Lab Hosts; active Labs; unhealthy services |
+| **Services** | Browse mock/simulator manifests and install/start them |
+| **Labs** | Deploy a Lab template, then start/stop/restart/reset/destroy its services |
+| **Hosts** | Enable/check Agents as Lab Hosts; review platform, Python, uv, container, raw-network capabilities |
+
+### 11.2 Service lifecycle
+
+A Lab Service progresses through explicit states: `discovered` ->
+`requirements_checked` -> `installing` -> `installed` -> `configured` ->
+`starting` -> `running` -> `healthy` -> `stopping` -> `stopped` ->
+`not_installed`. Error states include `install_failed`, `start_failed`,
+`unhealthy`, `stop_failed`, `reset_failed`, `uninstall_failed`.
+
+Lifecycle operations (`install`, `configure`, `start`, `stop`, `restart`,
+`reset`, `uninstall`, `health`, `logs`) are dispatched as ad-hoc `python` Jobs
+on the Lab Host Agent through the existing job queue. Each managed service keeps
+a per-instance state directory with a PID file and bounded log tail; reset uses
+the safest source-faithful strategy (default: restart with seed). Reset and
+uninstall apply only to Morgana-managed instances, never to arbitrary external
+industrial targets.
+
+### 11.3 Happy path
+
+1. Deploy/select an Agent.
+2. **Hosts** tab -> **Check** (capability probe) -> **Enable**.
+3. **Services** tab -> pick a mock -> **Install** -> **Start**.
+4. **Run Compatible Scripts** (filters the Scripts view to the matching protocol package).
+5. Run a Test/Chain against the Lab endpoint.
+6. **Reset** / **Stop** the Lab when done.
+
+### 11.4 IndustriConnect (first provider)
+
+IndustriConnect is the first Industrial Lab provider: ten mock devices/simulators
+(Modbus, OPC UA plant, Siemens S7, EtherNet/IP, DNP3, BACnet, MQTT/Sparkplug B,
+EtherCAT, PROFIBUS, PROFINET) plus four Lab templates (single Modbus, single
+OPC UA, single DNP3, basic multi-protocol lab). Mocks are simulators, not
+hardware emulators. See the [IndustriConnect README](excalibur/ot/industriconnect/README.md)
+and the [Industrial Lab guide](industrial-lab/README.md).
+
+### 11.5 Mobile Lab (adjacent subsystem)
+
+**Mobile Lab** is the adjacent lab subsystem that provisions, discovers,
+configures, starts, stops, resets and uses mobile test devices and mobile test
+applications directly from Morgana. It reuses Industrial Lab's architectural
+patterns while remaining a distinct domain.
+
+| Capability | Detail |
+|---|---|
+| Providers | Android Emulator, Apple Simulator, Physical Android, Physical iOS, and an extensible external virtual-device provider architecture (Corellium) |
+| Device model | Provider-agnostic `MobileDevice` with platform, OS version, model, architecture, device type, Host Agent, runtime/readiness/connection/reservation state, ownership, Frida readiness |
+| Ownership safety | `MORGANA_MANAGED`, `EXTERNAL_API_MANAGED`, `DISCOVERED_EXTERNAL`, `EXTERNAL_PHYSICAL` — destructive actions are gated |
+| Apps | `MobileAppAsset` with SHA-256, package/bundle ID, compatibility, license status, install tracking |
+| Templates | Declarative `MobileLabTemplate` + `MobileLabInstance` deployment |
+| Target references | Stable `mobilelab://<device>/app/<app>` references resolved at runtime |
+| Frida / MEDUSA | Reuses the existing Frida executor; MEDUSA and Frida Mobile remain independent Script providers bound via target-aware filtering |
+
+**Page structure** (sidebar, after Industrial Lab): Overview, Devices, Apps,
+Templates, Hosts.
+
+Apple Simulator is available only on compatible macOS/Xcode Hosts — no false
+Windows/Linux support is claimed. Physical devices are non-destructive by
+default. See the [Mobile Lab guide](mobile-lab/README.md) and the
+[Mobile Lab catalog](mobile-lab/catalog.json).
+
+---
+
+## 12. Tags and Workspaces
 
 Tags have two roles:
 
 - Runtime parameters substituted into Script commands.
 - Descriptive/filterable metadata intended for selectors and workspaces.
 
-### 11.1 Tag Definition fields
+### 12.1 Tag Definition fields
 
 The **Tags > Tag Definitions** area displays:
 
@@ -866,11 +971,11 @@ The **Tags > Tag Definitions** area displays:
 
 Deleting a definition also deletes all its assignments.
 
-### 11.2 Current creation limitation
+### 12.2 Current creation limitation
 
 The standalone **+ New Tag** form is not reliably wired to its current fields in 0.4.0. Use the Script **+ Add Tag** picker to auto-create runtime definitions, or use the authenticated Tags API. Existing non-system definitions can be edited and deleted in the UI.
 
-### 11.3 Workspaces
+### 12.3 Workspaces
 
 A Workspace backend record stores a selector expression such as:
 
@@ -885,11 +990,11 @@ The current web page contains Workspace controls, but their JavaScript handlers 
 > [!WARNING]
 > Workspaces are filtering metadata, not a security boundary. Typed Agent assignment is not available in the current UI, and route authorization does not consistently enforce workspace membership.
 
-## 12. Chains
+## 13. Chains
 
 A Chain is a saved flow of Script nodes. The current execution engine supports sequential Script nodes and IF/ELSE branching.
 
-### 12.1 Create a Chain
+### 13.1 Create a Chain
 
 1. Open **Chains**.
 2. Select **+ New Chain**.
@@ -903,7 +1008,7 @@ A Chain is a saved flow of Script nodes. The current execution engine supports s
 
 Expected result: the Chain list shows the saved name and node count; **Execute** becomes available.
 
-### 12.2 Add an IF/ELSE condition
+### 13.2 Add an IF/ELSE condition
 
 1. Add **If / Then / Else** after a Script whose stdout determines the branch.
 2. Enter the case-insensitive text that previous stdout must contain.
@@ -912,11 +1017,11 @@ Expected result: the Chain list shows the saved name and node count; **Execute**
 
 An empty `contains` value always selects the ELSE branch. Matching uses only the latest preceding Script stdout, not stderr, exit code, Detection Fabric verdict, or AI status.
 
-### 12.3 Ordering and removal
+### 13.3 Ordering and removal
 
 The visual flow order is execution order. Selecting **Remove** on a node removes that node **and every following node in the same branch**. Export or duplicate the Chain before major restructuring.
 
-### 12.4 Execute and monitor
+### 13.4 Execute and monitor
 
 1. Save the Chain.
 2. Select **Execute** from the list or editor.
@@ -935,7 +1040,7 @@ Each Script node creates its own Test and Job. The Chain continues after a faile
 
 Open the log for step stdout, stderr, exit code, branch choice, and a link to each Test.
 
-### 12.5 Retry and cancellation
+### 13.5 Retry and cancellation
 
 - Automatic Chain retry: unavailable.
 - Stop-on-first-failure: unavailable in the current visual engine.
@@ -944,7 +1049,7 @@ Open the log for step stdout, stderr, exit code, branch choice, and a link to ea
 
 Do not delete an Agent or referenced Script while a Chain is running.
 
-### 12.6 Import, export, duplicate, and delete
+### 13.6 Import, export, duplicate, and delete
 
 - **Export JSON** requires a saved Chain.
 - **Import JSON** creates a new Chain with ` (imported)` appended.
@@ -953,9 +1058,9 @@ Do not delete an Agent or referenced Script while a Chain is running.
 - **Clear Log** deletes all Chain execution records.
 - **Delete All** removes every Chain and leaves old execution records without a live Chain reference.
 
-## 13. Tests and Jobs
+## 14. Tests and Jobs
 
-### 13.1 Test lifecycle
+### 14.1 Test lifecycle
 
 | Test state | Meaning |
 |---|---|
@@ -969,7 +1074,7 @@ The server reconciles stale running Jobs about every 15 seconds. Default Job tim
 
 Reconciliation examines Tests already marked `running`; a Job that remains `pending` because an Agent never polls can remain pending indefinitely.
 
-### 13.2 Job lifecycle
+### 14.2 Job lifecycle
 
 Jobs are internal dispatch records:
 
@@ -982,7 +1087,7 @@ Jobs are internal dispatch records:
 
 A completed Job can correspond to a failed Test when the endpoint process exit code is non-zero.
 
-### 13.3 Browse and filter Tests
+### 14.3 Browse and filter Tests
 
 Open **Tests**. Use:
 
@@ -999,7 +1104,7 @@ Open **Tests**. Use:
 
 The metrics strip shows success rate, average duration, unique TCodes, Agents, and Scripts. Detection Intelligence summarizes validated outcomes.
 
-### 13.4 Inspect a Test
+### 14.4 Inspect a Test
 
 Open a Test row to view:
 
@@ -1012,7 +1117,7 @@ Open a Test row to view:
 - Detection Fabric verdict, reason, confidence, candidates, validation metadata, and related evidence.
 - Link back to the saved Script when it still exists.
 
-### 13.5 Do not conflate the status layers
+### 14.5 Do not conflate the status layers
 
 | Layer | Examples | Question answered |
 |---|---|---|
@@ -1031,7 +1136,7 @@ AI execution meanings:
 
 AI classifications are advisory and must be reviewed against raw evidence.
 
-### 13.6 Detection synchronization
+### 14.6 Detection synchronization
 
 - **Synchronize Selected Tests with Detection** refreshes enabled adapters, then processes selected completed Tests.
 - **Sync All Tests** creates a persistent synchronization run for all completed Tests.
@@ -1040,17 +1145,17 @@ AI classifications are advisory and must be reviewed against raw evidence.
 
 The current bulk path performs deterministic correlation locally and does not call AI for every candidate. Ambiguous evidence remains Possible for analyst review.
 
-### 13.7 Delete Tests
+### 14.7 Delete Tests
 
 Deleting a Test also deletes its Jobs and Detection Fabric result/link records. **Delete All** removes the entire Test, Job, and Test-correlation history.
 
 There is no Test cancellation endpoint and no direct Rerun button. To repeat an exercise, return to its Script, Chain, Campaign, or schedule and execute again.
 
-## 14. Campaigns
+## 15. Campaigns
 
 A Campaign coordinates Chains and individual Scripts in one visual exercise.
 
-### 14.1 Create a Campaign
+### 15.1 Create a Campaign
 
 1. Open **Campaigns**.
 2. Select **+ New Campaign**.
@@ -1061,17 +1166,17 @@ A Campaign coordinates Chains and individual Scripts in one visual exercise.
 
 The Campaign picker lets you search existing Chains. Script selection reuses the Script picker.
 
-### 14.2 Campaign conditions
+### 15.2 Campaign conditions
 
 IF/ELSE uses case-insensitive `stdout contains` logic from the most recent preceding individual Script. A preceding Chain or Parallel group resets that stdout context, so do not use a Chain's nested output as a Campaign branch condition.
 
-### 14.3 Parallel groups
+### 15.3 Parallel groups
 
 Campaign Parallel nodes execute all branches concurrently and wait for each to finish. Each branch can contain Chains and Scripts; limited IF/ELSE handling is available within branches.
 
 Parallel branches can contend for the same Agent and SQLite writes. Start with two small branches and inspect logs before scaling.
 
-### 14.4 Execute and monitor
+### 15.4 Execute and monitor
 
 1. Save the Campaign.
 2. Select **Execute**.
@@ -1081,7 +1186,7 @@ Parallel branches can contend for the same Agent and SQLite writes. Start with t
 
 Campaign states are `running`, `completed`, or `failed`. In 0.4.0, `completed` means the Campaign walker finished; nested Chain or Script failures may still be present. Always inspect the nested log and Tests page.
 
-### 14.5 Lifecycle operations
+### 15.5 Lifecycle operations
 
 - **Duplicate** copies the flow.
 - **Import JSON** accepts an exported Campaign definition.
@@ -1094,11 +1199,11 @@ Reports operate on the Tests produced by Campaign execution. The UI does not pro
 
 The current Campaign walker does not populate the `campaign_id` field on nested Tests. Campaign-scoped report filtering is therefore unreliable; use the Campaign execution log to identify Test IDs, then select those Tests explicitly for an Intelligent Report.
 
-## 15. Detection Fabric
+## 16. Detection Fabric
 
 Detection Fabric ingests detection-system evidence into a canonical local model, correlates it with Tests, and records traceable Test-to-detection relationships.
 
-### 15.1 Data model
+### 16.1 Data model
 
 | Record | Purpose |
 |---|---|
@@ -1110,7 +1215,7 @@ Detection Fabric ingests detection-system evidence into a canonical local model,
 
 Detection records are stored in the local Morgana database. Configured SaaS adapters pull data outbound; Morgana does not require an inbound webhook.
 
-### 15.2 Adapters page
+### 16.2 Adapters page
 
 Open **Adapters** to see:
 
@@ -1124,7 +1229,7 @@ Open **Adapters** to see:
 
 The only built-in vendor API adapter in 0.4.0 is **Microsoft Defender XDR**.
 
-### 15.3 Configure Defender XDR
+### 16.3 Configure Defender XDR
 
 Prerequisites:
 
@@ -1151,7 +1256,7 @@ Expected Test result: OAuth token acquisition succeeds and a one-item Graph aler
 
 Adapter secrets are Fernet-encrypted on disk and never returned in plaintext through the API. The encryption key is a critical backup asset.
 
-### 15.4 Synchronize vendor adapters
+### 16.4 Synchronize vendor adapters
 
 - **Sync Selected** runs checked adapters that are both configured and enabled.
 - **Sync All Adapters** runs every enabled vendor adapter and enabled Universal folder adapter.
@@ -1160,7 +1265,7 @@ Adapter secrets are Fernet-encrypted on disk and never returned in plaintext thr
 
 Review fetched, inserted, updated, and error counts. Zero inserted can be valid when source records were already deduplicated.
 
-### 15.5 Universal Morgana JSON adapter
+### 16.5 Universal Morgana JSON adapter
 
 The saved Universal adapter workflow in 0.4.0 supports local folder ingestion of Morgana normalized JSON only.
 
@@ -1181,7 +1286,7 @@ Run History shows received, accepted, rejected, duplicate, and error counts. Par
 > [!DANGER]
 > **Delete All Imported Data** removes every Universal-adapter Detection, clears its run/error history, deletes affected Test verdicts, and marks those Tests for revalidation.
 
-### 15.6 Browse Detection evidence
+### 16.6 Browse Detection evidence
 
 Recent Detections supports filters for:
 
@@ -1196,7 +1301,7 @@ Open a Detection to inspect normalized fields, source timestamps, evidence, enti
 
 From a Test, use **Related detections** for possible and confirmed records, then **Correlation audit** to inspect score components, thresholds, time window, adapter coverage, cache status, and candidate truncation.
 
-### 15.7 Correlation and scoring
+### 16.7 Correlation and scoring
 
 Current default score signals include:
 
@@ -1219,7 +1324,7 @@ Default thresholds are 70 for strong candidates and 40 for possible candidates. 
 
 The strict primary correlation window starts at execution and ends no more than 15 minutes after completion. Distinctive command-content lookup can extend to 60 minutes. Agent-side timestamps are preferred; server timestamps are a lower-quality fallback.
 
-### 15.8 Verdict meanings
+### 16.8 Verdict meanings
 
 | Outcome | Meaning |
 |---|---|
@@ -1232,13 +1337,13 @@ The strict primary correlation window starts at execution and ends no more than 
 
 Never report **Possible** as confirmed. Never report **No Telemetry** as a detection gap.
 
-### 15.9 Automatic and manual validation
+### 16.9 Automatic and manual validation
 
 When the Fabric and AI validation switches are enabled, Test completion schedules validation after a default delay of about 60 seconds so adapters can ingest evidence. Manual validation remains available from Test detail.
 
 Bulk selected/all synchronization refreshes adapters once and then correlates Tests. Confirmed current-version results can be reused when the correlation fingerprint is unchanged; stale correlation versions are hidden until recomputed.
 
-### 15.10 Detection Fabric limitations
+### 16.10 Detection Fabric limitations
 
 - Defender XDR is the only built-in vendor API adapter.
 - Universal live folder ingestion is Morgana JSON only in the current UI.
@@ -1247,9 +1352,9 @@ Bulk selected/all synchronization refreshes adapters once and then correlates Te
 - Correlation and AI can be wrong; raw source evidence remains authoritative.
 - Detection retention and Test history are independent. Expiring source Detections can reduce later drill-down evidence.
 
-## 16. Reports and Portable Exports
+## 17. Reports and Portable Exports
 
-### 16.1 Export Report ZIP
+### 17.1 Export Report ZIP
 
 This is the evidence-rich, AI-independent export.
 
@@ -1268,7 +1373,7 @@ The ZIP includes up to 5,000 newest Tests, output, AI review data, summary metri
 > [!WARNING]
 > Portable reports contain offensive execution output and detection evidence. Anyone with file access can read them. Encrypt, retain, and share them under your evidence-handling policy.
 
-### 16.2 Generate an Intelligent Report
+### 17.2 Generate an Intelligent Report
 
 This workflow requires a working Report AI Agent.
 
@@ -1298,7 +1403,7 @@ The report persists in the Morgana database and contains:
 
 Generation fails rather than publishing a report when the AI provider cannot produce valid structured, evidence-grounded content. Retry with a model that has reliable JSON output or use the portable report for raw evidence.
 
-### 16.3 Scope details
+### 17.3 Scope details
 
 - **Filtered** sends the IDs currently present in the loaded filtered view.
 - **Selected** requires at least one selected Test.
@@ -1307,11 +1412,11 @@ Generation fails rather than publishing a report when the AI provider cannot pro
 
 The Intelligent Report is analysis, not the complete evidence archive. Pair it with the portable ZIP.
 
-## 17. AI Mission Engine
+## 18. AI Mission Engine
 
 AI is optional. It powers Script review/improvement, output analysis, Tag suggestions, Test review, Detection Agent decisions when needed, Red Team iteration, and Intelligent Reports.
 
-### 17.1 Configure the active provider
+### 18.1 Configure the active provider
 
 1. Open **AI**.
 2. Review **Engine Status** and **Active Provider**.
@@ -1325,7 +1430,7 @@ AI is optional. It powers Script review/improvement, output analysis, Tag sugges
 
 Leaving an API-key field blank preserves its saved value. The UI masks stored provider keys after save.
 
-### 17.2 Supported providers
+### 18.2 Supported providers
 
 | Provider | Configuration | Authentication | Notes |
 |---|---|---|---|
@@ -1341,7 +1446,7 @@ Leaving an API-key field blank preserves its saved value. The UI masks stored pr
 
 The global provider selector omits direct OpenAI even though the backend supports it. Per-role selectors are also inconsistent: Microsoft Foundry is visible for the Intelligent Report Agent but not for the other four roles. Configure omitted combinations through the authenticated AI API only after testing them; a backend provider entry does not make every UI selector offer it.
 
-### 17.3 GitHub Models or GitHub Copilot
+### 18.3 GitHub Models or GitHub Copilot
 
 1. Install GitHub CLI on the Morgana server if it is not present.
 2. In **AI > Change Provider**, choose the GitHub provider.
@@ -1353,7 +1458,7 @@ The global provider selector omits direct OpenAI even though the backend support
 
 The login flow can persist the resulting token in the AI provider configuration. Treat the Morgana data directory and backup as credential-bearing.
 
-### 17.4 Azure OpenAI
+### 18.4 Azure OpenAI
 
 1. Choose **Azure OpenAI**.
 2. Enter the resource base URL, for example `https://<RESOURCE>.openai.azure.com`.
@@ -1364,7 +1469,7 @@ The login flow can persist the resulting token in the AI provider configuration.
 
 If a full chat-completions URL is supplied, Morgana uses it and adds `api-version` when absent.
 
-### 17.5 Microsoft Foundry
+### 18.5 Microsoft Foundry
 
 1. Choose **Microsoft Foundry (AI Services)**.
 2. Enter the Foundry OpenAI-compatible v1 endpoint, normally ending in `/openai/v1`.
@@ -1375,7 +1480,7 @@ If a full chat-completions URL is supplied, Morgana uses it and adds `api-versio
 
 Morgana appends `/chat/completions` unless it is already present.
 
-### 17.6 OpenAI direct
+### 18.6 OpenAI direct
 
 Direct OpenAI is implemented but is not listed in the main active-provider selector in 0.4.0. Configure it through the authenticated AI provider API, or use **Custom** with the OpenAI chat-completions URL.
 
@@ -1392,7 +1497,7 @@ Required fields are:
 
 Submit this only over trusted HTTPS and never place the real key in source control or shared shell history.
 
-### 17.7 Anthropic
+### 18.7 Anthropic
 
 1. Choose **Anthropic Claude**.
 2. Keep the default Messages endpoint unless your service requires another.
@@ -1401,7 +1506,7 @@ Submit this only over trusted HTTPS and never place the real key in source contr
 
 Morgana requests structured text but model availability remains account-dependent.
 
-### 17.8 Ollama
+### 18.8 Ollama
 
 1. Install and run Ollama on the Morgana server or an approved private inference host.
 2. Pull an appropriate model using the Ollama administration procedure.
@@ -1412,7 +1517,7 @@ Morgana requests structured text but model availability remains account-dependen
 
 Because Morgana runs as a Windows service, `localhost` means the Morgana server, not the operator browser. Ensure the Ollama process remains running independently of an interactive user session.
 
-### 17.9 LM Studio
+### 18.9 LM Studio
 
 1. Load a model in LM Studio on the Morgana server.
 2. Start its Local Server.
@@ -1423,11 +1528,11 @@ Because Morgana runs as a Windows service, `localhost` means the Morgana server,
 
 LM Studio must remain available while Morgana's Windows service calls it.
 
-### 17.10 Custom OpenAI-compatible endpoint
+### 18.10 Custom OpenAI-compatible endpoint
 
 Enter the full chat-completions URL, model ID, and bearer key when required. The endpoint must accept `model`, `messages`, `max_tokens`, and `temperature`, and return assistant content under the OpenAI-compatible `choices[0].message.content` shape.
 
-### 17.11 AI Agents
+### 18.11 AI Agents
 
 Morgana routes five roles independently:
 
@@ -1441,14 +1546,14 @@ Morgana routes five roles independently:
 
 Leave Provider blank to inherit the active provider, or select an already configured provider and optional model override. **Apply to All** fills the forms; select **Save Agents Config** to persist.
 
-### 17.12 Prompt customization
+### 18.12 Prompt customization
 
 **Agent Prompts > View / Edit Prompts** exposes 21 prompt templates. A custom prompt is active on the next call. **Reset to Default** deletes the customization.
 
 > [!WARNING]
 > Prompt changes can weaken structured-output, safety, evidence-grounding, and status rules. Export a full backup and validate each affected workflow before operational use.
 
-### 17.13 Engine controls and caching
+### 18.13 Engine controls and caching
 
 The installed UI does not expose the runtime engine switch, timeout, global fallback model, or generation token limit as fields. They are available through `GET/POST /api/v2/ai/config`:
 
@@ -1460,7 +1565,7 @@ These values are in-memory and can return to process defaults after a server res
 
 Completed Test reviews are cached unless explicitly forced. Detection Fabric reuses only eligible confirmed results whose current correlation version and fingerprint still match.
 
-### 17.14 AI privacy and limitations
+### 18.14 AI privacy and limitations
 
 - Cloud providers receive selected Script content, Test output, Tag context, Detection summaries, or report evidence required for the requested function.
 - Detection evidence is normalized/redacted before AI validation, but redaction cannot guarantee removal of every sensitive value.
@@ -1469,11 +1574,11 @@ Completed Test reviews are cached unless explicitly forced. Detection Fabric reu
 - AI can generate unsafe, incorrect, or out-of-scope commands. Human review is mandatory.
 - Rate limits, timeouts, unavailable models, and invalid JSON can produce `ERROR` or report-generation failure.
 
-## 18. Automation Center
+## 19. Automation Center
 
 Automation Center schedules Scripts, Chains, and Campaigns.
 
-### 18.1 Create a schedule
+### 19.1 Create a schedule
 
 1. Open **Automation Center**.
 2. Select **+ New Schedule**.
@@ -1493,7 +1598,7 @@ Automation Center schedules Scripts, Chains, and Campaigns.
 
 Expected result: the table shows Enabled, next run, target, mode, and run count. The scheduler checks due work approximately every 30 seconds.
 
-### 18.2 Time handling
+### 19.2 Time handling
 
 Friendly daily, weekly, and monthly fields are entered in browser local time and converted to UTC cron values. Custom cron is explicitly UTC:
 
@@ -1505,7 +1610,7 @@ The parser supports `*`, lists, ranges, and step values. Day of week uses 0 for 
 
 Recheck schedules after daylight-saving changes because saved UTC cron does not dynamically retain a local timezone rule.
 
-### 18.3 Run and inspect
+### 19.3 Run and inspect
 
 - **Run** triggers immediately regardless of enabled or next-run state.
 - **History** shows schedule executions.
@@ -1513,7 +1618,7 @@ Recheck schedules after daylight-saving changes because saved UTC cron does not 
 - **Off/On** disables or enables future trigger evaluation.
 - **Del** removes the schedule, not its execution evidence.
 
-### 18.4 Current scheduling limitations
+### 19.4 Current scheduling limitations
 
 - Retry fields are stored but retry execution is not implemented.
 - Notification fields exist in the API/model but no notification delivery is implemented.
@@ -1526,11 +1631,11 @@ Recheck schedules after daylight-saving changes because saved UTC cron does not 
 - Red Team scheduling is supported for a single Script. Composite Chain/Campaign Red Team mode is experimental and may not resolve current visual flow nodes correctly.
 - There is no UI action to cancel an active schedule execution.
 
-## 19. Settings Reference
+## 20. Settings Reference
 
 Morgana has no single Settings page. Configuration is distributed across **Admin**, **AI**, **Adapters**, **Tests > Detection Settings**, **Tags**, **Users**, and **Automation Center**.
 
-### 19.1 Admin settings
+### 20.1 Admin settings
 
 | Section/field | Default or range | Persistence and effect |
 |---|---|---|
@@ -1544,7 +1649,7 @@ Morgana has no single Settings page. Configuration is distributed across **Admin
 | Auto-backup interval | 24 hours; 1-168 | Checked by an hourly loop |
 | Maximum backup files | 10; 1-100 | Oldest managed database backups are deleted |
 
-### 19.2 Detection Fabric settings
+### 20.2 Detection Fabric settings
 
 | Field | Current default | Effect |
 |---|---:|---|
@@ -1562,11 +1667,11 @@ The Adapters top-level Settings dialog writes polling, retention-hours, and AI-t
 
 The top-level Retention (hours) field is saved as `retentionHours`, which the current retention service does not consume. The scheduler captures `ingestionIntervalMinutes` when its task starts, and enabling Detection Fabric after a startup in which it was disabled does not create that task. Restart the service during a controlled window after changing the global enabled state or ingestion interval. Per-adapter retention remains measured in days.
 
-### 19.3 User and Tag settings
+### 20.3 User and Tag settings
 
-Users store identity provider, role, enabled state, workspaces, and Tags. Tag Definitions store label, key/value, namespace, type, color, scope/capabilities, defaults, and runtime/filter behavior. Review the limitations in [Authentication](#6-authentication-users-and-api-keys) and [Tags](#11-tags-and-workspaces) before treating either as access control.
+Users store identity provider, role, enabled state, workspaces, and Tags. Tag Definitions store label, key/value, namespace, type, color, scope/capabilities, defaults, and runtime/filter behavior. Review the limitations in [Authentication](#6-authentication-users-and-api-keys) and [Tags](#12-tags-and-workspaces) before treating either as access control.
 
-### 19.4 Security implications
+### 20.4 Security implications
 
 - DNS changes do not reissue TLS certificates.
 - Short beacon intervals increase status sensitivity and request turnover.
@@ -1576,11 +1681,11 @@ Users store identity provider, role, enabled state, workspaces, and Tags. Tag De
 - Detection score changes can alter assurance outcomes.
 - Backup files contain users, named-key hashes, Tests, output, and detection evidence.
 
-## 20. Merlino Integration
+## 21. Merlino Integration
 
 Morgana implements the API contract expected by Merlino. Historical compatibility names may appear in Merlino settings, but Morgana documentation and operations use Morgana terms.
 
-### 20.1 Prerequisites
+### 21.1 Prerequisites
 
 - Morgana health endpoint is reachable from the Excel host.
 - Morgana root CA is trusted on the Excel host.
@@ -1588,7 +1693,7 @@ Morgana implements the API contract expected by Merlino. Historical compatibilit
 - At least one Agent is enrolled for execution.
 - Required Excalibur Scripts are installed.
 
-### 20.2 Connect Merlino
+### 21.2 Connect Merlino
 
 1. In Morgana **Admin > API Keys**, create a named key for Merlino and store it securely.
 2. On the Merlino host, install the public Morgana CA certificate in Trusted Root.
@@ -1599,7 +1704,7 @@ Morgana implements the API contract expected by Merlino. Historical compatibilit
 
 Expected result: Morgana returns status `ok` and its version from `/api/v2/merlino/check_status`.
 
-### 20.3 Synchronize and execute
+### 21.3 Synchronize and execute
 
 Depending on the Merlino workflow:
 
@@ -1612,7 +1717,7 @@ Morgana returns AI review and Detection Fabric fields when available. A missing 
 
 The direct `/synchronize` path sends the saved Script command without runtime Tag substitution and does not deduplicate an existing active Job when the same row is synchronized again in `running` state. Use concrete reviewed commands on this path and avoid repeated synchronization until the current Job finishes.
 
-### 20.4 Troubleshoot Merlino
+### 21.4 Troubleshoot Merlino
 
 - TLS error: trust the Morgana CA and use a hostname/IP in the certificate SAN.
 - HTTP 401: replace the named key in Merlino and verify it has not been revoked.
@@ -1620,9 +1725,9 @@ The direct `/synchronize` path sends the saved Script command without runtime Ta
 - No Job: verify state is running and at least one Script exactly matches the first TCode.
 - Stale result: synchronize again after the Test and optional Detection Fabric validation finish.
 
-## 21. REST API for Operators
+## 22. REST API for Operators
 
-### 21.1 Discovery
+### 22.1 Discovery
 
 | Resource | URL |
 |---|---|
@@ -1632,7 +1737,7 @@ The direct `/synchronize` path sends the saved Script command without runtime Ta
 
 OpenAPI reflects registered routes, but a route's presence does not guarantee that every UI workflow is production-ready. Apply the limitations in this manual.
 
-### 21.2 Authentication
+### 22.2 Authentication
 
 Use one of:
 
@@ -1648,7 +1753,7 @@ Authorization: Bearer <MORGANA_JWT>
 
 Use named API keys for integrations. Do not put keys in URLs. Console WebSockets are an exception in the current implementation and pass a key in the query string; protect proxy and access logs accordingly.
 
-### 21.3 PowerShell examples
+### 22.3 PowerShell examples
 
 Set placeholders only in the current trusted shell session:
 
@@ -1682,7 +1787,7 @@ Invoke-RestMethod -Uri "$base/api/v2/tests/<TEST_ID>" -Headers $headers
 
 Do not bypass TLS verification in routine automation. Install the Morgana CA in the calling host's trust store.
 
-### 21.4 Major API groups
+### 22.4 Major API groups
 
 | Prefix | Purpose |
 |---|---|
@@ -1702,7 +1807,7 @@ Do not bypass TLS verification in routine automation. Install the Morgana CA in 
 | `/api/v2/admin` | Server settings, logs, information, and backup |
 | `/api/v2/merlino` | Backward-compatible Merlino integration |
 
-### 21.5 API cautions
+### 22.5 API cautions
 
 - Named keys have full practical API access, no scope, and no expiry.
 - Agent registration, poll, result, heartbeat, install-script, binary-download, health, update-check, and update-status routes are unauthenticated.
@@ -1712,9 +1817,9 @@ Do not bypass TLS verification in routine automation. Install the Morgana CA in 
 - API deletion operations are immediate and can cascade into Test/evidence loss.
 - Do not expose `/docs`, `/openapi.json`, Agent registration, downloads, or any API route to untrusted networks.
 
-## 22. Logs and Diagnostics
+## 23. Logs and Diagnostics
 
-### 22.1 Server Logs page
+### 23.1 Server Logs page
 
 Open **Logs**. The default view loads the last 30 minutes. Filters support:
 
@@ -1725,7 +1830,7 @@ Open **Logs**. The default view loads the last 30 minutes. Filters support:
 
 Select **Export JSON** only after loading a result set. Review and sanitize exported logs before sharing. Select **Clear All** only after preserving required evidence.
 
-### 22.2 Installed log locations
+### 23.2 Installed log locations
 
 | Log | Purpose |
 |---|---|
@@ -1743,7 +1848,7 @@ Server application logs are JSON objects with UTC timestamp, level, logger name,
 > [!WARNING]
 > Startup logs write the full master API key on every server start. Native Console diagnostics can also write a key-bearing internal WebSocket URL. Provider, Script, Test, and Console logs can contain additional sensitive context. Restrict log ACLs, exports, backups, and support attachments; never send raw logs to an untrusted recipient.
 
-### 22.3 Diagnostic sequence
+### 23.3 Diagnostic sequence
 
 1. Check `Get-Service Morgana`.
 2. Query `/health` locally.
@@ -1754,9 +1859,9 @@ Server application logs are JSON objects with UTC timestamp, level, logger name,
 7. Reproduce once with a harmless General Utilities Script.
 8. Use DEBUG temporarily only if required, then return to INFO.
 
-## 23. Backup, Restore, and Disaster Recovery
+## 24. Backup, Restore, and Disaster Recovery
 
-### 23.1 Database backup from the UI
+### 24.1 Database backup from the UI
 
 1. Open **Admin > Database Backup**.
 2. Select **Backup Now**.
@@ -1774,7 +1879,7 @@ To enable automatic database backups:
 
 The background loop checks approximately hourly. This is database backup only.
 
-### 23.2 What database backup includes
+### 24.2 What database backup includes
 
 It includes records stored in SQLite, such as:
 
@@ -1785,7 +1890,7 @@ It includes records stored in SQLite, such as:
 
 It does **not** include all files needed for full recovery, including TLS keys, the master key, AI provider configuration, Detection Fabric encryption key/configuration, custom prompts, server settings files, logs, or Agent binaries.
 
-### 23.3 Full configuration backup
+### 24.3 Full configuration backup
 
 For disaster recovery, back up the complete `%ProgramData%\Morgana` directory:
 
@@ -1799,7 +1904,7 @@ For disaster recovery, back up the complete `%ProgramData%\Morgana` directory:
 
 The Detection Fabric secret-encryption key must be restored with its encrypted secret store. Losing that key makes saved adapter secrets unrecoverable.
 
-### 23.4 Restore a managed database backup
+### 24.4 Restore a managed database backup
 
 1. Create a new backup of the current database.
 2. Open **Admin > Database Backup**.
@@ -1815,7 +1920,7 @@ Restart-Service -Name Morgana
 
 Restore replaces the live database. Data created after that backup is lost. It does not roll back files outside the database.
 
-### 23.5 Full disaster recovery
+### 24.5 Full disaster recovery
 
 1. Provision an isolated Windows host with the same or compatible Morgana version.
 2. Install Morgana but do not admit untrusted network clients.
@@ -1827,9 +1932,9 @@ Restore replaces the live database. Data created after that backup is lost. It d
 8. Reissue named keys and provider secrets when compromise is suspected.
 9. Re-enroll Agents if server identity or network addressing changed.
 
-## 24. Upgrade the Server
+## 25. Upgrade the Server
 
-### 24.1 Recommended installer upgrade
+### 25.1 Recommended installer upgrade
 
 1. Review **Dashboard > Check Update** and release notes.
 2. Confirm no Tests, Chains, Campaigns, Consoles, reports, backups, or sync runs are active.
@@ -1843,7 +1948,7 @@ Restore replaces the live database. Data created after that backup is lost. It d
 
 Database migrations run at startup. Do not downgrade by replacing only the executable unless the release procedure explicitly supports it.
 
-### 24.2 Advanced in-place update API
+### 25.2 Advanced in-place update API
 
 The authenticated `/api/v2/update/apply` route can download a raw server executable, verify SHA-256 when supplied by the public manifest, stop the service, swap the executable, run a health check, and roll back on failure. The current UI shows a download link rather than exposing this action.
 
@@ -1851,9 +1956,9 @@ Use the API-only path only under a documented change procedure with console acce
 
 Supplying an override `download_url` bypasses the manifest SHA-256 value, and the network helper has a last-resort mode that disables remote certificate verification. Never use an override URL in routine operations; verify the publisher and hash independently if an emergency procedure requires it.
 
-## 25. Uninstall
+## 26. Uninstall
 
-### 25.1 Uninstall the server and preserve data
+### 26.1 Uninstall the server and preserve data
 
 Use the provided [complete uninstall script](uninstall/03-uninstall-morgana.ps1), because it stops/removes the service before removing program files:
 
@@ -1868,7 +1973,7 @@ Use the provided [complete uninstall script](uninstall/03-uninstall-morgana.ps1)
 
 Expected result: service and program files are removed, while `%ProgramData%\Morgana` is preserved for reinstall/recovery.
 
-### 25.2 Clean server removal
+### 26.2 Clean server removal
 
 > [!DANGER]
 > This permanently deletes the database, API material, certificates, AI configuration, detections, reports, logs, and backups stored under the Morgana data root.
@@ -1881,15 +1986,15 @@ After independently verifying the backup:
 
 Also remove the Morgana firewall rule, Defender exclusion, and trusted root CA if the script or local policy leaves them behind. Verify no Agent still points to the retired server.
 
-### 25.3 Uninstall Agents
+### 26.3 Uninstall Agents
 
 Use **Agents > Uninstall** for exact platform commands. Then delete the Agent row.
 
 On a machine that also hosts the Morgana Server, do not use an Agent `--purge` operation that removes the shared `%ProgramData%\Morgana` root.
 
-## 26. Security and Responsible Operation
+## 27. Security and Responsible Operation
 
-### 26.1 Mandatory controls
+### 27.1 Mandatory controls
 
 - Obtain explicit written authorization and a defined scope.
 - Isolate Morgana and Agents from public/untrusted networks.
@@ -1904,7 +2009,7 @@ On a machine that also hosts the Morgana Server, do not use an Agent `--purge` o
 - Monitor exercise execution from both endpoint and SOC sides.
 - Preserve evidence and perform post-exercise cleanup.
 
-### 26.2 Current technical limitations that affect deployment approval
+### 27.2 Current technical limitations that affect deployment approval
 
 Morgana 0.4.0 does not currently provide:
 
@@ -1924,7 +2029,7 @@ The installer also creates a broad inbound firewall rule, does not explicitly ha
 
 These limitations make Internet-facing or untrusted-network deployment unsupported.
 
-### 26.3 Antivirus exclusions
+### 27.3 Antivirus exclusions
 
 The installer attempts to exclude the Morgana data directory because offensive content can trigger endpoint controls. An exclusion is not a functional requirement for every Script and should never be applied automatically to production systems without risk approval.
 
@@ -1935,13 +2040,13 @@ Prefer:
 - Time-bounded, documented endpoint exclusions only when the exercise requires them.
 - Removal and verification after the exercise.
 
-### 26.4 AI-generated content
+### 27.4 AI-generated content
 
 AI is not an authorization mechanism. It can invent tools, select the wrong target, generate destructive behavior, or misclassify prevention/detection. Keep a human approval gate before every generated command and every report decision.
 
-## 27. Troubleshooting
+## 28. Troubleshooting
 
-### 27.1 Server and access
+### 28.1 Server and access
 
 | Symptom | Checks and action |
 |---|---|
@@ -1952,7 +2057,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Session repeatedly expires | JWT default is 24 hours; check server time and whether the signing configuration changed on restart. Sign in again. |
 | UI actions return HTTP 401 | Browser token or stored API key is invalid. Log out, sign in, and replace revoked integration keys. |
 
-### 27.2 Agents and Jobs
+### 28.2 Agents and Jobs
 
 | Symptom | Checks and action |
 |---|---|
@@ -1964,7 +2069,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Console window not visible | Sign in interactively to the Morgana server, check server Console logs, and ensure the Agent connects within 30 seconds. |
 | Console is connected but GUI app is invisible | Agent runs in service Session 0. Use CLI tools only. |
 
-### 27.3 Scripts and Chains
+### 28.3 Scripts and Chains
 
 | Symptom | Checks and action |
 |---|---|
@@ -1978,7 +2083,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Progress modal stays Running after partial failure | Close it and use **Recent Executions**; `partial_fail` is terminal but the current modal polling recognizes fewer terminal labels. |
 | Branch took unexpected path | Matching uses only prior stdout, case-insensitive. It ignores stderr and exit code. |
 
-### 27.4 Detection Fabric
+### 28.4 Detection Fabric
 
 | Symptom | Checks and action |
 |---|---|
@@ -1992,7 +2097,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Not Detected seems wrong | Verify healthy coverage, Agent-side timestamps, source timestamps, marker visibility, and score changes; force revalidation after new evidence. |
 | Sync run interrupted | Reopen Tests; Morgana marks active runs interrupted after restart and supports resume. |
 
-### 27.5 AI and reports
+### 28.5 AI and reports
 
 | Symptom | Checks and action |
 |---|---|
@@ -2006,7 +2111,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Intelligent Report fails | Confirm selected scope has meaningful evidence, Report Agent is configured, and model supports reliable JSON. Use Export Report ZIP meanwhile. |
 | Offline report does not open | Extract the full ZIP, run its `.cmd` launcher, keep PowerShell open, and preserve folder structure. |
 
-### 27.6 Backup and upgrade
+### 28.6 Backup and upgrade
 
 | Symptom | Checks and action |
 |---|---|
@@ -2016,7 +2121,7 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Update check fails | Verify server HTTPS access to the public Camelot version manifest. Manual operation can continue. |
 | Service fails after upgrade | Review update/service logs, verify executable and data ACLs, and restore the tested backup or previous approved installer. |
 
-## 28. FAQ
+## 29. FAQ
 
 ### Is Morgana safe to expose through a public reverse proxy?
 
@@ -2070,7 +2175,7 @@ Yes, with a locally hosted Ollama or LM Studio service. The data still exists on
 
 Campaign completion currently records that orchestration finished. Inspect nested execution logs and Tests for outcome quality.
 
-## 29. Accessibility and Keyboard Use
+## 30. Accessibility and Keyboard Use
 
 Morgana 0.4.0 has no published keyboard-shortcut map or accessibility conformance statement.
 
@@ -2082,7 +2187,7 @@ Morgana 0.4.0 has no published keyboard-shortcut map or accessibility conformanc
 
 Operators who require assistive technology should validate critical workflows in a non-production instance and keep an API-based alternative for tasks the UI cannot complete accessibly.
 
-## 30. Glossary
+## 31. Glossary
 
 | Term | Definition |
 |---|---|
@@ -2099,11 +2204,14 @@ Operators who require assistive technology should validate critical workflows in
 | Runtime Tag | Tag Definition whose value replaces a `#{key}` placeholder |
 | Workspace | Saved Tag selector used as a global UI filter, not an authorization boundary |
 
-## 31. References
+## 32. References
 
 - [Morgana release directory](Install/)
 - [Current version manifest](Install/version.json)
 - [Excalibur catalog](excalibur/catalog.json)
+- [Excalibur Packages reference](excalibur/PACKAGES.md)
+- [IndustriConnect provider guide](excalibur/ot/industriconnect/README.md)
+- [Industrial Lab guide](industrial-lab/README.md)
 - [Complete server uninstall script](uninstall/03-uninstall-morgana.ps1)
 - [MITRE ATT&CK](https://attack.mitre.org/)
 - [X3M.AI contact](https://x3m.ai/contact/)

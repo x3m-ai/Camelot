@@ -1,0 +1,47 @@
+# Morgana Mobile Lab — Community Guide
+
+Mobile Lab is Morgana's provider-agnostic subsystem for provisioning and
+managing mobile security test environments: Android emulators, Apple iOS
+Simulators, physical devices, and future external virtual-device providers.
+
+## Content Plane (this repository)
+
+| Path | Purpose |
+|---|---|
+| `catalog.json` | Provider metadata + template index fetched by Morgana on demand |
+| `templates/*.json` | Declarative `MobileLabTemplate` environments |
+
+## Providers
+
+| Provider | Type | Platforms | Host requirement |
+|---|---|---|---|
+| `android-emulator` | LOCAL_HOST_PROVIDER | android | Android SDK + adb + emulator + virtualization |
+| `apple-simulator` | LOCAL_HOST_PROVIDER | ios | macOS + Xcode + simctl |
+| `physical-android` | PHYSICAL_DEVICE_PROVIDER | android | adb |
+| `physical-ios` | PHYSICAL_DEVICE_PROVIDER | ios | macOS |
+| `corellium` | EXTERNAL_API_PROVIDER | android, ios | API credentials |
+
+Apple Simulator is macOS/Xcode only. Physical devices are non-destructive by
+default. Corellium requires a valid account; the architecture is validated but
+runtime is not run without credentials.
+
+## Templates
+
+| Template | Platform | Provider | Baseline |
+|---|---|---|---|
+| `android-clean-avd` | android | android-emulator | wipe |
+| `android-app-test-lab` | android | android-emulator | snapshot |
+| `ios-simulator-app-lab` | ios | apple-simulator | erase |
+| `physical-android-test-session` | android | physical-android | none |
+
+## App Licensing
+
+Only redistributable lab assets are published here. Unlicensed/proprietary apps
+are marked `reference-only` and never packaged. Morgana records SHA-256, source,
+and license status per asset.
+
+## Reference
+
+- Architecture: `Morgana/docs/MOBILE_LAB_ARCHITECTURE.md`
+- User guide: `Morgana/docs/MOBILE_LAB_USER_GUIDE.md`
+- Troubleshooting: `Morgana/docs/MOBILE_LAB_TROUBLESHOOTING.md`
