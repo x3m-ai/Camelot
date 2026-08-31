@@ -22,7 +22,7 @@ MEDUSA_REPO    = "Ch0pin/medusa"
 def _tolerant_parse(text: str) -> Optional[dict]:
     """Parse JSON tolerating control characters in strings."""
     try:
-        return json.loads(text)
+        return json.loads(text, strict=False)
     except json.JSONDecodeError:
         pass
     # Replace bare control characters inside string literals
@@ -55,6 +55,14 @@ def _slug(s: str) -> str:
     return re.sub(r'[^a-z0-9_]+', '_', s.lower()).strip('_')
 
 
+def _source_location(path: Path) -> tuple[Path, Path]:
+    """Return the MEDUSA root and source path for a module file."""
+    modules_dir = next((parent for parent in path.parents if parent.name == "modules"), None)
+    if modules_dir is None:
+        raise ValueError(f"module is not below a modules directory: {path}")
+    return modules_dir.parent, path.relative_to(modules_dir.parent)
+
+
 def parse_module(path: Path, platform: str) -> dict:
     """Parse a single .med or .imed file."""
     try:
@@ -77,31 +85,30 @@ def parse_module(path: Path, platform: str) -> dict:
     if options_raw and isinstance(options_raw, list):
         for opt in options_raw:
             if isinstance(opt, dict):
+                value = opt.get("value") if "value" in opt else opt.get("Value", "")
                 options.append({
                     "name": str(opt.get("name") or opt.get("Name") or "").strip(),
                     "help": str(opt.get("help") or opt.get("Help") or "").strip(),
                     "type": str(opt.get("type") or opt.get("Type") or "string").strip().lower(),
-                    "value": opt.get("value") or opt.get("Value") or "",
+                    "value": value,
                 })
 
-    # Category = parent directory name
-    parts = path.relative_to(path.parent.parent.parent).parts  # modules/category/file
-    if len(parts) >= 3:
-        category = parts[1]
-    elif len(parts) == 2:
-        category = parts[0]
-    else:
-        category = "uncategorized"
+    medusa_root, source_relative = _source_location(path)
+    module_relative = source_relative.relative_to("modules")
+    category_parts = module_relative.parts[:-1]
+    if platform == "ios" and category_parts[:1] == ("ios",):
+        category_parts = category_parts[1:]
+    category = category_parts[-1] if category_parts else "uncategorized"
 
     has_code = bool(code)
     file_sha = hashlib.sha256(path.read_bytes()).hexdigest()
     code_sha = hashlib.sha256(code.encode("utf-8", errors="replace")).hexdigest() if code else ""
 
     # Source path relative to medusa root
-    source_path = str(path.relative_to(path.parents[3]))  # medusa/modules/...
+    source_path = source_relative.as_posix()
 
     # Stable ID from source path
-    module_id = _slug(source_path.replace("\\", "/").replace("/", "_").replace(".med", "").replace(".imed", ""))
+    module_id = _slug(str(source_relative.with_suffix("")))
 
     # Script ID
     script_id = f"medusa:{platform}:{module_id}"
@@ -111,7 +118,7 @@ def parse_module(path: Path, platform: str) -> dict:
 
     return {
         "script_id": script_id,
-        "source_path": str(path),
+        "source_path": source_path,
         "source_file": path.name,
         "source_sha256": file_sha,
         "source_commit": MEDUSA_COMMIT,
@@ -172,7 +179,7 @@ def enumerate_snippets(medusa_dir: Path) -> list[dict]:
         slug = _slug(f.stem)
         result.append({
             "script_id": f"medusa:android:snippet:{slug}",
-            "source_path": str(f),
+            "source_path": f.relative_to(medusa_dir).as_posix(),
             "source_file": f.name,
             "source_sha256": hashlib.sha256(f.read_bytes()).hexdigest(),
             "source_commit": MEDUSA_COMMIT,
