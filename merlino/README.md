@@ -928,7 +928,12 @@ Morgana remains the authority for raw Test and Detection Fabric records.
 Below the operational/detection actions, the **EXECUTIVE ASSURANCE** section provides a **Generate Executive Report** button.
 
 - The button is named for the user's desired outcome; internally the first operation is **Create Assessment Snapshot**.
+- Clicking the button opens a dialog asking for the assessment identity:
+  - **Organisation** — required (the primary owner/customer for the assessment).
+  - **Assessment Area** — optional (business unit, department, region, etc.).
+  - **Assessment Name** — prefilled from the identity and workbook, editable.
 - Merlino validates Morgana connectivity, collects the current workbook's assessment context (Threat Profiles, Catalogue, Techniques, Data Components, Main Coverage, selected baseline) and POSTs a versioned JSON package (`MerlinoAssessmentPackage v1`) to Morgana. No XLSX upload.
+- The identity is sent as structured fields (`assessment.organisation`, `assessment.assessment_area`) — never inferred from the workbook file.
 - No prior **Synchronize Tests** run is required — Morgana uses its own authoritative Test / Detection Fabric evidence.
 - Morgana freezes the evidence into an immutable Assessment Snapshot and returns its ID.
 - Open Morgana → **Assessment Snapshots** to generate and download the native PowerPoint Executive Report.
