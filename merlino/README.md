@@ -923,6 +923,18 @@ These views analyze synchronized or API-returned evidence. They do not trigger e
 
 Morgana remains the authority for raw Test and Detection Fabric records.
 
+### 28.5 Executive Assurance — Generate Executive Report
+
+Below the operational/detection actions, the **EXECUTIVE ASSURANCE** section provides a **Generate Executive Report** button.
+
+- The button is named for the user's desired outcome; internally the first operation is **Create Assessment Snapshot**.
+- Merlino validates Morgana connectivity, collects the current workbook's assessment context (Threat Profiles, Catalogue, Techniques, Data Components, Main Coverage, selected baseline) and POSTs a versioned JSON package (`MerlinoAssessmentPackage v1`) to Morgana. No XLSX upload.
+- No prior **Synchronize Tests** run is required — Morgana uses its own authoritative Test / Detection Fabric evidence.
+- Morgana freezes the evidence into an immutable Assessment Snapshot and returns its ID.
+- Open Morgana → **Assessment Snapshots** to generate and download the native PowerPoint Executive Report.
+
+The Executive Report is the management-level report (14 slides: executive summary, baseline, threat-scenario readiness, strengths, gaps, test outcomes, prevention vs detection, business risks, investment priorities, 90-day roadmap, conclusion). It is distinct from the operational report.
+
 ## 29. AI Mission Engine
 
 The active AI Mission Engine has two functions: configure one active provider and run enabled Promptbooks.

@@ -1416,6 +1416,26 @@ Generation fails rather than publishing a report when the AI provider cannot pro
 
 The Intelligent Report is analysis, not the complete evidence archive. Pair it with the portable ZIP.
 
+### 17.4 Assessment Snapshots and the Executive Report
+
+The Executive Report is a management-ready, native PowerPoint briefing (14 slides) generated from an immutable Assessment Snapshot. It joins Merlino's strategic context (Threat Profiles, coverage, baseline, business priorities) with Morgana's authoritative execution and detection evidence.
+
+1. In Merlino, open **Tests & Operations** and select **Generate Executive Report**. This creates an Assessment Snapshot in Morgana (structured JSON is sent — never the workbook file).
+2. In Morgana, open **Assessment Snapshots**.
+3. Select **Generate** on the desired snapshot.
+4. Wait for the report status to reach **READY**, then **Download PPTX**.
+
+Key properties:
+
+- The report is always generated from the frozen snapshot, never by re-querying the live database.
+- Metrics are deterministic; AI (the `report_agent` Reporting Agent) writes narrative only.
+- `POSSIBLE_DETECTION` is never presented as confirmed detection.
+- Test runtime/technical errors are reported as "not evaluable", not as security-control failures.
+- Generated artifacts are persisted and re-downloadable.
+- The Reporting Agent has a **Style** action; the built-in style is **Executive Dark v1**.
+
+See the Morgana help and `docs/ASSESSMENT_SNAPSHOTS.md` in the Morgana repository for the full reference.
+
 ## 18. AI Mission Engine
 
 AI is optional. It powers Script review/improvement, output analysis, Tag suggestions, Test review, Detection Agent decisions when needed, Red Team iteration, and Intelligent Reports.
