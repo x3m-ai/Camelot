@@ -93,6 +93,28 @@ the [Mobile Lab guide](../../morgana/mobile-lab/README.md).
 
 ---
 
+## OWASP MASTG + Hacking Playground
+
+Morgana integrates the **OWASP Mobile Application Security Testing Guide
+(MASTG)** and the **OWASP MASTG Hacking Playground** as a mobile security test
+library layered on Mobile Lab:
+
+1. **Mobile Lab → MASTG Tests** — browse the MASTG test library (292 tests with
+   MASVS mappings, automation classification, deprecation status) or open tests
+   compatible with a device via the device's **MASTG** action.
+2. **Run Compatible Scripts** — jump from a MASTG test to the matching OWASP
+   MASTG / Drozer / MEDUSA / Frida Mobile Scripts.
+3. **Hacking Playground apps** — appear in the Mobile Lab **Apps** tab as
+   intentionally-vulnerable App Assets (Android Java/Kotlin, iOS JWT); deploy
+   `android-mastg-playground-lab` or `ios-mastg-playground-lab` templates.
+
+MASTG Tests are procedure cards (manual/semi/auto), not fake automation. Only
+real Frida demos are published as executable Scripts. The Hacking Playground
+does not cover every MASTG test, and Morgana does not claim it does. See
+`Morgana/docs/OWASP_MASTG_INTEGRATION.md`.
+
+---
+
 ## Integration with Merlino
 
 **Merlino** is the intelligence layer — free and open to all. **Morgana** is the execution layer — access requires contacting X3M.AI.

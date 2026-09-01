@@ -940,6 +940,7 @@ patterns while remaining a distinct domain.
 | Target references | Stable `mobilelab://<device>/app/<app>` references resolved at runtime |
 | Frida / MEDUSA | Reuses the existing Frida executor; MEDUSA and Frida Mobile remain independent Script providers bound via target-aware filtering |
 | Drozer | Independent Android application-security provider run through the pinned isolated Drozer runtime; bound via target-aware filtering |
+| OWASP MASTG | Test library (292 manual procedure cards with MASVS mappings + automation classification), executable OWASP Frida demos, and Hacking Playground apps as App Assets; served at `/api/v2/mastg/*` |
 
 **Page structure** (sidebar, after Industrial Lab): Overview, Devices, Apps,
 Templates, Hosts.
