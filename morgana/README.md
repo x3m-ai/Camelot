@@ -1420,15 +1420,16 @@ The Intelligent Report is analysis, not the complete evidence archive. Pair it w
 
 The Executive Report is a management-ready, native PowerPoint briefing (14 slides) generated from an immutable Assessment Snapshot. It joins Merlino's strategic context (Threat Profiles, coverage, baseline, business priorities) with Morgana's authoritative execution and detection evidence.
 
-1. In Merlino, open **Tests & Operations** and select **Generate Executive Report**. This creates an Assessment Snapshot in Morgana (structured JSON is sent — never the workbook file).
-2. In Morgana, open **Assessment Snapshots**.
+1. In Merlino, open **Tests & Operations** and select **Generate Executive Report**. This opens an identity dialog where you enter the **Organisation** (required), **Assessment Area** (optional — business unit, department, region, etc.) and an **Assessment Name**. This creates an Assessment Snapshot in Morgana (structured JSON is sent — never the workbook file).
+2. In Morgana, open **Assessment Snapshots**. The list shows each snapshot's Organisation, Area, and Created date + time (in your local timezone).
 3. Select **Generate** on the desired snapshot.
-4. Wait for the report status to reach **READY**, then **Download PPTX**.
+4. Wait for the report status to reach **READY**, then **Download PPTX**. The report cell shows the generation date + time; failed generations show a **View Error** link with the exact failure reason.
 
 Key properties:
 
 - The report is always generated from the frozen snapshot, never by re-querying the live database.
 - Metrics are deterministic; AI (the `report_agent` Reporting Agent) writes narrative only.
+- AI narrative is validated against a strict nested content schema; malformed AI output automatically falls back to a deterministic narrative — it can never crash report generation.
 - `POSSIBLE_DETECTION` is never presented as confirmed detection.
 - Test runtime/technical errors are reported as "not evaluable", not as security-control failures.
 - Generated artifacts are persisted and re-downloadable.
