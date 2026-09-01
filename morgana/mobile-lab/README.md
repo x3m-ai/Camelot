@@ -35,6 +35,8 @@ runtime is not run without credentials.
 | `physical-android-test-session` | android | physical-android | none |
 | `android-drozer-lab` | android | android-emulator | wipe (drozer runtime + agent) |
 | `android-appsec-lab` | android | android-emulator | wipe (drozer + frida + MEDUSA) |
+| `android-mastg-playground-lab` | android | android-emulator | wipe (drozer + frida + MASTG apps) |
+| `ios-mastg-playground-lab` | ios | apple-simulator | erase (MASTG iOS JWT app; macOS/Xcode Host required) |
 
 ## Drozer integration
 
@@ -43,11 +45,24 @@ Android tooling capability on Mobile Lab targets. Its Excalibur packages live
 under `morgana/excalibur/mobile/drozer/`. See
 `Morgana/docs/DROZER_ARCHITECTURE.md` and the Mobile Lab section of this guide.
 
+## OWASP MASTG + Hacking Playground
+
+- **MASTG test library + MASVS coverage** — served from `mastg-coverage.json`
+  (this directory) and surfaced in Morgana at `/api/v2/mastg/*` and the Mobile
+  Lab "MASTG Tests" UI. Tests are manual procedure cards, not fake automation.
+- **Hacking Playground apps** — `catalog.json` `apps` array (3 apps) and
+  `services` array (1 Rails backend). Apps are App Assets, not Scripts.
+- **Playground templates** — `android-mastg-playground-lab`,
+  `ios-mastg-playground-lab`.
+- Updater: `morgana/excalibur/tools/update-mastg.ps1`.
+- Docs: `Morgana/docs/OWASP_MASTG_INTEGRATION.md` and the other `OWASP_MASTG_*.md` guides.
+
 ## App Licensing
 
 Only redistributable lab assets are published here. Unlicensed/proprietary apps
 are marked `reference-only` and never packaged. Morgana records SHA-256, source,
-and license status per asset.
+and license status per asset. Hacking Playground apps are GPL-3.0; binaries are
+not re-distributed (source-pinned, reproducible build).
 
 ## Reference
 

@@ -2,6 +2,26 @@
 
 All notable releases and updates for the X3M.AI ecosystem are documented here.
 
+## Morgana / Camelot — OWASP MASTG + Hacking Playground (September 2026)
+
+### Added
+- Complete **OWASP MAS / MASTG** mobile security test library + **OWASP MASTG Hacking Playground** integration
+  - 292 MASTG tests (163 Android / 129 iOS) published as manual procedure cards with MASVS mappings, weakness (`MASWE`), deprecation status (`covered_by`), and automation classification (MANUAL / SEMI_AUTOMATABLE / AUTOMATABLE) — never fake automation
+  - 157 MASTG demos: 23 executable Frida scripts (via the existing Morgana Frida executor) + 134 manual-reference cards (radare2 / semgrep / ADB / sample code)
+  - 550 MASTG reference records (knowledge 141, techniques 168, tools 136, apps 30, best practices 75)
+  - Hacking Playground: 3 Mobile Lab App Assets (Android Java/Kotlin, iOS JWT) + 1 Rails backend Supporting Service + 2 templates (`android-mastg-playground-lab`, `ios-mastg-playground-lab`)
+  - Pinned upstreams: `OWASP/mastg` @ `ef19f2b1` (CC BY-SA 4.0), `OWASP/MASTG-Hacking-Playground` @ `db219a10` (GPL-3.0)
+- Backend: `/api/v2/mastg/*` router (tests, demos, MASVS coverage, playground), Mobile Lab `GET /apps` catalog merge + `GET /services`, `MASTG - ` Script prefix
+- UI: MASTG Test Library modal in Mobile Lab (platform/MASVS/automation/deprecation filters), "MASTG" per-device action, Run Compatible Tests
+- Tooling: `mastg_parser.py`, `convert_mastg.py`, `test_mastg_parser.py`, `test_mastg_import.py`, `update-mastg.ps1`
+- Docs: 6 `OWASP_MASTG_*.md` guides in Morgana + MASTG content README and manual/catalog updates in Camelot
+
+### Notes
+- MASTG Tests are procedure cards, not executable scripts; only real Frida demos are executable.
+- Hacking Playground binaries are not re-distributed (source-pinned, reproducible build); the Playground does not provide complete MASTG coverage and Morgana does not claim it does.
+- Cross-provider suppression: 0 (Drozer / MEDUSA / Frida Mobile remain independent and are linked via compatibility relationships).
+- Full source reconciliation: 292/292 tests, 157/157 demos, zero silent loss.
+
 ## Morgana / Camelot — Drozer provider (August 2026)
 
 ### Added
