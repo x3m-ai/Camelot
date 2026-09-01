@@ -2,6 +2,22 @@
 
 All notable releases and updates for the X3M.AI ecosystem are documented here.
 
+## Morgana + Merlino — Assessment Snapshots & Executive Report (September 2026)
+
+### Added
+- **Assessment Snapshots** — immutable, point-in-time assurance records in Morgana joining Merlino strategic context (Threat Profiles, Catalogue, Techniques, Data Components, Main Coverage, selected baseline) with authoritative Morgana Test / AI Review / Detection Fabric evidence.
+  - Versioned contract `MerlinoAssessmentPackage v1` (structured JSON — no XLSX upload).
+  - Evidence-selection policy, idempotency keys, SHA-256 provenance hashes, deterministic assurance metrics, snapshot status lifecycle, server-restart recovery.
+- **Executive Report Engine** — 14-slide native editable PowerPoint (python-pptx), generated only from the frozen snapshot.
+  - Deterministic metrics; narrative composed by the existing `report_agent` (Reporting Agent) with a deterministic fallback when AI is unavailable.
+  - Detection semantics preserved: `POSSIBLE_DETECTION` never reported as confirmed; test technical errors reported as "not evaluable".
+- **Report Style profiles** — first-class versioned design tokens; built-in **Executive Dark v1** reproduces the golden Alveo executive deck design language. Style is frozen (id/version/hash) per generated report.
+- **Merlino** — Tests & Operations gains an **Executive Assurance** section with a **Generate Executive Report** button and Anacleto guidance.
+- **Morgana UI** — new **Assessment Snapshots** page (list, filter, detail, generate, download PPTX/PDF) and a **Style** action on the Reporting Agent card.
+
+### Docs
+- `Camelot/morgana/README.md` and `Camelot/merlino/README.md` updated with the Executive Report flow.
+
 ## Morgana / Camelot — OWASP MASTG + Hacking Playground (September 2026)
 
 ### Added
