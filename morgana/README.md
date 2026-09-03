@@ -1467,6 +1467,7 @@ Leaving an API-key field blank preserves its saved value. The UI masks stored pr
 | Anthropic | Messages endpoint, API key, Claude model | `x-api-key` | Uses Anthropic Messages API |
 | Ollama | OpenAI-compatible endpoint, model | None by default | Local inference; reasoning models receive no-think handling where supported |
 | LM Studio | OpenAI-compatible endpoint, loaded model ID | None by default | Local inference; model must be loaded and local server running |
+| OpenRouter | OpenAI-compatible chat-completions endpoint, API key, model slug | Bearer key | Unified AI gateway; accepts OpenRouter model slugs such as `openrouter/auto` |
 | Custom | OpenAI-compatible chat endpoint, optional/required key, model | Bearer key when supplied | Validate compatibility with Morgana's request and response shape |
 
 The global provider selector omits direct OpenAI even though the backend supports it. Per-role selectors are also inconsistent: Microsoft Foundry is visible for the Intelligent Report Agent but not for the other four roles. Configure omitted combinations through the authenticated AI API only after testing them; a backend provider entry does not make every UI selector offer it.
@@ -1553,11 +1554,21 @@ Because Morgana runs as a Windows service, `localhost` means the Morgana server,
 
 LM Studio must remain available while Morgana's Windows service calls it.
 
-### 18.10 Custom OpenAI-compatible endpoint
+### 18.10 OpenRouter
+
+1. Choose **OpenRouter**.
+2. Keep the default endpoint `https://openrouter.ai/api/v1/chat/completions` unless your service requires another.
+3. Enter your `<OPENROUTER_API_KEY>`.
+4. Enter any OpenRouter model slug, for example `openrouter/auto`, `openrouter/openai/gpt-4o`, or another supported slug.
+5. Test and save.
+
+OpenRouter is an OpenAI-compatible gateway, so the request/response shape follows the same Chat Completions structure. Morgana adds optional attribution headers (`HTTP-Referer`, `X-Title`) which are not required for successful calls.
+
+### 18.11 Custom OpenAI-compatible endpoint
 
 Enter the full chat-completions URL, model ID, and bearer key when required. The endpoint must accept `model`, `messages`, `max_tokens`, and `temperature`, and return assistant content under the OpenAI-compatible `choices[0].message.content` shape.
 
-### 18.11 AI Agents
+### 18.12 AI Agents
 
 Morgana routes five roles independently:
 
@@ -1571,14 +1582,14 @@ Morgana routes five roles independently:
 
 Leave Provider blank to inherit the active provider, or select an already configured provider and optional model override. **Apply to All** fills the forms; select **Save Agents Config** to persist.
 
-### 18.12 Prompt customization
+### 18.13 Prompt customization
 
 **Agent Prompts > View / Edit Prompts** exposes 21 prompt templates. A custom prompt is active on the next call. **Reset to Default** deletes the customization.
 
 > [!WARNING]
 > Prompt changes can weaken structured-output, safety, evidence-grounding, and status rules. Export a full backup and validate each affected workflow before operational use.
 
-### 18.13 Engine controls and caching
+### 18.14 Engine controls and caching
 
 The installed UI does not expose the runtime engine switch, timeout, global fallback model, or generation token limit as fields. They are available through `GET/POST /api/v2/ai/config`:
 
@@ -1590,7 +1601,7 @@ These values are in-memory and can return to process defaults after a server res
 
 Completed Test reviews are cached unless explicitly forced. Detection Fabric reuses only eligible confirmed results whose current correlation version and fingerprint still match.
 
-### 18.14 AI privacy and limitations
+### 18.15 AI privacy and limitations
 
 - Cloud providers receive selected Script content, Test output, Tag context, Detection summaries, or report evidence required for the requested function.
 - Detection evidence is normalized/redacted before AI validation, but redaction cannot guarantee removal of every sensitive value.

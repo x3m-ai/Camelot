@@ -117,7 +117,7 @@ Morgana operates as a three-tier execution platform:
 Morgana integrates cutting-edge AI directly into the Red Team workflow:
 
 - **AI Test Review** — When AI is enabled and a provider is configured, Morgana can analyse completed Test output and classify execution results
-- **Multi-provider AI** — Supports GitHub Models, GitHub Copilot, Azure OpenAI, Microsoft Foundry, OpenAI, Anthropic, Ollama, LM Studio, and custom OpenAI-compatible endpoints
+- **Multi-provider AI** — Supports GitHub Models, GitHub Copilot, Azure OpenAI, Microsoft Foundry, OpenAI, Anthropic, Ollama, LM Studio, OpenRouter, and custom OpenAI-compatible endpoints
 - **AI-driven scenario planning** — Combined with Merlino's AI Assistant, teams can generate full Red Team operation plans based on threat intelligence and MITRE ATT&CK coverage gaps
 - **Intelligent Reports** — An optional Report Agent analyses a selected Test scope and produces evidence-referenced findings, limitations, and retest criteria
 

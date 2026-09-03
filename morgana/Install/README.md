@@ -162,6 +162,7 @@ Merlino has its own built-in AI assistant that can analyze your threat coverage,
 | **Ollama** | Local inference — zero data egress |
 | **Anthropic** | Requires an Anthropic API key |
 | **AWS Bedrock** | Requires AWS credentials |
+| **OpenRouter** | Requires an OpenRouter API key |
 
 Once configured, the AI assistant is available in the **AI Assistant** taskpane inside Excel.
 ---
@@ -216,6 +217,7 @@ If you prefer a different model, go to the Morgana web UI → **Settings → AI*
 | **Ollama** | Ollama running locally (`ollama serve`) |
 | **Anthropic** | Anthropic API key |
 | **Azure OpenAI** | Azure OpenAI resource + API key |
+| **OpenRouter** | OpenRouter API key |
 
 ### Enable / disable
 
