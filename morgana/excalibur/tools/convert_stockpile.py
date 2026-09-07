@@ -596,7 +596,7 @@ def convert_variant(
 def validate_pack(pack: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     for field_name in ("package_id", "package_name", "version", "scripts", "chains"):
-        if not pack.get(field_name):
+        if field_name not in pack or pack.get(field_name) is None:
             errors.append(f"missing top-level field: {field_name}")
 
     scripts = pack.get("scripts") or []
@@ -681,22 +681,11 @@ def build_pack(
             }
         )
 
-    chains = [
-        {
-            "name": script["name"],
-            "description": f"Single-step MITRE Stockpile chain for {script['tcode']} - {script['technique_name']}.",
-            "package": package_id,
-            "tcode": script["tcode"],
-            "tactic": tactic_name,
-            "script_refs": [script["name"]],
-        }
-        for script in scripts
-    ]
-
-    # Stage 2F: raw Stockpile abilities are INDEPENDENT content. Tactic grouping
-    # does NOT imply execution ordering, so we do NOT emit a "Full Tactic
-    # Convenience Chain" (handoff §12, §79). Explicit CALDERA adversary profiles
-    # remain separate Scenario/Emulation templates — not raw ability chains.
+    # Stage 2F.1 §15: ability_library content creates Variants + Technique
+    # membership + Families only. No synthetic one-step convenience Chain per
+    # ability, and no Full Tactic Convenience Chain (handoff §12, §79). Explicit
+    # CALDERA adversary profiles remain separate Scenario/Emulation templates.
+    chains = []
 
     guidance = stockpile_guidance(tactic_name, len(scripts), len(tcodes))
     return {
