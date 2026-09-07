@@ -474,22 +474,18 @@ def build_pack(
         for s in script_entries
     ]
 
-    # Full tactic chain (all scripts in sequence)
-    if len(script_entries) > 1:
-        chains.append({
-            "name": f"ART - {tactic_name} - Full Tactic Chain",
-            "description": f"Runs all {len(script_entries)} ART scripts for {tactic_name} ({tactic_id}) in sequence.",
-            "package": package_id,
-            "tcode": tcodes_seen[0],
-            "tactic": tactic_name,
-            "script_refs": [s["name"] for s in script_entries],
-        })
+    # Stage 2F: Atomic Red Team is a library of INDEPENDENT atomic tests.
+    # Tactic grouping does NOT imply execution ordering. We therefore do NOT
+    # generate a "Full Tactic Chain" (handoff §11, §76). Each Atomic is a Test
+    # Variant; ordering is expressed only via an explicit Execution Plan, never
+    # a package-owned convenience Chain.
 
     guidance = art_guidance(tactic_name, len(script_entries), len(tcodes_seen))
     return {
         "package_id": package_id,
         "package_name": package_name,
         "version": "1.0.0",
+        "content_kind": "atomic_library",
         "description": (
             f"Red Canary Atomic Red Team scripts for MITRE ATT&CK {tactic_name} ({tactic_id}). "
             f"{len(script_entries)} atomics covering {len(tcodes_seen)} techniques: "

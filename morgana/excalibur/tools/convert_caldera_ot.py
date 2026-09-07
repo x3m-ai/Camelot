@@ -844,6 +844,7 @@ def build_pack(
         "package_id": package_id,
         "package_name": f"OT - {PLUGINS[protocol]['label']} - {tactic_name} Pack (MITRE)",
         "version": "1.0.0",
+        "content_kind": "ability_library",
         "description": (
             f"Official MITRE CALDERA for OT {PLUGINS[protocol]['label']} abilities for validating "
             f"{tactic_purpose(tactic_name)}. Provides {len(scripts)} Morgana Scripts for "

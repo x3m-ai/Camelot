@@ -537,6 +537,7 @@ def convert_full_plan(path: Path, library_dir: Path, source_commit: str, emu_com
         "package_id": package_id,
         "package_name": f"CTID - {actor} Full Emulation",
         "version": "1.0.0",
+        "content_kind": "emulation_plan",
         "description": description,
         "summary": f"Threat-informed emulation of documented {actor} behavior and attack progression.",
         "purpose": f"Validate defensive performance across a multi-stage {actor} scenario rather than isolated techniques.",

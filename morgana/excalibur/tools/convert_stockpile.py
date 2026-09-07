@@ -692,26 +692,18 @@ def build_pack(
         }
         for script in scripts
     ]
-    if len(scripts) > 1:
-        chains.append(
-            {
-                "name": f"STOCKPILE - {tactic_name} - Full Tactic Convenience Chain",
-                "description": (
-                    f"Convenience collection of all {len(scripts)} converted {tactic_name} scripts. "
-                    "This is not an authentic MITRE CALDERA adversary profile or validated operation sequence."
-                ),
-                "package": package_id,
-                "tcode": tcodes[0],
-                "tactic": tactic_name,
-                "script_refs": [script["name"] for script in scripts],
-            }
-        )
+
+    # Stage 2F: raw Stockpile abilities are INDEPENDENT content. Tactic grouping
+    # does NOT imply execution ordering, so we do NOT emit a "Full Tactic
+    # Convenience Chain" (handoff §12, §79). Explicit CALDERA adversary profiles
+    # remain separate Scenario/Emulation templates — not raw ability chains.
 
     guidance = stockpile_guidance(tactic_name, len(scripts), len(tcodes))
     return {
         "package_id": package_id,
         "package_name": f"STOCKPILE - {tactic_name} Pack (MITRE)",
         "version": "1.0.0",
+        "content_kind": "ability_library",
         "description": (
             f"MITRE CALDERA Stockpile command-based abilities for validating "
             f"{tactic_purpose(tactic_name)}. Provides {len(scripts)} Morgana-native Scripts "
