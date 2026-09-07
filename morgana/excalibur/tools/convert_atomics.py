@@ -461,24 +461,11 @@ def build_pack(
 
     script_entries = [{k: v for k, v in s.items() if k not in ("_tcode",)} for s in scripts]
 
-    # One chain per script (1-step chains)
-    chains = [
-        {
-            "name": s["name"],
-            "description": f"Single-step chain for {s['tcode']} — {s['technique_name']}",
-            "package": package_id,
-            "tcode": s["tcode"],
-            "tactic": tactic_name,
-            "script_refs": [s["name"]],
-        }
-        for s in script_entries
-    ]
-
-    # Stage 2F: Atomic Red Team is a library of INDEPENDENT atomic tests.
-    # Tactic grouping does NOT imply execution ordering. We therefore do NOT
-    # generate a "Full Tactic Chain" (handoff §11, §76). Each Atomic is a Test
-    # Variant; ordering is expressed only via an explicit Execution Plan, never
-    # a package-owned convenience Chain.
+    # Stage 2F.1 §15: atomic_library content creates Variants + Technique
+    # membership + Families only. It must NOT emit one synthetic convenience
+    # Chain per Variant, nor a Full Tactic Chain. Ordering is expressed only via
+    # an explicit Execution Plan, never a package-owned convenience Chain.
+    chains = []
 
     guidance = art_guidance(tactic_name, len(script_entries), len(tcodes_seen))
     return {
