@@ -85,6 +85,12 @@ The server is Windows-only. Linux is supported as an Agent platform, not as a Mo
 | **Mobile Lab** | Morgana subsystem for provisioning, discovering, configuring, starting, stopping, resetting and using mobile test devices and mobile test applications (Android emulator, Apple Simulator, physical devices, external virtual-device providers). |
 | **Mobile Lab Host** | A Morgana Agent enabled to run Mobile Lab tooling (Android SDK, Apple simctl, ADB, physical device access, Frida client). |
 | **Detection** | A normalized alert, incident, event, or finding ingested by Detection Fabric. |
+| **Technique** | A MITRE ATT&CK behavioral namespace and validation capability (e.g. T1112). Many Variants can belong to one Technique. |
+| **Behavior Class** | A broad internal semantic grouping inside a Technique (security_disable, credential, rdp_remote_access, …). |
+| **Test Family** | A narrower execution-semantic cluster of related Variants within a Technique. |
+| **Test Variant** | One exact executable implementation (reuses the Script entity); one Atomic test, Stockpile ability, or custom Script. |
+| **Execution Strategy** | How Morgana chooses which Variants to run (Representative Calibration, Smart Sample, All Variants, Custom Selection). |
+| **Execution Plan** | A reproducible frozen selection of Variants + execution policy. "What to run"; not a Chain. |
 
 ### 1.3 Installed product versus development use
 
@@ -381,6 +387,7 @@ The left sidebar contains:
 | **Industrial Lab** | Deploy, manage, reset, and observe industrial mock devices / simulators on Lab Host Agents |
 | **Mobile Lab** | Provision and manage Android and iOS security test environments (devices, apps, templates, hosts) |
 | **Scripts** | Script library, Excalibur, editing, execution, import/export |
+| **Test Intelligence** | Technique → Family → Variant → Strategy → Plan → Test: the Technique Library, Execution Strategies, Execution Plans, Coverage, Detection Gaps, and Family Review |
 | **Chains** | Ordered Script flows and execution logs |
 | **Tests** | Execution records, output, AI status, Detection Fabric verdicts, reports |
 | **Campaigns** | Multi-Chain and multi-Script exercise flows |

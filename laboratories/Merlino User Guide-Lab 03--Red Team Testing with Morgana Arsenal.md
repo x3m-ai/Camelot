@@ -25,7 +25,7 @@ If you have not completed Lab 01 and Lab 02, go back and complete them first. Th
 
 1. [Introduction -- Why Red Team Validation Matters](#1-introduction----why-red-team-validation-matters)
 2. [Step 1 -- Prepare the Tests Sheet](#2-step-1----prepare-the-tests-sheet)
-3. [Step 2 -- Synchronize Chains](#3-step-2----synchronize-chains)
+3. [Step 2 -- Sync Catalogue with Morgana](#3-step-2----sync-catalogue-with-morgana)
 4. [Step 3 -- Install Morgana](#4-step-3----install-morgana)
 5. [Step 4 -- Configure Merlino to Connect to Morgana](#5-step-4----configure-merlino-to-connect-to-morgana)
 6. [Step 5 -- Configure MISP Connection](#6-step-5----configure-misp-connection)
@@ -60,9 +60,9 @@ In this laboratory, you will:
 - **Prepare Merlino's Tests table** with the techniques from your Catalogue (the same ones analyzed in Lab 01 and Lab 02)
 - **Install Morgana** -- X3M.AI's dedicated Red Team execution platform -- on a server or virtual machine
 - **Deploy a Morgana agent** on a Windows target machine to serve as the test endpoint
-- **Synchronize Chains** to push your Catalogue entries to Morgana as chains with ordered scripts
-- **Execute attack tests** against the target machine using real MITRE ATT&CK techniques and scripts
-- **Synchronize results back into Merlino** to see which scripts succeeded, failed, or were blocked
+- **Sync Catalogue with Morgana** to resolve each Catalogue row to its ATT&CK Techniques (Variant/Family counts — no Chains are created)
+- **Execute validation tests** against the target machine using real MITRE ATT&CK techniques, via Morgana's Test Intelligence (Run / Plan → Execution Strategy → Execution Plan)
+- **Synchronize results back into Merlino** to see which Variants succeeded, failed, or were blocked
 - **Push intelligence to MISP** using the IOC taskpane to enrich your threat intelligence platform
 - **Import IOC data back from MISP** and visualize relationships using the IOC Cluster Graph
 
@@ -118,36 +118,35 @@ After clearing, the Tests sheet should show only the header row with no data bel
 
 ---
 
-## 3. Step 2 -- Synchronize Chains
+## 3. Step 2 -- Sync Catalogue with Morgana
 
-Now you will push your Catalogue entries to Morgana as chains. Each Catalogue entry becomes a chain containing ordered scripts that implement the ATT&CK techniques listed in the TCodes column.
+> **Updated for the current product (Stage 2F.x).** Merlino no longer "generates
+> Chains" from the Catalogue. Ordinary synchronization **resolves capability** in
+> Morgana: each Catalogue row is matched to its ATT&CK Techniques and returns
+> Variant/Family availability. It creates **0 Chains, 0 Campaigns, 0 Tests**.
 
 ### Open the Tests & Operations Taskpane
 
 1. Click the **Tests & Operations** button in the Merlino ribbon (Operations group).
 2. The taskpane opens with two main buttons at the top:
-   - **Synchronize Chains** -- reads the Catalogue, connects to Morgana, and creates chains with attack scripts for each entry. After this you go to Morgana and execute the chains.
-   - **Synchronize Tests** -- pulls execution results back from Morgana into the Tests table after you have run chains in Morgana
+   - **Sync Catalogue with Morgana** -- reads the Catalogue, resolves each row to its ATT&CK Techniques in Morgana, and shows Variant/Family counts. No Chains, Campaigns or Tests are created. Each resolved Technique gets an "Open in Morgana" deep-link.
+   - **Synchronize Tests** -- pulls execution results back from Morgana into the Tests table after you have run validation in Morgana.
 
-### Click Synchronize Chains
+### Click Sync Catalogue with Morgana
 
-1. Click the **Synchronize Chains** button.
-2. Merlino reads all rows from the Catalogue table and sends them to Morgana via the API.
-3. For each Catalogue entry, Morgana creates a **chain** -- an ordered sequence of scripts that implement the ATT&CK techniques in the TCodes column.
-4. The Tests table is populated with the chain data:
-   - Catalogue **Name** --> Tests **Test** (test name) and **Chain** (chain name)
-   - Catalogue **TCodes** --> Tests **TCodes**
-   - Catalogue **Description** --> Tests **Description**
+1. Click the **Sync Catalogue with Morgana** button.
+2. Merlino reads all rows from the Catalogue table and sends them to Morgana via the capability API.
+3. For each Catalogue entry, Morgana returns the resolved **Technique(s)** with Variant and Family counts (e.g. T1112 → 90 Variants / 25 Families).
+4. A summary appears showing the resolved Techniques, each with an "Open in Morgana" deep-link.
+5. A notification confirms the sync completed with **0 Chains and 0 Campaigns created**.
 
-5. A notification appears confirming how many chains were created and how many scripts were mapped.
-
-At this point, your Catalogue entries exist as chains in Morgana -- the same techniques and rules you analyzed in Lab 01 and Lab 02. The chains are ready to be executed directly from the Morgana web UI (see Step 8).
+At this point, your Catalogue entries are resolved as **Technique capabilities** in Morgana -- the same techniques you analyzed in Lab 01 and Lab 02. You open each Technique in Morgana's **Test Intelligence** workspace to inspect Families/Variants and run an **Execution Plan** (see Step 8).
 
 ---
 
 ## 4. Step 3 -- Install Morgana
 
-Morgana is X3M.AI's dedicated Red Team execution platform, purpose-built for Purple Teaming and tight integration with Merlino. It features a Python/FastAPI server, a Go-based agent, and its own web UI.
+Morgana is X3M.AI's dedicated Red Team execution platform, purpose-built for Purple Teaming and tight integration with Merlino. It features a Python/FastAPI server, a Go-based agent, and its own web UI (including the **Test Intelligence** workspace).
 
 ### Requirements
 
@@ -359,11 +358,11 @@ That folder contains the complete source and build instructions for Windows and 
 ## 8. Step 7 -- Synchronize Tests (First Sync)
 
 Now that you have:
-- Chains created in Morgana (from Step 2)
+- Catalogue capability resolved in Morgana (from Step 2)
 - Morgana running and connected (from Steps 3-4)
 - An agent deployed on the target machine (from Step 6)
 
-You are ready to do the first synchronization. This registers the chains in the Merlino Tests table so you can track results after execution.
+You are ready to execute validation in Morgana's **Test Intelligence** workspace. Ordinary capability sync creates no Tests; Tests are produced when you actually *run* validation (a Script directly, or an Execution Plan).
 
 ### Open the Tests & Operations Taskpane
 
@@ -373,62 +372,49 @@ You are ready to do the first synchronization. This registers the chains in the 
 ### Click Synchronize Tests
 
 1. Click the **Synchronize Tests** button.
-2. Merlino reads the chains from Morgana via the API (`/api/v2/merlino/synchronize`) and populates the Tests table:
-   - Chain names, IDs, associated scripts
-   - Current state of each chain
-3. A status message appears: *"Sync completed! X tests, Y scripts, Z agents"*.
+2. Merlino reads the Test records from Morgana via the API and populates the Tests table: Test IDs, associated Variant/Script names, current state of each Test.
+3. A status message appears: *"Synchronize Tests complete..."*.
 
-After this first sync the Tests table is populated. You will then execute the chains in Morgana (Step 8) and sync again afterwards to pull results back into Merlino (Step 9).
+After this first sync the Tests table is populated (it will initially be empty until you run tests in Morgana). You will then run validation in Morgana (Step 8) and sync again afterwards to pull results back into Merlino (Step 9).
 
 ### What You Will See in Morgana
 
 After synchronization, go to the Morgana web UI and check:
 
-- **Chains**: You will see the chains created by Synchronize Chains, each named after a Catalogue entry, containing the ATT&CK techniques from the TCodes column as ordered scripts.
+- **Test Intelligence**: open the resolved Technique (via `#technique=T1112` deep-link) to inspect Families, Variants, Coverage. There are **no auto-created Chains** — each Catalogue entry resolves to capability counts, not to a Chain.
 
-![Morgana Chains list showing the chains created by the synchronization](img/314-morgana-adversaries-list.png)
-*Figure 314: The Chains page in Morgana after synchronization. Each chain corresponds to a Catalogue entry and contains the ATT&CK techniques from the TCodes column as ordered scripts.*
-
-> **Key Concept:** The **Name** column in Merlino's Catalogue is the unique identifier that links entries across both systems. The names in Merlino's Catalogue, Tests, and Morgana's Chains all correspond.
-
-Now go to Step 8 to execute the chains from the Morgana web UI.
+Now go to Step 8 to run validation from the Morgana web UI.
 
 ---
 
 ## 9. Step 8 -- Run Tests in Morgana
 
-Now comes the actual Red Team testing. You will execute the chains directly from the Morgana web UI against the target machine.
+Now comes the actual Red Team testing. You will select validation in Morgana's **Test Intelligence** workspace and run it against the target machine.
 
-### Navigate to Chains in Morgana
+### Navigate to Test Intelligence in Morgana
 
-1. In the Morgana web UI, click **Chains** in the navigation.
-2. You will see the list of chains created by Synchronize Chains from Merlino.
+1. In the Morgana web UI, click **Test Intelligence** in the navigation.
+2. Search for the TCode from your Catalogue (e.g. `T1112`) and open the Technique.
 
-![Morgana Chains list ready for execution](img/325-morgana-chains-execute.png)
-*Morgana — Chains list ready for execution. Select one or all chains and click Execute to start Red Team testing.*
+### Run / Plan
 
-### Execute Chains
+1. Select **Run / Plan**.
+2. Choose an **Execution Strategy** (Representative Calibration is the recommended baseline).
+3. **Preview selection** to review the selected Variants and represented Families.
+4. **Create Execution Plan**.
 
-You have two options:
+### Execute the Plan
 
-**Option A -- Execute all chains at once:**
-1. Select all chains using the checkbox at the top of the list.
-2. Click the **Execute** button.
-3. Morgana dispatches all chains to the available agents simultaneously.
-
-**Option B -- Execute chains one by one:**
-1. Click on a chain name to open it.
-2. Review the scripts in execution order.
-3. Click **Execute** to start that chain on the target agent.
-4. Repeat for each chain you want to run.
+1. Open **Execution Plans**, select your plan, and choose **Run**.
+2. Morgana dispatches one Test Instance per selected Variant to the available agent.
 
 ### Agent Assignment
 
-If a chain has no agent associated, Morgana will prompt you to select a temporary agent for execution before proceeding. Select the target agent from the dropdown and confirm.
+If no target agent is set, select the target agent when creating/running the plan.
 
 ### Monitor Execution
 
-As chains run, each script shows a **status**:
+As tests run, each Variant's Test shows a **status**:
   - **Green (0):** Script executed successfully -- the technique was performed on the target.
   - **Red (-1):** Script failed or was blocked -- the target's defenses prevented execution.
   - **Blue (1):** Script is currently running.

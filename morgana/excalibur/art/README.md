@@ -1,7 +1,7 @@
 # ART Packs — Red Canary Atomic Red Team Integration
 
 > **Source:** [redcanaryco/atomic-red-team](https://github.com/redcanaryco/atomic-red-team)  
-> **Generated:** 2026-08-11 | **Scripts:** 1603 | **Chains:** 1616 | **Tactics:** 13
+> **Generated:** 2026-09-07 | **Scripts:** 1603 | **Chains:** 0 | **Tactics:** 13
 
 ---
 
@@ -88,9 +88,15 @@ I placeholder nel comando vengono rinominati di conseguenza:
 #{script_path}  →  #{art_exec_1059_001_script_path}
 ```
 
-### Chains generate
+### Chains
 
-Per ogni script viene generata automaticamente una chain a 1 step con lo stesso nome. Alla fine di ogni pack viene aggiunta una "Full Tactic Chain" che esegue tutti gli script del tactic in sequenza.
+> **Stage 2F.x:** the Atomic Red Team library is an **atomic test library**, not an
+> attack path. The converter therefore emits **`chains: []`** for every ART pack.
+> Each Atomic test becomes a **Test Variant** (Technique membership + deterministic
+> Family classification) in Morgana. No per-Variant convenience Chain and no
+> "Full Tactic Chain" is generated.
+
+Per ogni script: **nessuna chain**. Ogni Atomic diventa un Test Variant. L'ordinamento è espresso esclusivamente tramite un Execution Plan esplicito, mai tramite una chain di convenienza generata dal pacchetto.
 
 ---
 

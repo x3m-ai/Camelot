@@ -108,9 +108,23 @@ Morgana operates as a three-tier execution platform:
 
 | Tier | Role |
 |---|---|
-| **Server** | Python-based C2 server managing campaigns, agents, chains, and test execution |
+| **Server** | Python-based C2 server managing agents, chains, tests, and Test Intelligence |
 | **Agent** | Lightweight OS service (Windows NT Service / Linux systemd) deployed on target machines |
 | **Excalibur Packs** | Certified adversary emulation script libraries mapped to MITRE ATT&CK tactics |
+
+The core product surface is **Test Intelligence**: server organizes executable content into **Technique → Behavior Class → Test Family → Test Variant**, lets operators choose **what** to validate with an **Execution Strategy** (Representative Calibration, Smart Sample, All Variants, Custom Selection), records it as a reproducible **Execution Plan**, and runs one **Test Instance** per selected Variant. See the [Test Intelligence Guide](https://github.com/x3m-ai/Morgana/blob/master/docs/TEST_INTELLIGENCE_GUIDE.md).
+
+### How Camelot, Merlino, and Morgana divide ownership
+
+```text
+Camelot  = content / packages / provenance / distribution
+Merlino  = assessment / intelligence / capability intent
+Morgana  = execution / Test Intelligence / Assurance / Coverage / learning
+```
+
+- **Camelot** publishes content (Excalibur packs, ART/Stockpile converters). Atomic/ability libraries publish executable Variant content with `chains: []` — only genuine source-defined scenario/emulation content preserves intentional ordering.
+- **Merlino** selects what to assess (Catalogue) and synchronizes **capability intent** to Morgana. Ordinary sync creates **0 Chains, 0 Campaigns, 0 Tests**.
+- **Morgana** adds execution intelligence (Families, Strategies, Plans) and measures Assurance/Coverage.
 
 ### Advanced AI Capabilities in Red Teaming
 
