@@ -378,26 +378,35 @@ Revocation does not affect browser sessions or the master key.
 
 ## 7. Dashboard and Navigation
 
-The left sidebar contains:
+The left sidebar is organized into collapsible macro-sections. Each section groups
+related destinations so the menu communicates how Morgana is organized:
 
-| Page | Primary use |
-|---|---|
-| **Dashboard** | Last-hour Test summary, Agent state, update check |
-| **Agents** | Enrollment, health, naming, beacon interval, Console, removal |
-| **Industrial Lab** | Deploy, manage, reset, and observe industrial mock devices / simulators on Lab Host Agents |
-| **Mobile Lab** | Provision and manage Android and iOS security test environments (devices, apps, templates, hosts) |
-| **Scripts** | Script library, Excalibur, editing, execution, import/export |
-| **Test Intelligence** | Technique → Family → Variant → Strategy → Plan → Test: the Technique Library, Execution Strategies, Execution Plans, Coverage, Detection Gaps, and Family Review |
-| **Chains** | Ordered Script flows and execution logs |
-| **Tests** | Execution records, output, AI status, Detection Fabric verdicts, reports |
-| **Campaigns** | Multi-Chain and multi-Script exercise flows |
-| **Tags** | Tag definitions and saved workspace selectors |
-| **Adapters** | Detection Fabric configuration, ingestion, detections, and evidence |
-| **Automation Center** | Scheduled Script, Chain, and Campaign execution |
-| **Users** | Local account records and identity metadata |
-| **Logs** | Searchable server JSON logs |
-| **AI** | Provider, agent, model, and prompt configuration |
-| **Admin** | Server information, DNS, keys, global Agent default, logging, backups |
+| Section | Purpose | Destinations |
+|---|---|---|
+| **Overview** | Entry point and operational summary | Dashboard |
+| **Intelligence** | How Morgana reasons | AI, Agents, Test Intelligence, Intelligence Lab, Calibration, Morgana Brain, Cognitive Foundry, Self Development, Intelligence Heritage |
+| **Assessment & Planning** | What should be assessed, scoped and prepared | Assessment Snapshots, Validation Packages, Campaigns |
+| **Execution** | What Morgana runs | Tests, Scripts, Chains |
+| **Labs** | Specialized environments | Industrial Lab, Mobile Lab |
+| **Integrations & Automation** | What Morgana connects to and automates | Adapters, Automation Center, Tags |
+| **Administration** | Platform management | Users, Logs, Admin |
+| **Help** | Documentation and community resources | Help |
+
+### 7.0 Sidebar behavior
+
+- **Vertical scrolling** — the navigation area scrolls independently of the page
+  content, so every destination remains reachable at 100% browser zoom without
+  zooming out.
+- **Collapsible sections** — each section header toggles its group open/closed.
+  Section headers are keyboard-focusable and respond to Enter/Space.
+- **Persistent state** — the open/closed state of each section is stored locally
+  (`morgana.sidebar.sections`) and survives navigation and reload.
+- **Active-section auto-expansion** — navigating directly to a page inside a
+  collapsed section automatically expands that section so the active item is
+  visible.
+
+Default state: Overview, Intelligence, Assessment & Planning, and Execution are
+open; Labs, Integrations & Automation, and Administration are collapsed.
 
 ### 7.1 Dashboard
 
@@ -887,7 +896,7 @@ The three planes are cleanly separated:
 
 ### 11.1 Page structure
 
-The **Industrial Lab** page (sidebar, after Agents) has four tabs:
+The **Industrial Lab** page (Labs section) has four tabs:
 
 | Tab | Purpose |
 |---|---|
@@ -949,7 +958,7 @@ patterns while remaining a distinct domain.
 | Drozer | Independent Android application-security provider run through the pinned isolated Drozer runtime; bound via target-aware filtering |
 | OWASP MASTG | Test library (292 manual procedure cards with MASVS mappings + automation classification), executable OWASP Frida demos, and Hacking Playground apps as App Assets; served at `/api/v2/mastg/*` |
 
-**Page structure** (sidebar, after Industrial Lab): Overview, Devices, Apps,
+**Page structure** (Labs section): Overview, Devices, Apps,
 Templates, Hosts.
 
 Apple Simulator is available only on compatible macOS/Xcode Hosts — no false

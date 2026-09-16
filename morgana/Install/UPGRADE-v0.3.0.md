@@ -155,7 +155,7 @@ The installer creates a fresh database, generates a new TLS certificate and a ne
 
 ### Step 6 — Reload Atomic Red Team scripts
 
-1. Go to **Scripts** in the left sidebar
+1. Go to **Execution → Scripts**
 2. Click **Refresh Canary Scripts**
 3. Wait ~30 seconds
 

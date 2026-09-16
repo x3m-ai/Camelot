@@ -208,7 +208,7 @@ Then restart the Morgana service.
 To get the API key you need to connect Merlino to Morgana:
 
 1. Open the Morgana web UI: `https://localhost:8888/ui/` (or `https://<SERVER-IP>:8888/ui/` if on a separate machine)
-2. Go to **Admin** in the left sidebar
+2. Go to **Administration → Admin**
 3. Click **Generate API Key**
 4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
 

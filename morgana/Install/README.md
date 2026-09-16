@@ -89,7 +89,7 @@ Default credentials:
 
 On first run the script database is empty. To load the full Atomic Red Team library:
 
-1. Go to **Scripts** in the left sidebar
+1. Go to **Execution → Scripts**
 2. Click **Refresh Canary Scripts**
 3. Wait ~30 seconds while 4,500+ scripts are indexed
 
@@ -110,7 +110,7 @@ Do the same on every machine where you install the Morgana Agent.
 To get the API key needed to connect Merlino (or to install agents):
 
 1. Open the Morgana web UI: `https://localhost:8888/ui/`
-2. Go to **Admin** in the left sidebar
+2. Go to **Administration → Admin**
 3. Click **Generate API Key**
 4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
 
@@ -128,7 +128,7 @@ It beacons to the server, receives jobs, executes scripts, and reports results.
 ### Morgana UI — Deploy Agent button (recommended)
 
 1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
-2. Go to **Agents** in the left sidebar
+2. Go to **Intelligence → Agents**
 3. Click **Deploy Agent**
 4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
 
