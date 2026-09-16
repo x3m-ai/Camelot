@@ -17,7 +17,7 @@ This folder contains the **full source code** of the agent, published here for t
 ### Option 1 — Morgana UI (recommended, easiest)
 
 1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
-2. Go to **Agents** in the left sidebar
+2. Go to **Intelligence → Agents**
 3. Click **Deploy Agent**
 4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
 
