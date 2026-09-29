@@ -6,7 +6,7 @@ Excalibur packages are professionally crafted attack script collections covering
 
 > **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 331 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
 
-> **Access notice:** Excalibur packages run inside Morgana, which is a controlled-distribution platform. To use Excalibur packs for Red Team or Purple Team operations, you must have authorised access to Morgana. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
+> **Access notice:** Excalibur packages run inside Morgana, which is free to download from Camelot. Use Excalibur packs only for authorised Red Team or Purple Team operations on systems covered by explicit written approval.
 
 ---
 

@@ -1,9 +1,9 @@
 ﻿# Morgana - Installation Guide
 
 > **Morgana** is the X3M.AI advanced Red Team platform for adversary emulation, penetration testing, and Purple Team operations.  
-> Access by request. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
+> Free to download. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
-> **Access notice:** Morgana is a controlled-distribution platform due to its advanced offensive capabilities. To use Morgana for Purple Team or Red Team operations, contact X3M.AI at [x3m.ai/contact](https://x3m.ai/contact/) before proceeding.
+> Morgana is free to download. See the installation guide below to download the Windows installer and get started. No access request is required to obtain the software.
 
 ---
 
@@ -11,7 +11,7 @@
 
 Morgana is a professional-grade Red Team platform built from the ground up by X3M.AI. It delivers advanced adversary emulation, penetration testing workflows, and Purple Team automation — with integrated AI capabilities for automated test review and operation analysis.
 
-Morgana is a **controlled-distribution** platform. Due to its advanced offensive capabilities — persistent agent deployment, automated kill chain execution, and AI-assisted analysis — access is managed directly by X3M.AI. [Contact X3M.AI](https://x3m.ai/contact/) if you are interested in using Morgana for authorised Red Team or Purple Team operations.
+**Download Morgana for Windows:** run `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) (or the [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest)) and follow the steps below.
 
 **Key concepts:**
 
@@ -25,13 +25,11 @@ Morgana is a **controlled-distribution** platform. Due to its advanced offensive
 
 ---
 
-## Access
+## Download
 
-Morgana is a **controlled-distribution** platform. Due to its advanced offensive capabilities — including persistent agent deployment, automated kill chain execution, PowerShell/cmd/bash/Python script execution on target machines, and AI-assisted test analysis — access is managed directly by X3M.AI.
+Morgana is free to download from Camelot. Get started by running the Windows installer:
 
-To use Morgana for Purple Team exercises or Red Team operations, contact X3M.AI. Our team will review your use case and provide access to authorised participants.
-
-**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
+**`Morgana-Server-Setup.exe`** — [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) · [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest)
 
 > **Responsible use:** Morgana must only be used for authorised Red Team and Purple Team operations within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity, or testing against systems without explicit written permission.
 

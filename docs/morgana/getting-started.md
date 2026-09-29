@@ -5,13 +5,11 @@
 
 ---
 
-## Access
+## Get Morgana
 
-Morgana is a **controlled-distribution** platform. Due to its advanced offensive capabilities and integrated AI features, access is managed directly by X3M.AI.
+Morgana is free to download from Camelot. No access request is required to obtain the software.
 
-If you are interested in using Morgana for Purple Team exercises or Red Team operations in conjunction with Merlino, contact us:
-
-**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
+**Download the Windows installer:** `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) and follow the [installation guide](../../morgana/README.md#4-install-the-morgana-server).
 
 ---
 
@@ -117,7 +115,7 @@ does not cover every MASTG test, and Morgana does not claim it does. See
 
 ## Integration with Merlino
 
-**Merlino** is the intelligence layer — free and open to all. **Morgana** is the execution layer — access requires contacting X3M.AI.
+**Merlino** is the intelligence layer — free and open to all. **Morgana** is the execution layer — free to download from Camelot, used only for authorised operations.
 
 Once you have Morgana running, the integration with Merlino is seamless:
 
@@ -134,6 +132,4 @@ For a complete walkthrough, see **[Lab 03: Red Team Testing with Morgana](../../
 
 ## Installation
 
-Installation instructions are available in the [Morgana Install Guide](../../morgana/Install/README.md) for users who have received authorised access.
-
-**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
+Morgana is free to download. See the [Morgana Install Guide](../../morgana/Install/README.md) for the Windows installer (`Morgana-Server-Setup.exe`) and the exact installation steps.
