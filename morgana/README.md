@@ -2,7 +2,7 @@
 
 > **Applies to:** Morgana 0.4.0 (27 August 2026)  
 > **Audience:** Red Team operators, Purple Teams, Detection Engineers, SOC analysts, and Morgana administrators  
-> **Product status:** Controlled distribution. Use only in environments covered by explicit written authorization.
+> **Product status:** Free to download from Camelot. Use only in environments covered by explicit written authorization.
 
 Morgana is an adversary-emulation and detection-assurance platform. A Windows server coordinates endpoint Agents, Scripts, Chains, Campaigns, Tests, detection evidence, reports, and optional AI services through an HTTPS web interface and REST API.
 
@@ -165,7 +165,7 @@ Server and Agent versions are independent. The Morgana 0.4.0 source declares Age
 
 ## 4. Install the Morgana Server
 
-Morgana is controlled-distribution software. Obtain the current installer through the approved X3M.AI channel or the authorized [release directory](Install/).
+Morgana is free to download. Obtain the current installer from the [Install directory](Install/) — specifically `Morgana-Server-Setup.exe` — or from the [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest).
 
 ### 4.1 Pre-install checklist
 

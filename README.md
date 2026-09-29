@@ -49,7 +49,7 @@
 | Tool | What It Does | Install |
 |---|---|---|
 | **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
-| **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur certified attack packs, Purple Team automation. Controlled distribution: contact X3M.AI for access | [Contact X3M.AI](https://x3m.ai/contact/) |
+| **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur certified attack packs, Purple Team automation. Free to download; see the installation guide | [Download free](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) |
 
 Together, they form a **threat intelligence and adversary emulation workflow**: analyze threats in Merlino, synchronize definitions and evidence with Morgana, and execute authorized Red Team operations from Morgana.
 
@@ -135,26 +135,13 @@ Morgana integrates cutting-edge AI directly into the Red Team workflow:
 - **AI-driven scenario planning** — Combined with Merlino's AI Assistant, teams can generate full Red Team operation plans based on threat intelligence and MITRE ATT&CK coverage gaps
 - **Intelligent Reports** — An optional Report Agent analyses a selected Test scope and produces evidence-referenced findings, limitations, and retest criteria
 
-### Why Distribution is Controlled
+### Free to download
 
-Morgana is a **genuinely offensive tool**. Its capabilities — persistent agent deployment, PowerShell/cmd/bash/Python execution on target machines, automated kill chain orchestration, AI-enhanced evasion analysis — are powerful enough to cause serious harm if misused.
+Morgana is free to download from Camelot. Get the Windows installer and documentation without requesting access — no contact or founder approval is required to obtain the software.
 
-For this reason, **X3M.AI controls the distribution of Morgana**. Access is granted only to security teams, organisations, and professionals who:
+> **Download Morgana for Windows:** run the installer `Morgana-Server-Setup.exe` from the [Install directory](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install), or see the [installation guide](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) for the exact steps and prerequisites.
 
-- Are conducting **authorised** Purple Team or Red Team operations
-- Have **explicit written approval** to test the environments they are targeting
-- Accept and operate under the X3M.AI responsible use terms
-
-> **Morgana must never be used for unauthorised access, offensive operations against systems without explicit written permission, or any activity that violates applicable laws.**
-
-### Access Morgana for Purple Teaming and Red Operations
-
-If you are interested in using Morgana for Purple Team exercises or Red Team operations — especially in conjunction with **Merlino** (which is free and open to all) — contact X3M.AI directly. Our team will review your use case and guide you through the access process.
-
-**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
-
-> **Merlino** is free for everyone, with no registration required.  
-> **Morgana** requires contacting X3M.AI for authorised access.
+Responsible use still matters: **Morgana must only be used for authorised Purple Team and Red Team operations** on systems where testing has explicit written approval. It must never be used for unauthorised access, offensive activity, or testing against systems without permission.
 
 ### What Morgana Delivers
 
@@ -176,7 +163,7 @@ The real power of the X3M.AI ecosystem is the automated pipeline between intelli
 5. **Review** — Inspect raw output and, when configured, optional AI review and Detection Fabric evidence
 6. **Synchronise results** — Refresh Merlino to retrieve current Morgana execution and detection fields
 
-**[Contact X3M.AI to access Morgana](https://x3m.ai/contact/)**
+**Get Morgana free** — [Download the Windows installer](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) and follow the installation guide.
 
 ---
 
@@ -265,7 +252,7 @@ For partnership inquiries or enterprise collaboration, contact us at **support@x
 This repository (documentation and community content) is licensed under the [MIT License](LICENSE).
 
 - **Merlino Add-in** is free, no registration, distributed under its own EULA
-- **Morgana** is controlled-distribution software; request authorized access through X3M.AI
+- **Morgana** is free to download from Camelot; distributed under its own EULA. Use only for authorised operations.
 
 ---
 

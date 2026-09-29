@@ -8,7 +8,7 @@ The Morgana Agent is the execution-layer component of the **Morgana Advanced Red
 
 This folder contains the **full source code** of the agent, published here for transparency. You are free to inspect it and build it from source.
 
-> **Access notice:** The Morgana Agent is part of a controlled-distribution platform. To deploy and use Morgana for Red Team or Purple Team operations, you must have authorised access granted by X3M.AI. [Contact X3M.AI](https://x3m.ai/contact/) to request access.
+> **Access notice:** The Morgana Agent is part of Morgana, which is free to download from Camelot. Deploy and use Morgana only for authorised Red Team or Purple Team operations on systems covered by explicit written approval.
 
 ----
 
