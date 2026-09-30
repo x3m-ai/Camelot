@@ -4,7 +4,7 @@
 > **Audience:** Red Team operators, Purple Teams, Detection Engineers, SOC analysts, and Morgana administrators  
 > **Product status:** Free to download from Camelot. Use only in environments covered by explicit written authorization.
 
-Morgana is an adversary-emulation and detection-assurance platform. A Windows server coordinates endpoint Agents, Scripts, Chains, Campaigns, Tests, detection evidence, reports, and optional AI services through an HTTPS web interface and REST API.
+Morgana is an adversary-emulation and detection-assurance platform. The server runs on Windows and Linux (both stable); it coordinates endpoint Agents, Scripts, Chains, Campaigns, Tests, detection evidence, reports, and optional AI services through an HTTPS web interface and REST API.
 
 > [!CAUTION]
 > Morgana can execute PowerShell, command-shell, Bash, and Python content with the privileges of the Agent service. It also provides an interactive remote Console. Never expose Morgana to the public Internet. Place it on a dedicated, access-controlled test network and use it only against systems included in an approved rules-of-engagement document.
@@ -49,7 +49,7 @@ This public manual intentionally contains no passwords, API keys, tokens, tenant
 
 Morgana turns approved adversary behavior into repeatable, evidence-producing exercises:
 
-1. Install the Morgana Server on a protected Windows host.
+1. Install the Morgana Server on a protected Windows or Linux host.
 2. Enroll Agents on authorized Windows or Linux targets.
 3. Install Excalibur Packs or create custom Scripts.
 4. Execute a Script, Chain, Campaign, or schedule.
@@ -67,7 +67,7 @@ Morgana 0.4.0 has one installed server product. The implementation does not expo
 - AI features require a configured cloud provider or a local inference service.
 - Merlino integration requires the Merlino Excel Add-in.
 
-The server is Windows-only. Linux is supported as an Agent platform, not as a Morgana Server platform.
+The server runs on Windows and Linux; both platforms are stable. Linux Agents are supported alongside Windows Agents, and individual Tests may target Windows, Linux, or macOS based on their platform metadata.
 
 ### 1.2 Core terminology
 
@@ -142,8 +142,11 @@ The program files are installed below `%ProgramFiles%\Morgana Server` on a stand
 
 ### 3.1 Server
 
-- 64-bit Windows capable of running the Morgana installer and a Windows service.
-- Local administrator rights for installation, service changes, firewall changes, and certificate trust.
+- **Windows:** 64-bit Windows capable of running the Morgana installer and a Windows service,
+  with local administrator rights for installation, service changes, firewall changes, and
+  certificate trust.
+- **Linux:** a Linux host running the server from source (Python venv + systemd); there is no
+  packaged Linux installer. See the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
 - A modern browser with JavaScript and local storage enabled.
 - TCP 8888 available, unless the installed service was explicitly configured for another port.
 - Outbound HTTPS to the services used by your deployment.
@@ -2209,7 +2212,7 @@ No. Excalibur is the native package model. Some community Excalibur-format packs
 
 ### Can the server run on Linux?
 
-No. The current installed server is Windows-only. Linux is an Agent platform.
+Yes. The server runs on Windows and Linux, both stable. The Windows installer is `Morgana-Server-Setup.exe`; on Linux the server is installed manually from source (see the [source installation guide](https://github.com/x3m-ai/Morgana#installation)).
 
 ### Can I update Agents from the server?
 

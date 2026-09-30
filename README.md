@@ -137,9 +137,9 @@ Morgana integrates cutting-edge AI directly into the Red Team workflow:
 
 ### Free to download
 
-Morgana is free to download from Camelot. Get the Windows installer and documentation without requesting access — no contact or founder approval is required to obtain the software.
+Morgana is free to download from Camelot. Get the Windows installer and documentation without requesting access — no contact or founder approval is required to obtain the software. Morgana runs on Windows and Linux, both stable.
 
-> **Download Morgana for Windows:** run the installer `Morgana-Server-Setup.exe` from the [Install directory](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install), or see the [installation guide](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) for the exact steps and prerequisites.
+> **Download Morgana:** on Windows run the installer `Morgana-Server-Setup.exe` from the [Install directory](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install), or see the [installation guide](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) for the exact steps and prerequisites. On Linux install the server from source per the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
 
 Responsible use still matters: **Morgana must only be used for authorised Purple Team and Red Team operations** on systems where testing has explicit written approval. It must never be used for unauthorised access, offensive activity, or testing against systems without permission.
 
@@ -163,7 +163,7 @@ The real power of the X3M.AI ecosystem is the automated pipeline between intelli
 5. **Review** — Inspect raw output and, when configured, optional AI review and Detection Fabric evidence
 6. **Synchronise results** — Refresh Merlino to retrieve current Morgana execution and detection fields
 
-**Get Morgana free** — [Download the Windows installer](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) and follow the installation guide.
+**Get Morgana free** — runs on Windows and Linux (both stable). [Download the Windows installer](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) and follow the installation guide, or use the [Linux source setup](https://github.com/x3m-ai/Morgana#installation).
 
 ---
 

@@ -9,7 +9,7 @@
 
 Morgana is free to download from Camelot. No access request is required to obtain the software.
 
-**Download the Windows installer:** `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) and follow the [installation guide](../../morgana/README.md#4-install-the-morgana-server).
+**Download Morgana:** Morgana runs on Windows and Linux (both stable). On Windows use the installer `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install). On Linux install the server from source per the [source installation guide](https://github.com/x3m-ai/Morgana#installation), then follow the [installation guide](../../morgana/README.md#4-install-the-morgana-server) for first-run setup.
 
 ---
 
@@ -132,4 +132,4 @@ For a complete walkthrough, see **[Lab 03: Red Team Testing with Morgana](../../
 
 ## Installation
 
-Morgana is free to download. See the [Morgana Install Guide](../../morgana/Install/README.md) for the Windows installer (`Morgana-Server-Setup.exe`) and the exact installation steps.
+Morgana is free to download and runs on Windows and Linux (both stable). See the [Morgana Install Guide](../../morgana/Install/README.md) for the Windows installer (`Morgana-Server-Setup.exe`) and the exact installation steps. For a Linux server, use the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
