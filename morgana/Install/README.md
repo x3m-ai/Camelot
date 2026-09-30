@@ -39,8 +39,8 @@ Morgana is free to download from Camelot. Get started by running the Windows ins
 
 | Component | Requirement |
 |-----------|-------------|
-| Server OS | Windows 10 / 11 / Server 2019 or later |
-| Agent OS | Windows 10 / 11 / Server 2019 or later (Linux support coming) |
+| Server OS | Windows 10 / 11 / Server 2019 or later, or Linux (manual source install) |
+| Agent OS | Windows 10 / 11 / Server 2019 or later, or Linux (systemd `morgana-agent.service`) |
 | RAM | 512 MB minimum, 1 GB recommended |
 | Disk | 500 MB minimum |
 | Network | Agent machines must reach the server on **TCP 8888** |
