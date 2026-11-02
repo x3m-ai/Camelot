@@ -1,37 +1,59 @@
-﻿# Morgana - Installation Guide
+# Morgana - Installation Guide
 
-> **Morgana** is the X3M.AI advanced Red Team platform for adversary emulation, penetration testing, and Purple Team operations.  
+> **Current release: morgana-v0.4.1** (02 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
+
+> **Morgana** is the X3M.AI Red Team execution and Test Intelligence platform for
+> Purple Teaming - adversary emulation, penetration testing and Purple Team
+> automation with an optional local AI capability.
 > Free to download. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
-> Morgana is free to download. See the installation guide below to download the Windows installer and get started. No access request is required to obtain the software.
+> **This build is an installation-test candidate.** It has been built, signed and
+> published, but it has **not yet been accepted on a clean Windows VM**. Treat it
+> as a candidate, not as a production-accepted release.
+
+> **Responsible use:** Morgana must only be used for authorised Red Team and
+> Purple Team operations within environments where testing has been formally
+> approved. It must not be used for unauthorised access, offensive activity, or
+> testing against systems without explicit written permission.
 
 ---
 
-## What is Morgana?
+## What is in this folder
 
-Morgana is a professional-grade Red Team platform built from the ground up by X3M.AI. It delivers advanced adversary emulation, penetration testing workflows, and Purple Team automation — with integrated AI capabilities for automated test review and operation analysis.
+| File | Purpose | Size | SHA-256 |
+|------|---------|------|---------|
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 52.4 MB | `a826547f779030f97253c6c4dd1eaf18e9e45c5f992c8d5283b0e27353431007` |
+| `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `77dc180427715c62df2a863cef1a3d22b7e3f724626e77c7bfb6cf0b2760aa14` |
+| `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
+| `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
+| `THIRD-PARTY-NOTICES.md` | Licence and attribution notices for redistributed components. | - | - |
+| `release.json` | Release feed polled by the Morgana in-app update check. | - | - |
+| `version.json` | **Legacy** feed for already-installed older clients. Not part of this release. | - | - |
 
-**Download Morgana for Windows:** run `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) (or the [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest)) and follow the steps below.
-
-**Key concepts:**
-
-| Term | Meaning |
-|------|---------|
-| **Script** | Atomic execution unit (PowerShell / cmd / bash / Python) |
-| **Chain** | Ordered sequence of scripts forming a kill chain |
-| **Test** | Single execution run, linked to a Merlino row |
-| **Campaign** | Named exercise grouping multiple tests |
-| **Agent** | Lightweight OS service installed on the target machine |
+The installer does **NOT** contain model weights, operational data, demo records
+or credentials. The optional AI model is downloaded separately when you install
+the AI Pack.
 
 ---
 
 ## Download
 
-Morgana is free to download from Camelot. Get started by running the Windows installer:
+Both files are public and require no authentication and no GitHub account:
 
-**`Morgana-Server-Setup.exe`** — [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install) · [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest)
+- Installer: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe
+- AI runtime: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/morgana-ai-runtime-0.3.35.zip
 
-> **Responsible use:** Morgana must only be used for authorised Red Team and Purple Team operations within environments where testing has been formally approved. It must not be used for unauthorised access, offensive activity, or testing against systems without explicit written permission.
+Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.1/morgana/Install/...`
+
+Verify what you downloaded before running it:
+
+```powershell
+Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
+# expected: a826547f779030f97253c6c4dd1eaf18e9e45c5f992c8d5283b0e27353431007
+
+Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
+# expected: 77dc180427715c62df2a863cef1a3d22b7e3f724626e77c7bfb6cf0b2760aa14
+```
 
 ---
 
@@ -39,136 +61,171 @@ Morgana is free to download from Camelot. Get started by running the Windows ins
 
 | Component | Requirement |
 |-----------|-------------|
-| Server OS | Windows 10 / 11 / Server 2019 or later, or Linux (manual source install) |
-| Agent OS | Windows 10 / 11 / Server 2019 or later, or Linux (systemd `morgana-agent.service`) |
-| RAM | 512 MB minimum, 1 GB recommended |
-| Disk | 500 MB minimum |
+| Server OS | Windows 10 / 11 / Server 2019 or later (64-bit) |
+| RAM | 512 MB minimum, 1 GB recommended (plus ~4 GB more for the local AI Pack) |
+| Disk | 500 MB minimum, plus ~6 GB if you install the local AI Pack |
 | Network | Agent machines must reach the server on **TCP 8888** |
 | Browser | Chrome 120+ or Edge 120+ (for the web UI) |
+| Python / Go / Visual Studio | **None.** The installer is self-contained. |
 
-> **Antivirus note:** Validation scripts intentionally trigger AV by design.  
-> You must add a Windows Defender exclusion for `C:\ProgramData\Morgana\` on both  
-> the server and any agent machine. This is expected and required.
+> **Antivirus note:** validation scripts intentionally trigger AV by design.
+> Add a Windows Defender exclusion for `C:\ProgramData\Morgana\` on both the
+> server and any agent machine. This is expected and required.
 
 ---
 
-## Installation (Windows - Recommended)
+## Installation on a clean Windows VM
 
 ### Step 1 - Run the installer
 
-1. Right-click **`Morgana-Server-Setup.exe`** and choose **Run as Administrator**
-2. Follow the wizard (or use `/VERYSILENT` for silent install)
-3. The installer will:
-   - Install the Morgana Server as a Windows NT Service (`Morgana`)
-   - Auto-start the service on boot
-   - Generate a self-signed TLS certificate
-   - **Install the certificate into the Windows Trusted Root store** (so your browser shows a padlock, not a warning)
-   - Open firewall port 8888 (TCP Inbound)
-   - Optionally create a **desktop shortcut** (if selected during setup) — double-click it to open the Morgana web UI directly
+Right-click `Morgana-Server-Setup.exe` and choose **Run as Administrator**, or
+use the silent form:
+
+```powershell
+Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
+    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -Verb RunAs -Wait
+```
+
+The installer:
+
+1. Copies the complete application tree to `C:\Program Files\Morgana Server`
+2. Initializes `C:\ProgramData\Morgana\db\morgana.db` from the shipped clean
+   seed - **only if no database exists there already**
+3. Installs and starts the Windows NT Service `Morgana`
+4. Generates a self-signed TLS certificate and trusts it locally
+5. Opens TCP 8888 inbound
+
+Expected database after a fresh install: schema at the current version with two
+bootstrap records only - the break-glass administrator and the ad-hoc script
+placeholder. **No tests, chains, campaigns, agents or customer data.**
 
 ### Step 2 - Open the web UI
-
-After installation, open your browser and go to:
 
 ```
 https://localhost:8888/ui/
 ```
-
-Default credentials:
 
 | Field | Value |
 |-------|-------|
 | Username | `admin@admin.com` |
 | Password | `admin` |
 
-> **Change the password** in Settings after first login.
+> **Change this password immediately** in the web UI after first sign-in.
 
-### Step 3 - Load Atomic Red Team scripts
-
-On first run the script database is empty. To load the full Atomic Red Team library:
-
-1. Go to **Execution → Scripts**
-2. Click **Refresh Canary Scripts**
-3. Wait ~30 seconds while 4,500+ scripts are indexed
-
-### Step 4 - Add Windows Defender exclusion (important)
-
-Red Team scripts trigger Defender by design. Add the Morgana data directory to exclusions:
-
-1. Open **Windows Security** > **Virus & threat protection** > **Manage settings**
-2. Scroll to **Exclusions** > **Add or remove exclusions**
-3. Add folder: `C:\ProgramData\Morgana\`
-
-Do the same on every machine where you install the Morgana Agent.
-
----
-
-## API Key
-
-To get the API key needed to connect Merlino (or to install agents):
-
-1. Open the Morgana web UI: `https://localhost:8888/ui/`
-2. Go to **Administration → Admin**
-3. Click **Generate API Key**
-4. **Copy the key immediately** and save it somewhere safe — it will not be shown again
-
-> **Keep this key secret. Treat it like a password.**
-
----
-
-## Agent Installation
-
-The Morgana Agent is a lightweight OS service installed on **target machines**.  
-It beacons to the server, receives jobs, executes scripts, and reports results.
-
----
-
-### Morgana UI — Deploy Agent button (recommended)
-
-1. Open the Morgana web UI: `https://YOUR_MORGANA_SERVER:8888/ui/`
-2. Go to **Intelligence → Agents**
-3. Click **Deploy Agent**
-4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
-
-The server generates the install script automatically, pre-configured with your URL and API key.
-
-After installation the agent appears in the **Agents** page of the web UI within one beacon interval (default 30 seconds).
-
----
-
-## Merlino Integration
-
-Morgana is designed as a drop-in replacement for Caldera in Merlino.
-
-1. In Merlino, open **Settings**
-2. Under **Caldera / Morgana**, enter:
-   - **URL:** `https://YOUR_MORGANA_SERVER:8888`
-   - **API Key:** the key generated from the Morgana web UI (Admin → Generate API Key)
-3. Click **Save**
-
-That is all. No other changes are needed in Merlino.  
-All existing Merlino workflows (Synchronize, Tests & Operations, Agents view) work identically.
-### Merlino AI Assistant
-
-Merlino has its own built-in AI assistant that can analyze your threat coverage, generate Red Team scenarios, and correlate Morgana test results with MITRE ATT&CK data. Configure it in Merlino under **Settings → AI**:
-
-| Provider | Notes |
-|----------|-------|
-| **GitHub Copilot** | Free with a GitHub Copilot subscription — no extra API key |
-| **OpenAI** | Requires an OpenAI API key |
-| **Mistral** | Requires a Mistral API key |
-| **Ollama** | Local inference — zero data egress |
-| **Anthropic** | Requires an Anthropic API key |
-| **AWS Bedrock** | Requires AWS credentials |
-| **OpenRouter** | Requires an OpenRouter API key |
-
-Once configured, the AI assistant is available in the **AI Assistant** taskpane inside Excel.
----
-
-## Silent / Unattended Installation
+### Step 3 - Add the Defender exclusion
 
 ```powershell
-# Silent install with log
+Add-MpPreference -ExclusionPath "C:\ProgramData\Morgana"
+```
+
+### Step 4 - Load an Excalibur script pack
+
+The script library is empty after a fresh install. Morgana uses **Excalibur
+Packs**, not Atomic Red Team.
+
+1. Go to **Execution -> Scripts**
+2. Click **Refresh catalog**
+3. Choose a pack (for example `excalibur-execution-v1`) and click **Install**
+
+### Step 5 - Generate an API key
+
+1. Go to **Administration -> Admin**
+2. Click **Generate API Key**
+3. Copy it immediately - it is not shown again
+
+This key connects Merlino and installs agents.
+
+---
+
+## Installing the optional local AI Pack
+
+The core product works fully without any AI model. Local inference is optional.
+
+1. Sign in to the web UI
+2. Go to **AI -> Local AI Pack**
+3. Click **Install** on **Morgana Local AI - Qwen3.5-4B**
+
+The install uses the AI runtime archive **already shipped inside the installer**
+(`<install dir>\ai-runtime\`), so no internet access is needed for the runtime.
+The model weights (~2.7 GB) are downloaded from the pinned upstream location, or
+imported offline:
+
+- **Online:** click Install and wait for the download and verification
+- **Air-gapped:** download `Qwen3.5-4B-Q4_K_M.gguf` from
+  `https://huggingface.co/unsloth/Qwen3.5-4B-GGUF` at revision
+  `e87f176479d0855a907a41277aca2f8ee7a09523`, then use **Import from file** and
+  optionally supply `morgana-ai-runtime-0.3.35.zip` as the runtime archive
+
+Every artifact is SHA-256 verified against the pinned digest **before**
+activation. `INSTALLED` only means the files are in place and verified.
+
+### Self-test
+
+After the pack reports `INSTALLED`, click **Run self-test**. A healthy result
+returns a structured verdict from the model (`BLOCKED` / `INCONCLUSIVE` /
+`ATTACK_DETECTED` with evidence). A model that returns no detection evidence is
+deterministically downgraded to `INCONCLUSIVE` rather than being trusted.
+
+The self-test is the only proof that inference works. Installation on its own is
+not.
+
+**Hardware:** CPU inference only. ~4 GB of RAM for the model, ~6 GB free disk.
+The weights are memory-mapped, so the full size does not need to be resident in
+RAM.
+
+---
+
+## Rerun preservation check
+
+Prove that reinstalling does not destroy your data, using a harmless record:
+
+1. In the web UI create a campaign named `vm-preservation-check`
+2. Run the installer again (same version is fine)
+3. Refresh the web UI and confirm `vm-preservation-check` still exists
+
+The installer preserves an existing `C:\ProgramData\Morgana\db\morgana.db`
+byte-for-byte. It refuses to overwrite it, and a database that appears during
+seeding is also preserved.
+
+---
+
+## Agent installation
+
+The agent is a lightweight OS service installed on target machines. It beacons to
+the server, receives jobs, executes scripts and reports results.
+
+1. Go to **Intelligence -> Agents**
+2. Click **Deploy Agent**
+3. Copy the one-liner PowerShell command and run it **as Administrator** on the
+   target machine
+
+The server pre-configures the command with its own URL and API key. The agent
+appears in the **Agents** page within one beacon interval (default 30 s).
+
+The server delivers the agent binary itself at `/download/morgana-agent.exe` and
+`/download/morgana-worker.exe`, so no separate agent download is needed.
+
+---
+
+## Merlino integration
+
+Morgana is a drop-in replacement for Caldera in Merlino.
+
+1. In Merlino open **Settings**
+2. Under **Caldera / Morgana** enter:
+   - **URL:** `https://YOUR_MORGANA_SERVER:8888`
+   - **API Key:** the key from **Administration -> Admin**
+3. Click **Save**
+
+No other change is required. Merlino's existing Synchronize, Tests & Operations
+and Agents views work unchanged.
+
+---
+
+## Silent / unattended installation
+
+```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
     -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
     -Verb RunAs -Wait
@@ -178,96 +235,62 @@ Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
 
 ## Upgrading
 
-1. Download the new installer from the **[Morgana Install page](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install)**
-2. Run it — the installer stops the existing service, replaces the binary and restarts
-3. Your database, API key and settings are **preserved automatically**
-4. **Restart the machine** after upgrading — recommended to ensure the new NT Service version loads cleanly
+1. Download the new installer from this folder
+2. Run it - it stops the service, replaces the application and restarts it
+3. Your database, API key and settings are preserved automatically
+4. Reboot afterwards to be sure the new service version loads cleanly
+
+> The in-app **Check Update** banner links to the installer. This release is a
+> directory distribution, so the in-app updater deliberately **will not** replace
+> your installation in place - download and run the installer.
 
 ---
 
 ## AI Review Engine
 
-Morgana includes a built-in AI engine that automatically reviews completed test results and generates a structured analysis: what ran, what was detected, what was missed, and recommended detections.
+Morgana includes a review engine that analyses completed test results: what ran,
+what was detected, what was missed, and recommended detections.
 
-### How it works
+The default provider is **GitHub Models**, authenticated through the GitHub CLI
+already on the machine. Install https://cli.github.com/ and run `gh auth login`
+once. Alternative providers (Azure OpenAI, OpenAI, Anthropic, Ollama, custom) are
+configured under **AI -> Settings**.
 
-After a test finishes, the AI engine analyses the execution output against MITRE ATT&CK context and returns a structured review visible in the **Tests** page of the web UI.
-
-### Default provider — GitHub Models (recommended, no API key needed)
-
-Morgana uses the **GitHub Models** API by default, authenticated via the GitHub CLI (`gh`) OAuth token already on your machine.
-
-**Prerequisites:**
-1. Install the [GitHub CLI](https://cli.github.com/) (`winget install GitHub.cli`)
-2. Log in once: `gh auth login`
-
-That is all — no API keys, no extra accounts. The AI engine activates automatically.
-
-### Alternative providers
-
-If you prefer a different model, go to the Morgana web UI → **Settings → AI** and select one of:
-
-| Provider | What you need |
-|----------|---------------|
-| **GitHub Models** | GitHub CLI logged in (default) |
-| **GitHub Copilot** | GitHub Copilot subscription + `gh auth login` |
-| **OpenAI** | OpenAI API key |
-| **Ollama** | Ollama running locally (`ollama serve`) |
-| **Anthropic** | Anthropic API key |
-| **Azure OpenAI** | Azure OpenAI resource + API key |
-| **OpenRouter** | OpenRouter API key |
-
-### Enable / disable
-
-The AI review engine is enabled by default. Toggle it in the web UI under **Settings → AI → Enable AI Review**.
+The local AI Pack above is a separate, fully offline capability.
 
 ---
 
 ## Uninstalling
 
-```
-Control Panel > Programs > Morgana Server > Uninstall
-```
+Use **Apps & features -> Morgana Server -> Uninstall**, or:
 
-Or silently:
 ```powershell
-Start-Process -FilePath "C:\Program Files\Morgana Server\unins000.exe" `
-    -ArgumentList "/VERYSILENT" -Verb RunAs -Wait
+& "C:\Program Files\Morgana Server\unins000.exe" /VERYSILENT
 ```
 
-The data directory (`C:\ProgramData\Morgana\`) is **not** removed on uninstall.  
-Delete it manually if you want a complete clean removal.
+`C:\ProgramData\Morgana\` (database, certificates, logs, AI packs) is preserved
+deliberately. Delete it manually for a complete removal.
 
 ---
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Browser shows "Not secure" | Close all tabs and reopen. If it persists, run: `certutil -addstore -f Root "C:\ProgramData\Morgana\certs\server.crt"` as Administrator |
-| Service does not start | Check `C:\ProgramData\Morgana\logs\service.log` and `server.log` |
-| Port 8888 already in use | Edit `MORGANA_PORT` in the service environment (NSSM) or change port during install |
-| Scripts not loading | Click **Refresh Canary Scripts** in the Scripts page. Requires internet access on first run |
-| Agent not appearing | Verify firewall allows TCP 8888 from the agent machine to the server |
-| Defender quarantines scripts | Add `C:\ProgramData\Morgana\` to Windows Defender exclusions |
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Browser warns about the certificate | The self-signed cert was not trusted | Open `https://localhost:8888` once and accept, or reinstall |
+| `ERR_CONNECTION_REFUSED` on 8888 | Service not running | `sc query Morgana` then `sc start Morgana` |
+| UI loads, API calls fail | API key missing in the browser | Sign in again |
+| Agent never appears | Port 8888 blocked, or agent not installed as Administrator | Check firewall and run the deploy command elevated |
+| AI Pack stuck in `DOWNLOADING` | No route to the model host | Use the offline import path |
+| AI Pack `INSTALLED` but self-test fails | Backend or memory problem | Check `C:\ProgramData\Morgana\logs\server.log` |
 
-**Log files:**
-
-| File | Content |
-|------|---------|
-| `C:\ProgramData\Morgana\logs\server.log` | Application log (JSONL format) |
-| `C:\ProgramData\Morgana\logs\service.log` | NSSM service stdout |
-| `C:\ProgramData\Morgana\logs\service_error.log` | NSSM service stderr |
+Service logs: Windows Event Viewer, source `Morgana`.
+Application log: `C:\ProgramData\Morgana\logs\server.log`.
 
 ---
 
 ## Links
 
-- **Merlino (Excel Add-in):** https://x3m.ai/merlino/
-- **Community (Camelot):** https://github.com/x3m-ai/Camelot
-- **Support:** open an issue on the [Camelot community repo](https://github.com/x3m-ai/Camelot/issues)
-
----
-
-> Morgana is developed by [X3M.AI Ltd](https://x3m.ai) (UK).  
-> Free to use. No registration, no telemetry, no data collection.
+- Community repository and packs: https://github.com/x3m-ai/Camelot
+- This Install folder: https://github.com/x3m-ai/Camelot/tree/main/morgana/Install
+- Licensing and product terms: see the `LICENSE` file in the repositories
