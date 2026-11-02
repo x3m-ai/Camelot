@@ -1,4 +1,4 @@
-# Third-party notices - Morgana distribution
+﻿# Third-party notices - Morgana distribution
 
 Morgana Server itself is Copyright (C) 2026 X3M.AI Ltd (UK) - Nino Crudele.
 See the LICENSE file in the Morgana repository.

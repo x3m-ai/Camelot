@@ -1,6 +1,6 @@
-# Morgana - Installation Guide
+﻿# Morgana - Installation Guide
 
-> **Current release: morgana-v0.4.1** (02 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
+> **Current release: morgana-v0.4.2** (02 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
 
 > **Morgana** is the X3M.AI Red Team execution and Test Intelligence platform for
 > Purple Teaming - adversary emulation, penetration testing and Purple Team
@@ -22,8 +22,8 @@
 
 | File | Purpose | Size | SHA-256 |
 |------|---------|------|---------|
-| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 52.4 MB | `a826547f779030f97253c6c4dd1eaf18e9e45c5f992c8d5283b0e27353431007` |
-| `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `77dc180427715c62df2a863cef1a3d22b7e3f724626e77c7bfb6cf0b2760aa14` |
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 52.5 MB | `a8aceb9cb7770785728fb6f583ec638d7e82f8788fe36d30384324e3c65de56d` |
+| `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d` |
 | `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
 | `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
 | `THIRD-PARTY-NOTICES.md` | Licence and attribution notices for redistributed components. | - | - |
@@ -43,16 +43,16 @@ Both files are public and require no authentication and no GitHub account:
 - Installer: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe
 - AI runtime: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/morgana-ai-runtime-0.3.35.zip
 
-Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.1/morgana/Install/...`
+Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.2/morgana/Install/...`
 
 Verify what you downloaded before running it:
 
 ```powershell
 Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
-# expected: a826547f779030f97253c6c4dd1eaf18e9e45c5f992c8d5283b0e27353431007
+# expected: a8aceb9cb7770785728fb6f583ec638d7e82f8788fe36d30384324e3c65de56d
 
 Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
-# expected: 77dc180427715c62df2a863cef1a3d22b7e3f724626e77c7bfb6cf0b2760aa14
+# expected: a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d
 ```
 
 ---
