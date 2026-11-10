@@ -1,15 +1,16 @@
 ﻿# Morgana - Installation Guide
 
-> **Current release: morgana-v0.4.3** (02 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
+> **Current release: morgana-v0.4.0** (10 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
 
 > **Morgana** is the X3M.AI Red Team execution and Test Intelligence platform for
 > Purple Teaming - adversary emulation, penetration testing and Purple Team
 > automation with an optional local AI capability.
 > Free to download. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
-> **This build is an installation-test candidate.** It has been built, signed and
-> published, but it has **not yet been accepted on a clean Windows VM**. Treat it
-> as a candidate, not as a production-accepted release.
+> **This build is an installation-test candidate.** It has been built and signed.
+> Publication is a separate, authorised step: a staged file is not a published or
+> accepted release. It has **not yet been accepted on a clean Windows VM**. Treat
+> it as a candidate, not as a production-accepted release.
 
 > **Responsible use:** Morgana must only be used for authorised Red Team and
 > Purple Team operations within environments where testing has been formally
@@ -22,7 +23,7 @@
 
 | File | Purpose | Size | SHA-256 |
 |------|---------|------|---------|
-| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 52.5 MB | `da24d879b56c9a5a438a763473dfa5872ba1c6b20a6a16c642a5a19186a41e74` |
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55 MB | `a05764cb9b15dcf50554676097c21ed0f140157a7500cadc9487f3579b75d3f7` |
 | `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d` |
 | `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
 | `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
@@ -43,13 +44,13 @@ Both files are public and require no authentication and no GitHub account:
 - Installer: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe
 - AI runtime: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/morgana-ai-runtime-0.3.35.zip
 
-Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.3/morgana/Install/...`
+Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.0/morgana/Install/...`
 
 Verify what you downloaded before running it:
 
 ```powershell
 Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
-# expected: da24d879b56c9a5a438a763473dfa5872ba1c6b20a6a16c642a5a19186a41e74
+# expected: a05764cb9b15dcf50554676097c21ed0f140157a7500cadc9487f3579b75d3f7
 
 Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 # expected: a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d
@@ -68,9 +69,12 @@ Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 | Browser | Chrome 120+ or Edge 120+ (for the web UI) |
 | Python / Go / Visual Studio | **None.** The installer is self-contained. |
 
-> **Antivirus note:** validation scripts intentionally trigger AV by design.
-> Add a Windows Defender exclusion for `C:\ProgramData\Morgana\` on both the
-> server and any agent machine. This is expected and required.
+> **Antivirus note:** validation scripts can trigger AV by design. If your
+> security policy permits a scoped exception, limit it to the Morgana
+> runtime/data directory (`C:\ProgramData\Morgana`) on the authorised lab server
+> and Agents; otherwise follow your policy and investigate false positives. Do
+> not add broad exclusions to production endpoints. The installer may attempt a
+> scoped exclusion; verify the actual behaviour in the clean VM.
 
 ---
 
@@ -113,11 +117,17 @@ https://localhost:8888/ui/
 
 > **Change this password immediately** in the web UI after first sign-in.
 
-### Step 3 - Add the Defender exclusion
+### Step 3 - Optional: scoped Defender exclusion
+
+Only if your security policy permits a documented, time-bounded exception:
 
 ```powershell
 Add-MpPreference -ExclusionPath "C:\ProgramData\Morgana"
 ```
+
+This is not a universal prerequisite. Prefer a dedicated lab server, narrow
+ACLs, network segmentation, and removal/verification after the exercise. Do not
+add broad exclusions to production endpoints.
 
 ### Step 4 - Load an Excalibur script pack
 
@@ -135,6 +145,29 @@ Packs**, not Atomic Red Team.
 3. Copy it immediately - it is not shown again
 
 This key connects Merlino and installs agents.
+
+---
+
+## Licensing and activation
+
+Morgana is free to download. **Community** is available without a licence key.
+**Professional** and **Service Provider** are commercial plans purchased on
+https://x3m.ai/licensing/.
+
+After first sign-in:
+
+1. Open **Licensing → Activate License**.
+2. Enter the **licence-owner email** and **activation key** from the purchase email.
+3. Open the approval email sent to the licence owner and confirm the intended installation.
+4. Return to Morgana and verify that the purchased plan is active.
+
+The licence-owner email identifies the contract owner and can differ from the
+Morgana login. The activation key is stable across renewals.
+
+> [!NOTE]
+> This folder is an installation-test candidate. The `release-manifest.json`
+> records the version and VM acceptance status. Do not treat the onboarding as
+> released until the published build has passed the clean-VM acceptance flow.
 
 ---
 
@@ -200,7 +233,9 @@ the server, receives jobs, executes scripts and reports results.
 3. Copy the one-liner PowerShell command and run it **as Administrator** on the
    target machine
 
-The server pre-configures the command with its own URL and API key. The agent
+The generated command includes the server URL and a Morgana API key. The current
+release has no per-agent approval queue, does not validate the server certificate,
+and accepts unsigned jobs. Use it only on a trusted exercise network. The agent
 appears in the **Agents** page within one beacon interval (default 30 s).
 
 The server delivers the agent binary itself at `/download/morgana-agent.exe` and
@@ -293,4 +328,6 @@ Application log: `C:\ProgramData\Morgana\logs\server.log`.
 
 - Community repository and packs: https://github.com/x3m-ai/Camelot
 - This Install folder: https://github.com/x3m-ai/Camelot/tree/main/morgana/Install
+- Plans and pricing: https://x3m.ai/licensing/
+- Support: support@x3m.ai
 - Licensing and product terms: see the `LICENSE` file in the repositories
