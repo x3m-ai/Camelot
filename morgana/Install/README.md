@@ -23,7 +23,7 @@
 
 | File | Purpose | Size | SHA-256 |
 |------|---------|------|---------|
-| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55 MB | `a3f49683935072de25999063c24a63e9382519d4548c08eb30a316dfa13d53f7` |
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55 MB | `0196825e419342432f0262b895eb6a407f4ec484ae19da3e2882b01343e37915` |
 | `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d` |
 | `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
 | `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
@@ -50,7 +50,7 @@ Verify what you downloaded before running it:
 
 ```powershell
 Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
-# expected: a3f49683935072de25999063c24a63e9382519d4548c08eb30a316dfa13d53f7
+# expected: 0196825e419342432f0262b895eb6a407f4ec484ae19da3e2882b01343e37915
 
 Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 # expected: a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d
