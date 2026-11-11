@@ -1,6 +1,6 @@
 ﻿# Morgana - Installation Guide
 
-> **Current release: morgana-v0.4.0** (10 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
+> **Current release: morgana-v1.0.0** (11 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
 
 > **Morgana** is the X3M.AI Red Team execution and Test Intelligence platform for
 > Purple Teaming - adversary emulation, penetration testing and Purple Team
@@ -8,9 +8,9 @@
 > Free to download. Tightly integrated with [Merlino](https://x3m.ai/merlino/).
 
 > **This build is an installation-test candidate.** It has been built and signed.
-> Publication is a separate, authorised step: a staged file is not a published or
-> accepted release. It has **not yet been accepted on a clean Windows VM**. Treat
-> it as a candidate, not as a production-accepted release.
+> A candidate in the public folder is not an accepted release: it has **not yet
+> been accepted on a clean Windows VM**. Treat it as a candidate, not as a
+> production-accepted release.
 
 > **Responsible use:** Morgana must only be used for authorised Red Team and
 > Purple Team operations within environments where testing has been formally
@@ -23,7 +23,7 @@
 
 | File | Purpose | Size | SHA-256 |
 |------|---------|------|---------|
-| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55 MB | `a05764cb9b15dcf50554676097c21ed0f140157a7500cadc9487f3579b75d3f7` |
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55 MB | `a3f49683935072de25999063c24a63e9382519d4548c08eb30a316dfa13d53f7` |
 | `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d` |
 | `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
 | `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
@@ -44,13 +44,13 @@ Both files are public and require no authentication and no GitHub account:
 - Installer: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe
 - AI runtime: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/morgana-ai-runtime-0.3.35.zip
 
-Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v0.4.0/morgana/Install/...`
+Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v1.0.0/morgana/Install/...`
 
 Verify what you downloaded before running it:
 
 ```powershell
 Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
-# expected: a05764cb9b15dcf50554676097c21ed0f140157a7500cadc9487f3579b75d3f7
+# expected: a3f49683935072de25999063c24a63e9382519d4548c08eb30a316dfa13d53f7
 
 Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 # expected: a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d
@@ -71,10 +71,10 @@ Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 
 > **Antivirus note:** validation scripts can trigger AV by design. If your
 > security policy permits a scoped exception, limit it to the Morgana
-> runtime/data directory (`C:\ProgramData\Morgana`) on the authorised lab server
-> and Agents; otherwise follow your policy and investigate false positives. Do
-> not add broad exclusions to production endpoints. The installer may attempt a
-> scoped exclusion; verify the actual behaviour in the clean VM.
+> runtime/data directory (`C:\ProgramData\Morgana`) on the authorised lab
+> server and Agents; otherwise follow your policy and investigate false
+> positives. Do not add broad exclusions to production endpoints. The installer
+> may attempt a scoped exclusion; verify the actual behaviour in the clean VM.
 
 ---
 
@@ -87,7 +87,7 @@ use the silent form:
 
 ```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
-    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -ArgumentList "/VERYSILENT", "/TERMSACCEPTED", "/NORESTART", "/LOG=C:\morgana-install.log" `
     -Verb RunAs -Wait
 ```
 
@@ -156,7 +156,7 @@ https://x3m.ai/licensing/.
 
 After first sign-in:
 
-1. Open **Licensing → Activate License**.
+1. Open **Licensing â†’ Activate License**.
 2. Enter the **licence-owner email** and **activation key** from the purchase email.
 3. Open the approval email sent to the licence owner and confirm the intended installation.
 4. Return to Morgana and verify that the purchased plan is active.
@@ -165,9 +165,9 @@ The licence-owner email identifies the contract owner and can differ from the
 Morgana login. The activation key is stable across renewals.
 
 > [!NOTE]
-> This folder is an installation-test candidate. The `release-manifest.json`
-> records the version and VM acceptance status. Do not treat the onboarding as
-> released until the published build has passed the clean-VM acceptance flow.
+> This folder is an installation-test candidate ($releaseTag, VM acceptance
+> pending). Do not treat the onboarding as released until the published build
+> has passed the clean-VM acceptance flow.
 
 ---
 
@@ -245,16 +245,19 @@ The server delivers the agent binary itself at `/download/morgana-agent.exe` and
 
 ## Merlino integration
 
-Morgana is a drop-in replacement for Caldera in Merlino.
+Morgana is connected through Merlino's Caldera/Morgana settings.
 
 1. In Merlino open **Settings**
 2. Under **Caldera / Morgana** enter:
    - **URL:** `https://YOUR_MORGANA_SERVER:8888`
-   - **API Key:** the key from **Administration -> Admin**
-3. Click **Save**
+   - **API Key:** a named Morgana key from **Administration -> Admin**
+3. Click **Save** and run the connection check.
 
-No other change is required. Merlino's existing Synchronize, Tests & Operations
-and Agents views work unchanged.
+The current integration uses **Tests & Operations â†’ Validation Packages**.
+**Check with Morgana** is read-only; **Sync Selected** creates Validation Package
+objects only; Execution Plans are prepared and run explicitly in Morgana. The
+legacy Synchronize Chains view remains for existing integrations. See the
+Merlino manual, section 28.
 
 ---
 
@@ -262,7 +265,7 @@ and Agents views work unchanged.
 
 ```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
-    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -ArgumentList "/VERYSILENT", "/TERMSACCEPTED", "/NORESTART", "/LOG=C:\morgana-install.log" `
     -Verb RunAs -Wait
 ```
 
