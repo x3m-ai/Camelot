@@ -87,9 +87,11 @@ use the silent form:
 
 ```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
-    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -ArgumentList "/VERYSILENT", "/TERMSACCEPTED", "/NORESTART", "/LOG=C:\morgana-install.log" `
     -Verb RunAs -Wait
 ```
+
+`/TERMSACCEPTED` is required: without it the silent install stops before making changes instead of accepting the X3M.AI Terms of Service implicitly. The interactive wizard requires the acceptance checkbox.
 
 The installer:
 
@@ -262,7 +264,7 @@ and Agents views work unchanged.
 
 ```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
-    -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=C:\morgana-install.log" `
+    -ArgumentList "/VERYSILENT", "/TERMSACCEPTED", "/NORESTART", "/LOG=C:\morgana-install.log" `
     -Verb RunAs -Wait
 ```
 

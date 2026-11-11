@@ -77,13 +77,13 @@ Merlino transforms Microsoft Excel into a Cyber Threat Intelligence workbench. C
 
 ### Install Merlino
 
-Merlino is currently installed as a custom Office Add-in; this repository does not claim AppSource availability. Use the official manifest URL or the Windows trusted-catalog installer described in the [Merlino User and Administrator Manual](merlino/README.md#5-install-merlino).
+Merlino is distributed through the Microsoft Marketplace and installed from inside Excel: open Excel, open the add-ins / Microsoft Marketplace, search for **Merlino** and check the publisher **X3M.AI LTD**, then select **Add**. No download or BAT installer is required. See the [Merlino User and Administrator Manual](merlino/README.md#5-install-merlino) for details and the [official listing](https://marketplace.microsoft.com/en-us/product/wa200010289).
 
 **[Merlino Portal](https://x3m.ai/merlino/)**
 
 Requirements:
-- Excel 2016 or later, Microsoft 365 Excel Desktop, or Excel on the web where tenant policy permits custom add-ins
-- HTTPS access to the official Merlino deployment
+- Microsoft Excel with access to the add-ins / Microsoft Marketplace; some tenants block the Store
+- An organisation that allows Marketplace add-ins
 - Additional approved connectivity only for the optional imports, Morgana, MISP, or AI features in use
 
 ### Documentation

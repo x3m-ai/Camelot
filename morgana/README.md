@@ -183,7 +183,7 @@ Morgana is free to download. Obtain the current installer from the [Install dire
 
 1. Sign in to Windows with an account that can elevate locally.
 2. Right-click `Morgana-Server-Setup.exe` and select **Run as administrator**.
-3. Review the license and installation destination.
+3. Review the customer terms, select the acceptance checkbox, and choose the installation destination. The wizard does not continue without the checkbox.
 4. Optionally select the desktop Dashboard shortcut.
 5. Complete the wizard and wait for the post-install configuration to finish.
 6. Keep the final page open long enough to record the bootstrap sign-in information in an approved password vault. This manual does not reproduce it.
@@ -237,9 +237,11 @@ Use silent installation only within an approved software deployment system and c
 
 ```powershell
 Start-Process -FilePath ".\Morgana-Server-Setup.exe" `
-  -ArgumentList "/VERYSILENT", "/NORESTART", "/LOG=<INSTALL_LOG_PATH>" `
+  -ArgumentList "/VERYSILENT", "/TERMSACCEPTED", "/NORESTART", "/LOG=<INSTALL_LOG_PATH>" `
   -Verb RunAs -Wait
 ```
+
+`/TERMSACCEPTED` is required: without it the silent install stops before making changes instead of accepting the X3M.AI Terms of Service implicitly. The interactive wizard requires the acceptance checkbox.
 
 Afterward, verify the service, health endpoint, certificate, firewall scope, and first sign-in manually. Do not place credentials in deployment command lines or logs.
 

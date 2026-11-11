@@ -4,10 +4,26 @@ Merlino is a free Microsoft Excel Add-in for Cyber Threat Intelligence professio
 
 ## Installation
 
-1. Open Microsoft Excel (Desktop or Web)
-2. Go to **Insert** > **Add-ins** > **Get Add-ins**
-3. Search for **Merlino** or install directly from: **[merlino.x3m.ai](https://merlino.x3m.ai)**
-4. The Merlino ribbon tab appears in Excel
+Merlino is distributed through the **Microsoft Marketplace** and installed from
+inside Excel.
+
+1. Open Microsoft Excel.
+2. Open the add-ins section from the ribbon and choose the **Microsoft
+   Marketplace / Store**. Exact labels vary by Excel release.
+3. Search for **Merlino**, confirm the publisher is **X3M.AI LTD**, then select
+   **Add**.
+4. On first use, accept the X3M.AI Terms of Use.
+
+Official listing:
+<https://marketplace.microsoft.com/en-us/product/wa200010289>
+
+If Merlino does not appear or cannot be added, check that your Excel version
+supports add-ins and that your organisation allows the Microsoft Marketplace;
+the Store can be disabled by tenant policy. Contact
+<support@x3m.ai> or [Contact us](https://x3m.ai/en/contact/) for help. Do not use
+a manual manifest sideload or a BAT installer as a customer workaround.
+
+After installation, the **Merlino** ribbon tab appears in Excel.
 
 ## First Steps
 

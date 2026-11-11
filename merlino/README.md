@@ -2,7 +2,7 @@
 
 > **Applies to:** Merlino implementation package 0.4.0; public Office manifest 1.5.0.0 (verified 27 August 2026)
 > **Audience:** CTI analysts, Detection Engineers, Purple Teams, Red Teams, workbook owners, and Microsoft 365 administrators
-> **Product status:** Free Excel Add-in distributed through the official Merlino web deployment and approved sideloading methods. It is not currently documented here as an AppSource product.
+> **Product status:** Free Excel Add-in distributed through the Microsoft Marketplace and installed from inside Excel. The publisher on the official listing is **X3M.AI LTD**.
 
 Merlino turns Microsoft Excel into a task-oriented Cyber Threat Intelligence and Purple Teaming workspace. It imports MITRE ATT&CK and security-control data, relates records through ATT&CK technique IDs, calculates coverage, synchronizes selected metadata and evidence with Morgana, and can send selected workbook content to an optional AI provider.
 
@@ -179,7 +179,7 @@ Network access depends on the feature used:
 
 ### 4.1 Excel and platform
 
-Verified public installation files target Excel 2016 or later, Microsoft 365 Excel Desktop, and Excel on the web. The Windows trusted-catalog installer is Windows-specific. Availability of custom add-ins in managed Microsoft 365 tenants depends on organizational policy.
+Merlino is distributed through the Microsoft Marketplace and added from inside Excel. The listing supports the Excel platforms Microsoft documents; availability of Marketplace add-ins in managed Microsoft 365 tenants depends on organisational policy, and an administrator can block the Store.
 
 For the fullest workflow, use a current Excel Desktop build on Windows. In particular, **Open Local Template** depends on an Excel API that is unavailable in Excel on the web.
 
@@ -204,43 +204,28 @@ For the fullest workflow, use a current Excel Desktop build on Windows. In parti
 
 ## 5. Install Merlino
 
-Merlino is currently supported through custom Office Add-in installation. This manual does not claim Microsoft AppSource availability.
+Merlino is distributed through the Microsoft Marketplace and installed from inside Excel. Customers do not download an installer or run a BAT file.
 
-### 5.1 Install from the manifest URL
+### 5.1 Install from Excel
 
-Use this path where Excel exposes **Add a custom add-in > Add from URL**:
+1. Open Microsoft Excel.
+2. Open the add-ins section from the ribbon and choose the **Microsoft Marketplace / Store**. Exact menu labels vary by Excel release.
+3. Search for **Merlino** and confirm that the publisher is **X3M.AI LTD**.
+4. Select **Add**, then open Merlino from Excel.
+5. On first use, read and accept the X3M.AI Terms of Use.
 
-1. Open Excel.
-2. Open **Insert > My Add-ins** or **Office Add-ins**.
-3. Select **Add a custom add-in > Add from URL**.
-4. Enter the official production manifest URL:
+Official listing:
+<https://marketplace.microsoft.com/en-us/product/wa200010289>
 
-	 ```text
-	 https://merlino-addin.x3m.ai/manifest.xml
-	 ```
+### 5.2 If Merlino does not appear or cannot be added
 
-5. Confirm the prompt.
-6. Close and reopen Excel if the Merlino ribbon tab does not appear immediately.
+Check that the version of Excel supports add-ins and that the organisation allows access to the Microsoft Marketplace. The Store can be disabled by tenant policy; this is not proof that Excel is incompatible. For assistance use [Contact us](https://x3m.ai/en/contact/) or <support@x3m.ai>. An administrator can allow the same Marketplace app for the organisation.
 
-The exact menu labels can vary by Excel release and tenant policy. If **Add from URL** is unavailable, ask the Microsoft 365 administrator to permit or deploy the custom manifest.
-
-### 5.2 Windows trusted-catalog installation
-
-The current Windows installer scripts download the production manifest into a per-user Merlino folder and register that folder as an Office trusted catalog under the current user's Office settings.
-
-1. Obtain the official `INSTALL-MERLINO.bat` or installation package from the [Merlino portal](https://x3m.ai/merlino/).
-2. Review the script according to organizational software policy.
-3. Close Excel.
-4. Run the installer as the intended Excel user. The current per-user catalog process does not require local administrator rights.
-5. Reopen Excel.
-6. Open **Insert > My Add-ins > Shared Folder**.
-7. Select **Merlino**.
-
-Do not modify and redistribute the manifest. Use only the current official deployment URL.
+Do not use a manual manifest sideload or a BAT installer as a customer workaround. Those methods remain internal development tooling only.
 
 ### 5.3 Excel on the web
 
-Custom add-in availability is controlled by the tenant. Once Merlino is available, download a public template and open that workbook through **File > Open**. The **Open Local Template** button inside the taskpane is not supported in Excel on the web.
+Once Merlino is available in the organisation's Marketplace, open a public template and open that workbook through **File > Open**. The **Open Local Template** button inside the taskpane is not supported in Excel on the web.
 
 ### 5.4 Verify installation
 
@@ -249,11 +234,15 @@ Custom add-in availability is controlled by the tenant. Once Merlino is availabl
 3. Open **Templates** and confirm the public template catalog loads.
 4. Do not load a template into a workbook containing unsaved data.
 
+### 5.5 Developer / internal installation (not for customers)
+
+The repository keeps the production manifest and trusted-catalog tooling for development and administration. `INSTALL-MERLINO.bat`, `install-merlino-addin.ps1` and the manifest are **not** customer installation methods; do not publish them as such.
+
 ## 6. First Run and Workbook Safety
 
 ### 6.1 Accept the first-run notice
 
-The first taskpane opened displays a welcome overlay and Terms of Use checkbox. After acceptance, the state is saved in local storage and the overlay is suppressed across taskpanes. **About Merlino** in the taskpane information strip can reopen it.
+The first taskpane opened displays a welcome overlay and a Terms of Use checkbox. Acceptance is stored locally with the accepted terms version and the UTC time; the overlay is suppressed across taskpanes only for that version. A new terms version re-prompts once. **About Merlino** in the taskpane information strip can reopen the terms for review without rewriting the stored acceptance.
 
 ### 6.2 Safe first-run procedure
 
@@ -1256,9 +1245,9 @@ Merlino checks its published version metadata and loads code from the configured
 
 | Symptom | Action |
 |---|---|
-| Merlino is not in the ribbon | Reopen Excel, verify the custom manifest/trusted catalog is allowed, and confirm the production host is reachable |
-| Add from URL is absent | Ask the Microsoft 365 administrator to permit or centrally deploy the custom add-in |
-| Blank or stale taskpane | Save work, export settings, run the downloaded cache-clear tool, reopen Excel, and re-add the manifest if required |
+| Merlino is not in the ribbon | Confirm the add-in was added from the Microsoft Marketplace and reopen Excel |
+| Merlino is absent from the Marketplace | Check the Excel version and whether the organisation allows the Microsoft Marketplace; contact support@x3m.ai |
+| Blank or stale taskpane | Save work, export settings, reopen Excel, and re-add Merlino from the Marketplace if required |
 | Public templates do not load | Verify HTTPS access to the official Merlino template catalog |
 
 ### 36.2 Workbook and imports
@@ -1317,7 +1306,7 @@ Merlino checks its published version metadata and loads code from the configured
 
 ### Is Merlino available from Microsoft AppSource?
 
-This manual does not claim AppSource availability. Use the verified custom manifest or Windows trusted-catalog installation path approved by your administrator.
+Yes. Merlino is listed on the Microsoft Marketplace (AppSource) with publisher **X3M.AI LTD**: <https://marketplace.microsoft.com/en-us/product/wa200010289>. Install it from inside Excel through the add-ins / Microsoft Marketplace path. If it does not appear, check the Excel version and whether the organisation's tenant policy allows the Store.
 
 ### Does Merlino require an account?
 
