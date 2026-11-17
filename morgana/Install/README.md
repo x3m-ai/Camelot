@@ -1,6 +1,6 @@
 ﻿# Morgana - Installation Guide
 
-> **Current release: morgana-v1.1.0** (17 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
+> **Current release: morgana-v1.1.1** (17 November 2026) - installation-test candidate, directory distribution, clean installation database, optional local AI Pack. VM acceptance pending.
 
 > **Morgana** is the X3M.AI Red Team execution and Test Intelligence platform for
 > Purple Teaming - adversary emulation, penetration testing and Purple Team
@@ -23,7 +23,7 @@
 
 | File | Purpose | Size | SHA-256 |
 |------|---------|------|---------|
-| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55.2 MB | `aeb024b3fc24d16ed7e10ec3891ea338995ce4892bac050a362be8241a74bb70` |
+| `Morgana-Server-Setup.exe` | Windows installer. Contains the application, its runtime and a clean installation database. | 55.2 MB | `50b4501a0f447ba263141712d5957c7daa9fdd1cc956b2ee9f789f3febdd6627` |
 | `morgana-ai-runtime-0.3.35.zip` | Optional inference runtime for the local AI Pack. Only needed if you install the AI Pack. | 2.4 MB | `a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d` |
 | `release-manifest.json` | Machine-readable release manifest: version, status, URLs, sizes, hashes, signature state. | - | - |
 | `SHA256SUMS.txt` | Checksums of the downloadable files. | - | - |
@@ -44,13 +44,13 @@ Both files are public and require no authentication and no GitHub account:
 - Installer: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/Morgana-Server-Setup.exe
 - AI runtime: https://github.com/x3m-ai/Camelot/raw/main/morgana/Install/morgana-ai-runtime-0.3.35.zip
 
-Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v1.1.0/morgana/Install/...`
+Pinned to this exact release: `https://github.com/x3m-ai/Camelot/raw/morgana-v1.1.1/morgana/Install/...`
 
 Verify what you downloaded before running it:
 
 ```powershell
 Get-FileHash .\Morgana-Server-Setup.exe -Algorithm SHA256
-# expected: aeb024b3fc24d16ed7e10ec3891ea338995ce4892bac050a362be8241a74bb70
+# expected: 50b4501a0f447ba263141712d5957c7daa9fdd1cc956b2ee9f789f3febdd6627
 
 Get-FileHash .\morgana-ai-runtime-0.3.35.zip -Algorithm SHA256
 # expected: a86665c628fec26707c78a7f88733d0a09c15a3dffe234f465030c295d241b7d
