@@ -2,7 +2,7 @@
 
 > **Full Morgana documentation:** [morgana/README.md](../README.md) — Section 10 covers Excalibur import, Tag configuration, update behavior, and authoring.
 
-Excalibur is the certified adversary emulation and security validation script library for the **Morgana Advanced Red Team Platform**. This document covers every published Excalibur package, its provider, content, prerequisites, and usage guidance.
+Excalibur is the curated adversary emulation and security validation script library for the **Morgana Advanced Red Team Platform**. This document covers every published Excalibur package, its provider, content, prerequisites, and usage guidance.
 
 All packages are installed through the Morgana UI at **Scripts → Excalibur Packs → Refresh catalog → Install**. No runtime dependencies on the source repositories are required after installation.
 
@@ -15,11 +15,11 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | Provider | Packages | Scripts | Chains | Domain |
 |---|---|---|---|---|
 | [X3M.AI](#1-x3mai-excalibur-packs) | 2 | 26 | 24 | Enterprise ATT&CK |
-| [Red Canary — Atomic Red Team](#2-red-canary--atomic-red-team) | 13 | 1 603 | 1 616 | Enterprise ATT&CK |
-| [MITRE CALDERA Stockpile](#3-mitre-caldera-stockpile) | 11 | 221 | 231 | Enterprise ATT&CK |
-| [MITRE CTID](#4-mitre-ctid--adversary-emulation) | 24 | 398 | 27 | Enterprise ATT&CK |
-| [LOLBAS Project](#5-lolbas--gtfobins) | 15 | 475 | 0 | Enterprise ATT&CK |
-| [GTFOBins](#5-lolbas--gtfobins) | 34 | 3 582 | 0 | Enterprise ATT&CK |
+| [Red Canary - Atomic Red Team](#2-red-canary-atomic-red-team) | 13 | 1 603 | 0 | Enterprise ATT&CK |
+| [MITRE CALDERA Stockpile](#3-mitre-caldera-stockpile) | 11 | 221 | 0 | Enterprise ATT&CK |
+| [MITRE CTID](#4-mitre-ctid-adversary-emulation) | 24 | 398 | 27 | Enterprise ATT&CK |
+| [LOLBAS Project](#5-lolbas-gtfobins) | 15 | 475 | 0 | Enterprise ATT&CK |
+| [GTFOBins](#5-lolbas-gtfobins) | 34 | 3 582 | 0 | Enterprise ATT&CK |
 | [LOLDrivers](#6-loldrivers) | 58 | 18 766 | 0 | Enterprise ATT&CK |
 | [Frida Mobile](#7-frida-mobile) | 40 | 830 | 0 | Mobile ATT&CK |
 | [MEDUSA](#medusa) | 38 | 147 | 0 | Mobile ATT&CK |
@@ -32,9 +32,10 @@ All packages are installed through the Morgana UI at **Scripts → Excalibur Pac
 | [LOLRMM](#13-lolrmm) | 3 | 320 | 0 | Enterprise ATT&CK |
 | [ControlThings Suite](#14-controlthings-suite) | 5 | 33 | 0 | ICS ATT&CK |
 | [IndustriConnect](#15-industriconnect) | 10 | 130 | 0 | ICS ATT&CK |
-| **Total** | **331** | **27 823** | **2 121** | |
+| [OWASP MASTG](mobile/mastg/README.md) | 4 | 449 | 0 | Mobile ATT&CK |
+| **Total** | **335** | **28 272** | **274** | |
 
-> Numbers reflect the catalog as of 2026-08-31. Run **Refresh catalog** to see the current version.
+> Numbers are derived from `catalog.json` (catalog updated 2026-09-07, version 1.5.0). They are **declared package metadata**, not a count of executed, tested or certified scripts. ART and Stockpile publish variant libraries with `chains: []`; only genuine source-defined scenario/emulation content preserves intentional ordering. Use **Refresh catalog** for the installed view.
 
 ---
 
@@ -122,6 +123,9 @@ Community conversion of the [Red Canary Atomic Red Team](https://github.com/redc
 | `art-impact-v1` | TA0040 Impact | 66 |
 | `art-recon-v1` | TA0043 Reconnaissance | 2 |
 
+ART packs are published as variant libraries with `chains: []`. The previous
+1,616-chain figure was historical and is not part of the current catalog.
+
 **Source:** [redcanaryco/atomic-red-team](https://github.com/redcanaryco/atomic-red-team)  
 **License:** MIT  
 **Execution Platforms:** Windows, Linux, macOS  
@@ -139,17 +143,21 @@ Community conversion of [MITRE CALDERA Stockpile](https://github.com/mitre/stock
 
 | Package ID | Tactic | Scripts | Chains |
 |---|---|---|---|
-| `stockpile-collection-v1` | Collection | ~20 | ~20 |
-| `stockpile-credential-access-v1` | Credential Access | ~20 | ~20 |
-| `stockpile-defense-evasion-v1` | Defense Evasion | ~20 | ~20 |
-| `stockpile-discovery-v1` | Discovery | ~30 | ~30 |
-| `stockpile-execution-v1` | Execution | ~20 | ~20 |
-| `stockpile-exfiltration-v1` | Exfiltration | ~10 | ~10 |
-| `stockpile-impact-v1` | Impact | ~10 | ~10 |
-| `stockpile-lateral-movement-v1` | Lateral Movement | ~20 | ~20 |
-| `stockpile-persistence-v1` | Persistence | ~20 | ~20 |
-| `stockpile-privilege-escalation-v1` | Privilege Escalation | ~20 | ~20 |
-| `stockpile-initial-access-v1` | Initial Access | ~10 | ~10 |
+| `stockpile-collection-v1` | Collection | ~20 | 0 |
+| `stockpile-credential-access-v1` | Credential Access | ~20 | 0 |
+| `stockpile-defense-evasion-v1` | Defense Evasion | ~20 | 0 |
+| `stockpile-discovery-v1` | Discovery | ~30 | 0 |
+| `stockpile-execution-v1` | Execution | ~20 | 0 |
+| `stockpile-exfiltration-v1` | Exfiltration | ~10 | 0 |
+| `stockpile-impact-v1` | Impact | ~10 | 0 |
+| `stockpile-lateral-movement-v1` | Lateral Movement | ~20 | 0 |
+| `stockpile-persistence-v1` | Persistence | ~20 | 0 |
+| `stockpile-privilege-escalation-v1` | Privilege Escalation | ~20 | 0 |
+| `stockpile-initial-access-v1` | Initial Access | ~10 | 0 |
+
+Stockpile abilities are published as variant libraries (`chains: []`). The old
+"~20 chains per pack" figures were not semantic scenario chains and have been
+removed.
 
 **Source:** [mitre/stockpile](https://github.com/mitre/stockpile)  
 **License:** Apache 2.0  

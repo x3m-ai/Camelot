@@ -1,5 +1,10 @@
 # Camelot Repository -- Complete Setup Instructions
 
+> **Historical document.** This is a repository-creation/setup brief, not a
+> customer installation guide. Do not use it to install Merlino or Morgana.
+> Current public installation: [`morgana/Install/`](morgana/Install/) and
+> [`merlino/README.md`](merlino/README.md).
+
 > **Purpose:** This document is a complete instruction set for an AI agent to create and configure the `x3m-ai/Camelot` GitHub repository from scratch. Feed this entire document to the agent in a new VS Code workspace.
 
 ---

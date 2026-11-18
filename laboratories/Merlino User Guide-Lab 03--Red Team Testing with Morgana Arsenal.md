@@ -87,7 +87,7 @@ This is the final piece of the puzzle: after this lab, your Merlino workbook wil
 +------------------+       +---------------------+
 ```
 
-Merlino sends test definitions to Morgana via the synchronization API. Morgana queues jobs for the target agents. The Go agent (installed as an NT Service on Windows or systemd on Linux) polls the server, executes scripts, and reports results. Results flow back to Merlino through synchronization. Merlino can then push the intelligence to MISP for broader threat intelligence sharing and correlation.
+Merlino resolves capability and syncs selected Validation Packages to Morgana; the package sync creates packages only. An operator prepares an Execution Plan in Morgana and runs it deliberately against an authorized Agent. The Go agent (installed as an NT Service on Windows or systemd on Linux) polls the server, executes scripts, and reports results. Results flow back to Merlino through synchronization. Merlino can then push the intelligence to MISP for broader threat intelligence sharing and correlation.
 
 ---
 
@@ -191,11 +191,11 @@ https://localhost:8888/ui/
 
 The Morgana web UI shows the full dashboard for managing agents, scripts, chains, tests, and campaigns.
 
-> **Note:** The installer installs the certificate into the Windows Trusted Root store automatically. On a clean machine the browser and Excel will trust it immediately — no manual steps required.
+> **Server vs workstation:** the installer trusts the Morgana CA on the **server host**. A remote Excel or browser workstation must import the public Morgana CA into its own Trusted Root store. Do not assume automatic trust across machines.
 
 ### SSL Certificate
 
-HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all unencrypted HTTP communication. The installer handles certificate generation and trust automatically — on a fresh installation everything works out of the box.
+HTTPS is required because Microsoft Excel enforces strict security: the Office.js runtime blocks all unencrypted HTTP communication. The installer generates and trusts the CA on the Morgana server host; a remote Excel/browser workstation must import the CA into its own Trusted Root store. A trusted certificate does not provide mutual TLS or Agent certificate validation (see the Morgana manual, section 8.1).
 
 **For production environments**, replace the self-signed certificate by placing your own files at:
 - `C:\ProgramData\Morgana\certs\server.crt`
@@ -351,7 +351,7 @@ The agent binary deployed by Morgana is pre-compiled and served directly by the 
 
 **[github.com/x3m-ai/Camelot -- morgana/morgana-agent/](https://github.com/x3m-ai/Camelot/tree/main/morgana/morgana-agent)**
 
-That folder contains the complete source and build instructions for Windows and Linux. You can compile it yourself and install it using the same `--server` and `--token` arguments as the pre-built binary. This is completely transparent -- there are no differences between the pre-built binary and what you build from that source.
+That folder contains source and build instructions for Windows and Linux. The source is published for transparency. For a supported deployment use the pre-built installer from the Camelot Install folder; a self-compiled binary is an unsupported artifact unless it follows the build and acceptance process. The CLI uses `--server` and `--token`; the current release does not validate the server certificate and has no per-agent approval queue.
 
 ---
 

@@ -1,10 +1,10 @@
 # Excalibur Packages
 
-Excalibur is the certified adversary emulation script library for the **Morgana Advanced Red Team Platform**.
+Excalibur is the curated adversary emulation script library for the **Morgana Advanced Red Team Platform**.
 
 Excalibur packages are professionally crafted attack script collections covering real-world MITRE ATT&CK tactics and techniques. Each package targets a specific platform, identity domain, or detection surface and is designed for authorised Purple Team and Red Team exercises — including adversary emulation, kill chain execution, and detection validation against enterprise security controls (Microsoft Sentinel, Defender for Endpoint, and others).
 
-> **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 331 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
+> **Full package reference:** See **[PACKAGES.md](PACKAGES.md)** for the complete catalog — all 335 packages, scripts, chains, prerequisites, ATT&CK coverage, and source references.
 
 > **Access notice:** Excalibur packages run inside Morgana, which is free to download from Camelot. Use Excalibur packs only for authorised Red Team or Purple Team operations on systems covered by explicit written approval.
 
@@ -15,8 +15,8 @@ Excalibur packages are professionally crafted attack script collections covering
 | Provider | Packages | Scripts | Chains |
 |---|---|---|---|
 | X3M.AI Excalibur | 2 | 26 | 24 |
-| [Red Canary — Atomic Red Team](art/) | 13 | 1 603 | 1 616 |
-| [MITRE CALDERA Stockpile](stockpile/) | 11 | 221 | 231 |
+| [Red Canary — Atomic Red Team](art/) | 13 | 1 603 | 0 |
+| [MITRE CALDERA Stockpile](stockpile/) | 11 | 221 | 0 |
 | [MITRE CTID](ctid/) | 24 | 398 | 27 |
 | [LOLBAS & GTFOBins](lotl/) | 49 | 4 057 | 0 |
 | [LOLDrivers](loldrivers/) | 58 | 18 766 | 0 |
@@ -31,7 +31,15 @@ Excalibur packages are professionally crafted attack script collections covering
 | [LOLRMM](lotl/lolrmm/) | 3 | 320 | 0 |
 | [ControlThings Suite](ot/controlthings/) | 5 | 33 | 0 |
 | [IndustriConnect](ot/industriconnect/) | 10 | 130 | 0 |
-| **Total** | **331** | **27 823** | **2 121** |
+| [OWASP MASTG](mobile/mastg/) | 4 | 449 | 0 |
+| **Total** | **335** | **28 272** | **274** |
+
+Numbers are derived from `catalog.json` (catalog updated 2026-09-07; version
+1.5.0). They are declared package metadata, not a count of executed, tested or
+certified scripts. ART and Stockpile are variant libraries published with
+`chains: []`; only genuine source-defined scenario/emulation content preserves
+intentional ordering. See [PACKAGES.md](PACKAGES.md) for the current reference
+and always use **Refresh catalog** for the installed view.
 
 Morgana downloads the current [catalog](catalog.json) when the operator selects **Scripts > Excalibur Packs > Refresh catalog**. After support for a category is deployed once, future package additions and updates are published through Camelot without requiring a new Morgana release.
 

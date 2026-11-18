@@ -75,28 +75,37 @@ powershell-export-scripts/     Community PowerShell utility scripts
 
 ## PUBLISH WORKFLOW
 
-Camelot is updated as part of the **Morgana or Merlino release pipeline**:
+Camelot is updated by the Morgana release pipeline:
 
-### When a new Morgana version is released:
-1. New `Morgana-Server-Setup.exe` is built in the Morgana repo (`scripts/build-installer.ps1`)
-2. The build script **automatically** copies the installer + raw EXE + `version.json` to `Merlino/docs/morgana/` (primary CDN at `https://merlino.x3m.ai/morgana/`)
-3. File is also copied to `morgana/Install/Morgana-Server-Setup.exe` here in Camelot (overwrite)
-4. `morgana/Install/README.md` version header is updated
-5. Commit + push to Camelot and Merlino (user must ask explicitly)
+1. `Morgana/scripts/01-build-installer.ps1` builds, signs, verifies and **stages**
+   the complete set in `morgana/Install/`: installer, AI runtime, README,
+   manifest, checksums, release feed and notices. It performs no upload, commit
+   or push.
+2. `Morgana/scripts/02-publish-installer.ps1` is the separate explicit publish
+   step. Run it only with authorization.
+3. The generated `morgana/Install/README.md` header, `release-manifest.json`,
+   `release.json` and `SHA256SUMS.txt` are authoritative. Do not hand-edit the
+   version header or copy a random EXE.
+4. `release.json` is the current feed. `version.json` is the legacy feed for
+   already-installed older clients and has a separate contract; do not
+   "align" it by simply changing the number.
+5. Public metadata must use artifact names, URLs and relative paths. Do not
+   publish absolute build-machine paths.
+6. Commit and push only after explicit authorization.
 
-> **Note:** The Morgana in-app auto-update system fetches `https://merlino.x3m.ai/morgana/version.json`. Camelot's `morgana/Install/version.json` is kept in sync but is no longer the primary source.
+### README VERSION HEADER
 
-### When new community content is added:
+The build generates the first content line of `morgana/Install/README.md` from
+the release tag. Do not edit it independently. If the installer ProductVersion
+and the release tag differ, stop: align the version source and rebuild.
+
+```text
+> **Current release: vX.Y.Z** (DD Month YYYY) — short description
+```
+
+### Community content
+
 - Templates → `standard-templates/` or `merlino/`
 - Lab guides → `laboratories/`
 - Data files → `data/`
 - Morgana docs → `docs/morgana/`
-
----
-
-## README VERSION HEADER FORMAT
-
-The first content line of `morgana/Install/README.md` must always be:
-```
-> **Current release: vX.Y.Z** (DD Month YYYY) — short description of what changed
-```

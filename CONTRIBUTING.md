@@ -47,7 +47,7 @@ We are actively looking for people who want to help build the future of open CTI
 **Areas where we need help:**
 
 - **TypeScript / React** -- Merlino taskpanes, UI components, Excel API integrations
-- **Python** -- Morgana Arsenal plugins, Caldera agents and abilities
+- **Python** -- community content, parsers, and approved Morgana-facing utilities (product code is handled in the product repositories)
 - **CTI Analysis** -- Threat profiles, MITRE ATT&CK mappings, use case documentation
 - **Red Team / Purple Team** -- Adversary emulation testing, operation design, attack chain validation
 - **Detection Engineering** -- Sentinel rules, Defender policies, detection gap analysis
@@ -58,8 +58,19 @@ We are actively looking for people who want to help build the future of open CTI
 
 1. Introduce yourself in [Discussions](https://github.com/x3m-ai/Camelot/discussions) -- tell us what you are interested in
 2. Browse existing discussions and issues to find something that excites you
-3. For Morgana code contributions, submit PRs to [Morgana Arsenal](https://github.com/x3m-ai/Morgana-Arsenal)
-4. For documentation, templates, and guides, submit PRs directly to this repo
+3. For documentation, templates, labs, and curated content, submit PRs directly to this repo
+4. For Morgana server/agent or Merlino product code, do not submit PRs to Camelot; contact the maintainers to discuss the appropriate product repository
+
+## Repository Boundaries
+
+| Repository | What it contains |
+|---|---|
+| **Camelot** | Public documentation, labs, templates, community data, curated Excalibur content |
+| **Merlino** | Merlino product source (private) |
+| **Morgana** | Morgana server/agent product source; not the Camelot documentation repo |
+| **Morgana Arsenal** | Separate content/community project; not the Morgana server or agent source |
+
+Do not treat these repositories as interchangeable, and do not move product source into Camelot to satisfy a documentation link.
 
 ## What This Repo Does NOT Accept
 

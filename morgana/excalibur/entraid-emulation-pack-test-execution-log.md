@@ -1,10 +1,10 @@
-﻿# Excalibur â€” Entra ID Emulation Pack â€” Test Execution Log
+# Excalibur — Entra ID Emulation Pack — Test Execution Log
 
 > **Package:** `excalibur-entraid-emulation-pack.json` v1.0.0
 > **Author:** X3M.AI
 > **Date started:** ____________________
 > **Tester:** ____________________
-> **Environment:** Test tenant only â€” NEVER run against production
+> **Environment:** Test tenant only — NEVER run against production
 
 ---
 
@@ -15,7 +15,7 @@ Before running any test, verify all of the following:
 - [ ] Microsoft.Graph PowerShell module installed: `Install-Module Microsoft.Graph -Scope CurrentUser`
 - [ ] Connected to Microsoft Graph: `Connect-MgGraph -Scopes 'Group.ReadWrite.All','User.ReadWrite.All','RoleManagement.ReadWrite.Directory','Policy.ReadWrite.AuthenticationMethod','AuditLog.Read.All'`
 - [ ] Package imported in Morgana via the Import Package button on the Scripts page
-- [ ] Microsoft Sentinel workspace open â€” Log Analytics ready for query verification
+- [ ] Microsoft Sentinel workspace open — Log Analytics ready for query verification
 - [ ] Target Analytics Rules enabled in the Sentinel workspace
 - [ ] Entra ID P2 license active in test tenant (required for UC#12, #13, #18, #21, #22)
 
@@ -38,13 +38,13 @@ Returned by the Morgana AI Review engine (`copilot_reviewer.py`). Shown in the *
 
 | Status | Meaning |
 |---|---|
-| `FINISHED` | Script executed cleanly â€” no defender interference detected |
+| `FINISHED` | Script executed cleanly — no defender interference detected |
 | `FAILED` | Script execution failed (script error, not defender-related) |
-| `ERROR` | Script itself is broken â€” syntax error, missing dependency, permission denied (unrelated to any defender) |
+| `ERROR` | Script itself is broken — syntax error, missing dependency, permission denied (unrelated to any defender) |
 | `BLOCKED` | A defender (AV / EDR / WDAC / AMSI / AppLocker / SmartScreen / firewall) prevented execution |
-| `INTERCEPTED` | Execution proceeded but a defender logged or warned without blocking â€” telemetry generated |
+| `INTERCEPTED` | Execution proceeded but a defender logged or warned without blocking — telemetry generated |
 
-### Effective Status (composite â€” shown as badge in Morgana UI)
+### Effective Status (composite — shown as badge in Morgana UI)
 Derived from the combination of AI Review + Detection Fabric verdict.
 
 | Effective Status | Condition | Badge Color |
@@ -59,20 +59,20 @@ Tracks whether Microsoft Sentinel generated the expected alert.
 | Value | Meaning |
 |---|---|
 | `[ ]` | Not yet verified |
-| `YES` | Alert generated â€” detection rule fired |
-| `NO` | Alert NOT generated â€” investigate |
-| `PENDING` | Script run, waiting for log ingestion latency (5â€“15 min) |
+| `YES` | Alert generated — detection rule fired |
+| `NO` | Alert NOT generated — investigate |
+| `PENDING` | Script run, waiting for log ingestion latency (5–15 min) |
 | `N/A` | Detection not applicable in this environment |
-| `SKIP` | Test skipped â€” reason in Notes |
+| `SKIP` | Test skipped — reason in Notes |
 
 ---
 
 ## Test Execution Table
 
 > **Important:** Always run the `cleanup_command` after each test.
-> Allow 5â€“15 minutes between tests for log propagation to Sentinel.
+> Allow 5–15 minutes between tests for log propagation to Sentinel.
 
-### Group 1 â€” Identity & Group Management
+### Group 1 — Identity & Group Management
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,76 +83,76 @@ Tracks whether Microsoft Sentinel generated the expected alert.
 | 4 | Excalibur-EntraID-User added to Microsoft Entra ID Privileged Groups | `Morgana-EntraID-AddUserPrivGroup` | Adds test user to Security Reader directory role | `[ ]` | | | `[ ]` | | |
 | 16 | Excalibur-AuditLogs-EntraID-Sensitive Group Modification Detection | `Morgana-EntraID-SensitiveGroupMod` | Adds then removes a member from a SENSITIVE-tagged group | `[ ]` | | | `[ ]` | | |
 
-### Group 2 â€” Credential & Authentication Manipulation
+### Group 2 — Credential & Authentication Manipulation
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 | 5 | Excalibur-EntraID-Authentication Methods Changed for Privileged Accounts | `Morgana-EntraID-ChangeAuthMethod` | Registers a phone MFA method then removes it | `[ ]` | | | `[ ]` | | |
 | 9 | Excalibur-EntraID-MFA disabled for a user | `Morgana-EntraID-MFADisabled` | Registers phone MFA, then removes it (MFA disabled) | `[ ]` | | | `[ ]` | | |
-| 10 | Excalibur-TH-UEBA-Anomalous Password Reset | `Morgana-EntraID-AnomalousPasswordReset` | Resets password on a test user | `[ ]` | | | `[ ]` | | UEBA â€” higher latency expected |
-| 11 | Excalibur-UEBA-Anomalous Microsoft Entra ID Account Manipulation | `Morgana-EntraID-AnomalousAccountManip` | 4 rapid property changes on a test user (job title, dept, display name) | `[ ]` | | | `[ ]` | | UEBA â€” higher latency expected |
+| 10 | Excalibur-TH-UEBA-Anomalous Password Reset | `Morgana-EntraID-AnomalousPasswordReset` | Resets password on a test user | `[ ]` | | | `[ ]` | | UEBA — higher latency expected |
+| 11 | Excalibur-UEBA-Anomalous Microsoft Entra ID Account Manipulation | `Morgana-EntraID-AnomalousAccountManip` | 4 rapid property changes on a test user (job title, dept, display name) | `[ ]` | | | `[ ]` | | UEBA — higher latency expected |
 
-### Group 3 â€” Privileged Role & PIM
+### Group 3 — Privileged Role & PIM
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 | 6 | Excalibur-EntraID-Privileged Role Assigned Outside PIM | `Morgana-EntraID-RoleOutsidePIM` | Assigns Reports Reader role directly (not via PIM) | `[ ]` | | | `[ ]` | | |
-| 7 | Excalibur-EntraID-Changes to PIM Settings | `Morgana-EntraID-ChangePIMSettings` | Inspects PIM policies (read-only baseline) | `[ ]` | | | `[ ]` | | See note below â€” read-only script |
+| 7 | Excalibur-EntraID-Changes to PIM Settings | `Morgana-EntraID-ChangePIMSettings` | Inspects PIM policies (read-only baseline) | `[ ]` | | | `[ ]` | | See note below — read-only script |
 | 8 | Excalibur-EntraID-User Added to Admin Role | `Morgana-EntraID-AddUserAdminRole` | Adds test user to Helpdesk Administrator role | `[ ]` | | | `[ ]` | | |
 | 12 | Excalibur-Auditlogs-Entra ID Role Assignment Permanent | `Morgana-EntraID-PermanentRoleAssign` | Assigns Directory Readers permanently (no expiry, no PIM) | `[ ]` | | | `[ ]` | | Requires Entra ID P2 |
 | 13 | Excalibur-Auditlogs-Create new PIM role Assignment | `Morgana-EntraID-CreatePIMAssignment` | Creates eligible PIM assignment for test user | `[ ]` | | | `[ ]` | | Requires P2 + PIM enabled |
 | 14 | Excalibur-Auditlogs-Entra ID Role Management Permission Grant | `Morgana-EntraID-RoleMgmtPermGrant` | Grants RoleManagement.Read.Directory to a test service principal | `[ ]` | | | `[ ]` | | |
 
-### Group 4 â€” App Registration & OAuth Abuse
+### Group 4 — App Registration & OAuth Abuse
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 | 15 | Excalibur-EntraID-Consent Phishing - Admin Consent | `Morgana-EntraID-ConsentPhishing` | Creates multi-tenant test app, grants admin consent for User.Read.All | `[ ]` | | | `[ ]` | | |
 
-### Group 5 â€” Sign-in Anomalies & Brute Force
+### Group 5 — Sign-in Anomalies & Brute Force
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 | 17 | Excalibur-EntraID-Attempts to sign in to disabled accounts | `Morgana-EntraID-SignInDisabledAcct` | Creates disabled user, attempts ROPC auth | `[ ]` | | | `[ ]` | | |
-| 18 | Excalibur-EntraID-Anomaly Sign In Event from an IP | `Morgana-EntraID-AnomalousSignInIP` | Queries risk baseline + guidance for anomalous IP test | `[ ]` | | | `[ ]` | | Requires login from different IP â€” see note |
+| 18 | Excalibur-EntraID-Anomaly Sign In Event from an IP | `Morgana-EntraID-AnomalousSignInIP` | Queries risk baseline + guidance for anomalous IP test | `[ ]` | | | `[ ]` | | Requires login from different IP — see note |
 | 19 | Excalibur-EntraID-Auth-Brute force attack against Azure Portal | `Morgana-EntraID-BruteForceAzurePortal` | 5 consecutive failed auth attempts against token endpoint | `[ ]` | | | `[ ]` | | |
 | 20 | Excalibur-SigninLogs-Nimbus Logging in Outside The VPN | `Morgana-EntraID-NimbusOutsideVPN` | Creates svc-nimbus-* account, authenticates from non-VPN IP | `[ ]` | | | `[ ]` | | Requires Named Location configured in Sentinel |
 
-### Group 6 â€” Entra ID Protection
+### Group 6 — Entra ID Protection
 
 | # | Detection Rule | Morgana Script | What It Does | State | AI Review | Effective Status | Sentinel Alert | Executed At | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 | 21 | Excalibur-EntraIDProtection-Anonymous IP address | `Morgana-EntraID-AnonymousIP` | Queries existing risk detections + guidance for Tor/proxy simulation | `[ ]` | | | `[ ]` | | Manual simulation from Tor/anonymizing proxy required |
-| 22 | Create incidents based on Microsoft Entra ID Protection alerts | `Morgana-EntraID-IDProtectionIncident` | Verifies risky users and active risk detections, validates Sentinel incident creation | `[ ]` | | | `[ ]` | | Run LAST â€” relies on risk events from previous tests |
+| 22 | Create incidents based on Microsoft Entra ID Protection alerts | `Morgana-EntraID-IDProtectionIncident` | Verifies risky users and active risk detections, validates Sentinel incident creation | `[ ]` | | | `[ ]` | | Run LAST — relies on risk events from previous tests |
 
 ---
 
 ## Notes for Specific Tests
 
-### UC#7 â€” Changes to PIM Settings (`Morgana-EntraID-ChangePIMSettings`)
-The script is **read-only** â€” it inspects PIM policies but does not modify them. For a test that generates an actual audit log entry:
+### UC#7 — Changes to PIM Settings (`Morgana-EntraID-ChangePIMSettings`)
+The script is **read-only** — it inspects PIM policies but does not modify them. For a test that generates an actual audit log entry:
 - Use `Update-MgPolicyRoleManagementPolicyRule` to change a notification threshold on a PIM policy
 - Document the original value before changing
 - Restore it immediately after Sentinel confirms the alert
 
-### UC#18 â€” Anomalous Sign-In from IP (`Morgana-EntraID-AnomalousSignInIP`)
+### UC#18 — Anomalous Sign-In from IP (`Morgana-EntraID-AnomalousSignInIP`)
 The script provides guidance only. To trigger the detection:
-1. Sign in with a test account from the standard corporate network (trusted IP)
+1. Sign in with a test account from the standard SGN network (trusted IP)
 2. Connect via a different VPN or proxy
 3. Sign in again with the same account from that IP
 4. Sentinel correlates the IP change and anomaly score
 
-### UC#20 â€” Nimbus Outside VPN (`Morgana-EntraID-NimbusOutsideVPN`)
-Requires a **Named Location** in Sentinel/Conditional Access configured for the corporate VPN IP range. Verify that the Named Location exists before running this test.
+### UC#20 — Nimbus Outside VPN (`Morgana-EntraID-NimbusOutsideVPN`)
+Requires a **Named Location** in Sentinel/Conditional Access configured for the SGN VPN IP range. Verify that the Named Location exists before running this test.
 
-### UC#21 â€” Anonymous IP (`Morgana-EntraID-AnonymousIP`)
+### UC#21 — Anonymous IP (`Morgana-EntraID-AnonymousIP`)
 Cannot be simulated via standard PowerShell. Options:
 1. Authenticate to `https://myapps.microsoft.com` using Tor Browser
 2. Use a known anonymizing VPN/proxy flagged by Entra ID Protection
 3. Check if existing risk events of this type are already present in the tenant
 
-### UC#22 â€” ID Protection Incident (`Morgana-EntraID-IDProtectionIncident`)
-Run **last**. This test validates that Sentinel is correctly creating incidents from Entra ID Protection alerts â€” it relies on risk events generated by the earlier tests.
+### UC#22 — ID Protection Incident (`Morgana-EntraID-IDProtectionIncident`)
+Run **last**. This test validates that Sentinel is correctly creating incidents from Entra ID Protection alerts — it relies on risk events generated by the earlier tests.
 
 ---
 

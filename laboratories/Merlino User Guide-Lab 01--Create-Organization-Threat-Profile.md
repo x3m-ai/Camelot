@@ -15,7 +15,7 @@
 3. [Step 1 -- Load a Template](#3-step-1----load-a-template)
 4. [Step 2 -- Import Data Sources](#4-step-2----import-data-sources)
 5. [Step 3 -- Run "Update Core" Runbook](#5-step-3----run-update-core-runbook)
-6. [Step 4 -- Select Threat Groups (Pick = TRUE)](#6-step-4----select-threat-groups-pick--true)
+6. [Step 4 -- Select Threat Groups (Pick = TRUE)](#6-step-4----select-threat-groups-pick-true)
 7. [Step 5 -- Run "Include Picks in Catalogue"](#7-step-5----run-include-picks-in-catalogue)
 8. [Step 6 -- Run "Update Core" and "Smart View"](#8-step-6----run-update-core-and-smart-view)
 9. [Step 7 -- Explore the Main Coverage View](#9-step-7----explore-the-main-coverage-view)
@@ -23,13 +23,12 @@
 11. [Step 9 -- Generate an Adaptive Report](#11-step-9----generate-an-adaptive-report)
 12. [Step 10 -- Explore Attack Knowledge Graph](#12-step-10----explore-attack-knowledge-graph)
 13. [Step 11 -- Analyze CrossPick Coverage Across Sheets](#13-step-11----analyze-crosspick-coverage-across-sheets)
-14. [Step 12 -- CVE Enrichment](#14-step-12----cve-enrichment)
-15. [Step 13 -- Tests & Operations (Morgana)](#15-step-13----tests--operations-morgana)
-16. [Step 14 -- IOC Management and MISP Integration](#16-step-14----ioc-management-and-misp-integration)
-17. [Step 15 -- AI-Powered Analysis](#17-step-15----ai-powered-analysis)
-18. [Anacleto -- Contextual Documentation Assistant](#18-anacleto----contextual-documentation-assistant)
-19. [Logs Taskpane](#19-logs-taskpane)
-20. [Summary of Ribbon Layout](#20-summary-of-ribbon-layout)
+14. [Step 12 -- Tests & Operations (Morgana)](#14-step-12----tests-operations-morgana)
+15. [Step 13 -- IOC Management and MISP Integration](#15-step-13----ioc-management-and-misp-integration)
+16. [Step 14 -- AI-Powered Analysis](#16-step-14----ai-powered-analysis)
+17. [Anacleto -- Contextual Documentation Assistant](#17-anacleto----contextual-documentation-assistant)
+18. [Logs Taskpane](#18-logs-taskpane)
+19. [Summary of Ribbon Layout](#19-summary-of-ribbon-layout)
 
 ---
 
@@ -996,48 +995,46 @@ The Tests & Operations taskpane lets you interact with the Morgana Red Team serv
 
 **Prerequisite:** You must have a Morgana server configured in Settings. If you do not have one, this section can be skipped during testing.
 
-### 14.1 Synchronize Chains
+### 14.1 Check capability and sync Validation Packages (current)
 
-Click the **Synchronize Chains** button to:
+Use the current package flow from **Tests & Operations → Validation Packages**:
 
-- Read the current Catalogue entries in your workbook
-- Connect to Morgana and create **chains** -- each chain is an ordered sequence of scripts that implement the ATT&CK techniques from your Catalogue
-- Update the **Tests** sheet with all matching scripts
-- This maps your threat intelligence selections (Catalogue) to actual Red Team test procedures that can be executed
+1. **Check with Morgana** resolves the selected packages to Technique/Family/
+   Variant capability counts. It is read-only: 0 Chains, 0 Campaigns, 0 Plans,
+   0 Tests, 0 runs.
+2. **Sync Selected with Morgana** upserts Validation Package objects only:
+   0 Chains, 0 Campaigns, 0 Plans, 0 Tests, 0 runs.
+3. Open the package or resolved Technique in Morgana's **Test Intelligence**
+   workspace, inspect eligible Families/Variants, choose an Execution Strategy
+   and save an Execution Plan.
+4. Run the Plan deliberately against an authorized Agent. Merlino does not
+   auto-execute a package or create ready-to-launch tests.
 
-After synchronization, the Tests sheet will contain rows for each available Morgana script that matches your selected techniques, along with:
-- Script name and description
-- Linked ATT&CK technique codes (TCodes)
-- Executor type (PowerShell, cmd, bash, etc.)
-- Platform information
+This is the flow documented in [Assessment to Validation Packages](../docs/merlino/validation-packages.md).
+
+### 14.2 Synchronize Tests (results)
+
+After you have run validation in Morgana, **Synchronize Tests** pulls execution
+results back into the Tests sheet, including lifecycle, output, AI review and
+Detection Fabric fields when available. It does not create new tests or chains.
+
+> **Legacy path:** the older **Synchronize Chains** button can still create Chain
+> definitions from installed Scripts for existing integrations. It is not the
+> current package onboarding path. The screenshots below show that legacy
+> behaviour and are retained as historical; replace them after a real capture of
+> the current Validation Packages flow.
 
 ![Tests & Operations Taskpane](img/39-tests-operations-taskpane.png)
 
-*The Tests & Operations taskpane showing the Synchronize Chains and Synchronize Tests buttons.*
-
-### 14.2 Synchronize Tests
-
-Click the **Synchronize Tests** button to perform one of Merlino's most powerful automation steps. This single click triggers a fully automated process that:
-
-- **Creates all chains** on your Morgana server -- Merlino reads the Catalogue and Tests sheet, organizes the matching scripts into coherent chains (ordered sequences of scripts forming a kill chain), and pushes them to Morgana. Each chain is structured with the correct sequence of techniques, organized by tactic phase (Initial Access through Impact)
-- **Creates all tests** ready to be launched -- Merlino automatically generates tests on the Morgana server, pre-configured with the correct chains, target agents, and execution parameters. These tests are immediately ready to execute with a single click in the Morgana web UI
-- **Populates the Excel sheets** (Agents, Tests) with the synchronized data, giving you complete visibility into your Red Team infrastructure from within Excel
-
-This automation is transformative. What would normally take a Red Team operator **days of manual work** -- reviewing technique lists, selecting matching scripts, organizing them into chains with logical attack sequences, configuring tests with the right parameters -- Merlino accomplishes in seconds. The entire pipeline from threat intelligence analysis (your Catalogue) to ready-to-launch Red Team tests is fully automated.
-
-After synchronization, you can:
-- See all deployed agents and their status in the Agents sheet
-- Review the automatically created chains in the Morgana web UI
-- Verify the generated tests in the Tests sheet
-- Open the Morgana web UI and launch any test immediately -- everything is pre-configured and ready to go
+*Historical screenshot: legacy Tests & Operations taskpane with Synchronize Chains/Tests. The current path uses Validation Packages.*
 
 ![Tests Synchronized](img/40-tests-synchronized.png)
 
-*The Tests sheet after synchronization, showing rows of Morgana scripts with columns for Pick, TCodes, Name, Description, Executor, Platform.*
+*Historical screenshot: the legacy Chain sync populated the Tests sheet with matching scripts. This is not the current package sync.*
 
 ![Morgana Operations Ready](img/41-morgana-operations-ready.png)
 
-*The Morgana web UI showing the tests automatically created by Merlino. Each test is pre-configured with the correct chain, attack sequence, and target agents -- ready to be launched with a single click.*
+*Historical screenshot: legacy automatically created chains/tests. The current flow prepares an Execution Plan explicitly and does not auto-create tests.*
 
 ---
 

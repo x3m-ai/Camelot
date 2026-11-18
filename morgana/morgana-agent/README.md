@@ -21,7 +21,7 @@ This folder contains the **full source code** of the agent, published here for t
 3. Click **Deploy Agent**
 4. Copy the one-liner PowerShell command and run it **as Administrator** on the target machine
 
-The server generates and serves the install script automatically, pre-configured with your server URL and API key.
+The server generates and serves the install script automatically, pre-configured with your server URL and a Morgana API key. The current release has no per-agent approval queue; treat the key as a lab credential.
 
 ---
 
@@ -38,7 +38,7 @@ To deploy it on a target machine:
 
 ```powershell
 # Run as Administrator on the target machine
-.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY
+.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_MORGANA_API_KEY
 ```
 
 The agent installs itself as a Windows NT Service (`MorganaAgent`) and starts automatically.
@@ -56,7 +56,7 @@ The Morgana Server exposes the agent binary at `/download/morgana-agent.exe` —
 curl.exe -k -o morgana-agent.exe https://10.0.0.4:8888/download/morgana-agent.exe; .\morgana-agent.exe install --server https://10.0.0.4:8888
 ```
 
-> **Note:** `-k` skips TLS certificate verification — required when Morgana Server uses a self-signed certificate (default installation).
+> **Note:** `-k` skips TLS certificate verification. This is consistent with the current Agent, which also skips server-certificate verification. Use it only on a trusted lab network; prefer installing the Morgana CA and removing `-k`.
 
 The agent downloads, installs itself as a Windows NT Service (`MorganaAgent`), and starts automatically.
 It will appear in the **Agents** page of the Morgana web UI within one beacon interval (default: 30 seconds).
@@ -96,15 +96,15 @@ go build -o morgana-agent ./cmd/agent/
 
 ```powershell
 # Windows — run as Administrator on the target machine
-.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY
+.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_MORGANA_API_KEY
 
 # Optional: set check-in interval (seconds, default 30)
-.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY --interval 15
+.\morgana-agent.exe install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_MORGANA_API_KEY --interval 15
 ```
 
 ```bash
 # Linux — run as root on the target machine
-sudo ./morgana-agent install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_API_KEY
+sudo ./morgana-agent install --server https://YOUR_MORGANA_SERVER:8888 --token YOUR_MORGANA_API_KEY
 ```
 
 #### Verify the agent is running
@@ -148,9 +148,15 @@ PowerShell / cmd / bash / Python scripts
 ```
 
 - The agent **polls** the server — no inbound connections needed on the agent machine
-- All communication is HTTPS (TLS 1.2+)
-- Jobs are verified with HMAC before execution
+- HTTPS is used, but the current Agent skips server-certificate verification
+- The Agent verifies an HMAC signature only when the server supplies one; unsigned Jobs are accepted
 - Results are posted back to the server immediately after execution
+
+> **Security boundary (current 0.4.x):** enrollment is open to reachable hosts,
+> there is no approval queue, Agent token authentication is not consistently
+> enforced server-side, and the Agent does not validate the server certificate.
+> Use Morgana only on an isolated, trusted exercise network. Do not rely on
+> signed Jobs, mutual TLS or per-agent approval in this release.
 
 ---
 

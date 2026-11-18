@@ -33,8 +33,8 @@
 
 ---
 
-> ### Merlino and Morgana are free. If they help you, consider sponsoring the project.
-> *Two tools. One developer. Zero subscription fees. Your support keeps them alive.*
+> ### Merlino is free. Morgana is free to download.
+> *Community is free. Professional and Service Provider are commercial plans. Sponsorship remains optional.*
 >
 > [![Sponsor on GitHub](https://img.shields.io/badge/♥_Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/x3m-ai)
 
@@ -49,9 +49,11 @@
 | Tool | What It Does | Install |
 |---|---|---|
 | **Merlino** | Free Excel Add-in for Cyber Threat Intelligence -- MITRE ATT&CK analysis, coverage heatmaps, AI-powered threat review, CVE enrichment, MISP integration | [Install free](https://x3m.ai/merlino/) |
-| **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur certified attack packs, Purple Team automation. Free to download; see the installation guide | [Download free](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) |
+| **Morgana** | Advanced Red Team platform for adversary emulation and penetration testing — AI-powered test review, Excalibur curated attack packs, Purple Team automation. Free to download; Community is free, Professional and Service Provider are commercial plans | [Download free](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) |
 
-Together, they form a **threat intelligence and adversary emulation workflow**: analyze threats in Merlino, synchronize definitions and evidence with Morgana, and execute authorized Red Team operations from Morgana.
+Together, they form a **threat intelligence and adversary emulation workflow**: analyze threats in Merlino, synchronize capability intent and Validation Packages with Morgana, and execute authorized Red Team operations from Morgana.
+
+> **Free download is not the same as all features free.** Merlino is free. Morgana Community is free; Professional and Service Provider require an activated commercial licence. Prices and current terms are on [x3m.ai/licensing](https://x3m.ai/licensing/).
 
 ---
 
@@ -77,13 +79,13 @@ Merlino transforms Microsoft Excel into a Cyber Threat Intelligence workbench. C
 
 ### Install Merlino
 
-Merlino is currently installed as a custom Office Add-in; this repository does not claim AppSource availability. Use the official manifest URL or the Windows trusted-catalog installer described in the [Merlino User and Administrator Manual](merlino/README.md#5-install-merlino).
+Merlino is distributed through the Microsoft Marketplace and installed from inside Excel: open Excel, open the add-ins / Microsoft Marketplace, search for **Merlino** and check the publisher **X3M.AI LTD**, then select **Add**. No download or BAT installer is required. See the [Merlino User and Administrator Manual](merlino/README.md#5-install-merlino) for details and the [official listing](https://marketplace.microsoft.com/en-us/product/wa200010289).
 
 **[Merlino Portal](https://x3m.ai/merlino/)**
 
 Requirements:
-- Excel 2016 or later, Microsoft 365 Excel Desktop, or Excel on the web where tenant policy permits custom add-ins
-- HTTPS access to the official Merlino deployment
+- Microsoft Excel with access to the add-ins / Microsoft Marketplace; some tenants block the Store
+- An organisation that allows Marketplace add-ins
 - Additional approved connectivity only for the optional imports, Morgana, MISP, or AI features in use
 
 ### Documentation
@@ -110,9 +112,9 @@ Morgana operates as a three-tier execution platform:
 |---|---|
 | **Server** | Python-based C2 server managing agents, chains, tests, and Test Intelligence |
 | **Agent** | Lightweight OS service (Windows NT Service / Linux systemd) deployed on target machines |
-| **Excalibur Packs** | Certified adversary emulation script libraries mapped to MITRE ATT&CK tactics |
+| **Excalibur Packs** | Curated adversary emulation script libraries mapped to MITRE ATT&CK tactics |
 
-The core product surface is **Test Intelligence**: server organizes executable content into **Technique → Behavior Class → Test Family → Test Variant**, lets operators choose **what** to validate with an **Execution Strategy** (Representative Calibration, Smart Sample, All Variants, Custom Selection), records it as a reproducible **Execution Plan**, and runs one **Test Instance** per selected Variant. See the [Test Intelligence Guide](https://github.com/x3m-ai/Morgana/blob/master/docs/TEST_INTELLIGENCE_GUIDE.md).
+The core product surface is **Test Intelligence**: server organizes executable content into **Technique → Behavior Class → Test Family → Test Variant**, lets operators choose **what** to validate with an **Execution Strategy** (Representative Calibration, Smart Sample, All Variants, Custom Selection), records it as a reproducible **Execution Plan**, and runs one **Test Instance** per selected Variant. See the [Test Intelligence and Validation Packages guide](docs/morgana/test-intelligence.md).
 
 ### How Camelot, Merlino, and Morgana divide ownership
 
@@ -135,35 +137,35 @@ Morgana integrates cutting-edge AI directly into the Red Team workflow:
 - **AI-driven scenario planning** — Combined with Merlino's AI Assistant, teams can generate full Red Team operation plans based on threat intelligence and MITRE ATT&CK coverage gaps
 - **Intelligent Reports** — An optional Report Agent analyses a selected Test scope and produces evidence-referenced findings, limitations, and retest criteria
 
-### Free to download
+### Free to download, commercially licensed plans
 
-Morgana is free to download from Camelot. Get the Windows installer and documentation without requesting access — no contact or founder approval is required to obtain the software. Morgana runs on Windows and Linux, both stable.
+Morgana is free to download from Camelot. The **Community** plan is free; **Professional** and **Service Provider** are commercial plans purchased on [x3m.ai/licensing](https://x3m.ai/licensing/). Free download does not mean every feature is free: the active plan is determined by the licence you activate. See [Activate your licence](morgana/README.md#55-activate-your-licence).
 
-> **Download Morgana:** on Windows run the installer `Morgana-Server-Setup.exe` from the [Install directory](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install), or see the [installation guide](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) for the exact steps and prerequisites. On Linux install the server from source per the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
+> **Download Morgana:** on Windows run the installer `Morgana-Server-Setup.exe` from the [Install directory](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install), or see the [installation guide](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) for the exact steps and prerequisites. The exact candidate version, SHA-256, signature and download URLs are in the [release manifest](https://github.com/x3m-ai/Camelot/blob/main/morgana/Install/release-manifest.json). The Camelot distribution is the Windows installer; Linux server packages are not published in Camelot. Contact support@x3m.ai to confirm the current Linux server availability and approved procedure.
 
 Responsible use still matters: **Morgana must only be used for authorised Purple Team and Red Team operations** on systems where testing has explicit written approval. It must never be used for unauthorised access, offensive activity, or testing against systems without permission.
 
 ### What Morgana Delivers
 
-- **Adversary emulation** — Execute certified attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
+- **Adversary emulation** — Execute curated attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
 - **Penetration testing workflows** — Repeatable, evidence-based test execution with full audit trails and AI-generated analysis
-- **Purple Team integration** — Merlino can synchronize Test rows and TCodes with Morgana, where matching Scripts and generated Chain definitions support authorized execution
-- **Excalibur Packs** — Certified script libraries covering real-world attack scenarios: Entra ID, Execution, Lateral Movement, Persistence, and more
+- **Purple Team integration** — Merlino can synchronize capability intent and Validation Packages with Morgana; matching Scripts become eligible Variants, and Execution Plans are prepared explicitly in Morgana. Legacy Test sync can create Chain definitions for existing integrations.
+- **Excalibur Packs** — Curated script libraries with documented provenance covering real-world attack scenarios: Entra ID, Execution, Lateral Movement, Persistence, and more. Review source and validation status before execution.
 - **Campaign management** — Group multiple tests into named campaigns, track results, and generate evidence reports
 - **Kill chain automation** — Script chains model multi-stage attack sequences from reconnaissance to impact
 
 ### The Merlino + Morgana Pipeline
 
-The real power of the X3M.AI ecosystem is the automated pipeline between intelligence and execution:
+The real power of the X3M.AI ecosystem is the pipeline between intelligence and execution:
 
 1. **Analyse** — Build your threat profile in Merlino using MITRE ATT&CK data
 2. **Prioritise** — CrossPick analysis identifies which techniques matter most for your organisation
-3. **Synchronise** — Merlino creates or updates Morgana Test records and can create Chain definitions from installed Scripts that match each TCode
-4. **Execute** — Launch controlled Red Team Tests from Morgana against an authorized Agent
+3. **Synchronise** — Merlino checks capability and syncs selected Validation Packages with Morgana. Ordinary package sync creates 0 Chains, 0 Campaigns, 0 Tests; Execution Plans are prepared explicitly in Morgana.
+4. **Execute** — Launch a deliberate Plan from Morgana against an authorized Agent
 5. **Review** — Inspect raw output and, when configured, optional AI review and Detection Fabric evidence
 6. **Synchronise results** — Refresh Merlino to retrieve current Morgana execution and detection fields
 
-**Get Morgana free** — runs on Windows and Linux (both stable). [Download the Windows installer](https://github.com/x3m-ai/Camelot/blob/main/morgana/README.md#4-install-the-morgana-server) and follow the installation guide, or use the [Linux source setup](https://github.com/x3m-ai/Morgana#installation).
+**Get Morgana** — Windows installer from Camelot; Community is free, Professional and Service Provider are commercial plans. Linux server availability is confirmed with support; Camelot does not publish a Linux package or source guide.
 
 ---
 
@@ -216,9 +218,9 @@ If you have built something with Merlino -- a useful script, a creative template
 
 <div align="center">
 
-### Merlino and Morgana are free. If they help you, consider sponsoring the project.
+### Merlino is free. Morgana is free to download.
 
-*Two tools. One developer. Zero subscription fees. Your support keeps them alive.*
+*Community is free. Professional and Service Provider are commercial plans. Sponsorship is optional.*
 
 <br>
 
@@ -235,7 +237,7 @@ If you have built something with Merlino -- a useful script, a creative template
 
 <br>
 
-*No subscription. No paywall. Pay what you think it's worth.*
+*Sponsorship is optional. It does not change plan entitlements.*
 
 </div>
 
@@ -252,7 +254,7 @@ For partnership inquiries or enterprise collaboration, contact us at **support@x
 This repository (documentation and community content) is licensed under the [MIT License](LICENSE).
 
 - **Merlino Add-in** is free, no registration, distributed under its own EULA
-- **Morgana** is free to download from Camelot; distributed under its own EULA. Use only for authorised operations.
+- **Morgana** is free to download from Camelot; Community is free, while Professional and Service Provider require a paid licence. Distributed under its own EULA. Use only for authorised operations.
 
 ---
 

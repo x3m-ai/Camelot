@@ -67,7 +67,8 @@
       }
     ],
     "env_port_var": "MODBUS_PORT",
-    "env_host_var": "MODBUS_HOST"
+    "env_host_var": "MODBUS_HOST",
+    "env_update_interval_var": "UPDATE_INTERVAL"
   },
   "install": {
     "strategy": "uv-sync",
@@ -80,9 +81,23 @@
     "commands": [
       "uv",
       "run",
-      "modbus-mock-server"
-    ]
+      "python",
+      "morgana_modbus_mock_compat.py"
+    ],
+    "notes": "Starts via the Morgana compatibility shim, not the upstream module entry point. The pinned upstream mock cannot bind its datastore on any pymodbus release inside its own declared range (pymodbus>=3.5,<4); the shim compensates and leaves the upstream file unmodified. See pymodbus_pin."
   },
+  "runtime_pins": {
+    "pymodbus": "3.12.1",
+    "reason": "Lowest measured release where the upstream simulation loop and the Modbus datastore both work. pymodbus>=3.13 raises TypeError('0 <= address < 65535') because ModbusSequentialDataBlock now subtracts 1 from the address and no longer exposes setValues/getValues."
+  },
+  "known_upstream_defects": [
+    {
+      "id": "modbus-mock-pymodbus-incompatible",
+      "symptom": "TypeError 0 <= address < 65535 at build_context(), or AttributeError 'dict' object has no attribute 'async_getValues' on every read, depending on pymodbus release.",
+      "scope": "mock device only; industriconnect-modbus-v1 Scripts use the modbus-mcp server, not the mock",
+      "workaround": "morgana_modbus_mock_compat.py + pymodbus 3.12.1 pin"
+    }
+  ],
   "stop": {
     "strategy": "terminate-process"
   },

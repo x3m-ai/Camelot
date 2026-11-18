@@ -9,7 +9,7 @@
 
 Morgana is free to download from Camelot. No access request is required to obtain the software.
 
-**Download Morgana:** Morgana runs on Windows and Linux (both stable). On Windows use the installer `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install). On Linux install the server from source per the [source installation guide](https://github.com/x3m-ai/Morgana#installation), then follow the [installation guide](../../morgana/README.md#4-install-the-morgana-server) for first-run setup.
+**Download Morgana:** the Camelot distribution is the Windows installer `Morgana-Server-Setup.exe` from the [Install folder](https://github.com/x3m-ai/Camelot/tree/main/morgana/Install). The exact candidate version, SHA-256 and signature are in the [release manifest](https://github.com/x3m-ai/Camelot/blob/main/morgana/Install/release-manifest.json). Linux server functionality exists in the product, but Camelot does not publish a Linux package or source guide; contact support@x3m.ai to confirm the current approved procedure.
 
 ---
 
@@ -17,13 +17,15 @@ Morgana is free to download from Camelot. No access request is required to obtai
 
 Morgana is a professional-grade Red Team platform that delivers:
 
-- **Adversary emulation** — Execute certified attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
+- **Adversary emulation** — Execute curated attack chains mapped to MITRE ATT&CK tactics, from Initial Access to Exfiltration
 - **Penetration testing workflows** — Repeatable, evidence-based execution with full audit trails
-- **Excalibur Packs** — Certified script libraries covering real-world attack scenarios
+- **Excalibur Packs** — Curated script libraries with documented provenance covering real-world attack scenarios
 - **Industrial Lab** — Deploy, manage, reset, and observe industrial mock devices / simulators on Agents
-- **Mobile Lab** — Provision and manage Android and iOS security test environments (emulators, simulators, physical devices) on Agents- **Drozer / MEDUSA / Frida Mobile** â€” Mobile security providers bound to Mobile Lab targets for Android application-model assessment (Drozer) and runtime instrumentation (MEDUSA, Frida Mobile)- **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
+- **Mobile Lab** — Provision and manage Android and iOS security test environments (emulators, simulators, physical devices) on Agents
+- **Drozer / MEDUSA / Frida Mobile** — Mobile security providers bound to Mobile Lab targets for Android application-model assessment (Drozer) and runtime instrumentation (MEDUSA, Frida Mobile)
+- **AI Test Review** — Automated AI analysis of each test execution: evasion assessment, execution quality, structured intelligence output
 - **Campaign management** — Group tests into named campaigns, track results, generate evidence reports
-- **Purple Team automation** — Merlino threat intelligence drives Morgana execution automatically
+- **Purple Team automation** — Merlino capability intent and Validation Packages drive explicit Morgana execution; no sync starts a Test implicitly
 
 Morgana operates as a three-tier platform:
 
@@ -83,7 +85,7 @@ Android/iOS devices, and an extensible external virtual-device architecture
 2. **Templates** tab — deploy a lab (e.g. "Android Security Lab — Clean AVD").
 3. **Devices** tab — start the device and wait for `READY`.
 4. **Apps** tab — register and install a test app.
-5. **Run Compatible Scripts** â€” bind MEDUSA / Frida Mobile / Drozer procedures to the target.
+5. **Run Compatible Scripts** — bind MEDUSA / Frida Mobile / Drozer procedures to the target.
 
 Apple Simulator is available only on compatible macOS/Xcode Hosts (no false
 Windows/Linux support). Physical devices are non-destructive by default. See
@@ -115,21 +117,24 @@ does not cover every MASTG test, and Morgana does not claim it does. See
 
 ## Integration with Merlino
 
-**Merlino** is the intelligence layer — free and open to all. **Morgana** is the execution layer — free to download from Camelot, used only for authorised operations.
+**Merlino** is the intelligence layer. **Morgana** is the execution layer — free to download from Camelot, used only for authorised operations. Community is free; Professional and Service Provider are commercial plans.
 
-Once you have Morgana running, the integration with Merlino is seamless:
+Current package flow:
 
-1. In Merlino, go to **Settings** and enter your Morgana server URL and API key
-2. Build your threat profile in Merlino (import MITRE ATT&CK data, select threat groups, run CrossPick analysis)
-3. Click **Tests and Operations** > **Synchronise** to map your techniques to Morgana scripts
-4. Morgana automatically creates adversary chains and campaigns based on your threat profile
-5. Launch Red Team operations from Morgana — results flow back to Merlino in real time
-6. The AI engine reviews each test and generates structured intelligence reports
+1. In Merlino, open **Settings** and enter your Morgana server URL and API key.
+2. Build the threat profile and Catalogue (import MITRE ATT&CK data, select groups, run CrossPick analysis).
+3. Open **Tests & Operations → Validation Packages** and generate or review the candidate packages.
+4. **Check with Morgana** — read-only capability resolution. It creates 0 packages, Chains, Campaigns, Plans, Tests or runs.
+5. **Sync Selected with Morgana** — idempotent package upsert. It creates Validation Package objects only: 0 Chains, 0 Campaigns, 0 Plans, 0 Tests, 0 runs.
+6. In Morgana, open the package in Technique Intelligence, review eligible Families/Variants, choose a strategy and save an Execution Plan. Saving a plan does not execute it.
+7. Launch the Plan deliberately against an authorized Agent. Tests and Assurance flow back to Merlino.
 
-For a complete walkthrough, see **[Lab 03: Red Team Testing with Morgana](../../laboratories/Merlino%20User%20Guide-Lab%2003--Red%20Team%20Testing%20with%20Morgana%20Arsenal.md)**.
+> **Legacy path:** an older Test sync can create Chain definitions from installed Scripts. It is kept for existing integrations and is **not** the current package workflow. Do not describe it as automatic chain/campaign creation.
+
+See [Validation Packages in Merlino](../merlino/validation-packages.md) and [Morgana Test Intelligence](test-intelligence.md). For a guided exercise, see **[Lab 03: Red Team Testing with Morgana](../../laboratories/Merlino%20User%20Guide-Lab%2003--Red%20Team%20Testing%20with%20Morgana%20Arsenal.md)**.
 
 ---
 
 ## Installation
 
-Morgana is free to download and runs on Windows and Linux (both stable). See the [Morgana Install Guide](../../morgana/Install/README.md) for the Windows installer (`Morgana-Server-Setup.exe`) and the exact installation steps. For a Linux server, use the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
+Morgana is free to download. The Camelot distribution is the Windows installer; Community is free and Professional/Service Provider are commercial plans. See the [Morgana Install Guide](../../morgana/Install/README.md) for the Windows installer (`Morgana-Server-Setup.exe`) and the exact installation steps. Linux server functionality exists in the product, but Camelot does not publish a Linux package or source guide; contact support@x3m.ai to confirm the current approved procedure.

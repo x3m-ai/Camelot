@@ -44,7 +44,7 @@ This is precisely what Merlino measures in this lab.
 
 In this laboratory, you will:
 
-- Import a set of 41 real Microsoft Sentinel detection rules (exported from a production workspace) into Merlino's Catalogue
+- Import a depurated sample of 41 Microsoft Sentinel detection rules into Merlino's Catalogue (record the export date in the workbook; the sample is illustrative, not a production tenant export)
 - Run the analytical engine to map those rules against the MITRE ATT&CK techniques matrix
 - See exactly which techniques are covered by your Sentinel rules in the Techniques Coverage column
 - Use CrossPick analysis to identify which techniques are both high-priority (used by your threat groups from Lab 01) and uncovered by your current detection rules
@@ -63,7 +63,7 @@ Together, these two analyses form the core of a mature detection engineering pro
 
 ## 2. Step 1 -- Download the Sample Sentinel Rules File
 
-For this lab, we provide a sample file containing 41 real Microsoft Sentinel alert rules exported from a production workspace. These rules span multiple severity levels (High, Medium, Low) and cover a range of ATT&CK techniques including credential access, lateral movement, execution, defense evasion, and more.
+For this lab, we provide a depurated sample file containing 41 example Microsoft Sentinel alert rules (record the sample/export date in the workbook; the fixture is illustrative and contains no production tenant data). These rules span multiple severity levels (High, Medium, Low) and cover a range of ATT&CK techniques including credential access, lateral movement, execution, defense evasion, and more.
 
 **Download the sample file:**
 
@@ -229,21 +229,32 @@ The Main Coverage sheet now displays the ATT&CK techniques matrix with color-cod
 
 ### The Techniques Coverage Column
 
-Look at the **Techniques Coverage** column (TCov). This column shows the percentage of coverage for each technique:
+> **How to read coverage.** TCov is **mapping coverage from the imported
+> sample**, not proof of runtime detection. Check four layers separately:
+>
+> 1. **Mapping coverage** — does a rule in this sample declare the technique?
+> 2. **Telemetry availability** — is the required data actually collected?
+> 3. **Observed detection** — did the rule fire on a real, authorized test?
+> 4. **Prevention** — was the behaviour blocked rather than merely logged?
+>
+> A 100% mapping does not prove the rule is enabled, receives the right data, or
+> would fire. A 0% mapping does not prove that no detection exists elsewhere.
 
-- A technique with **100%** means at least one Sentinel rule explicitly maps to it
-- A technique with **0%** means no Sentinel rule covers it -- despite the fact that your threat groups use it
+Look at the **Techniques Coverage** column (TCov). This column shows the percentage of mapping coverage for each technique:
+
+- A technique with **100%** means at least one rule **in the imported sample** explicitly maps to it
+- A technique with **0%** means no rule in the imported sample maps to it, even though your threat groups use it
 
 ### The CrossPick Column
 
 The **CrossPick** column is where the real insight emerges. CrossPick shows the intersection of:
 
 1. **How many of your selected threat groups use this technique** (from Lab 01)
-2. **Whether your Sentinel rules cover it** (from this lab)
+2. **Whether your imported rule sample maps it** (from this lab)
 
-A technique with a **high CrossPick percentage and 0% Techniques Coverage** is a critical gap: it is actively used by multiple threat actors targeting your organization, and you have no Sentinel rule detecting it.
+A technique with a **high CrossPick percentage and 0% Techniques Coverage** is a priority mapping gap: it is used by multiple threat actors in your profile, and no rule in the imported sample maps to it. Validate telemetry and the actual rule before concluding that no detection exists.
 
-These are the techniques you should prioritize when building new detection rules.
+These are the techniques you should prioritize when building new detection rules or validating existing ones with a controlled test.
 
 ![img/205-main-coverage-sentinel.png](img/205-main-coverage-sentinel.png)
 *Main Coverage sheet showing Sentinel detection coverage. Green = covered, orange = gap, the CrossPick column reveals the most critical detection priorities.*
@@ -257,7 +268,7 @@ Now let's use Insights to drill deeper into individual techniques and uncover th
 ### Steps
 
 1. In the Merlino ribbon, click **Insights**
-2. On the Main Coverage sheet, click on an **orange cell** -- a technique that your threat groups use but Sentinel does not cover
+2. On the Main Coverage sheet, click on an **orange cell** -- a technique that your threat groups use but the imported sample does not map
 3. The Insights taskpane opens and shows detailed information about that technique
 
 Insights will display:
@@ -290,7 +301,7 @@ But look at the sub-techniques:
 The Sentinel rule references **T1003** (the parent technique) but does not specify which sub-techniques it actually detects. In reality, the "LSASS Credential Dumping with Procdump" rule specifically detects T1003.001 (LSASS Memory) -- but because the rule only declares T1003, Merlino correctly reports the parent as covered while showing all sub-techniques at 0%.
 
 ![img/206-insights-technique-gap.png](img/206-insights-technique-gap.png)
-*Insights on T1068 -- Exploitation for Privilege Escalation: this technique has a high CrossPick percentage (multiple threat groups from your profile use it) but zero Sentinel rules cover it. This is a critical detection gap -- high threat relevance, no detection whatsoever.*
+*Insights on T1068 -- Exploitation for Privilege Escalation: this technique has a high CrossPick percentage (multiple threat groups from your profile use it) but no rule in the imported sample maps to it. This is a priority mapping gap; validate telemetry and the actual rule before concluding there is no detection.*
 
 ![img/207-insights-subtechnique-gap.png](img/207-insights-subtechnique-gap.png)
 *Insights on T1003 (OS Credential Dumping): the parent technique appears covered, but all sub-techniques are at 0% because the Sentinel rule only declares the high-level T1003 code.*
@@ -351,7 +362,7 @@ Merlino makes this problem visible. Without this analysis, the gap remains hidde
 
 | Step | What You Did | What It Produced |
 |---|---|---|
-| Downloaded sample file | Obtained 41 real Sentinel rules from a production workspace | A Merlino Catalogue JSON file ready for import |
+| Downloaded sample file | Obtained the 41-rule depurated example sample (record the export date) | A Merlino Catalogue JSON file ready for import |
 | Cleared the Catalogue | Removed Lab 01 group entries to isolate Sentinel analysis | An empty Catalogue with intact table structure |
 | Imported Sentinel rules | Loaded 41 rules with ATT&CK technique mappings | A populated Catalogue with detection rule data |
 | Ran Update Core + Smart View | Processed rules through the analytical engine | Updated coverage percentages and color-coded heatmap |

@@ -109,8 +109,8 @@ Docs in `docs/morgana/` and `docs/merlino/` are end-user facing:
 
 - **NO EMOJI** in Markdown files (consistency with product repos).
 - Keep lab guides practical and reproducible — a community member should be able to follow them independently.
-- Reference Morgana installer via: `https://github.com/x3m-ai/Morgana/releases/latest`
-- Reference Merlino Add-in via: `https://merlino-addin.x3m.ai` or `https://merlino-addin.pages.dev`
+- Reference Morgana installer via: `https://github.com/x3m-ai/Camelot/tree/main/morgana/Install` and its `release-manifest.json`; do not use `x3m-ai/Morgana/releases/latest` until its assets are aligned.
+- Reference Merlino via: `https://x3m.ai/merlino/` and the manifest `https://merlino-addin.x3m.ai/manifest.xml`.
 - **NEVER commit or push** without explicit user confirmation.
 
 ## Output

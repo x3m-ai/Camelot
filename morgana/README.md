@@ -1,6 +1,6 @@
 # Morgana User and Administrator Manual
 
-> **Applies to:** Morgana 0.4.0 (27 August 2026)  
+> **Version:** current 0.4.x line. The exact candidate version, SHA-256, signature and download URLs are in [`Install/release-manifest.json`](Install/release-manifest.json). The manifest's `release_status` and `vm_acceptance` fields are authoritative: do not infer public acceptance from the version number.
 > **Audience:** Red Team operators, Purple Teams, Detection Engineers, SOC analysts, and Morgana administrators  
 > **Product status:** Free to download from Camelot. Use only in environments covered by explicit written authorization.
 
@@ -58,9 +58,17 @@ Morgana turns approved adversary behavior into repeatable, evidence-producing ex
 7. Correlate Tests with detections and review the evidence.
 8. Export a portable evidence report or generate an AI-assisted Intelligent Report.
 
-### 1.1 Current product edition
+### 1.1 Editions and licensing
 
-Morgana 0.4.0 has one installed server product. The implementation does not expose separate Community, Enterprise, or licensed feature editions. Some capabilities are optional because they depend on external services:
+Morgana is free to download. The installed server uses the same application; the active plan is determined by the licence you activate:
+
+- **Community** — free, self-managed manual adversary emulation for your own testing.
+- **Professional** — commercial plan for an organisation's internal use, with integrations, Detection Fabric, automation and advanced AI.
+- **Service Provider** — Professional capabilities plus provider operator seats and authorised customer service delivery.
+
+Community is available without a licence key. Professional and Service Provider are purchased on [x3m.ai/licensing](https://x3m.ai/licensing/) and activated under **Licensing → Activate License** with the licence-owner email and activation key from the purchase email. The licence-owner email can differ from the Morgana login; the activation key is stable across renewals. See [5.5 Activate your licence](#55-activate-your-licence).
+
+Some capabilities are optional because they depend on external services:
 
 - Excalibur catalog access requires HTTPS access to the public Camelot GitHub content.
 - Defender XDR ingestion requires a Microsoft Entra application and Microsoft Graph permissions.
@@ -145,8 +153,9 @@ The program files are installed below `%ProgramFiles%\Morgana Server` on a stand
 - **Windows:** 64-bit Windows capable of running the Morgana installer and a Windows service,
   with local administrator rights for installation, service changes, firewall changes, and
   certificate trust.
-- **Linux:** a Linux host running the server from source (Python venv + systemd); there is no
-  packaged Linux installer. See the [source installation guide](https://github.com/x3m-ai/Morgana#installation).
+- **Linux:** server functionality exists in the product, but Camelot does not publish a Linux
+  package or source guide. Contact support@x3m.ai to confirm the current approved Linux server
+  procedure. There is no packaged Linux installer in the Camelot distribution.
 - A modern browser with JavaScript and local storage enabled.
 - TCP 8888 available, unless the installed service was explicitly configured for another port.
 - Outbound HTTPS to the services used by your deployment.
@@ -164,11 +173,11 @@ No authoritative fixed RAM or disk minimum is enforced by the current applicatio
 
 An executor must exist on the target. Selecting Python does not install Python. Platform metadata does not prevent an operator from choosing an incompatible Agent, so verify the Script before execution.
 
-Server and Agent versions are independent. The Morgana 0.4.0 source declares Agent version 0.2.0; verify the version shown in the Agents table after every deployment.
+Server and Agent versions are independent. The Morgana 0.4.x source declares Agent version 0.2.0; verify the version shown in the Agents table after every deployment.
 
 ## 4. Install the Morgana Server
 
-Morgana is free to download. Obtain the current installer from the [Install directory](Install/) — specifically `Morgana-Server-Setup.exe` — or from the [GitHub releases](https://github.com/x3m-ai/Camelot/releases/latest).
+Morgana is free to download. Obtain the current installer from the [Install directory](Install/) — specifically `Morgana-Server-Setup.exe`. The [release manifest](Install/release-manifest.json) records the candidate version, SHA-256 and signature. The GitHub `releases/latest` page is not a supported installer source for this distribution until its assets are aligned.
 
 ### 4.1 Pre-install checklist
 
@@ -183,7 +192,7 @@ Morgana is free to download. Obtain the current installer from the [Install dire
 
 1. Sign in to Windows with an account that can elevate locally.
 2. Right-click `Morgana-Server-Setup.exe` and select **Run as administrator**.
-3. Review the license and installation destination.
+3. Review the customer terms, select the acceptance checkbox, and choose the installation destination. The wizard does not continue without the checkbox.
 4. Optionally select the desktop Dashboard shortcut.
 5. Complete the wizard and wait for the post-install configuration to finish.
 6. Keep the final page open long enough to record the bootstrap sign-in information in an approved password vault. This manual does not reproduce it.
@@ -202,7 +211,7 @@ The installer performs these actions:
 - Trusts the Morgana root CA on the server host.
 
 > [!IMPORTANT]
-> The account and password shown by the 0.4.0 installer are fixed bootstrap values, not per-installation credentials. Change the password locally before allowing remote access. The installer finish page also contains an obsolete instruction to download Atomic Red Team content with **Refresh Canary Scripts**. Ignore it; the current workflow is **Scripts > Excalibur Script Packs > Refresh catalog**.
+> The account and password shown by the 0.4.x installer are fixed bootstrap values, not per-installation credentials. Change the password locally before allowing remote access. The installer finish page also contains an obsolete instruction to download Atomic Red Team content with **Refresh Canary Scripts**. Ignore it; the current workflow is **Scripts > Excalibur Script Packs > Refresh catalog**.
 
 > [!WARNING]
 > A broad antivirus exclusion weakens host protection. Use a dedicated lab server, restrict access to the directory, and confirm the exclusion against organizational policy. Do not add exclusions to production endpoints merely to make an exercise succeed.
@@ -301,7 +310,20 @@ If the server address changes and is not in the current certificate:
 5. Start the service so it issues a new leaf certificate from the existing Morgana CA.
 6. Verify the new SAN list and reconnect.
 
-There is no automatic certificate-renewal UI in 0.4.0. Monitor expiry through your normal certificate-management process.
+There is no automatic certificate-renewal UI in 0.4.x. Monitor expiry through your normal certificate-management process.
+
+### 5.5 Activate your licence
+
+Morgana is free to download. Community is available without a licence key; Professional and Service Provider are commercial plans purchased on [x3m.ai/licensing](https://x3m.ai/licensing/).
+
+After signing in:
+
+1. Open **Licensing → Activate License**.
+2. Enter the **licence-owner email** and the **activation key** from the purchase email.
+3. Open the approval email sent to the licence owner and confirm the intended installation.
+4. Return to Morgana and check that the purchased plan is active.
+
+The licence-owner email identifies the owner of the contract; it can differ from the email used to sign in to Morgana. The activation key is stable across renewals. If the licence is not active, check the installation approval and contact support@x3m.ai.
 
 ## 6. Authentication, Users, and API Keys
 
@@ -336,7 +358,7 @@ To create a local user:
 
 ### 6.2 Current identity limitations
 
-These limitations are important in 0.4.0:
+These limitations are important in 0.4.x:
 
 - Roles and workspace memberships are stored, but most product routes accept any valid browser JWT or API key without enforcing those role distinctions. Do not treat `reader` as a complete technical read-only boundary.
 - The visible Enabled checkbox sends `is_enabled` through the generic user-update route, which ignores that field. Separate enable/disable API routes work, but the current edit dialog does not call them.
@@ -428,9 +450,9 @@ Dashboard counts are operational summaries, not Detection Fabric assurance resul
 
 ## 8. Agents
 
-### 8.1 Agent security model in 0.4.0
+### 8.1 Agent security model in 0.4.x
 
-Agent enrollment is open to any host that can reach the registration endpoint. The current Agent also skips server-certificate verification, Agent API tokens are empty, Agent poll/result/heartbeat requests are not authenticated, and Jobs are dispatched without an HMAC signature. The Agent-side Console WebSocket is also accepted without Agent authentication. There is no approval queue.
+Agent enrollment is open to any host that can reach the registration endpoint. The current Agent skips server-certificate verification; Agent token authentication is not a reliable security boundary; Agent poll/result/heartbeat requests are not consistently authenticated. The Agent verifies an HMAC signature only when the server supplies one, and Jobs are commonly dispatched without a signature. The Agent-side Console WebSocket is also accepted without Agent authentication. There is no approval queue.
 
 > [!CAUTION]
 > Deploy Agents only on an isolated, trusted exercise network. Restrict TCP 8888 by source IP and network segment. Do not rely on Agent approval, mutual TLS, certificate pinning, or signed Jobs in this release; those controls are unavailable.
@@ -457,21 +479,21 @@ Verify on the target:
 Get-Service -Name MorganaAgent
 ```
 
-The 0.4.0 UI generates this command shape:
+The 0.4.x UI generates this command shape:
 
 ```powershell
 curl.exe -k -o morgana-agent.exe https://<SERVER_HOST>:8888/download/morgana-agent.exe
-.\morgana-agent.exe install --server https://<SERVER_HOST>:8888
+.\morgana-agent.exe install --server https://<SERVER_HOST>:8888 --token <MORGANA_API_KEY>
 ```
 
-The `-k` option disables download certificate validation. Prefer removing it after trusting the Morgana CA; otherwise verify the server address and binary through an approved channel before execution. A deploy token is not required or validated in 0.4.0.
+The `-k` option disables download certificate validation, and the current Agent also skips server-certificate verification. Prefer removing `-k` after trusting the Morgana CA; otherwise verify the server address and binary through an approved channel before execution. The CLI requires a token argument; the UI supplies the Morgana API key. Treat it as a lab credential, not a per-agent security boundary or a signed-job guarantee.
 
 Windows Agent locations:
 
 | Item | Installed location |
 |---|---|
 | Binary and configuration | `%ProgramData%\Morgana\agent` |
-| Agent-token file | `%ProgramData%\Morgana\agent\.agent_token` (empty under current open enrollment) |
+| Agent-token file | `%ProgramData%\Morgana\agent\.agent_token` (registration token; protect it and do not share it) |
 | Work area | `%ProgramData%\Morgana\work` |
 | Agent log | `%ProgramData%\Morgana\logs\agent.log` |
 | Execution audit | `%ProgramData%\Morgana\logs\execution.log` |
@@ -497,7 +519,7 @@ journalctl -u morgana-agent --no-pager -n 100
 
 Expected result: `morgana-agent.service` is enabled and active, and the Agent appears as Linux in the table.
 
-The 0.4.0 UI generates this command shape:
+The 0.4.x UI generates this command shape:
 
 ```bash
 curl -ksSL 'https://<SERVER_HOST>:8888/download/morgana-agent' -o morgana-agent
@@ -569,7 +591,7 @@ If no native window appears, confirm an interactive Windows session exists on th
 
 ### 8.8 Update an Agent
 
-There is no in-place Agent update action in 0.4.0. To replace an Agent binary:
+There is no in-place Agent update action in 0.4.x. To replace an Agent binary:
 
 1. Confirm no Test or Console session is active.
 2. Use **Uninstall** in the Agent row to display target-specific removal commands.
@@ -674,12 +696,12 @@ Resolution order at execution is:
 3. Pack default value.
 4. Unresolved placeholder left literally in the command, with a warning in the server log.
 
-Script assignment values are applied to direct Script runs and standard scheduled Script runs. In 0.4.0, Script nodes executed inside a Chain or Campaign do not pass the Script identity into tag substitution; they use the global Tag Definition value or pack default instead. Set and verify a non-sensitive global/default value before composite execution, or run the Script directly when a per-Script override is required.
+Script assignment values are applied to direct Script runs and standard scheduled Script runs. In 0.4.x, Script nodes executed inside a Chain or Campaign do not pass the Script identity into tag substitution; they use the global Tag Definition value or pack default instead. Set and verify a non-sensitive global/default value before composite execution, or run the Script directly when a per-Script override is required.
 
 Runtime Tag substitution is applied to the main command, not to `cleanup_command`. Do not put `#{tag_key}` placeholders in cleanup. Use a reviewed literal cleanup value or an execution path whose legacy `input_args` explicitly supplies that placeholder.
 
 > [!WARNING]
-> Runtime Tag values are stored in the Morgana database and are visible to authorized operators. Pack `sensitive` metadata does not provide a secret vault or guaranteed masking in 0.4.0. Do not store production passwords, tokens, or private keys in Tags.
+> Runtime Tag values are stored in the Morgana database and are visible to authorized operators. Pack `sensitive` metadata does not provide a secret vault or guaranteed masking in 0.4.x. Do not store production passwords, tokens, or private keys in Tags.
 
 The Script editor does not expose the older `input_args` structure. API callers can send input overrides, but Tags are the current UI workflow for runtime values.
 
@@ -796,7 +818,7 @@ For a package with a stable `package_id`, reinstallation:
 
 Replacement is destructive to history linked to the unmodified Script rows: their Jobs, Tests, and Detection Fabric relationships are deleted before replacement. Export evidence and create a database backup before updating a pack.
 
-Script replacement and Chain creation are committed in separate phases. An import can therefore leave updated Scripts and only some Chains when errors occur; it is not an all-or-nothing transaction. Chain references are resolved within the imported `package_id`, so Excalibur, ART, Stockpile, and future source adapters use the same package-scoped behavior. Review every import report.
+Script replacement and Chain creation are committed in separate phases. An import can therefore leave updated Scripts and only some Chains when errors occur; it is not an all-or-nothing transaction. Chain references are resolved within the imported `package_id`, so Excalibur, ART, Stockpile, and future source adapters use the same package-scoped behavior. Review every import report. ART and Stockpile packs currently carry `chains: []`; only scenario packs with intentional ordering contain Chains.
 
 Deleting a pack is not a distinct UI operation. Delete its Scripts/Chains only after a backup and impact review.
 
@@ -812,7 +834,7 @@ Stockpile is used only as an upstream content source. Camelot converts safe, dir
 - Payload-dependent, build-only, and unsupported executor variants are skipped and reported.
 - Stockpile ability UUIDs and the exact upstream commit are retained in package metadata.
 
-Generated full-tactic Chains are convenience collections, not authentic CALDERA adversary profiles. Review the [Stockpile conversion and update guide](excalibur/stockpile/README.md) before installation.
+Stockpile abilities are published as variant libraries (`chains: []`). Do not expect generated full-tactic Chains in the current catalog; use Test Intelligence to select eligible Variants and build an Execution Plan. Review the [Stockpile conversion and update guide](excalibur/stockpile/README.md) before installation.
 
 ### 10.6 Configure required pack Tags
 
@@ -888,6 +910,11 @@ Use the **Industrial Lab** page to deploy the companion mock devices, or point t
 Industrial Lab is Morgana's provider-agnostic subsystem for deploying, managing,
 resetting, observing, and destroying industrial mock devices and simulators on
 Morgana Agents acting as **Lab Hosts**.
+
+> **Plan requirement:** creating or changing Industrial Lab services and provider
+> operations is a **Professional** capability (`pro.lab.industrial`). Community
+> can read/export existing evidence but does not include new Industrial Lab
+> operations. Confirm the active plan in **Licensing** before starting a lab.
 
 The three planes are cleanly separated:
 
@@ -996,7 +1023,7 @@ Deleting a definition also deletes all its assignments.
 
 ### 12.2 Current creation limitation
 
-The standalone **+ New Tag** form is not reliably wired to its current fields in 0.4.0. Use the Script **+ Add Tag** picker to auto-create runtime definitions, or use the authenticated Tags API. Existing non-system definitions can be edited and deleted in the UI.
+The standalone **+ New Tag** form is not reliably wired to its current fields in 0.4.x. Use the Script **+ Add Tag** picker to auto-create runtime definitions, or use the authenticated Tags API. Existing non-system definitions can be edited and deleted in the UI.
 
 ### 12.3 Workspaces
 
@@ -1008,7 +1035,7 @@ os=windows AND env=lab
 
 Supported selector syntax includes `AND`, `OR`, `NOT`, parentheses, bare labels, and `key=value` tokens. The authenticated Tags API can create, edit, delete, activate, clear, and evaluate Workspace records, and allows only one globally active record.
 
-The current web page contains Workspace controls, but their JavaScript handlers are absent. Creating, activating, clearing, or applying a Workspace is not a supported UI workflow in 0.4.0. The rest of the UI also does not apply the active record as a reliable global data filter. Use the API only for tested selector queries, not as an operational or security boundary.
+The current web page contains Workspace controls, but their JavaScript handlers are absent. Creating, activating, clearing, or applying a Workspace is not a supported UI workflow in 0.4.x. The rest of the UI also does not apply the active record as a reliable global data filter. Use the API only for tested selector queries, not as an operational or security boundary.
 
 > [!WARNING]
 > Workspaces are filtering metadata, not a security boundary. Typed Agent assignment is not available in the current UI, and route authorization does not consistently enforce workspace membership.
@@ -1207,7 +1234,7 @@ Parallel branches can contend for the same Agent and SQLite writes. Start with t
 4. Confirm.
 5. Review **Recent Executions > Log**.
 
-Campaign states are `running`, `completed`, or `failed`. In 0.4.0, `completed` means the Campaign walker finished; nested Chain or Script failures may still be present. Always inspect the nested log and Tests page.
+Campaign states are `running`, `completed`, or `failed`. In 0.4.x, `completed` means the Campaign walker finished; nested Chain or Script failures may still be present. Always inspect the nested log and Tests page.
 
 ### 15.5 Lifecycle operations
 
@@ -1225,6 +1252,11 @@ The current Campaign walker does not populate the `campaign_id` field on nested 
 ## 16. Detection Fabric
 
 Detection Fabric ingests detection-system evidence into a canonical local model, correlates it with Tests, and records traceable Test-to-detection relationships.
+
+> **Plan requirement:** new connector creation, telemetry ingestion, correlation,
+> AI detection validation and bulk validation are **Professional** capabilities
+> (`pro.detection.*`). Community includes reading and exporting already generated
+> evidence; it does not grant new Fabric processing.
 
 ### 16.1 Data model
 
@@ -1250,7 +1282,7 @@ Open **Adapters** to see:
 - Universal folder adapters and run history.
 - Recent Detections and Test associations.
 
-The only built-in vendor API adapter in 0.4.0 is **Microsoft Defender XDR**.
+The only built-in vendor API adapter in 0.4.x is **Microsoft Defender XDR**.
 
 ### 16.3 Configure Defender XDR
 
@@ -1290,7 +1322,7 @@ Review fetched, inserted, updated, and error counts. Zero inserted can be valid 
 
 ### 16.5 Universal Morgana JSON adapter
 
-The saved Universal adapter workflow in 0.4.0 supports local folder ingestion of Morgana normalized JSON only.
+The saved Universal adapter workflow in 0.4.x supports local folder ingestion of Morgana normalized JSON only.
 
 1. Open **Adapters > Universal Adapter (Morgana JSON)**.
 2. Select **+ Add Universal Adapter**.
@@ -1302,7 +1334,7 @@ The saved Universal adapter workflow in 0.4.0 supports local folder ingestion of
 
 The folder is non-recursive and scanned about every ten seconds. Valid successfully imported files are deleted. Keep the producer's authoritative copy elsewhere.
 
-Use **Test Parser / Normalizer** to preview a sample without storing it. Although parser components exist for formats such as CEF, LEEF, ECS, OCSF, OpenTelemetry, NDJSON, syslog, CSV, and raw JSON, the current saved folder-adapter UI forces `morgana_json`; those other live ingestion formats are not supported workflows in 0.4.0.
+Use **Test Parser / Normalizer** to preview a sample without storing it. Although parser components exist for formats such as CEF, LEEF, ECS, OCSF, OpenTelemetry, NDJSON, syslog, CSV, and raw JSON, the current saved folder-adapter UI forces `morgana_json`; those other live ingestion formats are not supported workflows in 0.4.x.
 
 Run History shows received, accepted, rejected, duplicate, and error counts. Parse/Validation Errors shows line, type, message, and a fragment.
 
@@ -1460,6 +1492,12 @@ See the Morgana help and `docs/ASSESSMENT_SNAPSHOTS.md` in the Morgana repositor
 
 AI is optional. It powers Script review/improvement, output analysis, Tag suggestions, Test review, Detection Agent decisions when needed, Red Team iteration, and Intelligent Reports.
 
+> **Plan requirement:** Community includes eligible execution review
+> (`core.execution_review`). Cognitive Brain and Red Agent are **Professional**
+> capabilities (`pro.ai.cognitive_brain`, `pro.ai.red_agent`); new Detection
+> Fabric AI validation is also Professional. The optional local AI Pack does not
+> change plan entitlements.
+
 ### 18.1 Configure the active provider
 
 1. Open **AI**.
@@ -1482,7 +1520,7 @@ Leaving an API-key field blank preserves its saved value. The UI masks stored pr
 | GitHub Copilot | Model | GitHub CLI/device-flow token and eligible subscription | Uses Copilot chat-completions service |
 | Azure OpenAI | Resource base URL, API key, Deployment Name, API Version | `api-key` header | Deployment Name is authoritative, not the marketing model name |
 | Microsoft Foundry | Endpoint ending at an OpenAI-compatible v1 base, API key, Deployment Name | `api-key` header | No `api-version` query parameter is added |
-| OpenAI | Chat-completions endpoint, API key, model | Bearer key | Supported by server/API and per-agent routing; omitted from the main provider selector in 0.4.0 |
+| OpenAI | Chat-completions endpoint, API key, model | Bearer key | Supported by server/API and per-agent routing; omitted from the main provider selector in 0.4.x |
 | Anthropic | Messages endpoint, API key, Claude model | `x-api-key` | Uses Anthropic Messages API |
 | Ollama | OpenAI-compatible endpoint, model | None by default | Local inference; reasoning models receive no-think handling where supported |
 | LM Studio | OpenAI-compatible endpoint, loaded model ID | None by default | Local inference; model must be loaded and local server running |
@@ -1527,7 +1565,7 @@ Morgana appends `/chat/completions` unless it is already present.
 
 ### 18.6 OpenAI direct
 
-Direct OpenAI is implemented but is not listed in the main active-provider selector in 0.4.0. Configure it through the authenticated AI provider API, or use **Custom** with the OpenAI chat-completions URL.
+Direct OpenAI is implemented but is not listed in the main active-provider selector in 0.4.x. Configure it through the authenticated AI provider API, or use **Custom** with the OpenAI chat-completions URL.
 
 Required fields are:
 
@@ -1587,6 +1625,30 @@ OpenRouter is an OpenAI-compatible gateway, so the request/response shape follow
 
 Enter the full chat-completions URL, model ID, and bearer key when required. The endpoint must accept `model`, `messages`, `max_tokens`, and `temperature`, and return assistant content under the OpenAI-compatible `choices[0].message.content` shape.
 
+### 18.11.1 Morgana AI — Local Pack
+
+The local AI capability is separate from the active cloud provider. It is
+optional and installed from **AI → Local AI Pack**.
+
+1. Sign in to the web UI and open **AI → Local AI Pack**.
+2. Select **Morgana Local AI — Qwen3.5-4B** and click **Install**.
+3. The runtime archive ships inside the installer under `<install dir>\ai-runtime\`.
+   The model weights are downloaded from the pinned upstream location or imported
+   offline when the host is air-gapped.
+4. Wait for the artifact SHA-256 verification and the `INSTALLED` state.
+5. Click **Run self-test**. A healthy result returns a structured verdict
+   (`BLOCKED`, `INCONCLUSIVE` or `ATTACK_DETECTED` with evidence). A model that
+   returns no detection evidence is downgraded to `INCONCLUSIVE`.
+
+`INSTALLED` only means the files are present and verified; it does not prove that
+inference works. Use the self-test result, not the installation badge.
+
+Hardware: CPU inference only, approximately 4 GB of RAM for the model and 6 GB
+of free disk. Weights are memory-mapped. The first online installation needs a
+route to the model host; an air-gapped installation needs the approved offline
+import. A cloud provider remains a network dependency when selected. The local
+pack does not change the active plan or grant Professional capabilities.
+
 ### 18.12 AI Agents
 
 Morgana routes five roles independently:
@@ -1632,6 +1694,10 @@ Completed Test reviews are cached unless explicitly forced. Detection Fabric reu
 ## 19. Automation Center
 
 Automation Center schedules Scripts, Chains, and Campaigns.
+
+> **Plan requirement:** creating, updating or activating recurring schedules is
+> a **Professional** capability (`pro.automation.scheduler`). Community can run
+> work manually.
 
 ### 19.1 Create a schedule
 
@@ -1759,20 +1825,55 @@ Morgana implements the API contract expected by Merlino. Historical compatibilit
 
 Expected result: Morgana returns status `ok` and its version from `/api/v2/merlino/check_status`.
 
-### 21.3 Synchronize and execute
+### 21.3 Validation Packages (current path)
 
-Depending on the Merlino workflow:
+1. Build or refresh the Assessment, Threat Profile and Catalogue in Merlino.
+2. In Merlino **Tests & Operations → Validation Packages**, review the candidate
+   packages and run **Check with Morgana**.
+3. `POST /api/v2/merlino/validation-packages/capability-check` resolves the
+   package Technique scope to Family/Variant/eligibility counts. It is read-only:
+   0 Validation Packages, 0 Chains, 0 Campaigns, 0 Plans, 0 Tests, 0 runs.
+4. **Sync Selected with Morgana** calls
+   `POST /api/v2/merlino/validation-packages/sync`. It creates or updates
+   Validation Package objects only: 0 Tests, 0 Chains, 0 Campaigns, 0 Plans,
+   0 runs.
+5. In Morgana, open the package in Technique Intelligence, review eligible
+   Families/Variants, choose an Execution Strategy and save an Execution Plan.
+   Saving a plan does not execute it.
+6. An operator launches the Plan deliberately against an authorized Agent.
+   `GET /api/v2/merlino/validation-packages/{external_id}/status` returns the
+   package progress and Assurance roll-up.
+7. `POST /api/v2/merlino/assessment/sync` is the governed Assessment envelope
+   sync; it preserves assessment/package lineage and is not an execution trigger.
 
-- `/api/v2/merlino/synchronize` creates or updates Tests, resolves the assigned Agent by hostname, and queues the first Script matching the first TCode when the row state is running.
-- `/api/v2/merlino/synchronize_morgana` creates a Chain for a Merlino Test row when missing, using all installed Scripts for its TCode, then returns Chain/Test execution evidence.
+The package flow never creates execution objects implicitly. See
+[Test Intelligence and Validation Packages](../docs/morgana/test-intelligence.md)
+and [Validation Packages in Merlino](../docs/merlino/validation-packages.md).
+
+### 21.4 Legacy Test sync (compatibility only)
+
+These routes are kept for existing integrations. They are **not** the current
+package onboarding path:
+
+- `/api/v2/merlino/synchronize` creates or updates Tests, resolves the assigned
+  Agent by hostname, and queues the first Script matching the first TCode when
+  the row state is running.
+- `/api/v2/merlino/synchronize_morgana` creates a Chain for a Merlino Test row
+  when missing, using all installed Scripts for its TCode, then returns
+  Chain/Test execution evidence.
 - `/api/v2/merlino/realtime` returns recent Test and Agent metrics.
 - `/api/v2/agents` provides the compatibility Agent list.
 
-Morgana returns AI review and Detection Fabric fields when available. A missing TCode Script produces a Chain with no executable nodes or a synchronization record without a queued Job; install or create the Script first.
+Morgana returns AI review and Detection Fabric fields when available. A missing
+TCode Script produces a Chain with no executable nodes or a synchronization
+record without a queued Job; install or create the Script first.
 
-The direct `/synchronize` path sends the saved Script command without runtime Tag substitution and does not deduplicate an existing active Job when the same row is synchronized again in `running` state. Use concrete reviewed commands on this path and avoid repeated synchronization until the current Job finishes.
+The direct `/synchronize` path sends the saved Script command without runtime Tag
+substitution and does not deduplicate an existing active Job when the same row is
+synchronized again in `running` state. Use concrete reviewed commands on this
+path and avoid repeated synchronization until the current Job finishes.
 
-### 21.4 Troubleshoot Merlino
+### 21.5 Troubleshoot Merlino
 
 - TLS error: trust the Morgana CA and use a hostname/IP in the certificate SAN.
 - HTTP 401: replace the named key in Merlino and verify it has not been revoked.
@@ -2066,7 +2167,7 @@ On a machine that also hosts the Morgana Server, do not use an Agent `--purge` o
 
 ### 27.2 Current technical limitations that affect deployment approval
 
-Morgana 0.4.0 does not currently provide:
+Morgana 0.4.x does not currently provide:
 
 - Authenticated or approved Agent enrollment.
 - Effective Agent token authentication.
@@ -2176,6 +2277,27 @@ AI is not an authorization mechanism. It can invent tools, select the wrong targ
 | Update check fails | Verify server HTTPS access to the public Camelot version manifest. Manual operation can continue. |
 | Service fails after upgrade | Review update/service logs, verify executable and data ACLs, and restore the tested backup or previous approved installer. |
 
+### 28.7 Contact support from the product
+
+Open the **Support** form from the Morgana web UI (Help/Support area). The form
+is available even when the licence is expired or not yet activated.
+
+| Field / option | Notes |
+|---|---|
+| Email | Used as the reply address; required. |
+| Name / organisation | Optional context. |
+| Category | Technical issue, licensing/payments, question or suggestion. |
+| Subject / description | Required; bounded length. |
+| Diagnostics | Optional product version, OS and plan context. Do not include passwords, keys or customer data. |
+| Images | Up to 3 PNG/JPEG/WebP files, 5 MB each and 10 MB total. |
+
+The request is sent to the central support transport and delivered to
+support@x3m.ai with the requester's email as Reply-To. A confirmation shown by
+the UI means the central endpoint accepted the request; it does not by itself
+prove inbox delivery or a resolution time. If the support transport is not
+configured or unreachable, email **support@x3m.ai** directly. The website
+Contact form is a separate flow.
+
 ## 29. FAQ
 
 ### Is Morgana safe to expose through a public reverse proxy?
@@ -2200,7 +2322,7 @@ Not through the current API/UI. Stop initiating new work, isolate the target if 
 
 ### Can I approve Agents before they execute?
 
-No. There is no approval state in 0.4.0. Network allowlisting is mandatory.
+No. There is no approval state in 0.4.x. Network allowlisting is mandatory.
 
 ### Are Tags a password vault?
 
@@ -2212,7 +2334,7 @@ No. Excalibur is the native package model. Some community Excalibur-format packs
 
 ### Can the server run on Linux?
 
-Yes. The server runs on Windows and Linux, both stable. The Windows installer is `Morgana-Server-Setup.exe`; on Linux the server is installed manually from source (see the [source installation guide](https://github.com/x3m-ai/Morgana#installation)).
+The server supports Windows and Linux. The Camelot distribution is the Windows installer `Morgana-Server-Setup.exe`; Camelot does not publish a Linux package or source guide. Contact support@x3m.ai to confirm the current approved Linux server procedure.
 
 ### Can I update Agents from the server?
 
@@ -2232,7 +2354,7 @@ Campaign completion currently records that orchestration finished. Inspect neste
 
 ## 30. Accessibility and Keyboard Use
 
-Morgana 0.4.0 has no published keyboard-shortcut map or accessibility conformance statement.
+Morgana 0.4.x has no published keyboard-shortcut map or accessibility conformance statement.
 
 - Use standard browser `Tab` and `Shift+Tab` navigation for native controls.
 - `Enter` submits many focused form actions; `Escape` closes some, but not all, modals.
@@ -2274,4 +2396,4 @@ Operators who require assistive technology should validate critical workflows in
 
 ---
 
-Morgana is developed by [X3M.AI Ltd](https://x3m.ai). Product behavior in this manual was verified against the Morgana 0.4.0 UI, registered server routes, models, configuration, Agent implementation, installer, and lifecycle scripts current on 27 August 2026.
+Morgana is developed by [X3M.AI Ltd](https://x3m.ai). Product behavior in this manual was checked against the current 0.4.x source, registered server routes, models, configuration, Agent implementation and lifecycle scripts on 10 November 2026. The exact build version, SHA-256 and signature are in the release manifest. Browser, Excel, Outlook and clean-VM behavior remain subject to the acceptance tests.

@@ -4,6 +4,11 @@ Mobile Lab is Morgana's provider-agnostic subsystem for provisioning and
 managing mobile security test environments: Android emulators, Apple iOS
 Simulators, physical devices, and future external virtual-device providers.
 
+> **Plan requirement:** the integrated Mobile Lab lifecycle is a **Professional**
+> capability (`pro.lab.mobile`). Community can use the published content and
+> read/export existing evidence, but does not include new Mobile Lab lifecycle
+> operations. Confirm the active plan in **Licensing**.
+
 ## Content Plane (this repository)
 
 | Path | Purpose |

@@ -319,6 +319,39 @@ def rename_placeholders(text: str, arg_rename: dict[str, str]) -> str:
     return text
 
 
+# Upstream `type` values that identify exactly ONE resource role.
+#
+# `Path` is deliberately ABSENT. Upstream uses Path for input files, cache
+# directories and destinations alike, so mapping it to "input_file" would make
+# Morgana report a false "file not found" on every directory argument. Anything
+# not listed here keeps its declared type as provenance and leaves the role
+# unspecified, which is the honest answer.
+_DECLARED_TYPE_ROLES = {
+    "filepath": "input_file",
+    "file_path": "input_file",
+    "infile": "input_file",
+    "directorypath": "input_directory",
+    "directory": "input_directory",
+    "folder": "input_directory",
+    "executable": "executable",
+    "executablepath": "executable",
+    "binary": "executable",
+}
+
+
+def role_from_declared_type(declared_type: str) -> str | None:
+    """Map an upstream declared type to a resource role only when unambiguous.
+
+    Returns None when the type does not identify a single role. Callers must
+    preserve the original type either way - role and type are different facts.
+    """
+    if not declared_type:
+        return None
+    key = declared_type.strip().lower().replace("-", "_").replace(" ", "_")
+    return _DECLARED_TYPE_ROLES.get(key)
+
+
+
 def parse_atomic_file(yaml_path: Path) -> dict | None:
     with open(yaml_path, encoding="utf-8", errors="replace") as f:
         try:
@@ -379,7 +412,16 @@ def convert_atomic_test(
         arg_rename[arg_name] = new_key
 
         default_val = str(arg_info.get("default", "")) if arg_info.get("default") is not None else ""
-        arg_entries.append({
+        # GAIA-AGENT-PREREQ: preserve the UPSTREAM declared type verbatim.
+        #
+        # Upstream `type` is provenance, not a resolved role. `Path` alone does
+        # not say whether the value is an input file, an output file, a
+        # directory or an executable - conflating the two produced exactly the
+        # ambiguity this feature exists to remove. We therefore carry `type`
+        # unchanged and leave `resource_role` unset (unspecified) unless the
+        # upstream type is unambiguously one specific role.
+        declared_type = str(arg_info.get("type", "") or "").strip()
+        entry = {
             "key": new_key,
             "label": arg_name.replace("_", " ").title(),
             "description": truncate(str(arg_info.get("description", "")), 200),
@@ -387,7 +429,13 @@ def convert_atomic_test(
             "example": default_val,
             "sensitive": False,
             "required": False,
-        })
+        }
+        if declared_type:
+            entry["type"] = declared_type
+            role = role_from_declared_type(declared_type)
+            if role:
+                entry["resource_role"] = role
+        arg_entries.append(entry)
 
     command = rename_placeholders(raw_command.strip(), arg_rename)
     cleanup = rename_placeholders(raw_cleanup.strip(), arg_rename) if raw_cleanup.strip() else ""

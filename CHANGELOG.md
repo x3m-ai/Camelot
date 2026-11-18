@@ -2,6 +2,45 @@
 
 All notable releases and updates for the X3M.AI ecosystem are documented here.
 
+## Unreleased — Public documentation alignment (10 November 2026)
+
+Documentation-only alignment; no product behavior or release acceptance is
+claimed by this entry.
+
+### Changed
+- Licensing language: Merlino is free; Morgana is free to download, Community is
+  free, Professional and Service Provider are commercial plans. Removed blanket
+  “zero subscription fees” / “no paywall” claims.
+- Added plan prerequisites from the licensing registry for Industrial Lab,
+  Mobile Lab, Detection Fabric, Automation Center and AI capabilities.
+- Added the public **Assessment → Validation Packages → Execution Plan → Test →
+  Assurance** guide and the **Test Intelligence** guide; linked them from the
+  Morgana and Merlino manuals.
+- Distinguished the current package sync (0 Chains/Campaigns/Tests/Plans/runs)
+  from the legacy Test sync that can create Chain definitions.
+- Added the **Morgana AI — Local Pack** install/self-test section and the
+  in-product **Support** form section.
+- Updated Excalibur counts from `catalog.json` (catalog updated 2026-09-07):
+  335 packages, 28,272 scripts, 274 chains. ART and Stockpile are variant
+  libraries with `chains: []`; removed the old 1,616/231 chain figures.
+- Corrected installation/security wording: Defender exclusion is a scoped
+  exception, not a universal requirement; Agent certificate verification and
+  signed Jobs are not guarantees in the current 0.4.x line.
+- Corrected the Merlino quick start to use the custom add-in/trusted-catalog
+  path; removed the unsupported “search Get Add-ins” instruction.
+- Replaced private-repository links with public Camelot/website destinations;
+  labelled historical setup/release documents as historical.
+- Updated the release-agent/copilot instructions to the current build/publish
+  pipeline and relative public metadata paths.
+
+### Found during the audit
+- The staged build metadata (`release.json`/`release-manifest.json`/README)
+  reports `morgana-v0.4.0`, while the installer ProductVersion reports `0.4.3`.
+  This must be aligned to one version source before publication. The build
+  script now guards against the mismatch and fails before staging.
+- The staged build remains `installation-test-candidate` with
+  `vm_acceptance: pending`; clean-VM acceptance is still required.
+
 ## Morgana + Merlino — Assessment Snapshots & Executive Report (September 2026)
 
 ### Added

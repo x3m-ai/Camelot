@@ -4,6 +4,11 @@ Industrial Lab is a first-class Morgana subsystem for deploying, managing,
 resetting, observing, and destroying industrial mock devices/simulators on
 Morgana Agents acting as **Lab Hosts**.
 
+> **Plan requirement:** creating or changing Industrial Lab services and provider
+> operations is a **Professional** capability (`pro.lab.industrial`). Community
+> can read/export existing evidence but does not include new Industrial Lab
+> operations. Confirm the active plan in **Licensing** before starting a lab.
+
 IndustriConnect is the **first** Industrial Lab provider. Industrial Lab itself
 is provider-agnostic: future providers (ControlThings, ModbusPal, sim_ied,
 CALDERA OT lab assets, hardware-assisted labs) are added through service

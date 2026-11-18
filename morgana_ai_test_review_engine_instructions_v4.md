@@ -1,5 +1,10 @@
 # Morgana AI Test Review Engine – Integration Instructions for Claude Sonnet
 
+> **Historical design document.** These are design/integration instructions, not
+> the current installation or operating guide. For current product behavior use
+> [`morgana/README.md`](morgana/README.md) and the
+> [`release manifest`](morgana/Install/release-manifest.json).
+
 ## Context
 
 You already know the Merlino and Morgana architecture, the current production codebase, and the purpose of the platform.
